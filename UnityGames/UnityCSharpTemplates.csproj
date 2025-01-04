@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E735A697-A3C2-451E-8BA0-BF190776AF20}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Cheng</RootNamespace>
+    <AssemblyName>UnityCSharpTemplates</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\UnityCSharpTemplates.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityEditor|AnyCPU'">
+    <OutputPath>bin\UnityEditor\</OutputPath>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\UnityEditor\UnityCSharpTemplates.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityWindows|AnyCPU'">
+    <OutputPath>bin\UnityWindows\</OutputPath>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_STANDALONE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\UnityWindows\UnityCSharpTemplates.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityAndroid|AnyCPU'">
+    <OutputPath>bin\UnityAndroid\</OutputPath>
+    <DefineConstants>TRACE;PLATFORM_ANDROID,UNITY_ANDROID</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\UnityAndroid\UnityCSharpTemplates.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Unitys\Unity 2022p\Editor\Data\Managed\UnityEditor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Unitys\Unity 2022p\Editor\Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
+      <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
+      <Name>CSharpTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\DataEditor\BoundedContainer\Editor\UBoundedContainerEditorDraw.cs" />
+    <Compile Include="Controls\DataEditor\BoundedContainer\UBoundedContainer.cs" />
+    <Compile Include="Controls\DataEditor\BoundedContainer\UBoundedContainerExtend.cs" />
+    <Compile Include="Controls\DataEditor\Decimal\Editor\DecimalUnityEditorDraw.cs" />
+    <Compile Include="Controls\DataEditor\Decimal\UDecimal.cs" />
+    <Compile Include="Controls\DataEditor\DisplayNameAttribute.cs" />
+    <Compile Include="Controls\DataStructure\Button\AnyUnityButton.cs" />
+    <Compile Include="Controls\DataStructure\Button\ConditionButtons\ConditionButton.cs" />
+    <Compile Include="Controls\DataEditor\EditorGUIParser.cs" />
+    <Compile Include="Controls\DataStructure\Button\Editor\EditorMultKeyCodeDraw.cs" />
+    <Compile Include="Controls\DataStructure\Button\Editor\UnityAxisButtonEditorDraw.cs" />
+    <Compile Include="Controls\DataStructure\Button\Joysticks\Editor\TouchSlidingAxisEditorDraw.cs" />
+    <Compile Include="Controls\DataStructure\Button\Joysticks\Editor\UnityEditorAxisDraw.cs" />
+    <Compile Include="Controls\DataStructure\Button\Editor\UnityEditorKeyCodeButtonDraw.cs" />
+    <Compile Include="Controls\DataStructure\Button\Editor\UnityEditorNameButtonDraw.cs" />
+    <Compile Include="Controls\DataStructure\Button\Joysticks\Editor\UnityKeyCode4JoystickEditorDraw.cs" />
+    <Compile Include="Controls\DataStructure\Button\Joysticks\UnityAxis.cs" />
+    <Compile Include="Controls\DataStructure\Button\Joysticks\UnityKeyCode4Joystick.cs" />
+    <Compile Include="Controls\DataStructure\Button\KeyButton\KeyCodeButton.cs" />
+    <Compile Include="Controls\DataStructure\Button\KeyButton\MultButton\MultKeyCodeButton.cs" />
+    <Compile Include="Controls\DataStructure\Button\AnyTouchUnityButton.cs" />
+    <Compile Include="Controls\DataStructure\Button\Joysticks\TouchSlidingAxis.cs" />
+    <Compile Include="Controls\DataStructure\Button\UnityNameButton\UnityAxisButton.cs" />
+    <Compile Include="Controls\DataStructure\Button\UnityNameButton\UnityNameButton.cs" />
+    <Compile Include="Controls\DataStructure\Button\MultUnityButton.cs" />
+    <Compile Include="Controls\DataStructure\Button\UnityButtonTemplate.cs" />
+    <Compile Include="Controls\DataStructure\Button\UnityClickButton.cs" />
+    <Compile Include="Controls\DataStructure\Collection\Editor\UListGUIEditorDraw.cs" />
+    <Compile Include="Controls\DataStructure\Collection\UList.cs" />
+    <Compile Include="Controls\DataStructure\DataParsers\UnityParserMeshData.cs" />
+    <Compile Include="Controls\DataStructure\GameController\Editor\UnityXBoxGameControllerEditorDraw.cs" />
+    <Compile Include="Controls\DataStructure\GameController\UnityXBoxGameController.cs" />
+    <Compile Include="Controls\Extends\UnityObjExtend.cs" />
+    <Compile Include="Controls\MonoBehaviours\Camera\2D\DepthSimulationPlanarMove.cs" />
+    <Compile Include="Controls\Camera\CameraExends.cs" />
+    <Compile Include="Controls\MonoBehaviours\Canvas\CanvasEvent.cs" />
+    <Compile Include="Controls\MonoBehaviours\Colors\ColorExtractors\ColorExtractor.cs" />
+    <Compile Include="Controls\MonoBehaviours\Colors\ColorExtractors\ColorHueExtraclor.cs" />
+    <Compile Include="Controls\MonoBehaviours\Colors\ColorExtractors\ColorSVExtraclor.cs" />
+    <Compile Include="Controls\DataEditor\Receptacles\ReceptacleValue.cs" />
+    <Compile Include="Controls\DataEditor\Receptacles\ReceptacleValueExtend.cs" />
+    <Compile Include="Controls\DataStructure\DataParsers\UnityDataParserMesh.cs" />
+    <Compile Include="Controls\Extends\DisplayNames.cs" />
+    <Compile Include="Controls\MonoBehaviours\FrameAnimation\AnimationStateMachine\AnimationStateMachinePar.cs" />
+    <Compile Include="Controls\MonoBehaviours\FrameAnimation\AnimationStateMachine\UnityAnimationStateMachine.cs" />
+    <Compile Include="Controls\MonoBehaviours\FrameAnimation\Editor\FrameAnimationParserEditorDraw.cs" />
+    <Compile Include="Controls\MonoBehaviours\FrameAnimation\FrameAnimation.cs" />
+    <Compile Include="Controls\MonoBehaviours\FrameAnimation\FrameAnimationStructure.cs" />
+    <Compile Include="Controls\DataStructure\ObjectPools\UnityBehaviourPool.cs" />
+    <Compile Include="Controls\DataStructure\ObjectPools\UnityGameObjectPool.cs" />
+    <Compile Include="Controls\DataStructure\ObjectPools\UnityObjectPool.cs" />
+    <Compile Include="Controls\MonoBehaviours\MouseMoveSpeedAxis.cs" />
+    <Compile Include="Controls\MonoBehaviours\Scene\GlobalPersistenceObject.cs" />
+    <Compile Include="Controls\MonoBehaviours\Tags\TagsExtend.cs" />
+    <Compile Include="Controls\MonoBehaviours\Tags\UnityTags.cs" />
+    <Compile Include="Controls\DataStructure\Timer\NotScaleUnityTimer.cs" />
+    <Compile Include="Controls\DataStructure\Timer\ScaleUnityTimer.cs" />
+    <Compile Include="Controls\DataStructure\Timer\UnityRealTimer.cs" />
+    <Compile Include="Controls\DataStructure\Timer\UnityTimer.cs" />
+    <Compile Include="Controls\DataStructure\Timer\Editor\UnityTimerEditorDraw.cs" />
+    <Compile Include="Controls\MonoBehaviours\Timer\UnityTimerEvent.cs" />
+    <Compile Include="Controls\Extends\UnityColorExtend.cs" />
+    <Compile Include="Controls\UnityEnvironment.cs" />
+    <Compile Include="Controls\DataStructure\UnityKeyCodes.cs" />
+    <Compile Include="Controls\Extends\UnityRandom.cs" />
+    <Compile Include="DEBUG\Extends\UnityDebug.cs" />
+    <Compile Include="DEBUG\MonoBehaviour\UnityFrameTime.cs" />
+    <Compile Include="Controls\DataEditor\Receptacles\Editor\ReceptacleUnityEditorDraw.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\DataStructure\Button\Androids\" />
+    <Folder Include="Controls\DataStructure\Gun\" />
+    <Folder Include="Controls\MonoBehaviours\Camera\3D\" />
+    <Folder Include="Controls\MonoBehaviours\Mouse\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
+del /q "$(TargetDir)$(TargetName).pdb"
+)
+del /q "$(TargetDir)$(TargetFileName).config"
+
+
+RD /s /q "$(ProjectDir)obj\$(ConfigurationName)"
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

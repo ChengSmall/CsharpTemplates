@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5C493D14-A1FD-41D5-8908-FC752BA3CE80}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Cheng</RootNamespace>
+    <AssemblyName>OtherCode</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\OtherCode.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityWindows|AnyCPU'">
+    <OutputPath>bin\UnityWindows\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\OtherCode.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityAndroid|AnyCPU'">
+    <OutputPath>bin\UnityAndroid\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\OtherCode.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityEditor|AnyCPU'">
+    <OutputPath>bin\UnityEditor\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\OtherCode.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="其它文件\汉字拼音映射列表.json" />
+    <None Include="其它文件\汉字拼音首字母映射列表.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyLoading.cs" />
+    <Compile Include="CSharpCode\ProcessStart.cs" />
+    <Compile Include="DisposeFunc.cs" />
+    <Compile Include="Streams\ReadOnlyFileStream.cs" />
+    <Compile Include="structure\GameTimes.cs" />
+    <Compile Include="structure\MindMap\MindMapNode.cs" />
+    <Compile Include="Webs\Bilibili\BilibiliErrorException.cs" />
+    <Compile Include="Webs\Bilibili\BilibiliLiveRoom.cs" />
+    <Compile Include="Webs\Bilibili\BilibiliPendant.cs" />
+    <Compile Include="Webs\Bilibili\BilibiliSpaceInfo.cs" />
+    <Compile Include="WinApi\Hooks\Hooks.cs" />
+    <Compile Include="WinApi\Hooks\KeyHooks\KeyHook.cs" />
+    <Compile Include="WinApi\Kernel32_Other.cs" />
+    <Compile Include="WinApi\Memory.cs" />
+    <Compile Include="WinApi\Message\MSG.cs" />
+    <Compile Include="WinApi\Mouse.cs" />
+    <Compile Include="WinApi\Music\AudioMediaSubtypes.cs" />
+    <Compile Include="WinApi\Music\MmResult.cs" />
+    <Compile Include="WinApi\Music\WaveArgs.cs" />
+    <Compile Include="WinApi\Music\WaveFormat.cs" />
+    <Compile Include="WinApi\Music\WaveFormatEncoding.cs" />
+    <Compile Include="WinApi\Music\WaveFormatExtraData.cs" />
+    <Compile Include="WinApi\Music\WaveInterop.cs" />
+    <Compile Include="WinApi\Process.cs" />
+    <Compile Include="WinApi\Hooks\WinHooks.cs" />
+    <Compile Include="WinApi\WindowForms.cs" />
+    <Compile Include="WinApi\winmm\WinapiJoysticks.cs" />
+    <Compile Include="Alg\FastSquare.cs" />
+    <Compile Include="YCode\InitArgs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Compressions\" />
+    <Folder Include="Texter\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
+      <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
+      <Name>CSharpTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\NetFrameworkTemplate4.6.2\NetFrameworkTemplate.csproj">
+      <Project>{4560f930-7d25-4f57-9b33-882a78e0f4fb}</Project>
+      <Name>NetFrameworkTemplate</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
+del /q "$(TargetDir)$(TargetName).pdb"
+del /q "$(TargetDir)$(TargetFileName).config"
+)
+RD /s /q "$(ProjectDir)obj\$(ConfigurationName)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

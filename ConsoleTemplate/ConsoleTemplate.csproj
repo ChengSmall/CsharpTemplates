@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Cheng.Consoles</RootNamespace>
+    <AssemblyName>ConsoleTemplate</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\ConsoleTemplate.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
+      <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
+      <Name>CSharpTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConsoleEngine\ConsoleMenuUI2D.cs" />
+    <Compile Include="ConsoleEngine\ConsoleMenuUIList.cs" />
+    <Compile Include="ConsoleEngine\ConsolePrint.cs" />
+    <Compile Include="ConsoleEngine\IDrawObject.cs" />
+    <Compile Include="Consoles\ConsoleSystem.cs" />
+    <Compile Include="Consoles\ConsoleTextStyle.cs" />
+    <Compile Include="Consoles\VirtualTerminalConsole.cs" />
+    <Compile Include="Consoles\XmlStandardItemConsole.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
+del /q "$(TargetDir)$(TargetName).pdb"
+del /q "$(TargetDir)$(TargetFileName).config"
+)
+RD /s /q "$(ProjectDir)obj\$(ConfigurationName)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

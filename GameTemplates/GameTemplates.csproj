@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BF887D71-F9BF-46D3-BF92-532B27AFAB78}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Cheng</RootNamespace>
+    <AssemblyName>GameTemplates</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\GameTemplates.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityWindows|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UnityWindows\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityAndroid|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UnityAndroid\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityEditor|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UnityEditor\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
+      <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
+      <Name>CSharpTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Moudles\Experiences\Experiences.cs" />
+    <Compile Include="Moudles\Experiences\UpgradeRules.cs" />
+    <Compile Include="Moudles\Experiences\UpgradeRulesTemplates\MinecraftLevelRule.cs" />
+    <Compile Include="Moudles\Experiences\UpgradeRulesTemplates\SekiroExpRule.cs" />
+    <Compile Include="Moudles\Experiences\UpgradeRulesTemplates\War3LevelExpRule.cs" />
+    <Compile Include="Moudles\Numgenerator\Numgenerator.cs" />
+    <Compile Include="Moudles\Numgenerator\NumgeneratorBaseStructure.cs" />
+    <Compile Include="Moudles\Randoms\DynamicalProbabilityRweardPool.cs" />
+    <Compile Include="Moudles\Randoms\FixedProbabilityRewardPool.cs" />
+    <Compile Include="Moudles\Randoms\RewardPoolParameter.cs" />
+    <Compile Include="Moudles\Randoms\RewardPoolRandom.cs" />
+    <Compile Include="Moudles\游戏物品栏系统\UpperWeightLimit\BaseInterFace.cs" />
+    <Compile Include="Moudles\游戏物品栏系统\UpperWeightLimit\InventoryByWeight.cs" />
+    <Compile Include="Moudles\游戏物品栏系统\UpperWeightLimit\itemweight.cs" />
+    <Compile Include="小游戏\推箱子\PushBoxGame.cs" />
+    <Compile Include="小游戏\推箱子\PushBoxScene.cs" />
+    <Compile Include="小游戏\推箱子\PushBoxStructure.cs" />
+    <Compile Include="棋类游戏\扑克牌\PokerComparer.cs" />
+    <Compile Include="棋类游戏\扑克牌\PokerStructure.cs" />
+    <Compile Include="棋类游戏\扑克牌\Pokextends.cs" />
+    <Compile Include="棋类游戏\象棋\AI\AiObj.cs" />
+    <Compile Include="棋类游戏\象棋\ChiessBoard.cs" />
+    <Compile Include="棋类游戏\象棋\Chiessontroller.cs" />
+    <Compile Include="棋类游戏\象棋\ChiessStructrue.cs" />
+    <Compile Include="棋类游戏\黑白格子棋模板\BWChessStructure.cs" />
+    <Compile Include="棋类游戏\黑白格子棋模板\BWChessBoard.cs" />
+    <Compile Include="游戏数据结构\纪元年历\ERADateTime.cs" />
+    <Compile Include="游戏数据结构\纪元年历\ERATimeSpan.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
+del /q "$(TargetDir)$(TargetName).pdb"
+del /q "$(TargetDir)$(TargetFileName).config"
+)
+RD /s /q "$(ProjectDir)obj\$(ConfigurationName)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

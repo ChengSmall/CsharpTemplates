@@ -1,0 +1,26 @@
+################################################################################
+# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
+################################################################################
+
+/DEBUGCode/obj
+/CSharpTemplates/bin
+/CSharpTemplates/obj
+/CSharpTemplates/bin/Debug
+/CSharpTemplates/bin/Release
+/CSharpTemplates/obj/Debug
+/CSharpTemplates/obj/Release
+/DEBUGCode/bin
+/GameTemplates/bin
+/GameTemplates/obj
+/NetFrameworkTemplate4.6.2/bin
+/NetFrameworkTemplate4.6.2/obj
+/OtherCode/bin
+/OtherCode/obj
+/ProgramTest
+/ProgramTest/bin
+/ProgramTest/obj
+/UnityGames/bin
+/UnityGames/obj
+/UnityCode/obj
+/ConsoleTemplate/bin
+/ConsoleTemplate/obj

@@ -1,0 +1,118 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33529.622
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpTemplates", "CSharpTemplates\CSharpTemplates.csproj", "{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProgramTest", "ProgramTest\ProgramTest.csproj", "{9D1EB4E2-C996-4EB4-843C-455E001F57A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTemplates", "GameTemplates\GameTemplates.csproj", "{BF887D71-F9BF-46D3-BF92-532B27AFAB78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityCSharpTemplates", "UnityGames\UnityCSharpTemplates.csproj", "{E735A697-A3C2-451E-8BA0-BF190776AF20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtherCode", "OtherCode\OtherCode.csproj", "{5C493D14-A1FD-41D5-8908-FC752BA3CE80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFrameworkTemplate", "NetFrameworkTemplate4.6.2\NetFrameworkTemplate.csproj", "{4560F930-7D25-4F57-9B33-882A78E0F4FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DEBUGCode", "DEBUGCode\DEBUGCode.csproj", "{B34EED8C-0F8E-4E84-906F-9604233DB045}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityCode", "UnityCode\UnityCode.csproj", "{75303085-7F22-4760-B1AA-6321A936AACB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTemplate", "ConsoleTemplate\ConsoleTemplate.csproj", "{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		UnityAndroid|Any CPU = UnityAndroid|Any CPU
+		UnityEditor|Any CPU = UnityEditor|Any CPU
+		UnityWindows|Any CPU = UnityWindows|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.UnityAndroid|Any CPU.ActiveCfg = Release|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.UnityAndroid|Any CPU.Build.0 = Release|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.UnityEditor|Any CPU.ActiveCfg = UnityEditor|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.UnityEditor|Any CPU.Build.0 = UnityEditor|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.UnityWindows|Any CPU.ActiveCfg = Release|Any CPU
+		{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}.UnityWindows|Any CPU.Build.0 = Release|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityAndroid|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityAndroid|Any CPU.Build.0 = Debug|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityEditor|Any CPU.ActiveCfg = UnityEditor|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityEditor|Any CPU.Build.0 = UnityEditor|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityWindows|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityWindows|Any CPU.Build.0 = Debug|Any CPU
+		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.UnityAndroid|Any CPU.ActiveCfg = UnityAndroid|Any CPU
+		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.UnityEditor|Any CPU.ActiveCfg = UnityEditor|Any CPU
+		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.UnityWindows|Any CPU.ActiveCfg = UnityWindows|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.UnityAndroid|Any CPU.ActiveCfg = UnityAndroid|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.UnityAndroid|Any CPU.Build.0 = UnityAndroid|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.UnityEditor|Any CPU.ActiveCfg = UnityEditor|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.UnityEditor|Any CPU.Build.0 = UnityEditor|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.UnityWindows|Any CPU.ActiveCfg = UnityWindows|Any CPU
+		{E735A697-A3C2-451E-8BA0-BF190776AF20}.UnityWindows|Any CPU.Build.0 = UnityWindows|Any CPU
+		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.UnityAndroid|Any CPU.ActiveCfg = UnityAndroid|Any CPU
+		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.UnityEditor|Any CPU.ActiveCfg = UnityEditor|Any CPU
+		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.UnityWindows|Any CPU.ActiveCfg = UnityWindows|Any CPU
+		{4560F930-7D25-4F57-9B33-882A78E0F4FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4560F930-7D25-4F57-9B33-882A78E0F4FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4560F930-7D25-4F57-9B33-882A78E0F4FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4560F930-7D25-4F57-9B33-882A78E0F4FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4560F930-7D25-4F57-9B33-882A78E0F4FB}.UnityAndroid|Any CPU.ActiveCfg = UnityAndroid|Any CPU
+		{4560F930-7D25-4F57-9B33-882A78E0F4FB}.UnityEditor|Any CPU.ActiveCfg = UnityEditor|Any CPU
+		{4560F930-7D25-4F57-9B33-882A78E0F4FB}.UnityWindows|Any CPU.ActiveCfg = UnityWindows|Any CPU
+		{B34EED8C-0F8E-4E84-906F-9604233DB045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B34EED8C-0F8E-4E84-906F-9604233DB045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B34EED8C-0F8E-4E84-906F-9604233DB045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B34EED8C-0F8E-4E84-906F-9604233DB045}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B34EED8C-0F8E-4E84-906F-9604233DB045}.UnityAndroid|Any CPU.ActiveCfg = UnityAndroid|Any CPU
+		{B34EED8C-0F8E-4E84-906F-9604233DB045}.UnityEditor|Any CPU.ActiveCfg = UnityEditor|Any CPU
+		{B34EED8C-0F8E-4E84-906F-9604233DB045}.UnityWindows|Any CPU.ActiveCfg = UnityWindows|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.UnityAndroid|Any CPU.ActiveCfg = Release|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.UnityAndroid|Any CPU.Build.0 = Release|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.UnityEditor|Any CPU.ActiveCfg = Debug|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.UnityEditor|Any CPU.Build.0 = Debug|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.UnityWindows|Any CPU.ActiveCfg = Release|Any CPU
+		{75303085-7F22-4760-B1AA-6321A936AACB}.UnityWindows|Any CPU.Build.0 = Release|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityAndroid|Any CPU.ActiveCfg = Debug|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityAndroid|Any CPU.Build.0 = Debug|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityEditor|Any CPU.ActiveCfg = Debug|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityEditor|Any CPU.Build.0 = Debug|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityWindows|Any CPU.ActiveCfg = Debug|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityWindows|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D2B20622-4F33-4C31-B33E-5D0BE06303E0}
+	EndGlobalSection
+EndGlobal
