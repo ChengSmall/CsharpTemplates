@@ -24,16 +24,18 @@ namespace Cheng.Unitys.Cameras
     /// </para>
     /// </remarks>
     [Obsolete("未完成", true)]
-    internal class CameraOrbitController : MonoBehaviour
+    public class CameraOrbitController : MonoBehaviour
     {
-
-        #region 参数
 
         public CameraOrbitController()
         {
             controlledCamera = null;
             targetObject = null;
         }
+
+        #region 参数
+
+        #region 外部参数
 
 #if UNITY_EDITOR
         [Tooltip("要控制的3D摄像机")]
@@ -53,6 +55,12 @@ namespace Cheng.Unitys.Cameras
 
         #endregion
 
+        #region 内部参数
+
+        #endregion
+
+        #endregion
+
         #region 功能
 
         /// <summary>
@@ -61,7 +69,7 @@ namespace Cheng.Unitys.Cameras
         /// <param name="quaternion">要转动的角度</param>
         public void RollCamera(Quaternion quaternion)
         {
-            throw new NotImplementedException("功能未实现");
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -70,19 +78,19 @@ namespace Cheng.Unitys.Cameras
         /// <param name="eulerAngles">要转动的角度</param>
         public void RollCamera(Vector3 eulerAngles)
         {
-            throw new NotImplementedException("功能未实现");
+            throw new NotImplementedException();
         }
 
 
         public void SetCameraAngle(Quaternion quaternion)
         {
-            throw new NotImplementedException("功能未实现");
+            throw new NotImplementedException();
         }
 
 
         public void SetCameraAngle(Vector3 eulerAngles)
         {
-            throw new NotImplementedException("功能未实现");
+            throw new NotImplementedException();
         }
 
         #endregion

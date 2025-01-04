@@ -172,6 +172,9 @@
     <Folder Include="Controls\MonoBehaviours\Camera\3D\" />
     <Folder Include="Controls\MonoBehaviours\Mouse\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="下载源码的看这里.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (

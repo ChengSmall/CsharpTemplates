@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<提醒>
+	下载源码后，vs引用设置基本上会出错
+	UnityCSharpTemplates和UnityCode两个项目引用的UnityEngine相关依赖，需要手动引用自己本地的dll
+</提醒>
