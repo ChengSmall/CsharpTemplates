@@ -27,6 +27,8 @@ namespace Cheng.DEBUG
         private Stream p_stream;
         private BaseRandom p_random;
 
+        #region 派生
+
         public override bool CanRead => p_stream.CanRead;
 
         public override bool CanSeek => p_stream.CanSeek;
@@ -46,9 +48,14 @@ namespace Cheng.DEBUG
             p_stream.Flush();
         }
 
-        protected override void DisposeUnmanaged()
+        protected override bool Disposing(bool disposing)
         {
-            p_stream.Close();
+            if (disposing)
+            {
+                p_stream.Close();
+            }
+
+            return true;
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -89,6 +96,20 @@ namespace Cheng.DEBUG
         {
             p_stream.WriteByte(value);
         }
+
+        #endregion
+
+        #region 功能
+
+        /// <summary>
+        /// 内部封装的随机器
+        /// </summary>
+        public BaseRandom Random
+        {
+            get => p_random;
+        }
+
+        #endregion
 
     }
 

@@ -59,7 +59,6 @@
     <Compile Include="ConsoleEngine\IDrawObject.cs" />
     <Compile Include="Consoles\ConsoleSystem.cs" />
     <Compile Include="Consoles\ConsoleTextStyle.cs" />
-    <Compile Include="Consoles\VirtualTerminalConsole.cs" />
     <Compile Include="Consoles\XmlStandardItemConsole.cs" />
   </ItemGroup>
   <ItemGroup />
