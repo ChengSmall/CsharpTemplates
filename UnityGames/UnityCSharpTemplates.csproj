@@ -173,7 +173,7 @@
     <Folder Include="Controls\MonoBehaviours\Mouse\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="下载源码的看这里.xml" />
+    <None Include="介绍.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

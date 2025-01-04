@@ -244,6 +244,9 @@
   <ItemGroup>
     <None Include="Algorithm\Compression\ResourcePackage\资源包数据格式.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="简介.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (

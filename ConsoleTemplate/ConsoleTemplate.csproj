@@ -53,7 +53,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleEngine\ConsoleMenuUI2D.cs" />
     <Compile Include="ConsoleEngine\ConsoleMenuUIList.cs" />
     <Compile Include="ConsoleEngine\ConsolePrint.cs" />
     <Compile Include="ConsoleEngine\IDrawObject.cs" />
@@ -61,7 +60,9 @@
     <Compile Include="Consoles\ConsoleTextStyle.cs" />
     <Compile Include="Consoles\XmlStandardItemConsole.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="简介.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (

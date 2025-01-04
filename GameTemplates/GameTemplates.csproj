@@ -82,7 +82,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="简介.txt" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Moudles\Experiences\Experiences.cs" />
     <Compile Include="Moudles\Experiences\UpgradeRules.cs" />

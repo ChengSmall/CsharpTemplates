@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<介绍>
+	Unity可用的DLL库，需要CSharpTemplates项目前置；
+	编译期编译成三份：U3D编辑器(UnityEditor)，打包到windows系统(UnityWindows)，打包到移动端安卓(UnityAndroid)
+</介绍>
