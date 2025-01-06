@@ -267,7 +267,9 @@ namespace Cheng.DEBUG
         /// <returns></returns>
         public static string Foreach(this IEnumerable arr, int lineCount = 10, string fen = " ", Func<object, string> toStr = null)
         {
+            if (arr is null) throw new ArgumentNullException();
             if (toStr is null) toStr = defToStr;
+
             return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr);
         }
 

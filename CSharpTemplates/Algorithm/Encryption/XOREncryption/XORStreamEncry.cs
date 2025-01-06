@@ -1,15 +1,19 @@
 using Cheng.Streams;
 using System;
 using System.IO;
+using System.Text;
 
 namespace Cheng.Algorithm.Encryptions
 {
+
     /// <summary>
     /// 封装一个异或加密流，在读写时自动加密和解密数据
     /// </summary>
-    public class XORStreamEncry : HEStream
+    public sealed class XORStreamEncry : HEStream
     {
+
         #region 构造
+
         /// <summary>
         /// 实例化一个加密流封装
         /// </summary>
@@ -30,6 +34,43 @@ namespace Cheng.Algorithm.Encryptions
         public XORStreamEncry(Stream stream, long key)
         {
             f_tinit(stream, new XOREncryption(key), true);
+        }
+
+        /// <summary>
+        /// 实例化一个加密流封装
+        /// </summary>
+        /// <param name="stream">要封装的流</param>
+        /// <param name="key">异或加密密钥字符串，使用utf-8编码为加密数据</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="EncoderFallbackException">发生回退</exception>
+        public XORStreamEncry(Stream stream, string key) : this(stream, key, Encoding.UTF8, true)
+        {
+        }
+
+        /// <summary>
+        /// 实例化一个加密流封装
+        /// </summary>
+        /// <param name="stream">要封装的流</param>
+        /// <param name="key">异或加密密钥字符串</param>
+        /// <param name="encoding">将字符串解码为字节序列的编码器</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="EncoderFallbackException">发生回退</exception>
+        public XORStreamEncry(Stream stream, string key, Encoding encoding) : this(stream, key, encoding, true)
+        {
+        }
+
+        /// <summary>
+        /// 实例化一个加密流封装
+        /// </summary>
+        /// <param name="stream">要封装的流</param>
+        /// <param name="key">异或加密密钥字符串</param>
+        /// <param name="encoding">将字符串解码为字节序列的编码器</param>
+        /// <param name="isDispose">释放时是否一并清理封装对象资源，true表示清理，false不清理；默认为true</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="EncoderFallbackException">发生回退</exception>
+        public XORStreamEncry(Stream stream, string key, Encoding encoding, bool isDispose)
+        {
+            f_tinit(stream, new XOREncryption(encoding?.GetBytes(key)), isDispose);
         }
 
         /// <summary>
@@ -73,21 +114,27 @@ namespace Cheng.Algorithm.Encryptions
             this.p_xor = xor;
             p_isFree = free;
         }
+
         #endregion
 
         #region 参数
+
         private XOREncryption p_xor;
         private Stream p_stream;
+
         private bool p_isFree;
+
         #endregion
 
         #region 参数访问
+
         /// <summary>
         /// 获取基础封装流对象
         /// </summary>
         public Stream BaseStream => p_stream;
+
         /// <summary>
-        /// 获取异或加密对象
+        /// 获取基础异或加密对象
         /// </summary>
         public XOREncryption XOR => p_xor;
 
@@ -104,7 +151,9 @@ namespace Cheng.Algorithm.Encryptions
             get => p_stream.Position;
             set
             {
+                var pos = p_stream.Position;
                 p_stream.Position = value;
+                p_xor.AddPointer(value - pos);
             }
         }
 
@@ -124,17 +173,19 @@ namespace Cheng.Algorithm.Encryptions
 
         #endregion
 
+
         #region 派生
+
         /// <summary>
         /// 清除所有缓冲区并将所有数据写入到基础设备
         /// </summary>
         public override void Flush()
         {
-            if (IsDispose) return;
-            p_stream.Flush();
+            p_stream?.Flush();
         }
+
         /// <summary>
-        /// 重置密钥指针
+        /// 手动重置当前密钥指针
         /// </summary>
         public void Reset()
         {
@@ -151,16 +202,14 @@ namespace Cheng.Algorithm.Encryptions
             return r;
         }
 
-        public override long Seek(long offset, SeekOrigin origin)
+        public override int ReadByte()
         {
             ThrowIsDispose();
-            return p_stream.Seek(offset, origin);
-        }
+            int r = p_stream.ReadByte();
 
-        public override void SetLength(long value)
-        {
-            ThrowIsDispose();
-            p_stream.SetLength(value);
+            if (r == -1) return -1;
+
+            return (((byte)r) ^ p_xor.NextIndex());
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -170,28 +219,39 @@ namespace Cheng.Algorithm.Encryptions
             p_stream.Write(buffer, offset, count);
         }
 
-        public override int ReadByte()
-        {
-            ThrowIsDispose();
-            int r = p_stream.ReadByte();
-
-            if (r == -1) return r;
-
-            return r ^ p_xor.NextIndex();
-        }
-
         public override void WriteByte(byte value)
         {
             ThrowIsDispose();
-            value ^= p_xor.NextIndex();
+            p_stream.WriteByte((byte)(value ^ p_xor.NextIndex()));
+        }
 
-            p_stream.WriteByte(value);
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            ThrowIsDispose();
+
+            var nowPos = p_stream.Position;
+
+            var re = p_stream.Seek(offset, origin);
+
+            p_xor.AddPointer(re - nowPos);
+
+            return re;
+        }
+
+        public override void SetLength(long value)
+        {
+            ThrowIsDispose();
+            p_stream.SetLength(value);
         }
 
         protected override bool Disposing(bool disposing)
         {
-            if (p_isFree && disposing) p_stream.Close();
+            if (p_isFree && disposing)
+            {
+                p_stream.Close();
+            }
             p_xor.Reset();
+            p_stream = null;
 
             return true;
         }
