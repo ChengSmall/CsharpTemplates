@@ -383,7 +383,7 @@ namespace Cheng.Xmls.StandardItemText
                         return;
                     }
 
-                    return;
+                    //return;
                 }
 
                 double re;

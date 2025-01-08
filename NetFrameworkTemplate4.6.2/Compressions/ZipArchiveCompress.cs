@@ -134,7 +134,17 @@ namespace Cheng.Algorithm.Compressions.Systems
         {
         }
 
-        public ZipArchiveCompress(Stream stream, ZipArchiveMode mode, int bufferSize) : this(stream, mode, 1024 * 8, true)
+        /// <summary>
+        /// 指定压缩数据流实例化算法
+        /// </summary>
+        /// <param name="stream">要压缩或解压缩的数据源</param>
+        /// <param name="mode">压缩模式</param>
+        /// <param name="bufferSize">用于解压缩拷贝数据时的缓冲区大小</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentException">参数格式不正确</exception>
+        /// <exception cref="NotSupportedException">流没有指定权限</exception>
+        /// <exception cref="InvalidDataException">流的内容无法作为zip压缩文件解析</exception>
+        public ZipArchiveCompress(Stream stream, ZipArchiveMode mode, int bufferSize) : this(stream, mode, bufferSize, true)
         {
         }
 
@@ -153,7 +163,30 @@ namespace Cheng.Algorithm.Compressions.Systems
         {
             if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
 
-            p_zip = new ZipArchive(stream, mode, true);            
+            p_zip = new ZipArchive(stream, mode, true);
+            p_buffer = new byte[bufferSize];
+            p_stream = stream;
+            p_mode = mode;
+            p_freeBase = closeBaseStream;
+        }
+
+        /// <summary>
+        /// 指定压缩数据流实例化算法
+        /// </summary>
+        /// <param name="stream">要压缩或解压缩的数据源</param>
+        /// <param name="mode">压缩模式</param>
+        /// <param name="bufferSize">用于解压缩拷贝数据时的缓冲区大小</param>
+        /// <param name="closeBaseStream">释放实例时是否关闭封装的数据流，关闭传入true，不关闭则传入false</param>
+        /// <param name="entryNameEncoding">在流中读取或写入项路径名时使用的编码，默认为utf-8</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentException">参数格式不正确</exception>
+        /// <exception cref="NotSupportedException">流没有指定权限</exception>
+        /// <exception cref="InvalidDataException">流的内容无法作为zip压缩文件解析</exception>
+        public ZipArchiveCompress(Stream stream, ZipArchiveMode mode, int bufferSize, bool closeBaseStream, Encoding entryNameEncoding)
+        {
+            if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
+
+            p_zip = new ZipArchive(stream, mode, true, entryNameEncoding);
 
             p_buffer = new byte[bufferSize];
             p_stream = stream;
@@ -172,6 +205,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         private byte[] p_buffer;
 
         private ZipArchiveMode p_mode;
+
         private bool p_freeBase;
 
         #endregion

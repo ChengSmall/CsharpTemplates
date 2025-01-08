@@ -247,6 +247,9 @@
   <ItemGroup>
     <None Include="简介.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Parsers\TextParser\Xml\标准项数据文本.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
