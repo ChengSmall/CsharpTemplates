@@ -10,9 +10,12 @@ namespace Cheng.IO.NetEasys
 {
 
     /// <summary>
-    /// 网易云音乐uc缓存文件转mp3文件读写流
+    /// 网易云音乐uc缓存文件转音频文件读写流
     /// </summary>
-    public sealed class NetEasyUCToMp3AudioStream : HEStream
+    /// <remarks>
+    /// <para>封装网易云音乐的uc缓存文件，将其解密或加密成可用音频流的读写封装流</para>
+    /// </remarks>
+    public sealed class NetEasyUCToAudioStream : HEStream
     {
 
         #region 构造
@@ -21,7 +24,7 @@ namespace Cheng.IO.NetEasys
         /// 实例化一个转化流
         /// </summary>
         /// <param name="baseStream">要封装的基础uc文件流</param>
-        public NetEasyUCToMp3AudioStream(Stream baseStream) : this(baseStream, true)
+        public NetEasyUCToAudioStream(Stream baseStream) : this(baseStream, true)
         {
         }
 
@@ -30,7 +33,7 @@ namespace Cheng.IO.NetEasys
         /// </summary>
         /// <param name="baseStream">要封装的基础uc文件流</param>
         /// <param name="disposeBase">释放时是否释放<paramref name="baseStream"/>，释放传入true，不释放传入false，默认值是true</param>
-        public NetEasyUCToMp3AudioStream(Stream baseStream, bool disposeBase)
+        public NetEasyUCToAudioStream(Stream baseStream, bool disposeBase)
         {
             if (baseStream is null) throw new ArgumentNullException();
             p_stream = baseStream;

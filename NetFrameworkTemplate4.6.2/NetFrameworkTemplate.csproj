@@ -81,7 +81,7 @@
     <Compile Include="Compressions\ResourcePackageWinForm\DataStructure.cs" />
     <Compile Include="Compressions\ResourcePackageWinForm\ResourcePackageListView.cs" />
     <Compile Include="Compressions\ZipArchiveCompress.cs" />
-    <Compile Include="IO\NetEasyUCToMp3AudioStream.cs" />
+    <Compile Include="IO\NetEasyUCToAudioStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
