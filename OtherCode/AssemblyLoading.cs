@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 
 namespace Cheng.Systems
 {
@@ -28,10 +27,10 @@ namespace Cheng.Systems
         /// <summary>
         /// 初始化动态程序集加载模块和参数
         /// </summary>
-        public static void Init()
+        /// <param name="dom">当前应用程序域</param>
+        public static void Init(AppDomain dom)
         {
-            //var currAss = Assembly.GetExecutingAssembly();
-            var dom = AppDomain.CurrentDomain;
+            if (dom is null) throw new ArgumentNullException();
             dom.AssemblyResolve += Dom_AssemblyResolve;
             p_asses = new Dictionary<string, Assembly>();
         }
@@ -41,7 +40,7 @@ namespace Cheng.Systems
         /// </summary>
         /// <returns>
         /// <para>使用键值对储存的程序集，Key表示程序集的<see cref="Assembly.FullName"/></para>
-        /// <para>若未调用<see cref="Init"/>进行初始化则返回null</para>
+        /// <para>若未调用<see cref="Init(AppDomain)"/>进行初始化则返回null</para>
         /// </returns>
         public static Dictionary<string, Assembly> Assemblys
         {

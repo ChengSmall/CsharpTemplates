@@ -301,7 +301,17 @@ namespace Cheng.Json
         public static bool operator ==(JsonVariable j1, JsonVariable j2)
         {
             if ((object)j1 == (object)j2) return true;
-            if (j1 is null || j2 is null) return false;
+            if (j1 is null || j2 is null)
+            {
+                if(j1 is null)
+                {
+                    return j2.DataType == JsonType.Null;
+                }
+                else
+                {
+                    return j1.DataType == JsonType.Null;
+                }
+            }
             return j1.Equals(j2);
         }
 
@@ -314,7 +324,17 @@ namespace Cheng.Json
         public static bool operator !=(JsonVariable j1, JsonVariable j2)
         {
             if ((object)j1 == (object)j2) return false;
-            if (j1 is null || j2 is null) return true;
+            if (j1 is null || j2 is null)
+            {
+                if (j1 is null)
+                {
+                    return j2.DataType != JsonType.Null;
+                }
+                else
+                {
+                    return j1.DataType != JsonType.Null;
+                }
+            }
             return !j1.Equals(j2);
         }
 
@@ -334,8 +354,9 @@ namespace Cheng.Json
     /// </remarks>
     public sealed class JsonNull : JsonVariable
     {
+
         /// <summary>
-        /// 表示一个null类型的json对象
+        /// 表示null的json对象
         /// </summary>
         public readonly static JsonNull Nullable = new JsonNull();
 
@@ -351,6 +372,7 @@ namespace Cheng.Json
         public override JsonType DataType => JsonType.Null;
         public override bool IsNull => true;
         public override object Data => null;
+
         public override string ToString()
         {
             return JsonText;
@@ -408,6 +430,7 @@ namespace Cheng.Json
         #endregion
 
         #region 派生
+
         public override JsonType DataType => JsonType.Integer;
 
         public override long Integer
@@ -452,7 +475,9 @@ namespace Cheng.Json
     /// </summary>
     public sealed class JsonRealNumber : JsonVariable
     {
+
         #region 构造
+
         /// <summary>
         /// 实例化一个小数json对象
         /// </summary>
@@ -460,6 +485,7 @@ namespace Cheng.Json
         {
             value = 0d;
         }
+
         /// <summary>
         /// 实例化一个小数json对象
         /// </summary>
@@ -472,20 +498,25 @@ namespace Cheng.Json
         #endregion
 
         #region 参数
+
         /// <summary>
         /// 数据
         /// </summary>
         public double value;
+
         #endregion
 
         #region 派生
+
         public override JsonType DataType => JsonType.RealNum;
 
         public override double RealNum
         {
             get => value; set => this.value = value;
         }
+
         public override bool IsNull => false;
+
         public override object Data => value;
 
         public override string ToString()
@@ -955,6 +986,7 @@ namespace Cheng.Json
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化一个键值对类型的json对象
         /// </summary>
@@ -962,6 +994,7 @@ namespace Cheng.Json
         {
             p_dict = new Dictionary<string, JsonVariable>();
         }
+
         /// <summary>
         /// 实例化一个键值对类型的json对象
         /// </summary>
@@ -970,6 +1003,7 @@ namespace Cheng.Json
         {
             p_dict = new Dictionary<string, JsonVariable>(capacity);
         }
+
         /// <summary>
         /// 实例化一个键值对类型的json对象
         /// </summary>
@@ -978,6 +1012,7 @@ namespace Cheng.Json
         {
             p_dict = new Dictionary<string, JsonVariable>(comparer);
         }
+
         /// <summary>
         /// 实例化一个键值对类型的json对象
         /// </summary>
@@ -987,6 +1022,7 @@ namespace Cheng.Json
         {
             p_dict = new Dictionary<string, JsonVariable>(capacity, comparer);
         }
+
         /// <summary>
         /// 实例化一个键值对类型的json对象
         /// </summary>
@@ -995,6 +1031,7 @@ namespace Cheng.Json
         {
             p_dict = new Dictionary<string, JsonVariable>(json);
         }
+
         #endregion
 
         #region 参数

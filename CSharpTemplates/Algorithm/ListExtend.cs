@@ -1029,7 +1029,6 @@ namespace Cheng.Algorithm.Collections
         /// <typeparam name="T"></typeparam>
         /// <param name="list">待排集合</param>
         /// <param name="comparer">排序方法，null表示使用默认实现</param>
-        /// <exception cref="ArgumentOutOfRangeException">范围超出</exception>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         public static void Sort<T>(this IList<T> list, IComparer<T> comparer)
         {
@@ -1087,7 +1086,6 @@ namespace Cheng.Algorithm.Collections
         /// </summary>
         /// <param name="list">待排集合</param>
         /// <param name="comparer">排序方法</param>
-        /// <exception cref="ArgumentOutOfRangeException">范围超出</exception>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         public static void Sort(this IList list, IComparer comparer)
         {

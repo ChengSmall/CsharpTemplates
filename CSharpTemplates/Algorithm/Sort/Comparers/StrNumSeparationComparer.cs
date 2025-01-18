@@ -198,14 +198,17 @@ namespace Cheng.Algorithm.Sorts.Comparers
 
             }
 
-            if (leftSize == rightSize)
-            {
-                return 0;
-            }
-            else
-            {
-                return leftSize - rightSize;
-            }
+            //if (leftSize == rightSize)
+            //{
+            //    return 0;
+            //}
+            //else
+            //{
+            //    return leftSize < rightSize ? -1 : 1;
+            //}
+
+            return leftSize.CompareTo(rightSize);
+
         }
 
     }

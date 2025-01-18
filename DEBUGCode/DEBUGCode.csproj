@@ -87,6 +87,7 @@
     <ProjectReference Include="..\ConsoleTemplate\ConsoleTemplate.csproj">
       <Project>{985d5b0d-5a00-4e1a-a0f1-9efc688d3b27}</Project>
       <Name>ConsoleTemplate</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
       <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
