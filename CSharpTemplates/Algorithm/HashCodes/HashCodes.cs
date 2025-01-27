@@ -33,6 +33,7 @@ namespace Cheng.Algorithm.HashCodes
 
     #endregion
 
+
     /// <summary>
     /// 获取对象的64位HashCode方法的公共基类
     /// </summary>
@@ -320,6 +321,7 @@ namespace Cheng.Algorithm.HashCodes
         #region 计算基础类型的HashCode
 
         #region
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -329,6 +331,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -338,6 +341,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return (long)value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -347,6 +351,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return (long)value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -356,6 +361,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return (long)value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -365,6 +371,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return (long)value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -374,6 +381,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return (long)value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -383,6 +391,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return (long)value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -392,6 +401,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return (long)value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -401,6 +411,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -410,6 +421,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return value ? 1 : 0;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -420,6 +432,7 @@ namespace Cheng.Algorithm.HashCodes
             if (value == 0) return 0;
             return *(int*)&value;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -430,6 +443,7 @@ namespace Cheng.Algorithm.HashCodes
             if (value == 0) return 0;
             return *(long*)&value;
         }
+
         /// <summary>
         /// 获取实例的默认64位哈希值
         /// </summary>
@@ -457,6 +471,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return value.Ticks;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>
@@ -466,6 +481,7 @@ namespace Cheng.Algorithm.HashCodes
         {
             return value.Ticks;
         }
+
         /// <summary>
         /// 获取实例的64位哈希值
         /// </summary>

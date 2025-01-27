@@ -179,8 +179,10 @@
     <Compile Include="Parsers\TextParser\BaseTextParser.cs" />
     <Compile Include="Parsers\TextParser\BufferedText\BufferedTextWriter.cs" />
     <Compile Include="Parsers\TextParser\BufferedText\BufferedTextReader.cs" />
+    <Compile Include="Parsers\TextParser\Json\JsonDictionary.cs" />
     <Compile Include="Parsers\TextParser\Json\JsonExtend.cs" />
     <Compile Include="Parsers\TextParser\Json\Default\JsonParserDefault.cs" />
+    <Compile Include="Parsers\TextParser\Json\JsonList.cs" />
     <Compile Include="Parsers\TextParser\Json\JsonToObject.cs" />
     <Compile Include="Parsers\TextParser\SafeRelease\SafeReleaseTextReader.cs" />
     <Compile Include="Parsers\TextParser\SafeRelease\SafeReleaseTextWriter.cs" />

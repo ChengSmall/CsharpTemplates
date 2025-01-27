@@ -76,129 +76,6 @@ namespace Cheng.Memorys
         /// <summary>
         /// 调用此方法清理非托管资源
         /// </summary>
-        /// <param name="suppressFunalize">是否释放托管资源并停止析构方法；
-        /// <para>参数为true时，在资源释放后若<see cref="Disposeing(bool)"/>的返回值为true，则会使用<see cref="GC.SuppressFinalize(object)"/>禁止该对象的对象终结器并调用<see cref="IsSuppressFunalize"/>；<br/>
-        /// 若参数是false，则仅释放资源，且不会调用<see cref="IsSuppressFunalize"/>；一般在析构方法中调用时使用false</para>
-        /// </param>
-        protected void Dispose(bool suppressFunalize)
-        {
-            if (p_isDispose) return;
-            p_isDispose = true;
-
-            //释放
-
-            UnmanagedReleasources();
-            bool flag = Disposeing(suppressFunalize);
-
-            //释放
-
-            if (suppressFunalize && flag)
-            {
-                //托管清理
-                GC.SuppressFinalize(this);
-                IsSuppressFunalize();
-            }
-
-        }
-        
-        void IDisposable.Dispose()
-        {
-            Dispose(true);
-        }
-
-        /// <summary>
-        /// 调用该方法，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
-        /// </summary>
-        protected void ThrowObjectDisposeException()
-        {
-            if(p_isDispose) throw new ObjectDisposedException(GetType().Name);
-        }
-
-        /// <summary>
-        /// 调用该方法，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
-        /// </summary>
-        /// <param name="objName">引发异常的对象名称</param>
-        protected void ThrowObjectDisposeException(string objName)
-        {
-            if (p_isDispose) throw new ObjectDisposedException(objName);
-        }
-
-        #endregion
-
-    }
-
-    /// <summary>
-    /// 高度封装的管理非托管资源安全释放的类，采用自定析构取消机制
-    /// </summary>
-    public abstract class ReleaseUnmanagedResources : IDisposable
-    {
-
-        /// <summary>
-        /// 在派生类重写此方法，用于释放非托管资源
-        /// </summary>
-        /// <remarks>
-        /// <para>当第一次调用<see cref="Disposeing(bool)"/>时，该函数会被调用</para>
-        /// <para>若要更自由的编写清理资源的代码，可以重写<see cref="Disposeing(bool)"/></para> 
-        /// </remarks>
-        protected virtual void UnmanagedReleasources() { }
-
-        /// <summary>
-        /// 释放代码内终止了析构函数时调用该函数
-        /// </summary>
-        /// <remarks>
-        /// <para>当调用资源释放函数使用<see cref="GC.SuppressFinalize(object)"/>终止当前对象的析构函数时，会调用该函数一次</para>
-        /// <para>该函数的调用时机为，调用<see cref="Dispose(bool, bool)"/>函数时，参数 disposed 为 true，参数 notSuppressFinalize 为 false，且函数<see cref="Disposeing(bool)"/>返回值为true</para>
-        /// </remarks>
-        protected virtual void IsSuppressFunalize() { }
-
-        /// <summary>
-        /// 在派生类重写此方法，用于释放非托管资源和托管对象
-        /// </summary>
-        /// <remarks>该方法在首次调用<see cref="Dispose(bool, bool)"/>方法时被调用，<paramref name="disposeing"/>参数由<see cref="Dispose(bool, bool)"/>的参数传递</remarks>
-        /// <param name="disposeing">是否清理托管资源对象</param>
-        /// <returns>
-        /// <para>是否关闭该对象的析构方法</para>
-        /// <para>
-        /// 返回false时，将不会对实例调用<see cref="GC.SuppressFinalize(object)"/>和<see cref="IsSuppressFunalize"/>；<br/>
-        /// 返回true时，如果<see cref="Dispose(bool, bool)"/>的disposed参数为true，notSuppressFinalize参数为false时，会对实例调用<see cref="GC.SuppressFinalize(object)"/>
-        /// </para>
-        /// <para>默认返回值为true</para>
-        /// </returns>
-        protected virtual bool Disposeing(bool disposeing) => true;
-
-        /// <summary>
-        /// 当前实例是否未释放非托管资源
-        /// </summary>
-        public bool IsNotDispose => !p_isDispose;
-
-        /// <summary>
-        /// 当前实例是否已被释放
-        /// </summary>
-        protected bool IsDispose => p_isDispose;
-
-        #region 封装
-
-        /// <summary>
-        /// 构造
-        /// </summary>
-        protected ReleaseUnmanagedResources()
-        {
-            p_isDispose = false;
-        }
-
-        private bool p_isDispose;
-
-        /// <summary>
-        /// 调用该方法清理非托管资源
-        /// </summary>
-        public virtual void Close()
-        {
-            Dispose(true, false);
-        }
-
-        /// <summary>
-        /// 调用此方法清理非托管资源
-        /// </summary>
         /// <param name="disposed">是否释放托管资源并停止析构方法；
         /// <para>参数为true时，在资源释放后若<see cref="Disposeing(bool)"/>的返回值为true，则会使用<see cref="GC.SuppressFinalize(object)"/>禁止该对象的对象终结器并调用<see cref="IsSuppressFunalize"/>；<br/>
         /// 若参数是false，则仅释放资源，且不会调用<see cref="IsSuppressFunalize"/>；一般在析构函数中调用时使用false</para>
@@ -222,9 +99,22 @@ namespace Cheng.Memorys
 
         }
 
+        /// <summary>
+        /// 调用此方法清理非托管资源
+        /// </summary>
+        /// <param name="suppressFunalize">是否释放托管资源并停止析构方法；
+        /// <para>参数为true时，在资源释放后若<see cref="Disposeing(bool)"/>的返回值为true，则会使用<see cref="GC.SuppressFinalize(object)"/>禁止该对象的对象终结器并调用<see cref="IsSuppressFunalize"/>；<br/>
+        /// 若参数是false，则仅释放资源，且不会调用<see cref="IsSuppressFunalize"/>；一般在析构方法中调用时使用false</para>
+        /// </param>
+        protected void Dispose(bool suppressFunalize)
+        {
+            Dispose(suppressFunalize, false);
+
+        }
+        
         void IDisposable.Dispose()
         {
-            Close();
+            Dispose(true);
         }
 
         /// <summary>
@@ -232,7 +122,7 @@ namespace Cheng.Memorys
         /// </summary>
         protected void ThrowObjectDisposeException()
         {
-            if (p_isDispose) throw new ObjectDisposedException(GetType().Name);
+            if(p_isDispose) throw new ObjectDisposedException(GetType().Name);
         }
 
         /// <summary>

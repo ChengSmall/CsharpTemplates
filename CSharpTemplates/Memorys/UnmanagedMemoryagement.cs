@@ -9,7 +9,7 @@ namespace Cheng.Memorys
     /// <summary>
     /// 安全管理非托管内存的内存分配器
     /// </summary>
-    public sealed unsafe class UnmanagedMemoryagement : SafreleaseUnmanagedResources
+    public sealed unsafe class UnmanagedMemoryagement : ReleaseDestructor
     {
 
         #region 结构
@@ -58,8 +58,8 @@ namespace Cheng.Memorys
                 {
                     f_freeFunc(item.Key);
                 }
-                p_list.Clear();
-                p_byteSize = -1;
+                //p_list.Clear();
+                //p_byteSize = -1;
             }
 
             return true;
@@ -68,14 +68,6 @@ namespace Cheng.Memorys
         static void f_freeFunc(IntPtr m)
         {
             Marshal.FreeHGlobal(m);
-        }
-
-        /// <summary>
-        /// 在实例释放前保证非托管内存全部释放
-        /// </summary>
-        ~UnmanagedMemoryagement()
-        {
-            Dispose(false);
         }
 
         #endregion
@@ -122,13 +114,13 @@ namespace Cheng.Memorys
         /// </summary>
         /// <param name="cb">指定字节大小</param>
         /// <returns>指向新分配的内存指针</returns>
-        /// <exception cref="ArgumentOutOfRangeException">指定字节大小不能为负数</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节大小不能小于或等于0</exception>
         /// <exception cref="OutOfMemoryException">内存空间不足</exception>
         /// <exception cref="ObjectDisposedException">实例已释放</exception>
         public IntPtr AllocMemory(int cb)
         {
             ThrowObjectDisposeException();
-            if (cb < 0) throw new ArgumentOutOfRangeException();
+            if (cb <= 0) throw new ArgumentOutOfRangeException();
             lock (p_list)
             {               
                 var ptr = Marshal.AllocHGlobal(cb);

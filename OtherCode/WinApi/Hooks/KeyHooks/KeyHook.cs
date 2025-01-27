@@ -75,12 +75,6 @@ namespace Cheng.Hooks
 
         #region 释放
 
-        protected override void UnmanagedReleasources()
-        {
-            base.UnmanagedReleasources();
-            p_keyEvent = null;
-        }
-
         #endregion
 
         #region 构造

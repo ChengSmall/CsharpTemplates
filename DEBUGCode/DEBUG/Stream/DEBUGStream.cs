@@ -96,6 +96,7 @@ namespace Cheng.DEBUG
         {
             get
             {
+                ThrowIsDispose();
                 var re = p_stream.Length;
                 p_print?.WriteLine("获取Length:" + re);
                 return re;
@@ -106,12 +107,14 @@ namespace Cheng.DEBUG
         {
             get
             {
+                ThrowIsDispose();
                 var re = p_stream.Position;
                 p_print?.WriteLine("获取位置:" + re);
                 return re;
             }
             set
             {
+                ThrowIsDispose();
                 p_print?.WriteLine("设置位置:" + value.ToString());
                 p_stream.Position = value;
             }
@@ -143,6 +146,7 @@ namespace Cheng.DEBUG
 
         public override long Seek(long offset, SeekOrigin origin)
         {
+            ThrowIsDispose();
             var re = p_stream.Seek(offset, origin);
             p_print?.WriteLine(p_seekCount + " => " + re + " 调用Seek(" + offset + "," + origin + ");");
             p_count++;
@@ -151,7 +155,8 @@ namespace Cheng.DEBUG
         }
 
         public override void SetLength(long value)
-        {            
+        {
+            ThrowIsDispose();
             p_stream.SetLength(value);
             p_print?.WriteLine(p_writeCount + ": => 调用SetLength(" + value.ToString() + ");");
             p_count++;
@@ -160,6 +165,7 @@ namespace Cheng.DEBUG
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            ThrowIsDispose();
             var re = p_stream.Read(buffer, offset, count);
             StringBuilder sb = p_buffer;
             sb.Clear();
@@ -190,6 +196,7 @@ namespace Cheng.DEBUG
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            ThrowIsDispose();
             p_stream.Write(buffer, offset, count);
             StringBuilder sb = p_buffer;
             sb.Clear();
@@ -219,6 +226,7 @@ namespace Cheng.DEBUG
 
         public override int ReadByte()
         {
+            ThrowIsDispose();
             int re = p_stream.ReadByte();
             p_print?.WriteLine(p_readCount + ": => 读取单字节:" + (re == -1 ? "[End]" : re.ToString()));
             p_count++;
@@ -239,6 +247,7 @@ namespace Cheng.DEBUG
             if (disposing)
             {
                 p_stream.Close();
+                p_print?.WriteLine("释放DEBUG流");
             }
             return true;
         }
@@ -249,6 +258,7 @@ namespace Cheng.DEBUG
         /// <returns></returns>
         public override string ToString()
         {
+            ThrowIsDispose();
             StringBuilder sb = p_buffer;
 
             sb.Clear();

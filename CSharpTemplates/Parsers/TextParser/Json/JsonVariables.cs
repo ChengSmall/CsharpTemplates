@@ -1,7 +1,5 @@
+using Cheng.Algorithm.HashCodes;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cheng.Json
 {
@@ -51,7 +49,7 @@ namespace Cheng.Json
     /// <summary>
     /// json数据对象的基类
     /// </summary>
-    public abstract class JsonVariable : IEquatable<JsonVariable>
+    public abstract class JsonVariable : IEquatable<JsonVariable>, IHashCode64
     {
 
         #region 参数
@@ -292,6 +290,25 @@ namespace Cheng.Json
             return base.GetHashCode();
         }
 
+        public virtual long GetHashCode64()
+        {
+            switch (DataType)
+            {
+                case JsonType.Integer:
+                    return Integer.GetHashCode64();
+                case JsonType.RealNum:
+                    return RealNum.GetHashCode64();
+                case JsonType.Boolean:
+                    return Boolean.GetHashCode64();
+                case JsonType.String:
+                    return String.GetHashCode64();
+                case JsonType.Null:
+                    return 0;
+                default:
+                    return base.GetHashCode();
+            }
+        }
+
         /// <summary>
         /// 比较相等
         /// </summary>
@@ -338,6 +355,99 @@ namespace Cheng.Json
             return !j1.Equals(j2);
         }
 
+        /// <summary>
+        /// 强转为整数
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator long(JsonVariable jobj)
+        {
+            var t = jobj?.DataType;
+            if (t == JsonType.Integer)
+            {
+                return jobj.Integer;
+            }
+            if(t == JsonType.RealNum)
+            {
+                return (long)jobj.RealNum;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为浮点数
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator double(JsonVariable jobj)
+        {
+            var t = jobj?.DataType;
+            if (t == JsonType.RealNum)
+            {
+                return jobj.RealNum;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为整数
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator int(JsonVariable jobj)
+        {
+            var t = jobj?.DataType;
+            if (t == JsonType.Integer)
+            {
+                return (int)jobj.Integer;
+            }
+            if (t == JsonType.RealNum)
+            {
+                return (int)jobj.RealNum;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为浮点数
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator float(JsonVariable jobj)
+        {
+            var t = jobj?.DataType;
+            if (t == JsonType.RealNum)
+            {
+                return (float)jobj.RealNum;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为字符串
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator string(JsonVariable jobj)
+        {
+            var t = jobj?.DataType;
+            if (t == JsonType.String)
+            {
+                return jobj.String;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为布尔值
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator bool(JsonVariable jobj)
+        {
+            var t = jobj?.DataType;
+            if (t == JsonType.Boolean)
+            {
+                return jobj.Boolean;
+            }
+            throw new InvalidCastException();
+        }
+
+
         #endregion
 
         #endregion
@@ -345,6 +455,7 @@ namespace Cheng.Json
     }
 
     #region json对象
+
 
     /// <summary>
     /// 表示一个null类型的json对象
@@ -393,18 +504,26 @@ namespace Cheng.Json
             return 0;
         }
 
+        public override long GetHashCode64()
+        {
+            return 0;
+        }
+
         public override string ToString(IFormatProvider formatProvider)
         {
             return JsonText.ToString(formatProvider);
         }
     }
 
+
     /// <summary>
     /// 表示整数类型的json对象
     /// </summary>
     public sealed class JsonInteger : JsonVariable
     {
+
         #region 构造
+
         /// <summary>
         /// 实例化一个整数json对象
         /// </summary>
@@ -412,6 +531,7 @@ namespace Cheng.Json
         {
             value = 0;
         }
+
         /// <summary>
         /// 实例化一个整数json对象
         /// </summary>
@@ -420,6 +540,16 @@ namespace Cheng.Json
         {
             this.value = value;
         }
+
+        /// <summary>
+        /// 实例化一个整数json对象
+        /// </summary>
+        /// <param name="value">指定的值</param>
+        public JsonInteger(int value)
+        {
+            this.value = value;
+        }
+
         #endregion
 
         #region 参数
@@ -447,6 +577,11 @@ namespace Cheng.Json
             return value.GetHashCode();
         }
 
+        public override long GetHashCode64()
+        {
+            return value;
+        }
+
         public override bool Equals(JsonVariable other)
         {
             if (other is null) return false;
@@ -466,9 +601,65 @@ namespace Cheng.Json
             return value.ToString(formatProvider);
         }
 
+        /// <summary>
+        /// 使用指定的格式，将此实例的数值转换为它的等效字符串表示形式
+        /// </summary>
+        /// <param name="format">一个数值格式字符串</param>
+        /// <returns>此实例的值的字符串表示形式，由<paramref name="format"/>指定</returns>
+        /// <exception cref="System.FormatException"><paramref name="format"/>无效</exception>
+        public string ToString(string format)
+        {
+            return value.ToString(format);
+        }
+
+        public static implicit operator long(JsonInteger jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return jobj.value;
+        }
+
+        public static implicit operator long?(JsonInteger jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return jobj?.value;
+        }
+
+        public static explicit operator int(JsonInteger jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return (int)jobj.value;
+        }
+
+        public static explicit operator int?(JsonInteger jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return (int?)(jobj?.value);
+        }
+
+        public static implicit operator JsonInteger(long value)
+        {
+            return new JsonInteger(value);
+        }
+
+        public static implicit operator JsonInteger(int value)
+        {
+            return new JsonInteger(value);
+        }
+
+        public static explicit operator JsonInteger(double value)
+        {
+            return new JsonInteger((long)value);
+        }
+
+        public static explicit operator JsonInteger(float value)
+        {
+            return new JsonInteger((long)value);
+        }
+
         #endregion
 
     }
+
 
     /// <summary>
     /// 表示小数类型的json对象
@@ -491,6 +682,33 @@ namespace Cheng.Json
         /// </summary>
         /// <param name="value">指定的值</param>
         public JsonRealNumber(double value)
+        {
+            this.value = value;
+        }
+
+        /// <summary>
+        /// 实例化一个小数json对象
+        /// </summary>
+        /// <param name="value">指定的值</param>
+        public JsonRealNumber(float value)
+        {
+            this.value = value;
+        }
+
+        /// <summary>
+        /// 实例化一个小数json对象
+        /// </summary>
+        /// <param name="value">指定的值</param>
+        public JsonRealNumber(long value)
+        {
+            this.value = value;
+        }
+
+        /// <summary>
+        /// 实例化一个小数json对象
+        /// </summary>
+        /// <param name="value">指定的值</param>
+        public JsonRealNumber(int value)
         {
             this.value = value;
         }
@@ -524,6 +742,17 @@ namespace Cheng.Json
             return value.ToString();
         }
 
+        /// <summary>
+        /// 使用指定的格式，将此实例的数值转换为它的等效字符串表示形式
+        /// </summary>
+        /// <param name="format">一个数值格式字符串</param>
+        /// <returns>此实例的值的字符串表示形式，由<paramref name="format"/>指定</returns>
+        /// <exception cref="System.FormatException"><paramref name="format"/>无效</exception>
+        public string ToString(string format)
+        {
+            return value.ToString(format);
+        }
+
         public override string ToString(IFormatProvider formatProvider)
         {
             return value.ToString(formatProvider);
@@ -532,6 +761,11 @@ namespace Cheng.Json
         public override int GetHashCode()
         {
             return value.GetHashCode();
+        }
+
+        public override long GetHashCode64()
+        {
+            return value.GetHashCode64();
         }
 
         public override bool Equals(JsonVariable other)
@@ -543,9 +777,75 @@ namespace Cheng.Json
             return value == other.RealNum;
         }
 
+        public static implicit operator double(JsonRealNumber jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return jobj.value;
+        }
+
+        public static explicit operator float(JsonRealNumber jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return (float)jobj.value;
+        }
+
+        public static explicit operator long(JsonRealNumber jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return (long)jobj.value;
+        }
+
+        public static explicit operator int(JsonRealNumber jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return (int)jobj.value;
+        }
+
+        public static implicit operator JsonRealNumber(double value)
+        {
+            return new JsonRealNumber(value);
+        }
+
+        public static implicit operator JsonRealNumber(float value)
+        {
+            return new JsonRealNumber(value);
+        }
+
+        public static implicit operator JsonRealNumber(int value)
+        {
+            return new JsonRealNumber(value);
+        }
+
+        public static implicit operator JsonRealNumber(long value)
+        {
+            return new JsonRealNumber(value);
+        }
+
+
+        public static implicit operator double?(JsonRealNumber jobj)
+        {
+            return jobj?.value;
+        }
+
+        public static explicit operator float?(JsonRealNumber jobj)
+        {
+            return (float?)(jobj?.value);
+        }
+
+        public static explicit operator long?(JsonRealNumber jobj)
+        {
+            return (long?)jobj?.value;
+        }
+
+        public static explicit operator int?(JsonRealNumber jobj)
+        {
+            return (int?)jobj?.value;
+        }
+
         #endregion
 
     }
+
 
     /// <summary>
     /// 表示布尔类型的json对象
@@ -554,10 +854,15 @@ namespace Cheng.Json
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化一个布尔类型json对象
         /// </summary>
-        public JsonBoolean() { }
+        public JsonBoolean()
+        {
+            value = default;
+        }
+
         /// <summary>
         /// 实例化一个布尔类型json对象
         /// </summary>
@@ -566,31 +871,41 @@ namespace Cheng.Json
         {
             this.value = value;
         }
+
         #endregion
 
         #region 参数
+
         /// <summary>
         /// 数据
         /// </summary>
         public bool value;
+
         /// <summary>
         /// 值为true时的json文本
         /// </summary>
         public const string TrueJsonText = "true";
+
         /// <summary>
         /// 值为false时的json文本
         /// </summary>
         public const string FalseJsonText = "false";
         #endregion
 
+        #region 派生
+
         public override JsonType DataType => JsonType.Boolean;
+
         public override bool Boolean
         {
             get => value;
             set => this.value = value;
         }
+
         public override object Data => value;
+
         public override bool IsNull => false;
+
         public override bool Equals(JsonVariable other)
         {
             if (other is null) return false;
@@ -599,10 +914,17 @@ namespace Cheng.Json
 
             return value == other.Boolean;
         }
+
         public override int GetHashCode()
         {
             return value.GetHashCode();
         }
+
+        public override long GetHashCode64()
+        {
+            return value.GetHashCode64();
+        }
+
         public override string ToString()
         {
             return value ? TrueJsonText : FalseJsonText;
@@ -613,7 +935,26 @@ namespace Cheng.Json
             return value ? TrueJsonText.ToString(formatProvider) : FalseJsonText.ToString(formatProvider);            
         }
 
+        public static implicit operator bool?(JsonBoolean jobj)
+        {
+            return jobj?.value;
+        }
+
+        public static implicit operator bool(JsonBoolean jobj)
+        {
+            if (jobj is null) throw new InvalidCastException();
+            return jobj.value;
+        }
+
+        public static implicit operator JsonBoolean(bool value)
+        {
+            return new JsonBoolean(value);
+        }
+
+        #endregion
+
     }
+
 
     /// <summary>
     /// 表示字符串类型的json对象
@@ -655,7 +996,9 @@ namespace Cheng.Json
         #endregion
 
         #region 派生
+
         public override JsonType DataType => JsonType.String;
+
         /// <summary>
         /// 访问或设置字符串数据
         /// </summary>
@@ -664,8 +1007,11 @@ namespace Cheng.Json
             get => value;
             set => this.value = (value is null) ? string.Empty : value;
         }
+
         public override object Data => value;
+
         public override bool IsNull => false;
+
         public override bool Equals(JsonVariable other)
         {
             if (other is null) return false;
@@ -674,10 +1020,17 @@ namespace Cheng.Json
 
             return value == other.String;
         }
+
         public override int GetHashCode()
         {
             return value.GetHashCode();
         }
+
+        public override long GetHashCode64()
+        {
+            return value.GetHashCode64();
+        }
+
         public override string ToString()
         {
             return "\"" + value + "\"";
@@ -690,587 +1043,6 @@ namespace Cheng.Json
         #endregion
     }
 
-    /// <summary>
-    /// 表示一个集合类型的json对象
-    /// </summary>
-    public sealed class JsonList : JsonVariable, IList<JsonVariable>
-    {
-
-        #region 构造
-        /// <summary>
-        /// 实例化一个集合json对象
-        /// </summary>
-        public JsonList()
-        {
-            p_list = new List<JsonVariable>();
-        }
-        /// <summary>
-        /// 实例化一个集合json对象
-        /// </summary>
-        /// <param name="capacity">指定初始容量</param>
-        public JsonList(int capacity)
-        {
-            p_list = new List<JsonVariable>(capacity);
-        }
-        /// <summary>
-        /// 实例化一个集合json对象
-        /// </summary>
-        /// <param name="list">指定的拷贝对象</param>
-        public JsonList(JsonList list)
-        {
-            p_list = new List<JsonVariable>(list);
-        }
-        #endregion
-
-        #region 参数
-        private List<JsonVariable> p_list;
-        #endregion
-
-        #region 派生
-        
-        public override JsonType DataType => JsonType.List;
-        public override bool IsNull => false;
-        public override object Data => this;
-        public override JsonList Array => this;
-
-        public override bool Equals(JsonVariable other)
-        {
-            return (object)this == (object)other;
-        }
-
-        public override int GetHashCode()
-        {
-            return BaseHashCode();
-        }
-
-        /// <summary>
-        /// 使用json格式文本返回所有元素
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder(Count);
-
-            sb.Append('[');
-
-            for (int i = 0; i < Count; i++)
-            {
-                sb.Append(p_list[i].ToString());
-                if (i != Count - 1) sb.Append(',');
-            }
-
-            sb.Append(']');
-
-            return sb.ToString();
-        }
-
-        public override string ToString(IFormatProvider formatProvider)
-        {
-            StringBuilder sb = new StringBuilder(Count);
-
-            sb.Append('[');
-
-            for (int i = 0; i < Count; i++)
-            {
-                sb.Append(p_list[i].ToString(formatProvider));
-                if (i != Count - 1) sb.Append(',');
-            }
-
-            sb.Append(']');
-
-            return sb.ToString();
-        }
-
-        #endregion
-
-        #region 集合功能
-        /// <summary>
-        /// 获取元素数量
-        /// </summary>
-        public int Count => p_list.Count;
-        /// <summary>
-        /// 获取或设置集合的实际容量
-        /// </summary>
-        /// <value>设置此值不会改变元素数量，会改变实际容量；实际容量 = 元素数量 + 剩余空间</value>
-        /// <exception cref="ArgumentOutOfRangeException">值小于元素数量</exception>
-        /// <exception cref="OutOfMemoryException">没有足够的内存</exception>
-        public int Capacity
-        {
-            get => p_list.Capacity;
-            set
-            {
-                p_list.Capacity = value;
-            }
-        }
-
-        bool ICollection<JsonVariable>.IsReadOnly => false;
-
-        /// <summary>
-        /// 使用索引访问或设置元素
-        /// </summary>
-        /// <param name="index">索引</param>
-        /// <returns></returns>
-        public JsonVariable this[int index]
-        {
-            get
-            {
-                return p_list[index];
-            }
-            set
-            {
-                p_list[index] = (value is null) ? JsonNull.Nullable : value;
-            }
-        }
-
-        private void add(JsonVariable json)
-        {
-            if (json is null) p_list.Add(JsonNull.Nullable);
-            else p_list.Add(json);
-        }
-
-        private void insert(int index, JsonVariable json)
-        {
-            if (json is null) p_list.Insert(index, JsonNull.Nullable);
-            else p_list.Insert(index, json);
-        }
-
-        /// <summary>
-        /// 添加一个元素
-        /// </summary>
-        /// <param name="json">要添加的元素</param>
-        public void Add(JsonVariable json)
-        {
-            add(json);
-        }
-        /// <summary>
-        /// 添加一个整形元素
-        /// </summary>
-        /// <param name="value">要添加的元素</param>
-        public void Add(long value)
-        {
-            p_list.Add(new JsonInteger(value));
-        }
-        /// <summary>
-        /// 添加一个浮点型元素
-        /// </summary>
-        /// <param name="value"></param>
-        public void Add(double value)
-        {
-            p_list.Add(new JsonRealNumber(value));
-        }
-        /// <summary>
-        /// 添加一个布尔类型元素
-        /// </summary>
-        /// <param name="value"></param>
-        public void Add(bool value)
-        {
-            p_list.Add(new JsonBoolean(value));
-        }
-        /// <summary>
-        /// 添加一个字符串
-        /// </summary>
-        /// <param name="value"></param>
-        public void Add(string value)
-        {
-            p_list.Add(new JsonString(value));
-        }
-        /// <summary>
-        /// 添加一个空元素
-        /// </summary>
-        public void AddNull()
-        {
-            p_list.Add(JsonNull.Nullable);
-        }
-        /// <summary>
-        /// 在指定位置插入元素
-        /// </summary>
-        /// <param name="index">索引</param>
-        /// <param name="json">元素</param>
-        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
-        public void Insert(int index, JsonVariable json)
-        {
-            insert(index, json);
-        }
-        /// <summary>
-        /// 清空所有元素
-        /// </summary>
-        public void Clear()
-        {
-            p_list.Clear();
-        }
-        /// <summary>
-        /// 删除指定索引的元素
-        /// </summary>
-        /// <param name="index">索引</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void RemoveAt(int index)
-        {
-            p_list.RemoveAt(index);
-        }
-        /// <summary>
-        /// 删除指定索引的元素序列
-        /// </summary>
-        /// <param name="index">起始索引</param>
-        /// <param name="count">要删除的元素个数</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        public void RemoveAt(int index, int count)
-        {
-            p_list.RemoveRange(index, count);
-        }
-
-        /// <summary>
-        /// 删除指定元素
-        /// </summary>
-        /// <param name="json">要删除的元素</param>
-        /// <returns>成功删除返回true，删除失败返回false</returns>
-        public bool Remove(JsonVariable json)
-        {
-            if (json is null) return false;
-            return p_list.Remove(json);
-        }
-
-        public int IndexOf(JsonVariable json)
-        {
-            return p_list.IndexOf(json);
-        }
-
-        /// <summary>
-        /// 按谓词搜索匹配项并返回索引
-        /// </summary>
-        /// <param name="match">谓词</param>
-        /// <returns>第一个匹配项的索引，否则为-1</returns>
-        /// <exception cref="ArgumentNullException">谓词为null</exception>
-        public int FindIndex(Predicate<JsonVariable> match)
-        {
-            return p_list.FindIndex(match);
-        }
-
-        public bool Contains(JsonVariable json)
-        {
-            return p_list.Contains(json);
-        }
-
-        public void CopyTo(JsonVariable[] array, int arrayIndex)
-        {
-            p_list.CopyTo(array, arrayIndex);
-        }
-
-        /// <summary>
-        /// 将该数组的所有元素返回到新数组中
-        /// </summary>
-        /// <returns></returns>
-        public JsonVariable[] ToArray()
-        {
-            return p_list.ToArray();
-        }
-
-        public IEnumerator<JsonVariable> GetEnumerator()
-        {
-            return p_list.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return p_list.GetEnumerator();
-        }
-
-        #endregion
-
-    }
-
-    /// <summary>
-    /// 表示一个键值对集合类型的json对象
-    /// </summary>
-    public sealed class JsonDictionary : JsonVariable, IDictionary<string, JsonVariable>
-    {
-
-        #region 构造
-
-        /// <summary>
-        /// 实例化一个键值对类型的json对象
-        /// </summary>
-        public JsonDictionary()
-        {
-            p_dict = new Dictionary<string, JsonVariable>();
-        }
-
-        /// <summary>
-        /// 实例化一个键值对类型的json对象
-        /// </summary>
-        /// <param name="capacity">指定初始容量</param>
-        public JsonDictionary(int capacity)
-        {
-            p_dict = new Dictionary<string, JsonVariable>(capacity);
-        }
-
-        /// <summary>
-        /// 实例化一个键值对类型的json对象
-        /// </summary>
-        /// <param name="comparer">指定key的比较器和哈希算法</param>
-        public JsonDictionary(IEqualityComparer<string> comparer)
-        {
-            p_dict = new Dictionary<string, JsonVariable>(comparer);
-        }
-
-        /// <summary>
-        /// 实例化一个键值对类型的json对象
-        /// </summary>
-        /// <param name="capacity">指定初始容量</param>
-        /// <param name="comparer">指定key的比较器和哈希算法</param>
-        public JsonDictionary(int capacity, IEqualityComparer<string> comparer)
-        {
-            p_dict = new Dictionary<string, JsonVariable>(capacity, comparer);
-        }
-
-        /// <summary>
-        /// 实例化一个键值对类型的json对象
-        /// </summary>
-        /// <param name="json">指定的拷贝对象</param>
-        public JsonDictionary(JsonDictionary json)
-        {
-            p_dict = new Dictionary<string, JsonVariable>(json);
-        }
-
-        #endregion
-
-        #region 参数
-        internal Dictionary<string, JsonVariable> p_dict;
-        #endregion
-
-        #region 键值对功能
-        /// <summary>
-        /// 获取键值对的元素数量
-        /// </summary>
-        public int Count => p_dict.Count;
-        private void add(string key, JsonVariable json)
-        {
-            p_dict.Add(key, json ?? JsonNull.Nullable);
-        }
-        private void set(string key, JsonVariable json)
-        {
-            p_dict[key] = json ?? JsonNull.Nullable;
-        }
-        /// <summary>
-        /// 访问或设置键值对
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <value>若键值对内没有指定的键，则添加一个键值对，若存在键则覆盖旧值</value>
-        /// <returns>返回对应键所在的值</returns>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        /// <exception cref="KeyNotFoundException">获取的键不存在</exception>
-        public JsonVariable this[string key]
-        {
-            get => p_dict[key];
-            
-            set => set(key, value);
-        }
-
-        /// <summary>
-        /// 添加一对键值对
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <param name="json">值</param>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        /// <exception cref="ArgumentException">已存在相同的键</exception>
-        public void Add(string key, JsonVariable json)
-        {
-            add(key, json);
-        }
-        /// <summary>
-        /// 添加一对键值对
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <param name="json">值</param>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        public void Add(string key, long value)
-        {
-            p_dict.Add(key, new JsonInteger(value));
-        }
-        /// <summary>
-        /// 添加一对键值对
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <param name="json">值</param>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        public void Add(string key, double value)
-        {
-            p_dict.Add(key, new JsonRealNumber(value));
-        }
-        /// <summary>
-        /// 添加一对键值对
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <param name="json">值</param>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        public void Add(string key, bool value)
-        {
-            p_dict.Add(key, new JsonBoolean(value));
-        }
-        /// <summary>
-        /// 添加一对键值对
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <param name="json">值</param>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        public void Add(string key, string value)
-        {
-            p_dict.Add(key, new JsonString(value));
-        }
-        /// <summary>
-        /// 添加一个值为空的键值对
-        /// </summary>
-        /// <param name="key">添加的键</param>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        public void AddNull(string key)
-        {
-            p_dict.Add(key, JsonNull.Nullable);
-        }
-        /// <summary>
-        /// 删除一堆指定的键值
-        /// </summary>
-        /// <param name="key">要删除的键</param>
-        /// <returns>是否成功删除</returns>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        public bool Remove(string key)
-        {
-            return p_dict.Remove(key);
-        }
-        /// <summary>
-        /// 清空所有键值对元素
-        /// </summary>
-        public void Clear()
-        {
-            p_dict.Clear();
-        }
-        /// <summary>
-        /// 获取指定键的值
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <param name="json">获取的值</param>
-        /// <returns>获取成功返回true，无法找到返回false</returns>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        public bool TryGetValue(string key, out JsonVariable json)
-        {
-            return p_dict.TryGetValue(key, out json);
-        }
-        /// <summary>
-        /// 判断指定键是否存在
-        /// </summary>
-        /// <param name="key">判断的键</param>
-        /// <returns>存在返回true，否则返回false</returns>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        public bool ContainsKey(string key)
-        {
-            return p_dict.ContainsKey(key);
-        }
-
-        void ICollection<KeyValuePair<string, JsonVariable>>.Add(KeyValuePair<string, JsonVariable> item)
-        {
-            add(item.Key, item.Value);
-        }
-        bool ICollection<KeyValuePair<string, JsonVariable>>.Contains(KeyValuePair<string, JsonVariable> item)
-        {
-            return p_dict.ContainsKey(item.Key);
-        }
-        void ICollection<KeyValuePair<string, JsonVariable>>.CopyTo(KeyValuePair<string, JsonVariable>[] array, int arrayIndex)
-        {
-            ((ICollection<KeyValuePair<string, JsonVariable>>)p_dict).CopyTo(array, arrayIndex);
-        }
-        bool ICollection<KeyValuePair<string, JsonVariable>>.Remove(KeyValuePair<string, JsonVariable> item)
-        {
-            return p_dict.Remove(item.Key);
-        }
-
-        public IEnumerator<KeyValuePair<string, JsonVariable>> GetEnumerator()
-        {
-            return p_dict.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return p_dict.GetEnumerator();
-        }
-
-        public ICollection<string> Keys => p_dict.Keys;
-
-        public ICollection<JsonVariable> Values => p_dict.Values;
-
-        bool ICollection<KeyValuePair<string, JsonVariable>>.IsReadOnly => ((ICollection<KeyValuePair<string, JsonVariable>>)p_dict).IsReadOnly;
-
-        #endregion
-
-        #region 派生
-        public override JsonType DataType => JsonType.Dictionary;
-
-        public override object Data => this;
-        public override bool IsNull => false;
-        public override JsonDictionary JsonObject => this;
-
-        public override int GetHashCode()
-        {
-            return BaseHashCode();
-        }
-
-        public override bool Equals(JsonVariable other)
-        {
-            return (object)this == (object)other;
-        }
-
-        /// <summary>
-        /// 以格式返回所有元素
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-
-            int count = 0;
-            int length = Count;
-            StringBuilder sb = new StringBuilder(length * 2);
-            sb.Append("{");
-            foreach (var item in this)
-            {
-                count++;
-                sb.Append("\"" + item.Key + "\"");
-                sb.Append(':');
-                sb.Append(item.Value.ToString());
-                if(count != length) sb.Append(',');
-            }
-            sb.Append('}');
-            return sb.ToString();
-
-        }
-
-        public override string ToString(IFormatProvider formatProvider)
-        {
-            int count = 0;
-            int length = Count;
-            StringBuilder sb = new StringBuilder(length * 2);
-            sb.Append("{");
-            foreach (var item in this)
-            {
-                count++;
-                sb.Append("\"" + item.Key.ToString(formatProvider) + "\"");
-                sb.Append(':');
-                sb.Append(item.Value.ToString(formatProvider));
-                if (count != length) sb.Append(',');
-            }
-            sb.Append('}');
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// 返回一个新的相同键值对实例
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, JsonVariable> ToDictionary()
-        {
-            return new Dictionary<string, JsonVariable>(p_dict);
-        }
-
-        #endregion
-
-    }
 
     #endregion
 

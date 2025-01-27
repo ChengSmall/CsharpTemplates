@@ -47,7 +47,7 @@ namespace Cheng.Hooks
     /// <summary>
     /// 提供使用挂钩对应用程序截获消息、鼠标操作和击键等事件进行处理的方法
     /// </summary>
-    public abstract unsafe class Hook : ReleaseUnmanagedResources
+    public abstract unsafe class Hook : SafreleaseUnmanagedResources
     {
 
         #region 释放
@@ -57,7 +57,7 @@ namespace Cheng.Hooks
         /// </summary>
         ~Hook()
         {
-            Dispose(false, false);
+            Dispose(false);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Cheng.Hooks
         /// </summary>
         public override void Close()
         {
-            Dispose(true, false);
+            Dispose(true);
         }
 
         #endregion
