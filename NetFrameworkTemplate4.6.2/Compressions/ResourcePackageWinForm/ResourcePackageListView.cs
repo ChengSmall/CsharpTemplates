@@ -45,7 +45,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
     public class ResourcePackageListView
     {
 
-        #region ai        
+        #region ai
 
         private static TNode f_initTree(ResReaderPack pack)
         {

@@ -66,18 +66,22 @@ namespace Cheng.Json
         #endregion
 
         #region 键值对功能
+
         /// <summary>
         /// 获取键值对的元素数量
         /// </summary>
         public int Count => p_dict.Count;
+
         private void add(string key, JsonVariable json)
         {
             p_dict.Add(key, json ?? JsonNull.Nullable);
         }
+
         private void set(string key, JsonVariable json)
         {
             p_dict[key] = json ?? JsonNull.Nullable;
         }
+
         /// <summary>
         /// 访问或设置键值对
         /// </summary>
@@ -104,26 +108,51 @@ namespace Cheng.Json
         {
             add(key, json);
         }
+
         /// <summary>
         /// 添加一对键值对
         /// </summary>
         /// <param name="key">键</param>
-        /// <param name="json">值</param>
+        /// <param name="value">值</param>
         /// <exception cref="ArgumentNullException">key为null</exception>
         public void Add(string key, long value)
         {
             p_dict.Add(key, new JsonInteger(value));
         }
+
         /// <summary>
         /// 添加一对键值对
         /// </summary>
         /// <param name="key">键</param>
-        /// <param name="json">值</param>
+        /// <param name="value">值</param>
         /// <exception cref="ArgumentNullException">key为null</exception>
         public void Add(string key, double value)
         {
             p_dict.Add(key, new JsonRealNumber(value));
         }
+
+        /// <summary>
+        /// 添加一对键值对
+        /// </summary>
+        /// <param name="key">键</param>
+        /// <param name="value">值</param>
+        /// <exception cref="ArgumentNullException">key为null</exception>
+        public void Add(string key, int value)
+        {
+            p_dict.Add(key, new JsonInteger(value));
+        }
+
+        /// <summary>
+        /// 添加一对键值对
+        /// </summary>
+        /// <param name="key">键</param>
+        /// <param name="value">值</param>
+        /// <exception cref="ArgumentNullException">key为null</exception>
+        public void Add(string key, float value)
+        {
+            p_dict.Add(key, new JsonRealNumber(value));
+        }
+
         /// <summary>
         /// 添加一对键值对
         /// </summary>
@@ -134,6 +163,7 @@ namespace Cheng.Json
         {
             p_dict.Add(key, new JsonBoolean(value));
         }
+
         /// <summary>
         /// 添加一对键值对
         /// </summary>
@@ -144,6 +174,7 @@ namespace Cheng.Json
         {
             p_dict.Add(key, new JsonString(value));
         }
+
         /// <summary>
         /// 添加一个值为空的键值对
         /// </summary>
@@ -153,6 +184,7 @@ namespace Cheng.Json
         {
             p_dict.Add(key, JsonNull.Nullable);
         }
+
         /// <summary>
         /// 删除一堆指定的键值
         /// </summary>
@@ -163,6 +195,7 @@ namespace Cheng.Json
         {
             return p_dict.Remove(key);
         }
+
         /// <summary>
         /// 清空所有键值对元素
         /// </summary>
@@ -170,6 +203,11 @@ namespace Cheng.Json
         {
             p_dict.Clear();
         }
+
+        public ICollection<string> Keys => p_dict.Keys;
+
+        public ICollection<JsonVariable> Values => p_dict.Values;
+
         /// <summary>
         /// 获取指定键的值
         /// </summary>
@@ -181,6 +219,7 @@ namespace Cheng.Json
         {
             return p_dict.TryGetValue(key, out json);
         }
+
         /// <summary>
         /// 判断指定键是否存在
         /// </summary>
@@ -192,10 +231,13 @@ namespace Cheng.Json
             return p_dict.ContainsKey(key);
         }
 
+        #region
+
         void ICollection<KeyValuePair<string, JsonVariable>>.Add(KeyValuePair<string, JsonVariable> item)
         {
             add(item.Key, item.Value);
         }
+
         bool ICollection<KeyValuePair<string, JsonVariable>>.Contains(KeyValuePair<string, JsonVariable> item)
         {
             return p_dict.ContainsKey(item.Key);
@@ -204,6 +246,7 @@ namespace Cheng.Json
         {
             ((ICollection<KeyValuePair<string, JsonVariable>>)p_dict).CopyTo(array, arrayIndex);
         }
+
         bool ICollection<KeyValuePair<string, JsonVariable>>.Remove(KeyValuePair<string, JsonVariable> item)
         {
             return p_dict.Remove(item.Key);
@@ -219,11 +262,9 @@ namespace Cheng.Json
             return p_dict.GetEnumerator();
         }
 
-        public ICollection<string> Keys => p_dict.Keys;
-
-        public ICollection<JsonVariable> Values => p_dict.Values;
-
         bool ICollection<KeyValuePair<string, JsonVariable>>.IsReadOnly => ((ICollection<KeyValuePair<string, JsonVariable>>)p_dict).IsReadOnly;
+
+        #endregion
 
         #endregion
 

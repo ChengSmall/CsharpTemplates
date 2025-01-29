@@ -11,6 +11,7 @@ namespace Cheng.Json
     /// <remarks>派生此接口以实现完全自定义json解析器；若想要使用默认以实现的解析器，请使用<see cref="JsonParserDefault"/>实例</remarks>
     public interface IJsonParser : ITextParser
     {
+
         /// <summary>
         /// 将json对象转化为json文本并写入到指定的字符序列编写器中
         /// </summary>
@@ -18,6 +19,7 @@ namespace Cheng.Json
         /// <param name="writer">要写入的字符序列对象</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         void ParsingJson(JsonVariable json, TextWriter writer);
+
         /// <summary>
         /// 将json文本转化为json对象
         /// </summary>
@@ -25,6 +27,7 @@ namespace Cheng.Json
         /// <returns>转化完毕的对象</returns>
         /// <exception cref="NotImplementedException">json文本解析失败</exception>
         JsonVariable ToJsonData(TextReader reader);
+
     }
 
     /// <summary>
@@ -138,6 +141,7 @@ namespace Cheng.Json
                 }
 
             }
+
             public override JsonVariable ToJsonData(TextReader reader)
             {
                 lock (parser)
@@ -145,6 +149,7 @@ namespace Cheng.Json
                     return parser.ToJsonData(reader);
                 }
             }
+
             public override bool ToJsonData(TextReader reader, out JsonVariable json)
             {
                 lock (parser)
@@ -152,6 +157,7 @@ namespace Cheng.Json
                     return parser.ToJsonData(reader, out json);
                 }
             }
+
             public override JsonVariable ToJsonData(string jsonText)
             {
                 lock (parser)
@@ -159,6 +165,7 @@ namespace Cheng.Json
                     return parser.ToJsonData(jsonText);
                 }
             }
+
             public override bool ToJsonData(string jsonText, out JsonVariable json)
             {
                 lock (parser)
@@ -166,6 +173,7 @@ namespace Cheng.Json
                     return parser.ToJsonData(jsonText, out json);
                 }
             }
+
         }
     }
 

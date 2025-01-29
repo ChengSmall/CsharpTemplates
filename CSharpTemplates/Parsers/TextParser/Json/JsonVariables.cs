@@ -170,15 +170,7 @@ namespace Cheng.Json
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if(obj is JsonVariable)
-            {
-                return Equals((JsonVariable)obj);
-            }
-            if(obj == null)
-            {
-                return DataType == JsonType.Null;
-            }
-            return false;
+            return this.Equals(obj as JsonVariable);
         }
 
         /// <summary>
@@ -425,7 +417,8 @@ namespace Cheng.Json
         /// <param name="jobj"></param>
         public static explicit operator string(JsonVariable jobj)
         {
-            var t = jobj?.DataType;
+            if (jobj is null) return null;
+            var t = jobj.DataType;
             if (t == JsonType.String)
             {
                 return jobj.String;
@@ -447,6 +440,188 @@ namespace Cheng.Json
             throw new InvalidCastException();
         }
 
+
+        /// <summary>
+        /// 强转为整数
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator long?(JsonVariable jobj)
+        {
+            if (jobj is null) return null;
+            var t = jobj.DataType;
+            if (t == JsonType.Integer)
+            {
+                return jobj.Integer;
+            }
+            if (t == JsonType.RealNum)
+            {
+                return (long)jobj.RealNum;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为浮点数
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator double?(JsonVariable jobj)
+        {
+            if (jobj is null) return null;
+            var t = jobj.DataType;
+            if (t == JsonType.RealNum)
+            {
+                return jobj.RealNum;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为整数
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator int?(JsonVariable jobj)
+        {
+            if (jobj is null) return null;
+            var t = jobj.DataType;
+            if (t == JsonType.Integer)
+            {
+                return (int)jobj.Integer;
+            }
+            if (t == JsonType.RealNum)
+            {
+                return (int)jobj.RealNum;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为浮点数
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator float?(JsonVariable jobj)
+        {
+            if (jobj is null) return null;
+            var t = jobj.DataType;
+            if (t == JsonType.RealNum)
+            {
+                return (float)jobj.RealNum;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为布尔值
+        /// </summary>
+        /// <param name="jobj"></param>
+        public static explicit operator bool?(JsonVariable jobj)
+        {
+            if (jobj is null) return null;
+            var t = jobj.DataType;
+            if (t == JsonType.Boolean)
+            {
+                return jobj.Boolean;
+            }
+            throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(long value)
+        {
+            return new JsonInteger(value);
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(double value)
+        {
+            return new JsonRealNumber(value);
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(int value)
+        {
+            return new JsonInteger(value);
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(float value)
+        {
+            return new JsonRealNumber(value);
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(bool value)
+        {
+            return new JsonBoolean(value);
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(long? value)
+        {
+            return value.HasValue ? new JsonInteger(value.Value) : null;
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(double? value)
+        {
+            return value.HasValue ? new JsonRealNumber(value.Value) : null;
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(int? value)
+        {
+            return value.HasValue ? new JsonInteger(value.Value) : null;
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(float? value)
+        {
+            return value.HasValue ? new JsonRealNumber(value.Value) : null;
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(bool? value)
+        {
+            return value.HasValue ? new JsonBoolean(value.Value) : null;
+        }
+
+        /// <summary>
+        /// 强转为Json对象
+        /// </summary>
+        /// <param name="value"></param>
+        public static explicit operator JsonVariable(string value)
+        {
+            return value is null ? null : new JsonString(value);
+        }
 
         #endregion
 
@@ -481,7 +656,9 @@ namespace Cheng.Json
         public const string JsonText = "null";
 
         public override JsonType DataType => JsonType.Null;
+
         public override bool IsNull => true;
+
         public override object Data => null;
 
         public override string ToString()
@@ -946,9 +1123,14 @@ namespace Cheng.Json
             return jobj.value;
         }
 
-        public static implicit operator JsonBoolean(bool value)
+        public static explicit operator JsonBoolean(bool value)
         {
             return new JsonBoolean(value);
+        }
+
+        public static explicit operator JsonBoolean(bool? value)
+        {
+            return value.HasValue ? new JsonBoolean(value.Value) : null;
         }
 
         #endregion
@@ -961,7 +1143,9 @@ namespace Cheng.Json
     /// </summary>
     public sealed class JsonString : JsonVariable
     {
+
         #region 构造
+
         /// <summary>
         /// 实例化字符串类型的json对象
         /// </summary>
@@ -969,6 +1153,7 @@ namespace Cheng.Json
         {
             value = string.Empty;
         }
+
         /// <summary>
         /// 实例化字符串类型的json对象
         /// </summary>
@@ -977,11 +1162,13 @@ namespace Cheng.Json
         {
             this.value = (value is null) ? string.Empty : value;
         }
+
         #endregion
 
         #region 参数
 
         private string value;
+
         /// <summary>
         /// 访问或设置字符串数据
         /// </summary>
@@ -993,6 +1180,7 @@ namespace Cheng.Json
                 this.value = (value is null) ? string.Empty : value;
             }
         }
+
         #endregion
 
         #region 派生
@@ -1040,7 +1228,19 @@ namespace Cheng.Json
         {
             return "\"" + value.ToString(formatProvider) + "\"";            
         }
+
+        public static implicit operator JsonString(string value)
+        {
+            return new JsonString(value);
+        }
+
+        public static implicit operator string(JsonString json)
+        {
+            return json?.value;
+        }
+
         #endregion
+
     }
 
 
