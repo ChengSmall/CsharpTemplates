@@ -43,7 +43,7 @@ namespace Cheng.Xmls.StandardItemText
         {
             append.AppendANSIColorText(color.r, color.g, color.b, false);
             ToSTDText(node, append);
-            append.AppendANSIResetColorText();
+            append.AppendANSIStyleResetText();
         }
 
         #endregion

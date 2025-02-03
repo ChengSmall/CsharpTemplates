@@ -136,7 +136,7 @@ namespace Cheng.DEBUG
                     sb.Append('■');
                 }
 
-                sb.AppendANSIResetColorText();
+                sb.AppendANSIStyleResetText();
                 sb.AppendLine();
             }
 

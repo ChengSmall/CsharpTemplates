@@ -44,19 +44,11 @@ namespace Cheng.Consoles
         /// <exception cref="Win32Exception">出现win32错误</exception>
         public static void EnableVirtualTerminalProcessingOnWindows()
         {
-            var iStdOut = GetStdHandle(STD_Output_HandleID);
-            if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
+            var re = TryEnableVirtualTerminalProcessingOnWindows();
+            if(re != 0)
             {
-                throw new Win32Exception((int)GetLastError());
-                //return (uint)Marshal.GetLastWin32Error();
+                throw new Win32Exception((int)re);
             }
-            outConsoleMode |= (ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
-
-            if (!SetConsoleMode(iStdOut, outConsoleMode))
-            {
-                throw new Win32Exception((int)GetLastError());
-            }
-            //return 0;
         }
 
         /// <summary>
@@ -74,7 +66,7 @@ namespace Cheng.Consoles
 
             //outConsoleMode |= (ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
 
-            if (!SetConsoleMode(iStdOut, outConsoleMode & ENABLE_VIRTUAL_TERMINAL_PROCESSING))
+            if (!SetConsoleMode(iStdOut, (outConsoleMode & ~(ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN))))
             {
                 return GetLastError();
             }
@@ -182,6 +174,12 @@ namespace Cheng.Consoles
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
+        /// <summary>
+        /// 设置控制台输入缓冲区的输入模式或控制台屏幕缓冲区的输出模式
+        /// </summary>
+        /// <param name="hConsoleHandle">控制台输入缓冲区或控制台屏幕缓冲区的句柄</param>
+        /// <param name="dwMode">要设置的输入或输出模式</param>
+        /// <returns></returns>
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);

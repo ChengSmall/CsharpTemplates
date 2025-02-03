@@ -119,9 +119,13 @@ namespace Cheng.Consoles
 
                         if (cs == ConsoleTextStyle.ASNIStyle_Begin)
                         {
+                            //起始索引
+                            int beginS = i;
+
+                            BeginStyle:
                             //样式转义
                             style_index = i;
-                            int beginS = style_index;
+
                             if (style_index >= length) break;
                             
                             for ( ; style_index < length; style_index++)
@@ -130,13 +134,33 @@ namespace Cheng.Consoles
                                 if(cs == ConsoleTextStyle.ASNIStyle_End)
                                 {
                                     //到达样式转义终止符
+                                    //后一位索引
                                     i = style_index + 1;
-                                    break;
+
+                                    if (i < length)
+                                    {
+                                        if (sb[i] == ConsoleTextStyle.ASNIStyle_Begin)
+                                        {
+                                            goto BeginStyle; //属于相邻转义，回去重新数
+                                        }
+                                        else
+                                        {
+                                            cs = sb[i];
+                                            break; //没转义跳出
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //最后一位
+                                        Console.Write(sb.ToString(beginS, i - beginS));
+                                        return;
+                                    }
+                                    
                                 }
                             }
 
                             //sb.ToString(beginS, style_index - beginS);
-                            Console.Write(sb.ToString(beginS, style_index - beginS));
+                            Console.Write(sb.ToString(beginS, i - beginS));
                         }
 
                         Console.Write(cs);

@@ -220,7 +220,7 @@ namespace Cheng.Consoles.ConsoleUI
                     p_drawBuf.Append(sev);
                     if (bgs)
                     {
-                        p_drawBuf.AppendANSIResetColorText();
+                        p_drawBuf.AppendANSIStyleResetText();
                     }
                     append.Write(p_drawBuf.ToString());
                 }
@@ -245,7 +245,7 @@ namespace Cheng.Consoles.ConsoleUI
 
                 if (but.StartButtonColor)
                 {
-                    append.Write(ConsoleTextStyle.ResetColorStyleText);
+                    append.Write(ConsoleTextStyle.ResetStyleText);
                 }
 
                 ButtonOver:
@@ -301,7 +301,7 @@ namespace Cheng.Consoles.ConsoleUI
                     append.Append(sev);
                     if (bgs)
                     {
-                        append.AppendANSIResetColorText();
+                        append.AppendANSIStyleResetText();
                     }
                     //append.Write(p_drawBuf.ToString());
                 }
@@ -326,7 +326,7 @@ namespace Cheng.Consoles.ConsoleUI
 
                 if (but.StartButtonColor)
                 {
-                    append.Append(ConsoleTextStyle.ResetColorStyleText);
+                    append.Append(ConsoleTextStyle.ResetStyleText);
                 }
 
                 ButtonOver:

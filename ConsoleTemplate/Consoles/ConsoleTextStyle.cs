@@ -13,6 +13,8 @@ namespace Cheng.Consoles
     public unsafe static class ConsoleTextStyle
     {
 
+        #region 样式字符
+
         /// <summary>
         /// 样式转义字符
         /// </summary>
@@ -22,6 +24,47 @@ namespace Cheng.Consoles
         /// 样式转义终止符
         /// </summary>
         public const char ASNIStyle_End = 'm';
+
+        /// <summary>
+        /// 将文本样式重置为默认的ASNI转义序列
+        /// </summary>
+        public const string ResetStyleText = "\u001B[0m";
+
+        /// <summary>
+        /// 将文本样式重置为默认的字符
+        /// </summary>
+        public const char ResetStyleChar = '0';
+
+        /// <summary>
+        /// 添加粗体，高亮
+        /// </summary>
+        public const string Bold = "\u001B[1m";
+
+        /// <summary>
+        /// 添加下划线样式
+        /// </summary>
+        public const string UnderLine = "\u001B[4m";
+
+        /// <summary>
+        /// 添加闪烁样式
+        /// </summary>
+        public const string Blink = "\u001B[5m";
+
+        /// <summary>
+        /// 添加反显逆色效果
+        /// </summary>
+        public const string Reverse = "\u001B[7m";
+
+        /// <summary>
+        /// 添加隐藏字符样式
+        /// </summary>
+        public const string Hidden = "\u001B[8m";
+
+        #region 颜色
+
+        #endregion
+
+        #endregion
 
         static void f_appendByte(this StringBuilder append, byte value)
         {
@@ -77,6 +120,8 @@ namespace Cheng.Consoles
             c = (char)('0' + r);
             append.Write(c);
         }
+
+        #region 颜色转义
 
         /// <summary>
         /// 转化修改文本颜色的ASNI转义序列
@@ -236,11 +281,6 @@ namespace Cheng.Consoles
         }
 
         /// <summary>
-        /// 将文本样式重置为默认的ASNI转义序列
-        /// </summary>
-        public const string ResetColorStyleText = "\u001B[0m";
-
-        /// <summary>
         /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
         /// </summary>
         /// <param name="append"></param>
@@ -268,15 +308,17 @@ namespace Cheng.Consoles
             ColorToText(r, g, b, isBackground, append);
         }
 
+        #endregion
+
         /// <summary>
         /// 添加重置文字样式的ANSI转义字符序列
         /// </summary>
         /// <param name="append"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public static void WriteANSIResetColorText(this TextWriter append)
+        public static void WriteANSIStyleResetText(this TextWriter append)
         {
             if (append is null) throw new ArgumentNullException();
-            append.Write(ResetColorStyleText);
+            append.Write(ResetStyleText);
         }
 
         /// <summary>
@@ -284,10 +326,10 @@ namespace Cheng.Consoles
         /// </summary>
         /// <param name="append"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public static void AppendANSIResetColorText(this StringBuilder append)
+        public static void AppendANSIStyleResetText(this StringBuilder append)
         {
             if (append is null) throw new ArgumentNullException();
-            append.Append(ResetColorStyleText);
+            append.Append(ResetStyleText);
         }
 
     }
