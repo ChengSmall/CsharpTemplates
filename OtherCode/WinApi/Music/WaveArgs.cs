@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cheng.OtherCode.Winapi.Wave
 {
+
     [Flags]
     internal enum WaveOutSupport
     {
@@ -114,6 +115,7 @@ namespace Cheng.OtherCode.Winapi.Wave
         public IntPtr reserved;
         #endregion
     }
+
     /// <summary>
     /// 多媒体时间格式
     /// </summary>
@@ -238,6 +240,7 @@ namespace Cheng.OtherCode.Winapi.Wave
         [FieldOffset(4)]
         public uint midiSongPtrPos;
     }
+
     /// <summary>
     /// 描述了波形音频输出设备的能力
     /// </summary>

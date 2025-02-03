@@ -101,7 +101,10 @@ namespace Cheng.Windows.Processes
         /// 实例化进程操作实例
         /// </summary>
         /// <param name="process">封装进程对象</param>
-        /// <param name="releaseProcess">在释放资源时是否将内部<paramref name="process"/>释放；默认为true</param>
+        /// <param name="releaseProcess">在释放资源时是否将内部封装的托管对象<paramref name="process"/>释放；默认为true</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="InvalidOperationException">封装的对象进程尚未启动或已退出</exception>
+        /// <exception cref="NotSupportedException">尝试访问在远程计算机上运行的进程标识符</exception>
         public ProcessOperation(Process process, bool releaseProcess)
         {
             if (process is null) throw new ArgumentNullException();
@@ -215,7 +218,7 @@ namespace Cheng.Windows.Processes
                 int re;
                 if(WinAPI.IsWow64Process(p_handle, &re)) return re != 0;
 
-                throw new Win32Exception();
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
         }
 

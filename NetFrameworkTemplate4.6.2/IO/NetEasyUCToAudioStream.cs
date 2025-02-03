@@ -48,6 +48,8 @@ namespace Cheng.IO.NetEasys
 
         private readonly bool p_disposeBase;
 
+        private const int netucXORValue = 163;
+
         #endregion
 
         #region 功能
@@ -75,11 +77,18 @@ namespace Cheng.IO.NetEasys
 
         public override bool CanWrite => p_stream.CanWrite;
 
+        public override bool CanTimeout => p_stream.CanTimeout;
+
+        public override int ReadTimeout 
+        { 
+            get => p_stream.ReadTimeout; 
+            set => p_stream.ReadTimeout = value;
+        }
+
         public override long Length
         {
             get
             {
-                ThrowIsDispose();
                 return p_stream.Length;
             }
         }
@@ -88,12 +97,10 @@ namespace Cheng.IO.NetEasys
         {
             get
             {
-                ThrowIsDispose();
                 return p_stream.Position;
             }
             set
             {
-                ThrowIsDispose();
                 p_stream.Position = value;
             }
         }
@@ -105,25 +112,21 @@ namespace Cheng.IO.NetEasys
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            ThrowIsDispose();
             return p_stream.Seek(offset, origin);
         }
 
         public override void SetLength(long value)
         {
-            ThrowIsDispose();
             p_stream.SetLength(value);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            ThrowIsDispose();
-
             var re = p_stream.Read(buffer, offset, count);
 
             for (int i = offset; i < re; i++)
             {
-                buffer[i] ^= 163;
+                buffer[i] ^= netucXORValue;
             }
 
             return re;
@@ -143,7 +146,7 @@ namespace Cheng.IO.NetEasys
 
             for (int i = offset; i < end; i++)
             {
-                buffer[i] ^= 163;
+                buffer[i] ^= netucXORValue;
             }
 
             p_stream.Write(buffer, offset, count);
@@ -153,12 +156,12 @@ namespace Cheng.IO.NetEasys
         {
             var re = p_stream.ReadByte();
             if (re < 0) return -1;
-            return (byte)(re ^ 163);
+            return (byte)(re ^ netucXORValue);
         }
 
         public override void WriteByte(byte value)
         {
-            p_stream.WriteByte((byte)(value ^ 163));
+            p_stream.WriteByte((byte)(value ^ netucXORValue));
         }
 
         #endregion

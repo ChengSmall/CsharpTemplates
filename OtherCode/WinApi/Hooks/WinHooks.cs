@@ -11,7 +11,7 @@ namespace Cheng.OtherCode.Winapi.User32
     /// <summary>
     /// 挂钩api
     /// </summary>
-    public unsafe static class WinHooks
+    internal unsafe static class WinHooks
     {
 
         #region 结构

@@ -83,6 +83,9 @@
     <Compile Include="Compressions\ZipArchiveCompress.cs" />
     <Compile Include="IO\NetEasyUCToAudioStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Winapi\Hooks\Hooks.cs" />
+    <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
+    <Compile Include="Winapi\Hooks\WinHooks.cs" />
     <Compile Include="WinForms\ParserToJsonExtend.cs" />
   </ItemGroup>
   <ItemGroup>

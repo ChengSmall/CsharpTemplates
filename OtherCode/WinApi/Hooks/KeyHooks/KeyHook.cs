@@ -13,7 +13,7 @@ namespace Cheng.Hooks
     /// <summary>
     /// 键码消息捕获挂钩
     /// </summary>
-    public sealed class KeyHook : Hook
+    internal sealed class KeyHook : Hook
     {
 
         #region 结构

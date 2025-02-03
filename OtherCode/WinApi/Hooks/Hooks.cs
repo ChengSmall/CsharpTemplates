@@ -17,18 +17,18 @@ namespace Cheng.Hooks
     /// <typeparam name="T"></typeparam>
     /// <param name="hook">引发事件的实例</param>
     /// <param name="arg">事件参数</param>
-    public delegate void HookAction<T>(Hook hook, T arg);
+    internal delegate void HookAction<T>(Hook hook, T arg);
 
     /// <summary>
     /// 挂钩事件委托
     /// </summary>
     /// <param name="hook">引发事件的实例</param>
-    public delegate void HookAction(Hook hook);
+    internal delegate void HookAction(Hook hook);
 
     /// <summary>
     /// 挂钩链回调参数
     /// </summary>
-    public struct HookArgs
+    internal struct HookArgs
     {
         public HookArgs(int code, IntPtr wParam, IntPtr lParam)
         {
@@ -47,7 +47,7 @@ namespace Cheng.Hooks
     /// <summary>
     /// 提供使用挂钩对应用程序截获消息、鼠标操作和击键等事件进行处理的方法
     /// </summary>
-    public abstract unsafe class Hook : SafreleaseUnmanagedResources
+    internal abstract unsafe class Hook : SafreleaseUnmanagedResources
     {
 
         #region 释放
