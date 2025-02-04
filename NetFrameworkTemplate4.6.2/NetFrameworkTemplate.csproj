@@ -86,6 +86,7 @@
     <Compile Include="Winapi\Hooks\Hooks.cs" />
     <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
     <Compile Include="Winapi\Hooks\WinHooks.cs" />
+    <Compile Include="Winapi\WinThreadAPI.cs" />
     <Compile Include="WinForms\ParserToJsonExtend.cs" />
   </ItemGroup>
   <ItemGroup>

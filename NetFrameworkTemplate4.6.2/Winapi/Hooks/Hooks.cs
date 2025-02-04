@@ -74,7 +74,7 @@ namespace Cheng.Windows.Hooks
         #region 构造
 
         /// <summary>
-        /// 实例化一个挂钩
+        /// 实例化一个挂钩并关联全部线程
         /// </summary>
         /// <param name="id">挂钩过程类型id</param>
         /// <exception cref="Win32Exception">引发win32错误</exception>
@@ -169,6 +169,10 @@ namespace Cheng.Windows.Hooks
         /// <remarks>在派生类重写以重新实现挂钩事件响应函数</remarks>
         /// <param name="args">call back回调函数中的参数</param>
         protected abstract void HookCallBack(HookArgs args);
+
+        #region 静态函数
+
+        #endregion
 
         #endregion
 

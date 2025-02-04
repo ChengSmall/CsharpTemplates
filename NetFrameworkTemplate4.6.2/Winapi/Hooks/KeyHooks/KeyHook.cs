@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Cheng.Memorys;
@@ -12,59 +13,134 @@ namespace Cheng.Windows.Hooks
     /// <summary>
     /// 键码消息捕获挂钩
     /// </summary>
-    public sealed class KeyHook : Hook
+    public unsafe sealed class KeyHook : Hook
     {
 
         #region 结构
 
         /// <summary>
-        /// 键码事件参数
+        /// 键盘消息标识符
         /// </summary>
-        public struct KeyHookArgs : IEquatable<KeyHookArgs>
+        [Flags]
+        public enum KeyState : byte
         {
             /// <summary>
-            /// 初始化键码事件参数
+            /// 按下按键
             /// </summary>
-            /// <param name="key">键码</param>
-            /// <param name="state">按下true或松开false</param>
-            public KeyHookArgs(Keys key, bool state)
-            {
-                this.key = (int)key;
-                this.state = state;
-            }
+            KeyDown = 0,
 
             /// <summary>
-            /// 初始化键码事件参数
+            /// 释放按键
             /// </summary>
-            /// <param name="key">键码</param>
-            /// <param name="state">按下true或松开false</param>
-            public KeyHookArgs(int key, bool state)
+            KeyUp = 1,
+
+            /// <summary>
+            /// 按下的是系统按键
+            /// </summary>
+            IsSystemKey = 0b10
+        }
+
+        /// <summary>
+        /// 按键事件参数
+        /// </summary>
+        public unsafe struct KeyHookArgs : IEquatable<KeyHookArgs>
+        {
+
+            internal KeyHookArgs(ref KBDLLHOOKSTRUCT kb, KeyState state)
             {
-                this.key = key;
-                this.state = state;
+                p_kb = kb;
+                this.keyState = state;
             }
+
+            private readonly KBDLLHOOKSTRUCT p_kb;
+
+            /// <summary>
+            /// 键盘消息标识
+            /// </summary>
+            public readonly KeyState keyState;
 
             /// <summary>
             /// 虚拟键码
             /// </summary>
-            public readonly int key;
+            public int VkCode
+            {
+                get
+                {
+                    return p_kb.vkCode;
+                }
+            }
 
             /// <summary>
-            /// 键码状态，true表示按下，false表示松开
+            /// 硬件扫描码
             /// </summary>
-            public readonly bool state;
+            public int ScanCode
+            {
+                get => p_kb.scanCode;
+            }
+
+            /// <summary>
+            /// 扩展键、事件注入、上下文代码和转换状态标志
+            /// </summary>
+            public uint Flags
+            {
+                get => p_kb.flags;
+            }
+
+            /// <summary>
+            /// 此消息的时间戳
+            /// </summary>
+            public uint Time
+            {
+                get => p_kb.time;
+            }
 
             /// <summary>
             /// 获取将<see cref="KeyHookArgs.key"/>转化为<see cref="System.Windows.Forms.Keys"/>的参数
             /// </summary>
             public Keys Keys
             {
-                get => (Keys)key;
+                get => (Keys)VkCode;
+            }
+
+            /// <summary>
+            /// 按键是按下还是释放
+            /// </summary>
+            /// <remarks>该参数仅判断按键是否为按下还是释放，不判断按下的按键是否为系统按键</remarks>
+            /// <returns>true表示按下按键，false表示释放按键</returns>
+            public bool State
+            {
+                get => ((byte)keyState & 0b1) == 0;
+            }
+
+            /// <summary>
+            /// 按键是否为系统按键
+            /// </summary>
+            public bool IsSystemKey
+            {
+                get => ((byte)keyState & 0b10) == 0b10;
+            }
+
+            /// <summary>
+            /// 与消息关联的其他信息和参数
+            /// </summary>
+            public IntPtr DwExtraInfo
+            {
+                get => new IntPtr(p_kb.dwExtraInfo);
+            }
+
+            public static bool operator ==(KeyHookArgs k1, KeyHookArgs k2)
+            {
+                return k1.p_kb.vkCode == k2.p_kb.vkCode && k1.keyState == k2.keyState;
+            }
+
+            public static bool operator !=(KeyHookArgs k1, KeyHookArgs k2)
+            {
+                return k1.p_kb.vkCode != k2.p_kb.vkCode || k1.keyState != k2.keyState;
             }
 
             public bool Equals(KeyHookArgs other)
             {
-                return key == other.key && state == other.state;
+                return this == other;
             }
 
             public override bool Equals(object obj)
@@ -75,19 +151,21 @@ namespace Cheng.Windows.Hooks
 
             public override int GetHashCode()
             {
-                return key ^ (int)((uint)state.GetHashCode() << 31);
+                
+                return (int)(((uint)p_kb.vkCode | ((uint)p_kb.scanCode << 8)) ^ ((p_kb.flags ^ p_kb.time) | (((uint)keyState) << 30)));
+
             }
 
-            public static bool operator ==(KeyHookArgs k1, KeyHookArgs k2)
-            {
-                return k1.key == k2.key && k1.state == k2.state;
-            }
+        }
 
-            public static bool operator !=(KeyHookArgs k1, KeyHookArgs k2)
-            {
-                return k1.key != k2.key || k1.state != k2.state;
-            }
-
+        [StructLayout(LayoutKind.Sequential)]
+        internal unsafe struct KBDLLHOOKSTRUCT
+        {
+            public int vkCode;
+            public int scanCode;
+            public uint flags;
+            public uint time;
+            public void* dwExtraInfo;
         }
 
         #endregion
@@ -109,7 +187,7 @@ namespace Cheng.Windows.Hooks
         #region 构造
 
         /// <summary>
-        /// 实例化一个键码消息捕获挂钩
+        /// 实例化并向系统申请一个键码消息捕获挂钩
         /// </summary>
         public KeyHook() : base(HookID.KeyBoard_LL)
         {
@@ -117,20 +195,10 @@ namespace Cheng.Windows.Hooks
         }
 
         /// <summary>
-        /// 实例化一个键码消息捕获挂钩
+        /// 实例化并向系统申请一个键码消息捕获挂钩
         /// </summary>
-        /// <param name="threadID">挂钩过程所在线程id</param>
-        public KeyHook(int threadID) : base(HookID.KeyBoard_LL, threadID)
-        {
-            p_eventThreadSafe = new object();
-        }
-
-        /// <summary>
-        /// 实例化一个键码消息捕获挂钩
-        /// </summary>
-        /// <param name="threadID">挂钩过程所在线程id</param>
         /// <param name="handleMod">DLL的句柄，包含事件委托指向的挂钩过程</param>
-        public KeyHook(int threadID, IntPtr handleMod) : base(HookID.KeyBoard_LL, threadID, handleMod)
+        public KeyHook(IntPtr handleMod) : base(HookID.KeyBoard_LL, 0, handleMod)
         {
             p_eventThreadSafe = new object();
         }
@@ -143,19 +211,41 @@ namespace Cheng.Windows.Hooks
         #endregion
 
         #region 派生
-
+        
         protected override void HookCallBack(HookArgs args)
         {
-            if (args.code >= 0)
+            if (args.code == 0)
             {
-                KeyHookArgs kh = new KeyHookArgs(args.lParam.PtrDef<Keys>(), args.wParam == new IntPtr(0x100));
-                p_keyEvent?.Invoke(this, kh);
+                KeyState ks;
+
+                switch ((int)args.wParam)
+                {
+                    case 0x100:
+                        ks = KeyState.KeyDown;
+                        break;
+                    case 0x101:
+                        ks = KeyState.KeyUp;
+                        break;
+                    case 0x104:
+                        ks = KeyState.KeyDown | KeyState.IsSystemKey;
+                        break;
+                    default:
+                        ks = KeyState.KeyUp | KeyState.IsSystemKey;
+                        break;
+                }
+
+                //KeyHookArgs kh = new KeyHookArgs(ref *(KBDLLHOOKSTRUCT*)args.lParam, ks);
+                p_keyEvent?.Invoke(this, new KeyHookArgs(ref *(KBDLLHOOKSTRUCT*)args.lParam, ks));
             }
         }
 
         /// <summary>
         /// 键盘挂钩引发的事件
         /// </summary>
+        /// <remarks>
+        /// <para>将键盘事件挂钩安装到挂钩链，监控windows键盘事件</para>
+        /// <para>每当</para>
+        /// </remarks>
         public event HookAction<KeyHookArgs> KeyHookEvent
         {
             add
