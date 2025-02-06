@@ -11,6 +11,7 @@ namespace Cheng.Streams
     {
 
         #region 释放
+
         /// <summary>
         /// 此实例的资源是否被释放
         /// </summary>
@@ -18,6 +19,7 @@ namespace Cheng.Streams
         {
             get => p_isDispose;
         }
+
         /// <summary>
         /// 重写此方法以释放非托管资源
         /// </summary>

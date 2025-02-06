@@ -197,6 +197,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Streams\ReadBlockStream.cs" />
     <Compile Include="Threads\LoopThread\LoopFunction.cs" />
     <Compile Include="Threads\LoopThread\LoopStructure.cs" />
     <Compile Include="Memorys\Handles\SafeHandlePointer.cs" />

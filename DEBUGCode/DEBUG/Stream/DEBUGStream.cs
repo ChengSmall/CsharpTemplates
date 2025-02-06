@@ -18,17 +18,34 @@ namespace Cheng.DEBUG
 
         #region 构造
 
-        public DEBUGStream(Stream stream)
+        /// <summary>
+        /// 封装DEBUG流实时监控流
+        /// </summary>
+        /// <param name="stream">封装的流</param>
+        public DEBUGStream(Stream stream) : this(stream, Console.Out, true)
         {
-            p_stream = stream ?? throw new ArgumentNullException();
-            p_print = Console.Out;
-            init();
         }
 
-        public DEBUGStream(Stream stream, TextWriter print)
+        /// <summary>
+        /// 封装DEBUG流实时监控流
+        /// </summary>
+        /// <param name="stream">封装的流</param>
+        /// <param name="print">日志输出，null表示控制台标准输出流</param>
+        public DEBUGStream(Stream stream, TextWriter print) : this(stream, print, true)
+        {
+        }
+
+        /// <summary>
+        /// 封装DEBUG流实时监控流
+        /// </summary>
+        /// <param name="stream">封装的流</param>
+        /// <param name="print">日志输出，null表示控制台标准输出流</param>
+        /// <param name="diseposBase">是否释放封装流</param>
+        public DEBUGStream(Stream stream, TextWriter print, bool diseposBase)
         {
             p_stream = stream ?? throw new ArgumentNullException();
-            p_print = print ?? Console.Out;
+            p_print = print;
+            p_disposed = diseposBase;
             init();
         }
 
@@ -45,7 +62,7 @@ namespace Cheng.DEBUG
 
         #region 参数
 
-        private Stream p_stream;        
+        private Stream p_stream;
         private StringBuilder p_buffer;
         private TextWriter p_print;
         private long p_count;
@@ -53,7 +70,7 @@ namespace Cheng.DEBUG
         private uint p_readCount;
         private uint p_seekCount;
         private uint p_writeCount;
-
+        private bool p_disposed;
         private bool p_foreach = true;
 
         #endregion
@@ -140,15 +157,17 @@ namespace Cheng.DEBUG
 
         public override void Flush()
         {
+            p_stream?.Flush();
             p_print?.WriteLine("Flush");
-            p_stream.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
             ThrowIsDispose();
             var re = p_stream.Seek(offset, origin);
-            p_print?.WriteLine(p_seekCount + " => " + re + " 调用Seek(" + offset + "," + origin + ");");
+            //var sb = p_buffer;
+
+            p_print?.WriteLine(re.ToString() + " Seek(" + offset.ToString() + "," + origin.ToString() + "):" + p_seekCount.ToString());
             p_count++;
             p_seekCount++;
             return re;
@@ -169,7 +188,17 @@ namespace Cheng.DEBUG
             var re = p_stream.Read(buffer, offset, count);
             StringBuilder sb = p_buffer;
             sb.Clear();
-            sb.AppendLine(("使用Read读取:" + re.ToString() + "字节:"));
+
+            sb.Append(re);
+            sb.Append(" Read(buffer,");
+            sb.Append(offset);
+            sb.Append(',');
+            sb.Append(count);
+            sb.Append(')');
+            sb.Append(':');
+            sb.Append(p_readCount);
+            sb.AppendLine();
+
             if (p_foreach)
             {
                 int end = re - 1;
@@ -186,8 +215,8 @@ namespace Cheng.DEBUG
             }
            
             sb.Append("------------------- ");
-            sb.Append(p_readCount);
-            sb.Append(" -------------------");
+            //sb.Append(p_readCount);
+            //sb.Append(" -------------------");
             p_count++;
             p_readCount++;
             p_print?.WriteLine(sb.ToString());
@@ -200,7 +229,17 @@ namespace Cheng.DEBUG
             p_stream.Write(buffer, offset, count);
             StringBuilder sb = p_buffer;
             sb.Clear();
-            sb.AppendLine(("使用Write写入:" + count.ToString() + "字节:"));
+            //sb.AppendLine(("使用Write写入:" + count.ToString() + "字节:"));
+
+            sb.Append("void Write(buffer,");
+            sb.Append(offset);
+            sb.Append(',');
+            sb.Append(count);
+            sb.Append(')');
+            sb.Append(':');
+            sb.Append(p_writeCount);
+            sb.AppendLine();
+
             if (p_foreach)
             {
                 int end = count - 1;
@@ -216,8 +255,8 @@ namespace Cheng.DEBUG
                 sb.AppendLine();
             }
 
-            sb.Append("------------------- ");
-            sb.Append(p_writeCount);
+            //sb.Append("------------------- ");
+            //sb.Append(p_writeCount);
             sb.Append(" -------------------");
             p_count++;
             p_writeCount++;
@@ -236,6 +275,7 @@ namespace Cheng.DEBUG
 
         public override void WriteByte(byte value)
         {
+            ThrowIsDispose();
             p_stream.WriteByte(value);
             p_print?.WriteLine(p_writeCount + ": => 写入单字节:" + value.ToString());
             p_count++;
@@ -244,11 +284,12 @@ namespace Cheng.DEBUG
 
         protected override bool Disposing(bool disposing)
         {
-            if (disposing)
+            if (disposing && p_disposed)
             {
                 p_stream.Close();
                 p_print?.WriteLine("释放DEBUG流");
             }
+            p_stream = null;
             return true;
         }
 
@@ -258,18 +299,21 @@ namespace Cheng.DEBUG
         /// <returns></returns>
         public override string ToString()
         {
-            ThrowIsDispose();
+            if (this.IsDispose)
+            {
+                return "流已被释放";
+            }
             StringBuilder sb = p_buffer;
 
             sb.Clear();
-            sb.AppendLine("当前流状态：");
+            //sb.AppendLine("当前流状态：");
             sb.Append("读取操作次数：");
             sb.AppendLine(p_readCount.ToString());
             sb.Append("写入操作次数:");
             sb.AppendLine(p_writeCount.ToString());
             sb.Append("查找操作次数：");
             sb.AppendLine(p_seekCount.ToString());
-            sb.Append("封装流类型：");
+            sb.Append("内部封装流类型：");
             var t = p_stream.GetType();
             sb.Append(t.FullName);
 

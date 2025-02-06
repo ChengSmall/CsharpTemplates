@@ -822,6 +822,9 @@ namespace Cheng.Memorys
         /// <summary>
         /// 完整读取流数据的字节序列
         /// </summary>
+        /// <remarks>
+        /// <para>此函数会不断调用<see cref="Stream.Read(byte[], int, int)"/>读取数据，直至读取的字节数等于参数<paramref name="count"/>或流内无法读取</para>
+        /// </remarks>
         /// <param name="stream">读取的流</param>
         /// <param name="buffer">读取到的缓冲区</param>
         /// <param name="offset">缓冲区存放的起始索引</param>
@@ -853,6 +856,9 @@ namespace Cheng.Memorys
         /// <summary>
         /// 使用函数枚举器完整读取流数据的字节序列
         /// </summary>
+        /// <remarks>
+        /// <para>此函数每次推进会调用一次<see cref="Stream.Read(byte[], int, int)"/>读取数据，直至读取的字节数等于参数<paramref name="count"/>或流内无法读取</para>
+        /// </remarks>
         /// <param name="stream">读取的流</param>
         /// <param name="buffer">读取到的缓冲区</param>
         /// <param name="offset">缓冲区存放的起始索引</param>
@@ -878,21 +884,16 @@ namespace Cheng.Memorys
         {
             int index = offset;
             int rsize;
-            //int re = 0;
-
-            while (true)
+            int re = 0;
+            while (count != 0)
             {
                 rsize = stream.Read(buffer, index, count);
-                if (rsize == 0)
-                {
-                    yield break;
-                }
+                if (rsize == 0) yield break;
                 index += rsize;
                 count -= rsize;
-                //re += rsize;
+                re += rsize;
                 yield return rsize;
             }
-
         }
 
         /// <summary>

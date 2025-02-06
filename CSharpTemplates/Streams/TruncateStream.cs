@@ -315,10 +315,10 @@ namespace Cheng.Streams
             set
             {
                 ThrowIsDispose();
-                if (value < 0 || (value >= Length))
-                {
-                    throw new ArgumentOutOfRangeException("value");
-                }
+                //if (value < 0 || (value >= Length))
+                //{
+                //    throw new ArgumentOutOfRangeException("value");
+                //}
                 Seek(value, SeekOrigin.Begin);
             }
         }
@@ -399,14 +399,14 @@ namespace Cheng.Streams
                 throw new ArgumentException();
             }           
 
-            if (value < p_startPos)
-            {
-                value = p_startPos;
-            }
-            else if(value > p_endPos)
-            {
-                value = p_endPos + 1;
-            }
+            //if (value < p_startPos)
+            //{
+            //    value = p_startPos;
+            //}
+            //else if(value > p_endPos)
+            //{
+            //    value = p_endPos + 1;
+            //}
             p_nowPos = value;
 
             return p_nowPos - p_startPos;
@@ -424,6 +424,7 @@ namespace Cheng.Streams
             int bufCount;
             int re;
 
+
             //获取缓存可用量
             bufCount = p_bufPosEnd - p_bufPos + 1;
             //bufCount = f_bufferHaveReadCount(p_bufPos, p_bufPosEnd);
@@ -434,6 +435,15 @@ namespace Cheng.Streams
                 //没有缓存
                 //重置缓存指针（清空缓存）
                 f_bufferClear();
+
+                if (p_nowPos < p_startPos)
+                {
+                    NotBufferTruncateStream.throwOutRange();
+                }
+                else if(p_nowPos > p_endPos)
+                {
+                    return 0;
+                }
 
                 //从基础流读取到缓存
                 re = f_bufferReadbase(out _);
@@ -638,6 +648,7 @@ namespace Cheng.Streams
         #region 派生
 
         #region 封装
+
         #endregion
 
         #region 参数
@@ -652,10 +663,10 @@ namespace Cheng.Streams
             set
             {
                 ThrowIsDispose();
-                if (value < 0 || (value >= Length))
-                {
-                    throw new ArgumentOutOfRangeException("value");
-                }
+                //if (value < 0)
+                //{
+                //    throw new ArgumentOutOfRangeException("value");
+                //}
                 Seek(value, SeekOrigin.Begin);
             }
         }
@@ -733,14 +744,14 @@ namespace Cheng.Streams
                 throw new ArgumentException();
             }
 
-            if (value < p_startPos)
-            {
-                value = p_startPos;
-            }
-            else if (value > p_endPos)
-            {
-                value = p_endPos + 1;
-            }
+            //if (value < p_startPos)
+            //{
+            //    value = p_startPos;
+            //}
+            //else if (value > p_endPos)
+            //{
+            //    value = p_endPos + 1;
+            //}
             p_nowPos = value;
 
             return p_nowPos - p_startPos;
@@ -753,12 +764,23 @@ namespace Cheng.Streams
 
             var len = buffer.Length;
 
-            if (count < 0 || offset < 0 || offset + count > len) throw new ArgumentOutOfRangeException();            
+            if (count < 0 || offset < 0 || offset + count > len) throw new ArgumentOutOfRangeException();
 
             //截断流剩余长度
             var length = (p_endPos + 1) - p_nowPos;
-            int reCount;
 
+            if(length <= 0)
+            {
+                return 0;
+            }
+
+            if(length > ((p_endPos - p_startPos) + 1))
+            {
+                //超过范围
+                throwOutRange();
+            }
+
+            int reCount;
             if (length <= int.MaxValue) reCount = (int)Math.Min(length, count);
             else reCount = count;
 
@@ -775,6 +797,11 @@ namespace Cheng.Streams
             p_nowPos += reCount;
 
             return reCount;
+        }
+
+        internal static void throwOutRange()
+        {
+            throw new IOException(Cheng.Properties.Resources.Exception_StreamReaderOutRange);
         }
 
         public override int ReadByte()

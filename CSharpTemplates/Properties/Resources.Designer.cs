@@ -115,6 +115,15 @@ namespace Cheng.Properties {
         }
         
         /// <summary>
+        ///   查找类似 读取的流超出给定的范围 的本地化字符串。
+        /// </summary>
+        internal static string Exception_StreamReaderOutRange {
+            get {
+                return ResourceManager.GetString("Exception_StreamReaderOutRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 自定义写入异常 的本地化字符串。
         /// </summary>
         internal static string StreamParserDef_CunstomWriterExc {

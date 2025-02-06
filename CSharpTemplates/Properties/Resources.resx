@@ -141,6 +141,10 @@
     <value>流已经被释放</value>
     <comment>异常消息：流已经被释放</comment>
   </data>
+  <data name="Exception_StreamReaderOutRange" xml:space="preserve">
+    <value>读取的流超出给定的范围</value>
+    <comment>异常消息：读取的流超出给定的范围</comment>
+  </data>
   <data name="StreamParserDef_CunstomWriterExc" xml:space="preserve">
     <value>自定义写入异常</value>
     <comment>异常消息：</comment>
