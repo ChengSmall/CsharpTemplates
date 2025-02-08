@@ -37,21 +37,9 @@ namespace Cheng.Memorys
         private struct mb4
         {
         }
-        [StructLayout(LayoutKind.Sequential, Size = 1024 * 1024 * 256)]
-        private struct mb256
-        {
-        }
+
         #endregion
 
-        static void memoryCopyMB256(void* copy, void* to, int sizeMB256)
-        {
-            mb256* cp = (mb256*)copy;
-            mb256* top = (mb256*)to;
-            for (int i = 0; i < sizeMB256; i++)
-            {
-                top[i] = cp[i];
-            }
-        }
         static void memoryCopyMB4(void* copy, void* to, int sizeMB4)
         {
             mb4* cp = (mb4*)copy;
@@ -120,10 +108,8 @@ namespace Cheng.Memorys
         /// <param name="size">要拷贝的内存字节大小</param>
         public static void MemoryCopy(void* copyMemory, void* toMemory, int size)
         {
-            //Buffer.MemoryCopy(copyMemory, toMemory, size, size);
-
             const int mb4 = 1024 * 1024 * 4;
-            const int mb256 = 1024 * 1024 * 256;
+            //const int mb256 = 1024 * 1024 * 256;
             byte* copy = (byte*)copyMemory, to = (byte*)toMemory;
 
             //拷贝索引
@@ -146,18 +132,6 @@ namespace Cheng.Memorys
 
                         if (size > mb4)
                         {
-
-                            if(size > mb256)
-                            {
-
-                                sizeMagnitude = size / mb256;
-
-                                memoryCopyMB256(copy + copyByteIndex, to + copyByteIndex, sizeMagnitude);
-
-                                copyByteIndex += sizeMagnitude * mb256;
-                                size = size % mb256;
-
-                            }
 
                             sizeMagnitude = size / mb4;
 
@@ -207,12 +181,13 @@ namespace Cheng.Memorys
             }
 
             size = size % 4;
-            int offset4 = size4 * 4;
-            copy += offset4;
-            to += offset4;
 
             if (size != 0)
             {
+                int offset4 = size4 * 4;
+                copy += offset4;
+                to += offset4;
+
                 for (i = 0; i < size; i++)
                 {
                     to[i] = copy[i];
@@ -819,6 +794,11 @@ namespace Cheng.Memorys
 
         #region 流数据
 
+        static string getArgOutOfRangeReadBlock()
+        {
+            return Cheng.Properties.Resources.Exception_FuncArgOutOfRange;
+        }
+
         /// <summary>
         /// 完整读取流数据的字节序列
         /// </summary>
@@ -838,15 +818,16 @@ namespace Cheng.Memorys
         /// <exception cref="ObjectDisposedException">资源已释放</exception>
         public static int ReadBlock(this Stream stream, byte[] buffer, int offset, int count)
         {
-            if(stream is null) throw new ArgumentNullException(nameof(stream));
-            int index = offset;
+            if(stream is null || buffer is null) throw new ArgumentNullException();
+            //if (offset < 0 || count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(getArgOutOfRangeReadBlock());
+            //int index = offset;
             int rsize;
             int re = 0;
             while (count != 0)
             {
-                rsize = stream.Read(buffer, index, count);
+                rsize = stream.Read(buffer, offset, count);
                 if (rsize == 0) return re;
-                index += rsize;
+                offset += rsize;
                 count -= rsize;
                 re += rsize;
             }
@@ -875,21 +856,21 @@ namespace Cheng.Memorys
             if (stream is null) throw new ArgumentNullException(nameof(stream));
             if (buffer is null) throw new ArgumentNullException(nameof(buffer));
 
-            if (offset < 0 || count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+            if (offset < 0 || count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(getArgOutOfRangeReadBlock());
 
             return f_ReadBlockEnumator(stream, buffer, offset, count);
         }
 
         internal static IEnumerable<int> f_ReadBlockEnumator(Stream stream, byte[] buffer, int offset, int count)
         {
-            int index = offset;
+            //int index = offset;
             int rsize;
             int re = 0;
             while (count != 0)
             {
-                rsize = stream.Read(buffer, index, count);
+                rsize = stream.Read(buffer, offset, count);
                 if (rsize == 0) yield break;
-                index += rsize;
+                offset += rsize;
                 count -= rsize;
                 re += rsize;
                 yield return rsize;
