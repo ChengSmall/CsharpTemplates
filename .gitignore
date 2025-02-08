@@ -24,3 +24,6 @@
 /UnityCode/obj
 /ConsoleTemplate/bin
 /ConsoleTemplate/obj
+
+# 忽略 Visual Studio 用户特定文件
+.vs/
