@@ -3,14 +3,13 @@ using Cheng.Streams;
 using System;
 using System.IO;
 
-
 namespace Cheng.IO
 {
 
     /// <summary>
-    /// 封装只读文件流以更加便利读取文件数据
+    /// 打开一个路径上的文件并更加便利地读取该文件数据
     /// </summary>
-    public sealed class ReadOnlyFileStream : ReleaseDestructor
+    public sealed class ReadOnlyFileStream : SafreleaseUnmanagedResources
     {
 
         #region 构造
@@ -28,7 +27,7 @@ namespace Cheng.IO
 
             try
             {
-                fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             }
             catch (Exception)
             {
@@ -95,15 +94,6 @@ namespace Cheng.IO
         #region 参数访问
 
         /// <summary>
-        /// 获取基本封装流
-        /// </summary>
-        /// <returns>释放则返回null</returns>
-        public FileStream BaseFileStream
-        {
-            get => p_file;
-        }
-
-        /// <summary>
         /// 文件所在的绝对路径
         /// </summary>
         public string FilePath
@@ -147,7 +137,8 @@ namespace Cheng.IO
         /// <summary>
         /// 创建一个新的只读文件流
         /// </summary>
-        /// <returns>同文件下的新的只读流</returns>
+        /// <returns>同路径文件下的新的只读流</returns>
+        /// <exception cref="Exception">错误</exception>
         public FileStream CreateNewFileStream()
         {
             return new FileStream(this.p_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -158,7 +149,8 @@ namespace Cheng.IO
         /// </summary>
         /// <param name="startPos">截断的起始位置</param>
         /// <param name="length">截断的长度</param>
-        /// <returns>新的截断一部分的只读流</returns>
+        /// <returns>同路径文件下新的截断一部分的只读流</returns>
+        /// <exception cref="Exception">错误</exception>
         public ReadOnlyPartFileStream CreatePartFileStream(long startPos, long length)
         {
             return new ReadOnlyPartFileStream(p_filePath, startPos, length, FileShare.ReadWrite);

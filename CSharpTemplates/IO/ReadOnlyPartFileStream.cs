@@ -170,12 +170,12 @@ namespace Cheng.IO
         /// <param name="disposing">是否清理托管资源实例</param>
         /// <returns>回收完毕后是否取消对象终结器调用；true表示取消，false表示不取消</returns>
         protected override bool Disposing(bool disposing)
-        {          
+        {
             if (disposing)
             {
                 p_file.Close();
                 p_partFile.Close();
-            }            
+            }
 
             p_file = null;
             p_partFile = null;

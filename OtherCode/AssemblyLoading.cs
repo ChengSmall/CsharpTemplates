@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace Cheng.Systems
 {
@@ -12,17 +13,63 @@ namespace Cheng.Systems
     public static class AssemblyLoading
     {
 
+        #region 封装
+
         static Dictionary<string, Assembly> p_asses;
+
+        /// <summary>
+        /// 获取无版本号的Assembly名称
+        /// </summary>
+        /// <param name="fullName">一个<see cref="Assembly.FullName"/>参数</param>
+        /// <returns>忽略版本号的程序集名称</returns>
+        public static string GetNoVersionAssemblyName(string fullName)
+        {
+            if (fullName is null) return fullName;
+            int i;
+            for (i = 0; i < fullName.Length; i++)
+            {
+                if (fullName[i] == ',') return fullName.Substring(0, i + 1);
+            }
+            return fullName;
+            //return fullName.Substring(0, i + 1);
+        }
 
         private static Assembly Dom_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var assName = args.Name;
-            if (p_asses.TryGetValue(assName, out var ass))
+            assName = GetNoVersionAssemblyName(assName);
+            if(p_asses.TryGetValue(assName, out var asses))
             {
-                return ass;
+                return asses;
             }
             return null;
         }
+
+        static void f_addAss(Assembly ass, bool cover)
+        {
+            string name;
+
+            name = GetNoVersionAssemblyName(ass.FullName);
+            //获取name下的ass集合
+            bool b = p_asses.ContainsKey(name);
+            if (b)
+            {
+                //有
+                if (cover)
+                {
+                    p_asses[name] = ass;
+                }
+            }
+            else
+            {
+                //没有直接加
+                p_asses.Add(name, ass);
+            }
+        }
+
+        #endregion
+
+        #region 功能
 
         /// <summary>
         /// 初始化动态程序集加载模块和参数
@@ -48,12 +95,24 @@ namespace Cheng.Systems
         }
 
         /// <summary>
+        /// 获取已待续的程序集
+        /// </summary>
+        /// <param name="assemblyFileName">程序集忽略版本号的名称</param>
+        /// <returns></returns>
+        public static Assembly GetAssembly(string assemblyFileName)
+        {
+            if (p_asses.TryGetValue(assemblyFileName, out var ass)) return ass;
+            return null;
+        }
+
+        /// <summary>
         /// 向动态加载程序集添加待加载模块
         /// </summary>
         /// <param name="raw">字节数组，表示包含程序集的基于 COFF 的映像</param>
+        /// <param name="cover">若名字重复是否覆盖</param>
         /// <returns>出现的错误，没有错误则返回null</returns>
         /// <exception cref="ArgumentNullException">未调用<see cref="Init"/>进行初始化</exception>
-        public static Exception AddAssembly(byte[] raw)
+        public static Exception AddAssembly(byte[] raw, bool cover)
         {
             if (p_asses is null) throw new ArgumentNullException();
             try
@@ -61,7 +120,45 @@ namespace Cheng.Systems
                 lock (p_asses)
                 {
                     var ass = Assembly.Load(raw);
-                    p_asses[ass.FullName] = ass;
+                    f_addAss(ass, cover);
+                    //p_asses[ass.FullName] = ass;
+                    return null;
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                return ex;
+            }
+        }
+
+        /// <summary>
+        /// 向动态加载程序集添加待加载模块
+        /// </summary>
+        /// <param name="raw">字节数组，表示包含程序集的基于 COFF 的映像</param>
+        /// <returns>出现的错误，没有错误则返回null</returns>
+        /// <exception cref="ArgumentNullException">未调用<see cref="Init"/>进行初始化</exception>
+        public static Exception AddAssembly(byte[] raw)
+        {
+            return AddAssembly(raw, true);
+        }
+
+        /// <summary>
+        /// 向动态加载程序集添加待加载模块
+        /// </summary>
+        /// <param name="filePath">包含程序集清单的文件的名称或路径</param>
+        /// <param name="cover">若名字重复是否覆盖</param>
+        /// <returns>出现的错误，没有错误则返回null</returns>
+        /// <exception cref="ArgumentNullException">未调用<see cref="Init"/>进行初始化</exception>
+        public static Exception AddAssembly(string filePath, bool cover)
+        {
+            if (p_asses is null) throw new ArgumentNullException();
+            try
+            {
+                lock (p_asses)
+                {
+                    var ass = Assembly.LoadFrom(filePath);
+                    f_addAss(ass, cover);
                     return null;
                 }
                 
@@ -80,16 +177,29 @@ namespace Cheng.Systems
         /// <exception cref="ArgumentNullException">未调用<see cref="Init"/>进行初始化</exception>
         public static Exception AddAssembly(string filePath)
         {
+            return AddAssembly(filePath, true);
+        }
+
+        /// <summary>
+        /// 向动态加载程序集添加待加载模块
+        /// </summary>
+        /// <param name="assembly">待加载的程序集模块</param>
+        /// <param name="cover">若名字重复是否覆盖</param>
+        /// <returns>出现的错误，没有错误则返回null</returns>
+        /// <exception cref="ArgumentNullException">未调用<see cref="Init"/>进行初始化</exception>
+        public static Exception AddAssembly(Assembly assembly, bool cover)
+        {
             if (p_asses is null) throw new ArgumentNullException();
             try
             {
+                if (assembly is null) return new ArgumentNullException();
                 lock (p_asses)
                 {
-                    var ass = Assembly.LoadFrom(filePath);
-                    p_asses[ass.FullName] = ass;
+                    //p_asses[assembly.FullName] = assembly;
+                    f_addAss(assembly, cover);
                     return null;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -105,21 +215,52 @@ namespace Cheng.Systems
         /// <exception cref="ArgumentNullException">未调用<see cref="Init"/>进行初始化</exception>
         public static Exception AddAssembly(Assembly assembly)
         {
+            return AddAssembly(assembly, true);
+        }
+
+        /// <summary>
+        /// 将指定目录下的文件全部添加进待加载模块
+        /// </summary>
+        /// <param name="path">一个文件夹目录</param>
+        /// <param name="searchOption">目录搜索模式</param>
+        /// <param name="cover">若名字重复是否覆盖</param>
+        /// <exception cref="Exception">错误</exception>
+        public static void AddAssemblysByPath(string path, SearchOption searchOption, bool cover)
+        {
             if (p_asses is null) throw new ArgumentNullException();
-            try
+            DirectoryInfo info = new DirectoryInfo(path);
+
+            var files = info.GetFiles("*.dll", searchOption);
+
+            int length = files.Length;
+            for (int i = 0; i < length; i++)
             {
-                if (assembly is null) return new ArgumentNullException();
-                lock (p_asses)
+                var fileInfo = files[i];
+
+                if (fileInfo.Exists)
                 {
-                    p_asses[assembly.FullName] = assembly;
-                    return null;
+                    
+                    try
+                    {
+                        AddAssembly(fileInfo.FullName, cover);
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
 
             }
-            catch (Exception ex)
-            {
-                return ex;
-            }
+        }
+
+        /// <summary>
+        /// 将指定目录下的文件全部添加进待加载模块
+        /// </summary>
+        /// <param name="path">一个文件夹目录</param>
+        /// <param name="cover">若名字重复是否覆盖</param>
+        /// <exception cref="Exception">错误</exception>
+        public static void AddAssemblysByPath(string path, bool cover)
+        {
+            AddAssemblysByPath(path, cover);
         }
 
         /// <summary>
@@ -129,51 +270,10 @@ namespace Cheng.Systems
         /// <exception cref="Exception">错误</exception>
         public static void AddAssemblysByPath(string path)
         {
-            if (p_asses is null) throw new ArgumentNullException();
-            DirectoryInfo info = new DirectoryInfo(path);
-
-            var files = info.GetFiles();
-
-            int length = files.Length;
-            for (int i = 0; i < length; i++)
-            {
-                var fileInfo = files[i];
-
-                if (fileInfo.Exists)
-                {
-                    if (fileInfo.Extension == ".dll")
-                    {
-                        try
-                        {
-                            AddAssembly(fileInfo.FullName);
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        
-                    }
-                }
-
-            }
+            AddAssemblysByPath(path, false);
         }
 
-        /// <summary>
-        /// 获取已添加到动态加载集合中的程序集
-        /// </summary>
-        /// <param name="fullName">程序集名称</param>
-        /// <returns>要获取的程序集，若未找到则返回null</returns>
-        public static Assembly GetAssembly(string fullName)
-        {
-            if (p_asses is null) throw new ArgumentNullException();
-            lock (p_asses)
-            {
-                if(p_asses.TryGetValue(fullName, out var ass))
-                {
-                    return ass;
-                }
-            }
-            return null;
-        }
+        #endregion
 
     }
 
