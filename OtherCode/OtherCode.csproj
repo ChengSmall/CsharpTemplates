@@ -89,6 +89,7 @@
     <Compile Include="AssemblyLoading.cs" />
     <Compile Include="CSharpCode\ProcessStart.cs" />
     <Compile Include="DisposeFunc.cs" />
+    <Compile Include="Process\ProcessExdOther.cs" />
     <Compile Include="Streams\ReadOnlyFileStream.cs" />
     <Compile Include="structure\GameTimes.cs" />
     <Compile Include="structure\MindMap\MindMapNode.cs" />
@@ -109,7 +110,7 @@
     <Compile Include="WinApi\Music\WaveFormatEncoding.cs" />
     <Compile Include="WinApi\Music\WaveFormatExtraData.cs" />
     <Compile Include="WinApi\Music\WaveInterop.cs" />
-    <Compile Include="WinApi\Process.cs" />
+    <Compile Include="WinApi\WinProcess.cs" />
     <Compile Include="WinApi\Hooks\WinHooks.cs" />
     <Compile Include="WinApi\WindowForms.cs" />
     <Compile Include="WinApi\winmm\WinapiJoysticks.cs" />

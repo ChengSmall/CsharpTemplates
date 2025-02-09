@@ -10,7 +10,7 @@ namespace Cheng.OtherCode.Winapi
     /// <summary>
     /// winapi进程相关
     /// </summary>
-    public unsafe static class Process
+    public unsafe static class WinProcess
     {
         //ReadProcessMemory
 
