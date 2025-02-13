@@ -4,7 +4,6 @@
 不一样的惩 的C#代码库合集
 包含各种.Net和Unity功能
 
-
 ## 打包版本连接
 想要直接下载打包版本访问以下链接
 
@@ -14,15 +13,12 @@
 
 [WinForm和Windows特供支持包](https://wwqi.lanzoue.com/b00hqeikif "密码:2io7") 密码:2io7
 
+[控制台程序包](https://wwqi.lanzoue.com/b00hqk1jvg "密码:460h") 密码:460h
 
 ## 要下载源码的看这里
 下载源码后，vs引用设置基本上会出错
 UnityCSharpTemplates和UnityCode两个项目引用的UnityEngine相关依赖，需要手动引用自己本地的dll
 项目用的是.net framework 框架，C#版本较旧，因此很多C#高级语法都无法使用
-
-
-## 源码下载方法
-点击右侧的 <>Code 按钮，再点击 "Download ZIP" 按钮即可
 
 
 ## 提醒
