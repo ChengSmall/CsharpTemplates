@@ -48,7 +48,7 @@ namespace Cheng.IO.NetEasys
 
         private readonly bool p_disposeBase;
 
-        private const int netucXORValue = 163;
+        private const byte netucXORValue = 163;
 
         #endregion
 
@@ -59,7 +59,14 @@ namespace Cheng.IO.NetEasys
         protected override bool Disposing(bool disposing)
         {
 
-            if(disposing && p_disposeBase)
+            try
+            {
+                p_stream.Flush();
+            }
+            catch (Exception)
+            {
+            }
+            if (disposing && p_disposeBase)
             {
                 p_stream.Close();
             }
@@ -89,6 +96,7 @@ namespace Cheng.IO.NetEasys
         {
             get
             {
+                ThrowIsDispose();
                 return p_stream.Length;
             }
         }
@@ -97,31 +105,36 @@ namespace Cheng.IO.NetEasys
         {
             get
             {
+                ThrowIsDispose();
                 return p_stream.Position;
             }
             set
             {
+                ThrowIsDispose();
                 p_stream.Position = value;
             }
         }
 
         public override void Flush()
         {
-            p_stream.Flush();
+            p_stream?.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
+            ThrowIsDispose();
             return p_stream.Seek(offset, origin);
         }
 
         public override void SetLength(long value)
         {
+            ThrowIsDispose();
             p_stream.SetLength(value);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            ThrowIsDispose();
             var re = p_stream.Read(buffer, offset, count);
 
             for (int i = offset; i < re; i++)
@@ -154,6 +167,7 @@ namespace Cheng.IO.NetEasys
 
         public override int ReadByte()
         {
+            ThrowIsDispose();
             var re = p_stream.ReadByte();
             if (re < 0) return -1;
             return (byte)(re ^ netucXORValue);
@@ -161,6 +175,7 @@ namespace Cheng.IO.NetEasys
 
         public override void WriteByte(byte value)
         {
+            ThrowIsDispose();
             p_stream.WriteByte((byte)(value ^ netucXORValue));
         }
 

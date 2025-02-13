@@ -12,7 +12,7 @@ namespace Cheng.Windows.Processes
     /// <summary>
     /// 提供对进程间的内存读写操作
     /// </summary>
-    /// <remarks>此功能仅对提供<see cref="WinAPI"/>的Windows操作系统启用</remarks>
+    /// <remarks>包装<see cref="WinAPI"/>的Windows进程操作</remarks>
     public sealed unsafe class ProcessOperation : ReleaseDestructor
     {
 

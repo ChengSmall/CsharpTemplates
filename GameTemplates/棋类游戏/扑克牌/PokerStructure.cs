@@ -9,11 +9,16 @@ namespace Cheng.GameTemplates.Pokers
     #region 扑克结构
 
     #region 类型
+
     /// <summary>
     /// 扑克牌牌面数值
     /// </summary>
     public enum PokerNum : byte
     {
+        /// <summary>
+        /// 空值
+        /// </summary>
+        None = 0,
         A = 1,
         _2,
         _3,
@@ -26,18 +31,19 @@ namespace Cheng.GameTemplates.Pokers
         _10,
         J,
         Q,
-        K,       
+        K,
         /// <summary>
-        /// 小王（单色Joker）
+        /// 小王（灰色Joker）
         /// </summary>
-        Kid,
+        LittleJoker,
         /// <summary>
         /// 大王（彩色Joker）
         /// </summary>
         Joker,
     }
+
     /// <summary>
-    /// 扑克牌花色类型
+    /// 扑克牌花色类型，若牌面值是鬼王则花色无效
     /// </summary>
     public enum PokerFlower : byte
     {
@@ -62,6 +68,7 @@ namespace Cheng.GameTemplates.Pokers
         /// </summary>
         Plum_Blossoms = 4,
     }
+
     #endregion
 
     /// <summary>
@@ -71,14 +78,16 @@ namespace Cheng.GameTemplates.Pokers
     {
 
         #region 构造
+
         /// <summary>
-        /// 使用唯一id初始化扑克牌结构
+        /// 使用扑克牌类型id初始化扑克牌结构
         /// </summary>
         /// <param name="id"></param>
         public Poker(byte id)
         {
             this.id = id;
         }
+
         /// <summary>
         /// 初始化扑克牌结构
         /// </summary>
@@ -88,20 +97,27 @@ namespace Cheng.GameTemplates.Pokers
         {
             id = (byte)(((byte)((((byte)num) & 0xF) << 3)) | (((byte)(((byte)flower) & 0x7))));
         }
+
         #endregion
 
         #region 参数
+
         /// <summary>
         /// 扑克牌类型id
         /// </summary>
+        /// <remarks>
+        /// <para>一个扑克牌类型组合值；右侧3bit表示花色，中间4bit表示牌面值，最后1bit保留</para>
+        /// </remarks>
         public readonly byte id;
+
         #endregion
 
         #region 功能
 
         #region 参数访问
+
         /// <summary>
-        /// 访问或设置扑克牌面值
+        /// 访问扑克牌面值
         /// </summary>
         public PokerNum Num
         {
@@ -111,27 +127,30 @@ namespace Cheng.GameTemplates.Pokers
                 return (PokerNum)((id >> 3) & 0xF);
             }
         }
+
         /// <summary>
-        /// 访问或设置扑克牌花色
+        /// 访问扑克牌花色
         /// </summary>
         public PokerFlower Flower
         {
             // 右侧3bit => [1,4]
             get
             {
-                return (PokerFlower)((id) & 0x7);
+                return (PokerFlower)((id) & 0b111);
             }
         }
+
         /// <summary>
-        /// 获取扑克牌枚举值
+        /// 获取扑克牌牌面值
         /// </summary>
-        /// <param name="num">扑克牌面值</param>
+        /// <param name="num">扑克牌牌面值</param>
         /// <param name="flower">扑克牌花色</param>
         public void GetValue(out PokerNum num, out PokerFlower flower)
         {
             flower = (PokerFlower)(id & 0x7);
             num = (PokerNum)((id >> 3) & 0xF);
         }
+
         /// <summary>
         /// 空扑克结构
         /// </summary>
@@ -140,6 +159,7 @@ namespace Cheng.GameTemplates.Pokers
         {
             get => default;
         }
+
         /// <summary>
         /// 当前扑克是否为一个空实例（id == 0）
         /// </summary>
@@ -147,23 +167,47 @@ namespace Cheng.GameTemplates.Pokers
         {
             get => id == 0;
         }
+
         /// <summary>
-        /// 获取一张表示小王的扑克
+        /// 获取一张表示小王（灰色Joker）的扑克
         /// </summary>
-        public static Poker Kid
+        public static Poker LittleJoker
         {
-            get => new Poker(PokerNum.Kid, 0);
+            get => new Poker(PokerNum.LittleJoker, 0);
         }
+
         /// <summary>
-        /// 获取一张表示大王的扑克
+        /// 获取一张表示大王（彩色Joker）的扑克
         /// </summary>
         public static Poker Joker
         {
             get => new Poker(PokerNum.Joker, 0);
         }
+
+        /// <summary>
+        /// 返回重设扑克牌面值的新扑克对象
+        /// </summary>
+        /// <param name="newNum">新的牌面值</param>
+        /// <returns>新设置的扑克牌</returns>
+        public Poker SetNum(PokerNum newNum)
+        {
+            return new Poker((byte)((id & 0b1_0000_111) | (((byte)newNum) << 3)));
+        }
+
+        /// <summary>
+        /// 返回重设扑克牌花色的新扑克对象
+        /// </summary>
+        /// <param name="flower">新的牌花色</param>
+        /// <returns>新设置的扑克牌</returns>
+        public Poker SetFlower(PokerFlower flower)
+        {
+            return new Poker((byte)((id & 0b1_1111_000) | ((byte)flower)));
+        }
+
         #endregion
 
         #region 比较
+
         /// <summary>
         /// 比较相等
         /// </summary>
@@ -174,6 +218,7 @@ namespace Cheng.GameTemplates.Pokers
         {
             return p1.id == p2.id;
         }
+
         /// <summary>
         /// 比较不相等
         /// </summary>
@@ -201,6 +246,7 @@ namespace Cheng.GameTemplates.Pokers
         {
             return p1.id >= p2.id;
         }
+
         #endregion
 
         #region 派生
@@ -213,10 +259,12 @@ namespace Cheng.GameTemplates.Pokers
             }
             return false;
         }
+
         public override int GetHashCode()
         {
             return id;
         }
+
         /// <summary>
         /// 以字符串的形式返回当前扑克牌面
         /// </summary>
@@ -229,7 +277,7 @@ namespace Cheng.GameTemplates.Pokers
 
             if (n >= PokerNum._2 && n <= PokerNum._10)
             {
-                num = n.ToString();
+                num = ((byte)n).ToString();
             }
             else
             {
@@ -247,7 +295,7 @@ namespace Cheng.GameTemplates.Pokers
                     case PokerNum.K:
                         num = "K";
                         break;
-                    case PokerNum.Kid:
+                    case PokerNum.LittleJoker:
                         return "小王";
                     case PokerNum.Joker:
                         return "大王";
@@ -270,12 +318,16 @@ namespace Cheng.GameTemplates.Pokers
                 case PokerFlower.Plum_Blossoms:
                     flower = "♣";
                     break;
+                case PokerFlower.None:
+                    flower = string.Empty;
+                    break;
                 default:
                     return id.ToString();
             }
 
             return flower + num;
         }
+
         /// <summary>
         /// 判断该值是否等于参数
         /// </summary>
@@ -285,6 +337,7 @@ namespace Cheng.GameTemplates.Pokers
         {
             return id == other.id;
         }
+
         /// <summary>
         /// 与另一个实例比较大小，默认使用id作为比较源
         /// </summary>
@@ -292,7 +345,7 @@ namespace Cheng.GameTemplates.Pokers
         /// <returns></returns>
         public int CompareTo(Poker other)
         {
-            return id < other.id ? -1 : (id == other.id ? 0 : 1);
+            return id - other.id;
         }
 
         #endregion

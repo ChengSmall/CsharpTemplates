@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cheng.GameTemplates.BlackWhiteChiess
 {
+
     /// <summary>
     /// 黑白棋类棋盘
     /// </summary>
@@ -37,18 +38,22 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
         #region 功能
 
         #region 数组功能
+
         /// <summary>
         /// 获取棋盘的长度
         /// </summary>
         public int Width => p_width;
+
         /// <summary>
         /// 获取棋盘的高度
         /// </summary>
         public int Height => p_height;
+
         /// <summary>
         /// 获取棋盘的总格子数
         /// </summary>
         public int Count => p_length;
+
         /// <summary>
         /// 使用二维索引访问或修改棋盘棋子
         /// </summary>
@@ -67,6 +72,7 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
                 p_board[x, y] = value;
             }
         }
+
         /// <summary>
         /// 获取指定位置的棋子
         /// </summary>
@@ -85,6 +91,7 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
             chess = p_board[x, y];
             return true;
         }
+
         /// <summary>
         /// 超出范围
         /// </summary>
@@ -95,13 +102,16 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
         {
             return (x < 0 || x >= p_width || y < 0 || y >= p_height);
         }
+
         /// <summary>
         /// 获取棋盘基础数组实例
         /// </summary>
         public BWPiece[,] BasePieces => p_board;
+
         #endregion
 
         #region 棋盘功能
+
         /// <summary>
         /// 在指定位置上放置棋子
         /// </summary>
@@ -116,6 +126,7 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
             p_board[x, y] = piece;
             return true;
         }
+
         /// <summary>
         /// 在指定位置上放置棋子
         /// </summary>
@@ -134,6 +145,7 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
             p_board[x, y] = piece;
             return true;
         }
+
         /// <summary>
         /// 在棋盘上移除并提取一个棋子
         /// </summary>
@@ -149,6 +161,7 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
             p_board[x, y] = BWPiece.None;
             return true;
         }
+
         /// <summary>
         /// 将棋盘上所有棋子移除
         /// </summary>
@@ -156,6 +169,7 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
         {
             Array.Clear(p_board, 0, p_length);
         }
+
         #endregion
 
         #endregion

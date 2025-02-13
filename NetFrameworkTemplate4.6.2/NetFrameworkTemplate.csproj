@@ -82,7 +82,14 @@
     <Compile Include="Compressions\ResourcePackageWinForm\ResourcePackageListView.cs" />
     <Compile Include="Compressions\ZipArchiveCompress.cs" />
     <Compile Include="IO\NetEasyUCToAudioStream.cs" />
+    <Compile Include="Processes\API.cs" />
+    <Compile Include="Processes\ProcessAccessFlags.cs" />
+    <Compile Include="Processes\ProcessOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threads\LoopThread\LoopFunction.cs" />
+    <Compile Include="Threads\LoopThread\LoopStructure.cs" />
+    <Compile Include="Threads\SingleThreadTask\SingleTask.cs" />
+    <Compile Include="Threads\SingleThreadTask\SingleThreadTasks.cs" />
     <Compile Include="Winapi\Hooks\Hooks.cs" />
     <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
     <Compile Include="Winapi\Hooks\WinHooks.cs" />

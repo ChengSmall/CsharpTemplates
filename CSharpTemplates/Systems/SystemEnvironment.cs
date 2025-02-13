@@ -12,6 +12,7 @@ namespace Cheng.Systems
     {
 
         #region 环境判断
+
         /// <summary>
         /// 判断此进程是否为管理员权限
         /// </summary>
@@ -40,6 +41,7 @@ namespace Cheng.Systems
                 return flag;
             }
         }
+
         /// <summary>
         /// 判断此进程是否为指定的用户权限
         /// </summary>
@@ -76,6 +78,7 @@ namespace Cheng.Systems
         {
             get => sizeof(void*) == 8;
         }
+
         /// <summary>
         /// 获取当前进程的线程数量
         /// </summary>
@@ -108,9 +111,11 @@ namespace Cheng.Systems
                 return count;
             }
         }
+
         #endregion
 
         #region 命令行
+
         /// <summary>
         /// 获取一个命令行参数，若没有命令行参数则为空数组
         /// </summary>
@@ -124,6 +129,7 @@ namespace Cheng.Systems
             Array.Copy(s, 1, args, 0, length);
             return args;
         }
+
         /// <summary>
         /// 获取一个命令行参数，若没有命令行参数则为空数组
         /// </summary>
@@ -142,6 +148,7 @@ namespace Cheng.Systems
                 return false;
             }
         }
+
         #endregion
 
     }

@@ -198,8 +198,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Streams\ReadBlockStream.cs" />
-    <Compile Include="Threads\LoopThread\LoopFunction.cs" />
-    <Compile Include="Threads\LoopThread\LoopStructure.cs" />
     <Compile Include="Memorys\Handles\SafeHandlePointer.cs" />
     <Compile Include="Memorys\Handles\SafeReleaseHandlePointer.cs" />
     <Compile Include="Memorys\MemoryOperations.cs" />
@@ -214,9 +212,6 @@
     <Compile Include="Parsers\TextParser\StandardizedTexter\StandardizedTextWriter.cs" />
     <Compile Include="Parsers\TextParser\TextManipulation.cs" />
     <Compile Include="Memorys\UnmanagedMemoryagement.cs" />
-    <Compile Include="Processes\API.cs" />
-    <Compile Include="Processes\ProcessAccessFlags.cs" />
-    <Compile Include="Processes\ProcessOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Streams\BinaryStream.cs" />
     <Compile Include="Streams\HEStream.cs" />
@@ -227,8 +222,6 @@
     <Compile Include="Systems\SystemEnvironment.cs" />
     <Compile Include="Data\Timer\BaseTimer.cs" />
     <Compile Include="Data\Timer\Calculagraph.cs" />
-    <Compile Include="Threads\SingleThreadTask\SingleTask.cs" />
-    <Compile Include="Threads\SingleThreadTask\SingleThreadTasks.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Algorithm\Maths\Structures\" />
