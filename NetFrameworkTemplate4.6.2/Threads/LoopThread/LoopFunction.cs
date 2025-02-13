@@ -725,21 +725,19 @@ namespace Cheng.LoopThreads
 
                 if (waitTime > TimeSpan.Zero)
                 {
-                    //waitTime = new TimeSpan(waitTime.Ticks / 2);
-                    Thread.Sleep(waitTime);
-
-                    //p_waitTimer.Reset();
-                    //p_waitTimer.Start();
-
-                    //while (p_waitTimer.Elapsed < waitTime)
-                    //{
-                    //    Thread.SpinWait(500);
-                    //}
-
-                    //p_waitTimer.Reset();
+                    ThreadSleep(waitTime);
                 }
             }
 
+        }
+
+        /// <summary>
+        /// 调用此函数后的线程处于线程挂起等待，指定等待时间
+        /// </summary>
+        /// <param name="waitTime">要进行线程等待的时间</param>
+        protected virtual void ThreadSleep(TimeSpan waitTime)
+        {
+            Thread.Sleep(waitTime);
         }
 
         private void f_loopEnd()
@@ -905,7 +903,7 @@ namespace Cheng.LoopThreads
         {
             if(f_start)
             {
-                f_start = false;                
+                f_start = false;
                 return true;
             }
 
