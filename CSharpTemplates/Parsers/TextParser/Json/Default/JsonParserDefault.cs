@@ -84,6 +84,11 @@ namespace Cheng.Json
         /// </summary>
         private bool p_jsonToKeyIsUnicode;
 
+        /// <summary>
+        /// 对象转义字符单引号转义开关
+        /// </summary>
+        private bool p_jsonEscapeCharacterSingleQuotation;
+
         #endregion
 
         #region 封装
@@ -552,7 +557,7 @@ namespace Cheng.Json
                 sb.Append('"');
                 return true;
             }
-            if (ic == '\'')
+            if (ic == '\'' && p_jsonEscapeCharacterSingleQuotation)
             {
                 sb.Append('\'');
                 return true;
@@ -1359,12 +1364,14 @@ namespace Cheng.Json
                 return true;
             }
 
-            if (c == '\'')
+            if (c == '\'' && p_jsonEscapeCharacterSingleQuotation)
             {
+                esc = '\'';
                 return true;
             }
-            if (c == '\"')
+            if (c == '"')
             {
+                esc = '"';
                 return true;
             }
             if (c == '\t')
@@ -1745,6 +1752,7 @@ namespace Cheng.Json
             p_jsonToTextIsUnicode = false;
             p_jsonToKeyIsUnicode = false;
             p_numStyles = TextParserNumStylesDefault;
+            p_jsonEscapeCharacterSingleQuotation = false;
 
             try
             {
@@ -1760,6 +1768,9 @@ namespace Cheng.Json
 
         #region 参数访问
 
+        /// <summary>
+        /// 参数<see cref="ToJsonIdentifyingEscapeCharacters"/>的默认值
+        /// </summary>
         public const NumberStyles TextParserNumStylesDefault = NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands | NumberStyles.AllowExponent;
 
         /// <summary>
@@ -1849,6 +1860,22 @@ namespace Cheng.Json
             set
             {
                 p_JsonNotConverNumToString = value;
+            }
+        }
+
+        /// <summary>
+        /// 是否将单引号 ( ' ) 字符归类为转义字符检测和转化列表
+        /// </summary>
+        /// <value>
+        /// <para>当值为true时，在进行转义字符转化或检测时会将单引号加入检测列表，因此若对象内出现这样的字符串 "it's" 时，会将其中的单引号按转义字符转化到文本，结果是"it\'s"，反之也一样；若值为false时，不会将单引号加入转义字符列表</para>
+        /// <para>该参数默认为false</para>
+        /// </value>
+        public bool EscapeCharacterSingleQuotation
+        {
+            get => p_jsonEscapeCharacterSingleQuotation;
+            set
+            {
+                p_jsonEscapeCharacterSingleQuotation = value;
             }
         }
 
