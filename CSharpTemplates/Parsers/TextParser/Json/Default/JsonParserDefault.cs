@@ -1206,6 +1206,7 @@ namespace Cheng.Json
         /// </summary>
         /// <param name="reader">读取的对象文本，首字符紧挨</param>
         /// <param name="json">实例引用，若没有实际的对象则为一个null引用</param>
+        /// <param name="nextChar">区域性兼容参数</param>
         /// <returns>是否成功读取</returns>
         private bool ConverJsonText(TextReader reader, out JsonVariable json, out int nextChar)
         {

@@ -26,6 +26,7 @@ namespace Cheng.Json
         /// 实例化一个键值对类型的json对象
         /// </summary>
         /// <param name="capacity">指定初始容量</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/>小于0</exception>
         public JsonDictionary(int capacity)
         {
             p_dict = new Dictionary<string, JsonVariable>(capacity);
@@ -45,6 +46,7 @@ namespace Cheng.Json
         /// </summary>
         /// <param name="capacity">指定初始容量</param>
         /// <param name="comparer">指定key的比较器和哈希算法</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="comparer"/> 小于 0</exception>
         public JsonDictionary(int capacity, IEqualityComparer<string> comparer)
         {
             p_dict = new Dictionary<string, JsonVariable>(capacity, comparer);
@@ -54,9 +56,10 @@ namespace Cheng.Json
         /// 实例化一个键值对类型的json对象
         /// </summary>
         /// <param name="json">指定的拷贝对象</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
         public JsonDictionary(JsonDictionary json)
         {
-            p_dict = new Dictionary<string, JsonVariable>(json);
+            p_dict = new Dictionary<string, JsonVariable>(json?.p_dict, json?.p_dict.Comparer);
         }
 
         #endregion
@@ -209,6 +212,14 @@ namespace Cheng.Json
         public ICollection<JsonVariable> Values => p_dict.Values;
 
         /// <summary>
+        /// 获取用于确定字典中的键是否相等的比较器
+        /// </summary>
+        public IEqualityComparer<string> Comparer
+        {
+            get => p_dict.Comparer;
+        }
+
+        /// <summary>
         /// 获取指定键的值
         /// </summary>
         /// <param name="key">键</param>
@@ -229,6 +240,14 @@ namespace Cheng.Json
         public bool ContainsKey(string key)
         {
             return p_dict.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// 舍去多余的存储空间
+        /// </summary>
+        public void TrimExcess()
+        {
+            p_dict = new Dictionary<string, JsonVariable>(p_dict, p_dict.Comparer);
         }
 
         #region
