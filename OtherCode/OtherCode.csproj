@@ -86,7 +86,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyLoading.cs" />
+    <Compile Include="Assembly\AssemblyLoading.cs" />
     <Compile Include="CSharpCode\ProcessStart.cs" />
     <Compile Include="DisposeFunc.cs" />
     <Compile Include="Process\ProcessExdOther.cs" />
