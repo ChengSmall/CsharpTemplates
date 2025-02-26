@@ -690,15 +690,7 @@ namespace Cheng.Json
         /// <returns>-1表示不是数字符号，0表示数字，1表示十进制数的10-15位数，2表示小数点，3表示负数前缀，4表示其它数字符号</returns>
         private int f_checkNumberChar(char c)
         {
-            NumberFormatInfo nf;
-            if(p_cultureInfo is null)
-            {
-                nf = NumberFormatInfo.CurrentInfo;
-            }
-            else
-            {
-                nf = p_cultureInfo?.NumberFormat;
-            }
+            NumberFormatInfo nf = p_cultureInfo?.NumberFormat;
 
             if (nf is null)
             {
@@ -718,7 +710,6 @@ namespace Cheng.Json
 
                 return -1;
             }
-
             //if (c == ',') return false;
 
             if (char.IsDigit(c))
@@ -1757,7 +1748,7 @@ namespace Cheng.Json
 
             try
             {
-                p_cultureInfo = CultureInfo.CurrentCulture;
+                p_cultureInfo = CultureInfo.InvariantCulture;
             }
             catch (Exception)
             {
@@ -1778,6 +1769,7 @@ namespace Cheng.Json
         /// 将文本转化为整形或浮点型时需要能够转化的数值样式
         /// </summary>
         /// <value>
+        /// <para>若参数<see cref="JsonParserDefault.ParserCultureInfo"/>是null，则该参数无效</para>
         /// <para>默认为<see cref="TextParserNumStylesDefault"/></para>
         /// </value>
         public NumberStyles TextParserNumStyles
@@ -1916,7 +1908,7 @@ namespace Cheng.Json
         /// <value>
         /// <para>该对象用于本地化处理值和文本的相互转化</para>
         /// <para>
-        /// 若该值设置为null，则在将文本转化为对象时，跟随当前系统定义的<see cref="CultureInfo.CurrentCulture"/>；将对象转化为文本时，跟随文本写入器的<see cref="TextWriter.FormatProvider"/>
+        /// 若该值设置为null，则不适用区域信息；将对象转化为文本时，跟随文本写入器的<see cref="TextWriter.FormatProvider"/>
         /// </para>
         /// <para>初始化时默认为<see cref="CultureInfo.CurrentCulture"/></para>
         /// </value>

@@ -6,19 +6,26 @@ namespace Cheng.Json
 {
 
     /// <summary>
-    /// 一个公开的json解析器接口
+    /// 将json对象转化为特定文本的公共接口
     /// </summary>
-    /// <remarks>派生此接口以实现完全自定义json解析器；若想要使用默认以实现的解析器，请使用<see cref="JsonParserDefault"/>实例</remarks>
-    public interface IJsonParser : ITextParser
+    public interface IJsonParserToText
     {
-
         /// <summary>
-        /// 将json对象转化为json文本并写入到指定的字符序列编写器中
+        /// 将json对象转化为特定文本并写入到指定的字符序列编写器中
         /// </summary>
         /// <param name="json">json对象</param>
         /// <param name="writer">要写入的字符序列对象</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="Exception">其它错误</exception>
         void ParsingJson(JsonVariable json, TextWriter writer);
+    }
+
+    /// <summary>
+    /// 一个公开的json解析器接口
+    /// </summary>
+    /// <remarks>派生此接口以实现完全自定义json解析器；若想要使用默认以实现的解析器，请使用<see cref="JsonParserDefault"/>实例</remarks>
+    public interface IJsonParser : ITextParser, IJsonParserToText
+    {
 
         /// <summary>
         /// 将json文本转化为json对象
@@ -27,13 +34,12 @@ namespace Cheng.Json
         /// <returns>转化完毕的对象</returns>
         /// <exception cref="NotImplementedException">json文本解析失败</exception>
         JsonVariable ToJsonData(TextReader reader);
-
     }
 
     /// <summary>
     /// json解析器的公共基类，可派生此类以自定义json解析器
     /// </summary>
-    public abstract class JsonParser : IJsonParser
+    public abstract class JsonParser : IJsonParser, IJsonParserToText
     {
         /// <summary>
         /// 将json对象转化为json文本并写入到指定的字符序列编写器中
