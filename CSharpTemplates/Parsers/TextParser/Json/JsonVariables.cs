@@ -202,20 +202,11 @@ namespace Cheng.Json
         /// <returns></returns>
         public override string ToString()
         {
-            switch (DataType)
+            JsonParserDefault jpd = new JsonParserDefault();
+            using (var swr = new System.IO.StringWriter())
             {
-                case JsonType.Integer:
-                    return Integer.ToString();
-                case JsonType.RealNum:
-                    return RealNum.ToString();
-                case JsonType.Boolean:
-                    return Boolean.ToString();
-                case JsonType.String:
-                    return String;
-                case JsonType.Null:
-                    return string.Empty;
-                default:
-                    return base.ToString();
+                jpd.ParsingJson(this, swr);
+                return swr.ToString();
             }
         }
 
@@ -226,20 +217,11 @@ namespace Cheng.Json
         /// <returns></returns>
         public virtual string ToString(IFormatProvider formatProvider)
         {
-            switch (DataType)
+            JsonParserDefault jpd = new JsonParserDefault();
+            using (var swr = new System.IO.StringWriter(formatProvider))
             {
-                case JsonType.Integer:
-                    return Integer.ToString(formatProvider);
-                case JsonType.RealNum:
-                    return RealNum.ToString(formatProvider);
-                case JsonType.Boolean:
-                    return Boolean.ToString(formatProvider);
-                case JsonType.String:
-                    return String.ToString(formatProvider);
-                case JsonType.Null:
-                    return string.Empty;
-                default:
-                    return base.ToString();
+                jpd.ParsingJson(this, swr);
+                return swr.ToString();
             }
         }
 
@@ -1217,16 +1199,6 @@ namespace Cheng.Json
         public override long GetHashCode64()
         {
             return value.GetHashCode64();
-        }
-
-        public override string ToString()
-        {
-            return "\"" + value + "\"";
-        }
-
-        public override string ToString(IFormatProvider formatProvider)
-        {
-            return "\"" + value.ToString(formatProvider) + "\"";            
         }
 
         public static implicit operator JsonString(string value)

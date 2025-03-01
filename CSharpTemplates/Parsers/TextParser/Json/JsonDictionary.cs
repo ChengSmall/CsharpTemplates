@@ -313,48 +313,6 @@ namespace Cheng.Json
         }
 
         /// <summary>
-        /// 以格式返回所有元素
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-
-            int count = 0;
-            int length = Count;
-            StringBuilder sb = new StringBuilder(length * 2);
-            sb.Append("{");
-            foreach (var item in this)
-            {
-                count++;
-                sb.Append("\"" + item.Key + "\"");
-                sb.Append(':');
-                sb.Append(item.Value.ToString());
-                if(count != length) sb.Append(',');
-            }
-            sb.Append('}');
-            return sb.ToString();
-
-        }
-
-        public override string ToString(IFormatProvider formatProvider)
-        {
-            int count = 0;
-            int length = Count;
-            StringBuilder sb = new StringBuilder(length * 2);
-            sb.Append("{");
-            foreach (var item in this)
-            {
-                count++;
-                sb.Append("\"" + item.Key.ToString(formatProvider) + "\"");
-                sb.Append(':');
-                sb.Append(item.Value.ToString(formatProvider));
-                if (count != length) sb.Append(',');
-            }
-            sb.Append('}');
-            return sb.ToString();
-        }
-
-        /// <summary>
         /// 返回一个新的相同键值对实例
         /// </summary>
         /// <returns></returns>

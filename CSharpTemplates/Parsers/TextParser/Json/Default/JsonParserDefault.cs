@@ -1908,7 +1908,7 @@ namespace Cheng.Json
         /// <value>
         /// <para>该对象用于本地化处理值和文本的相互转化</para>
         /// <para>
-        /// 若该值设置为null，则不适用区域信息；将对象转化为文本时，跟随文本写入器的<see cref="TextWriter.FormatProvider"/>
+        /// 若该值设置为null，则不使用区域信息；将对象转化为文本时，跟随文本写入器的<see cref="TextWriter.FormatProvider"/>
         /// </para>
         /// <para>初始化时默认为<see cref="CultureInfo.CurrentCulture"/></para>
         /// </value>
