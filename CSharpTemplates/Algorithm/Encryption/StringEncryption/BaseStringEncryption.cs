@@ -16,6 +16,7 @@ namespace Cheng.Algorithm.Encryptions
         #endregion
 
         #region 参数访问
+
         /// <summary>
         /// 获取当前字符串加密时的字符串编码
         /// </summary>
@@ -31,7 +32,7 @@ namespace Cheng.Algorithm.Encryptions
         /// <param name="reader">要加密的读取字符序列</param>
         /// <param name="writer">加密到的写入字符序列</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public abstract void Encry(TextReader reader, TextWriter writer);      
+        public abstract void Encry(TextReader reader, TextWriter writer);
 
         /// <summary>
         /// 将给定的字符数组加密

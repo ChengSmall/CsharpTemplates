@@ -84,6 +84,10 @@
     <Compile Include="Algorithm\Compression\ResourcePackage\FileResourcePackageReader.cs" />
     <Compile Include="Algorithm\Compression\ResourcePackage\ResourcePackageReader.cs" />
     <Compile Include="Algorithm\Compression\ResourcePackage\ResourcePackageWriter.cs" />
+    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64DecodeStream.cs" />
+    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64EncodeReader.cs" />
+    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64EncoderException.cs" />
+    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64StreamWriter.cs" />
     <Compile Include="Algorithm\Random\BufferedRandom.cs" />
     <Compile Include="Algorithm\Random\SynchronizedRandom.cs" />
     <Compile Include="Algorithm\Sort\Comparers\ChineseCharparer.cs" />
@@ -93,7 +97,6 @@
     <Compile Include="Algorithm\Sort\Comparers\StrNumSeparationComparer.cs" />
     <Compile Include="Algorithm\Compression\BaseCompressionParser.cs" />
     <Compile Include="Algorithm\Compression\DataInformation.cs" />
-    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64.cs" />
     <Compile Include="Algorithm\Encryption\StringEncryption\BaseStringEncryption.cs" />
     <Compile Include="Algorithm\Encryption\XOREncryption\XOREncryption.cs" />
     <Compile Include="Algorithm\Encryption\XOREncryption\XORStreamEncry.cs" />

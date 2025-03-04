@@ -121,6 +121,10 @@
     <value>索引超出范围</value>
     <comment>异常消息：索引超出范围</comment>
   </data>
+  <data name="Exception_Base64EncoderError" xml:space="preserve">
+    <value>Base64编码出现错误</value>
+    <comment>异常消息：Base64编码出现错误</comment>
+  </data>
   <data name="Exception_FuncArgError" xml:space="preserve">
     <value>给定方法的参数不合规</value>
     <comment>异常消息：给定方法的参数不合规</comment>

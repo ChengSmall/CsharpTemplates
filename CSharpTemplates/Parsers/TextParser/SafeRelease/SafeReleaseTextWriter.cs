@@ -12,12 +12,7 @@ namespace Cheng.Texts
 
         #region 封装
 
-        protected SafeReleaseTextWriter()
-        {
-            p_isDispose = false;
-        }
-
-        private bool p_isDispose;
+        private bool p_isDispose = false;
 
         /// <summary>
         /// 关闭该实例并释放关联的资源

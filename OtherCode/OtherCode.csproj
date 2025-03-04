@@ -90,6 +90,7 @@
     <Compile Include="CSharpCode\ProcessStart.cs" />
     <Compile Include="DisposeFunc.cs" />
     <Compile Include="Process\ProcessExdOther.cs" />
+    <Compile Include="Streams\NetEasyUCToAudioStream.cs" />
     <Compile Include="Streams\ReadOnlyFileStream.cs" />
     <Compile Include="structure\GameTimes.cs" />
     <Compile Include="structure\MindMap\MindMapNode.cs" />

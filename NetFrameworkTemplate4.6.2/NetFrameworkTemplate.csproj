@@ -81,7 +81,6 @@
     <Compile Include="Compressions\ResourcePackageWinForm\DataStructure.cs" />
     <Compile Include="Compressions\ResourcePackageWinForm\ResourcePackageListView.cs" />
     <Compile Include="Compressions\ZipArchiveCompress.cs" />
-    <Compile Include="IO\NetEasyUCToAudioStream.cs" />
     <Compile Include="Processes\API.cs" />
     <Compile Include="Processes\ProcessAccessFlags.cs" />
     <Compile Include="Processes\ProcessOperation.cs" />
@@ -106,6 +105,7 @@
   <ItemGroup>
     <Folder Include="Algorithm\Pathfindings\" />
     <Folder Include="Device\" />
+    <Folder Include="IO\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

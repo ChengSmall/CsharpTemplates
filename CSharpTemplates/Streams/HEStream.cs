@@ -44,9 +44,30 @@ namespace Cheng.Streams
         /// <exception cref="ObjectDisposedException">已被释放</exception>
         protected void ThrowIsDispose()
         {
-            if (p_isDispose) throw new ObjectDisposedException(Cheng.Properties.Resources.Exception_StreamDisposeText);
+            if (p_isDispose) throw new ObjectDisposedException(GetType().Name);
         }
-        
+
+        /// <summary>
+        /// 调用此方法判断是否已被释放，若已释放则引发<see cref="ObjectDisposedException"/>异常
+        /// </summary>
+        /// <param name="objectName">已释放对象的名称</param>
+        /// <exception cref="ObjectDisposedException">已被释放</exception>
+        protected void ThrowIsDispose(string objectName)
+        {
+            if (p_isDispose) throw new ObjectDisposedException(objectName:objectName);
+        }
+
+        /// <summary>
+        /// 调用此方法判断是否已被释放，若已释放则引发<see cref="ObjectDisposedException"/>异常
+        /// </summary>
+        /// <param name="objectName">已释放对象的名称</param>
+        /// <param name="errorMessage">异常消息参数</param>
+        /// <exception cref="ObjectDisposedException">已被释放</exception>
+        protected void ThrowIsDispose(string objectName, string errorMessage)
+        {
+            if (p_isDispose) throw new ObjectDisposedException(objectName:objectName, message:errorMessage);
+        }
+
         #region 封装
 
         private bool p_isDispose = false;
