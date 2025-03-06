@@ -284,6 +284,9 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             return true;
         }
 
+        /// <summary>
+        /// 需要释放文件资源
+        /// </summary>
         public override bool IsNeedToReleaseResources => true;
 
         #endregion
@@ -321,7 +324,6 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
         protected override Stream CreateGetBaseStream(long position, long length)
         {
-
             if (length == 0) return Stream.Null;
 
             FileStream file = new FileStream(p_fullFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -332,7 +334,6 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             }
 
             return new TruncateStream(file, position, length, true, p_createStreamBufferSize);
-                       
         }
 
         public override bool CanCreateGetBaseStreamIsIndependent => true;

@@ -464,16 +464,15 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// <summary>
         /// 创建一个可同时访问基础封装流的截取流数据
         /// </summary>
+        /// <remarks>在派生类重写该方法用于定制截取流创建方式</remarks>
         /// <param name="position">要截取基础流的初始位置</param>
         /// <param name="length">要截取的字节的长度</param>
-        /// <returns>一个可访问基础封装的截取流对象，不再使用时需要回收</returns>
+        /// <returns>一个可访问基础封装的截取流对象，不再使用时需要释放</returns>
         protected virtual Stream CreateGetBaseStream(long position, long length)
         {
             if (length == 0) return Stream.Null;
 
-            var t = new NotBufferTruncateStream(Stream.Synchronized(p_stream), position, length, false);
-
-            return t;
+            return new TruncateStream(Stream.Synchronized(p_stream), position, length, false);
         }
 
         /// <summary>
@@ -638,12 +637,15 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             ThrowObjectDisposeException();
             var size = this[index].BeforeSize;
 
-            MemoryStream ms = new MemoryStream(size < int.MaxValue ? (int)size : 64);
+            MemoryStream ms = new MemoryStream();
+            if(size > 0) ms.Capacity = size < int.MaxValue ? (int)size : 64;
 
             DeCompressionTo(index, ms);
-            ms.TryGetBuffer(out var buf);
-
-            if (buf.Count == buf.Array.Length) return buf.Array;
+            if(ms.TryGetBuffer(out var buf))
+            {
+                if (buf.Count == buf.Array.Length) return buf.Array;
+            }
+            
             return ms.ToArray();
         }
 
@@ -655,15 +657,16 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             MemoryStream ms = new MemoryStream(size < int.MaxValue ? (int)size : 64);
 
             DeCompressionTo(dataPath, ms);
-            ms.TryGetBuffer(out var buf);
+            if (ms.TryGetBuffer(out var buf))
+            {
+                if (buf.Count == buf.Array.Length) return buf.Array;
+            }
 
-            if (buf.Count == buf.Array.Length) return buf.Array;
             return ms.ToArray();
         }
 
         public override IEnumerable<string> EnumatorFilePath()
         {
-
             foreach (var item in p_lists)
             {
                 yield return item.DataPath;

@@ -53,13 +53,14 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             p_list = new List<FileInfoIndex>();
             p_transBuffer = new byte[16];
 
-            p_notPaths = cp_notPaths;
-            p_notFiles = cp_notFiles;
+            p_notPaths = Path.GetInvalidPathChars();
+            p_notFiles = Path.GetInvalidFileNameChars();
 
             p_notPathAndFiles = f_mergeAndRemoveDuplicates(p_notPaths, p_notFiles);
 
             p_copyBytesBuffer = new byte[bufSize];
-        }
+
+    }
 
         static char[] f_mergeAndRemoveDuplicates(char[] array1, char[] array2)
         {
@@ -97,10 +98,6 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         const byte cp_notIndex = 0;
 
         const byte cp_haveIndex = byte.MaxValue;
-
-        private static char[] cp_notPaths = Path.GetInvalidPathChars();
-
-        private static char[] cp_notFiles = Path.GetInvalidFileNameChars();
 
         #endregion
 
@@ -156,7 +153,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// 即将要打包的一些文件
         /// </summary>
         /// <remarks>
-        /// <para>修改该集合，调整要打包的文件，准被完成后调用<see cref="ToPack(Stream)"/>或<see cref="ToPackEnumator(Stream)"/>开始打包</para>
+        /// <para>修改该集合，调整要打包的文件，准备完成后调用<see cref="ToPack(Stream)"/>或<see cref="ToPackEnumator(Stream)"/>开始打包</para>
         /// <para>这个集合内不要有重复的元素，否则可能会在打包时添加永远无法读取到的数据</para>
         /// </remarks>
         public List<FileInfoIndex> PackFiles
@@ -179,6 +176,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// <param name="list">待打包文件集合</param>
         /// <returns>写入到流数据的长度</returns>
         /// <exception cref="ArgumentNullException">集合为null</exception>
+        /// <exception cref="ArgumentException">集合内参数有错误</exception>
         public static long CalculatedFileIndexSize(IList<FileInfoIndex> list)
         {
             if (list is null) throw new ArgumentNullException();
@@ -548,7 +546,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
                 try
                 {
-                    readFile = fi.file.OpenRead();
+                    readFile = new FileStream(fi.file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 }
                 catch (Exception ex)
                 {
@@ -605,17 +603,22 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="NotSupportedException">流无法写入</exception>
         /// <exception cref="Exception">其它异常</exception>
+        /// <exception cref="InvalidOperationException">当前已经处于打包状态</exception>
         public IEnumerable ToPackEnumator(Stream stream)
         {
             if (stream is null) throw new ArgumentNullException();
-
+            
             if (!(stream.CanWrite))
             {
                 throw new NotSupportedException();
             }
-
-            var size = CalculatedFileIndexByteSize();
+            if (p_packing)
+            {
+                throw new InvalidOperationException();
+            }
             p_packing = true;
+            var size = CalculatedFileIndexByteSize();
+            
             return f_toPackenumator(stream, size);
 
         }
@@ -630,21 +633,24 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// <exception cref="NotSupportedException">流无法写入</exception>
         /// <exception cref="NotImplementedException">打包时出现错误</exception>
         /// <exception cref="Exception">其它异常</exception>
+        /// <exception cref="InvalidOperationException">当前已经处于打包状态</exception>
         public void ToPack(Stream stream)
         {
             if (stream is null) throw new ArgumentNullException();
-
+            if (p_packing)
+            {
+                throw new InvalidOperationException();
+            }
             if (!(stream.CanWrite))
             {
                 throw new NotSupportedException();
             }
             p_packing = true;
 
-            var enr = f_toPackenumator(stream, CalculatedFileIndexByteSize()).GetEnumerator();
-            while (enr.MoveNext())
+            var enr = f_toPackenumator(stream, CalculatedFileIndexByteSize());
+            foreach (var _ in enr)
             {
             }
-
         }
 
         /// <summary>
