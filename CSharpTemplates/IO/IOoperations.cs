@@ -5,6 +5,8 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Runtime;
+using Cheng.DataStructure.Hashs;
+using Cheng.Memorys;
 
 namespace Cheng.IO
 {
@@ -151,7 +153,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -178,7 +180,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -205,7 +207,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -232,7 +234,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -259,7 +261,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -286,7 +288,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -313,7 +315,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -340,7 +342,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -367,7 +369,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                OrderToBytes(value, bptr);
+                OrderToBytes(value, bptr + index);
             }
         }
 
@@ -410,7 +412,7 @@ namespace Cheng.IO
 
             for (int i = 0; i < size; i++)
             {
-                t |= (((uint)bptr[i]) << (i * 8));
+                t |= (((ulong)bptr[i]) << (i * 8));
             }
             return t;
         }
@@ -512,7 +514,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                return OrderToUInt32(new IntPtr(bptr));
+                return OrderToUInt32(new IntPtr(bptr + offset));
             }
 
         }
@@ -536,7 +538,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                return OrderToInt32(new IntPtr(bptr));
+                return OrderToInt32(new IntPtr(bptr + offset));
             }
 
         }
@@ -560,7 +562,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                return OrderToUInt64(new IntPtr(bptr));
+                return OrderToUInt64(new IntPtr(bptr + offset));
             }
 
         }
@@ -584,7 +586,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                return OrderToInt64(new IntPtr(bptr));
+                return OrderToInt64(new IntPtr(bptr + offset));
             }
 
         }
@@ -608,7 +610,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                return OrderToUInt16(new IntPtr(bptr));
+                return OrderToUInt16(new IntPtr(bptr + offset));
             }
 
         }
@@ -632,7 +634,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                return OrderToInt16(new IntPtr(bptr));
+                return OrderToInt16(new IntPtr(bptr + offset));
             }
 
         }
@@ -656,7 +658,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                return OrderToFloat(new IntPtr(bptr));
+                return OrderToFloat(new IntPtr(bptr + offset));
             }
 
         }
@@ -680,7 +682,7 @@ namespace Cheng.IO
 
             fixed (byte* bptr = buffer)
             {
-                return OrderToDouble(new IntPtr(bptr));
+                return OrderToDouble(new IntPtr(bptr + offset));
             }
 
         }
@@ -691,7 +693,81 @@ namespace Cheng.IO
 
         #endregion
 
-        #region 文件路径
+        #region 文件
+
+        /// <summary>
+        /// 计算指定流默认的Hash256值
+        /// </summary>
+        /// <param name="stream">流</param>
+        /// <param name="buffer32">大小至少是32字节的字节缓冲区</param>
+        /// <param name="readBuffer">大小至少是32字节的第二个字节缓冲区</param>
+        /// <returns>对于<paramref name="stream"/>Hash256值的默认计算结果</returns>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区大小不够</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">两个缓冲区是同一个实例的引用</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">没有读取权限</exception>
+        /// <exception cref="ObjectDisposedException">流已释放</exception>
+        public static Hash256 ToHash256(this Stream stream, byte[] buffer32, byte[] readBuffer)
+        {
+            if (stream is null || buffer32 is null || readBuffer is null) throw new ArgumentNullException();
+            if (buffer32.Length < Hash256.Size || readBuffer.Length < Hash256.Size) throw new ArgumentException();
+            if (buffer32 == readBuffer) throw new ArgumentException();
+
+            var re = stream.ReadBlock(buffer32, 0, Hash256.Size);
+            f_encBuf32(buffer32);
+            if (re != Hash256.Size)
+            {
+                return f_bytesToHash256(buffer32);
+            }
+
+            Loop:
+            re = stream.ReadBlock(readBuffer, 0, Hash256.Size);
+            for (int i = 0; i < re; i++)
+            {
+                buffer32[i] ^= readBuffer[i];
+            }
+            f_encBuf32(buffer32);
+
+            if (re == Hash256.Size) goto Loop;
+
+            return f_bytesToHash256(buffer32);
+        }
+
+        static void f_encBuf32(byte[] buf32)
+        {
+            const ulong a = 0xFEFAB0B1_1B0BAFEF, b = 0x87654321_12345678, c = 0x000FF000_EEE00EEE;
+            const ulong x = (a ^ c);
+
+            var u1 = OrderToUInt64(buf32, 0);
+            var u2 = OrderToUInt64(buf32, 8);
+            var u3 = OrderToUInt64(buf32, 16);
+            var u4 = OrderToUInt64(buf32, 24);
+
+            (u1 ^ a).OrderToByteArray(buf32, 24);
+            (u2 ^ b).OrderToByteArray(buf32, 16);
+            (u3 ^ c).OrderToByteArray(buf32, 8);
+            (u4 ^ x).OrderToByteArray(buf32, 0);
+        }
+
+        static Hash256 f_bytesToHash256(byte[] buf32)
+        {
+            return new Hash256(OrderToUInt64(buf32, 0), OrderToUInt64(buf32, 8), OrderToUInt64(buf32, 16), OrderToUInt64(buf32, 24));
+        }
+
+        /// <summary>
+        /// 计算指定流默认的Hash256值
+        /// </summary>
+        /// <param name="stream">流</param>
+        /// <returns>对于<paramref name="stream"/>Hash256值的默认计算结果</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">没有读取权限</exception>
+        /// <exception cref="ObjectDisposedException">流已释放</exception>
+        public static Hash256 ToHash256(this Stream stream)
+        {
+            return ToHash256(stream, new byte[Hash256.Size], new byte[Hash256.Size]);
+        }
 
         #endregion
 

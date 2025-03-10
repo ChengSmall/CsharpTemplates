@@ -1,3 +1,5 @@
+using Cheng.DataStructure.Hashs;
+using Cheng.IO;
 using Cheng.Memorys;
 using System;
 using System.Collections.Generic;
@@ -124,18 +126,21 @@ namespace Cheng.DEBUG
         /// <returns>包含流的所有数据</returns>
         public static byte[] ReadAll(this Stream stream)
         {
-            int cap;
+            byte[] buffer;
             if (stream.CanSeek && stream.Length < int.MaxValue)
             {
-                cap = (int)stream.Length;
-            }
-            else
-            {
-                cap = 1024;
-            }
-            MemoryStream ms = new MemoryStream(cap);
+                buffer = new byte[stream.Length];
 
-            byte[] buffer = new byte[1024 * 4];
+                var re = stream.ReadBlock(buffer, 0, buffer.Length);
+                if (re == buffer.Length) return buffer;
+                byte[] res = new byte[re];
+                Array.Copy(buffer, 0, res, 0, re);
+                return res;
+            }
+
+            MemoryStream ms = new MemoryStream(1024);
+
+            buffer = new byte[1024 * 4];
 
             stream.CopyToStream(ms, buffer);
 
@@ -145,6 +150,38 @@ namespace Cheng.DEBUG
             }
 
             return ms.ToArray();
+        }
+
+        #endregion
+
+        #region Hash256
+
+        /// <summary>
+        /// 获取指定文件的Hash256
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="buffer32">不少于32字节的缓冲区</param>
+        /// <param name="readBuffer">不少于32字节的第二个缓冲区</param>
+        /// <returns></returns>
+        public static Hash256 ToHash256ByFile(this string filePath, byte[] buffer32, byte[] readBuffer)
+        {
+            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            {
+                return file.ToHash256(buffer32, readBuffer);
+            }
+        }
+
+        /// <summary>
+        /// 获取指定文件的Hash256
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns></returns>
+        public static Hash256 ToHash256ByFile(this string filePath)
+        {
+            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            {
+                return file.ToHash256(new byte[32], new byte[32]);
+            }
         }
 
         #endregion

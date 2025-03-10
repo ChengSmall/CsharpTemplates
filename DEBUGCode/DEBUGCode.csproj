@@ -132,7 +132,6 @@
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
 del /q "$(TargetDir)$(TargetName).pdb"
 del /q "$(TargetDir)$(TargetFileName).config"
-)
-RD /s /q "$(ProjectDir)obj\$(ConfigurationName)"</PostBuildEvent>
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

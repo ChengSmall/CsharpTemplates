@@ -79,10 +79,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
-del /q "$(TargetDir)$(TargetName).pdb"
-)
-del /q "$(TargetDir)$(TargetFileName).config"
-RD /s /q "$(ProjectDir)obj\$(ConfigurationName)"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

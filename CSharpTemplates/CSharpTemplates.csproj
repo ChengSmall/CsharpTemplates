@@ -137,6 +137,7 @@
     <Compile Include="Data\Button\ButtonStateMapPower.cs" />
     <Compile Include="Data\Button\PowerButtonRange.cs" />
     <Compile Include="Data\Button\ResourceButton.cs" />
+    <Compile Include="Data\Hash\Hash256.cs" />
     <Compile Include="Data\List\DelegateArray.cs" />
     <Compile Include="Data\Receptacle\ReceptacleByte.cs" />
     <Compile Include="Data\Receptacle\ReceptacleDecimal.cs" />
@@ -255,7 +256,6 @@
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
 del /q "$(TargetDir)$(TargetName).pdb"
 del /q "$(TargetDir)$(TargetFileName).config"
-)
-RD /s /q "$(ProjectDir)obj\$(ConfigurationName)"</PostBuildEvent>
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

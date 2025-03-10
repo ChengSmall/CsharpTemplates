@@ -258,22 +258,6 @@ namespace Cheng.DEBUG
         }
 
         /// <summary>
-        /// 将byte转为二进制文本
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static string ByteToX2(byte value)
-        {
-            char* cp = stackalloc char[8];
-
-            for (int i = 0; i < 8; i++)
-            {
-                cp[7 - i] = ((value >> i) & 1) == 1 ? '1' : '0';
-            }
-            return new string(cp, 0, 8);
-        }
-
-        /// <summary>
         /// （DEBUG）遍历集合
         /// </summary>
         /// <param name="arr"></param>

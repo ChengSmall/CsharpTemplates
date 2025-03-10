@@ -530,6 +530,118 @@ namespace Cheng.Texts
             return true;
         }
 
+        /// <summary>
+        /// 将一个字节值转化为表示一个十六进制数的两个字符文本
+        /// </summary>
+        /// <param name="value">字节值</param>
+        /// <param name="toUpper">字母是否大写</param>
+        /// <param name="left">十六进制数的左侧字符</param>
+        /// <param name="right">十六进制数的右侧字符</param>
+        public static void ValueToX16Text(this byte value, bool toUpper, out char left, out char right)
+        {
+            byte b = (byte)(value >> 4);
+
+            char firstA = toUpper ? 'A' : 'a';
+            
+            if (b < 10)
+            {
+                left = (char)('0' + b);
+            }
+            else
+            {
+                left = (char)(firstA + (b - 10));
+            }
+
+            b = (byte)(value & 0b1111);
+
+            if (b < 10)
+            {
+                right = (char)('0' + b);
+            }
+            else
+            {
+                right = (char)(firstA + (b - 10));
+            }
+        }
+
+        /// <summary>
+        /// 将一个32位整数转化为十六进制文本
+        /// </summary>
+        /// <param name="value">32位整数</param>
+        /// <param name="toUpper">字母是否大写</param>
+        /// <param name="charBuffer">转化到的字符缓冲区，需要保证该指针指向的位置有至少8个字符大小的可用空间</param>
+        public static void ValueToX16Text(this uint value, bool toUpper, char* charBuffer)
+        {
+            const int length = sizeof(uint);
+
+            for (int i = 0; i < length; i++)
+            {
+                byte b = (byte)((value >> (((length - 1) - i) * 8)) & 0xFF);
+
+                ValueToX16Text(b, toUpper, out *(charBuffer + (i * 2)), out *(charBuffer + (i * 2 + 1)));
+            }
+
+        }
+
+        /// <summary>
+        /// 将一个64位整数转化为十六进制文本
+        /// </summary>
+        /// <param name="value">64位整数</param>
+        /// <param name="toUpper">字母是否大写</param>
+        /// <param name="charBuffer">转化到的字符缓冲区，需要保证该指针指向的位置有至少16个字符大小的可用空间</param>
+        public static void ValueToX16Text(this ulong value, bool toUpper, char* charBuffer)
+        {
+            const int length = sizeof(ulong);
+
+            for (int i = 0; i < length; i++)
+            {
+                byte b = (byte)((value >> (((length - 1) - i) * 8)) & 0xFF);
+
+                ValueToX16Text(b, toUpper, out *(charBuffer + (i * 2)), out *(charBuffer + (i * 2 + 1)));
+            }
+
+        }
+
+        /// <summary>
+        /// 将一个32位整数转化为十六进制文本
+        /// </summary>
+        /// <param name="value">32位整数</param>
+        /// <param name="toUpper">字母是否大写</param>
+        /// <param name="buffer">转化到的字符缓冲区</param>
+        /// <param name="index">从指定位置开始写入转化的字符串</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定的范围不足以承载转化文本</exception>
+        public static void ValueToX16Text(this uint value, bool toUpper, char[] buffer, int index)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (index < 0 || index + 8 > buffer.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char * p = buffer)
+            {
+                ValueToX16Text(value, toUpper, p + index);
+            }
+        }
+
+        /// <summary>
+        /// 将一个64位整数转化为十六进制文本
+        /// </summary>
+        /// <param name="value">64位整数</param>
+        /// <param name="toUpper">字母是否大写</param>
+        /// <param name="buffer">转化到的字符缓冲区</param>
+        /// <param name="index">从指定位置开始写入转化的字符串</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定的范围不足以承载转化文本</exception>
+        public static void ValueToX16Text(this ulong value, bool toUpper, char[] buffer, int index)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (index < 0 || index + 8 > buffer.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = buffer)
+            {
+                ValueToX16Text(value, toUpper, p + index);
+            }
+        }
+
         #endregion
 
     }

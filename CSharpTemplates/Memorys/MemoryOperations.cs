@@ -529,6 +529,7 @@ namespace Cheng.Memorys
         {
             return ((b >> index) & 1) == 1;
         }
+
         /// <summary>
         /// 设置单字节指定位域的值
         /// </summary>
@@ -540,6 +541,7 @@ namespace Cheng.Memorys
             if(value) b |= (byte)(1 << index);
             else b &= (byte)(~((byte)(1 << index)));
         }
+
         /// <summary>
         /// 获取指定非托管内存的某一字节引用
         /// </summary>
@@ -554,6 +556,7 @@ namespace Cheng.Memorys
                 return ref *(((byte*)p) + index);
             }
         }
+
         /// <summary>
         /// 获取指定内存的某一字节引用
         /// </summary>
@@ -565,6 +568,7 @@ namespace Cheng.Memorys
         {
             return ref *(((byte*)ptrAddress) + index);
         }
+
         /// <summary>
         /// 按位访问bit状态
         /// </summary>
@@ -584,8 +588,8 @@ namespace Cheng.Memorys
         /// <param name="setValue">要设置的值，true表示1，false表示0</param>
         public static void BitOffset(this ref ulong value, int offset, bool setValue)
         {
-            if (setValue) value |= (ulong)1 << offset;
-            else value &= ~((ulong)1 << offset);
+            if (setValue) value |= 1UL << offset;
+            else value &= ~(1UL << offset);
         }
 
         /// <summary>
@@ -607,8 +611,8 @@ namespace Cheng.Memorys
         /// <param name="setValue">要设置的值，true表示1，false表示0</param>
         public static void BitOffset(this ref uint value, int offset, bool setValue)
         {
-            if (setValue) value |= (uint)1 << offset;
-            else value &= ~((uint)1 << offset);
+            if (setValue) value |= 1U << offset;
+            else value &= ~(1U << offset);
         }
 
         /// <summary>
