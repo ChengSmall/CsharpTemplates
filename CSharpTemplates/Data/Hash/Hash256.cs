@@ -38,22 +38,22 @@ namespace Cheng.DataStructure.Hashs
         /// <summary>
         /// 第一个64位值
         /// </summary>
-        public readonly ulong s1;
+        public ulong s1;
 
         /// <summary>
         /// 第二个64位值
         /// </summary>
-        public readonly ulong s2;
+        public ulong s2;
 
         /// <summary>
         /// 第三个64位值
         /// </summary>
-        public readonly ulong s3;
+        public ulong s3;
 
         /// <summary>
         /// 第四个64位值
         /// </summary>
-        public readonly ulong s4;
+        public ulong s4;
 
         /// <summary>
         /// 该结构的字节大小
@@ -117,6 +117,124 @@ namespace Cheng.DataStructure.Hashs
             fixed (char* cp = buffer)
             {
                 ValueToString(upper, link, cp + index);
+            }
+        }
+
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="buffer68">指向表示Hash256文本的指针，至少要有68个可用字符</param>
+        /// <param name="hash">转化后的实例</param>
+        /// <returns>是否成功转化</returns>
+        public static bool ToHash256(char* buffer68, out Hash256 hash)
+        {
+            hash = default;
+
+            if (!TextManipulation.X16ToValue(buffer68, 16, out hash.s1)) return false;
+
+            if (!TextManipulation.X16ToValue(buffer68 + (16 + 1), 16, out hash.s2)) return false;
+
+            if (!TextManipulation.X16ToValue(buffer68 + (16 * 2 + 2), 16, out hash.s3)) return false;
+
+            if (!TextManipulation.X16ToValue(buffer68 + (16 * 3 + 3), 16, out hash.s4)) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="buffer68">指向表示Hash256文本的指针，至少要有68个可用字符</param>
+        /// <returns>转化后的实例</returns>
+        /// <exception cref="NotImplementedException">文本不是Hash256格式</exception>
+        public static Hash256 ToHash256(char* buffer68)
+        {
+            Hash256 h;
+            if(!TextManipulation.X16ToValue(buffer68, 16, out h.s1)) throw new NotImplementedException();
+
+            if (!TextManipulation.X16ToValue(buffer68 + (16 + 1), 16, out h.s2)) throw new NotImplementedException();
+
+            if(!TextManipulation.X16ToValue(buffer68 + (16 * 2 + 2), 16, out h.s3)) throw new NotImplementedException();
+
+            if(!TextManipulation.X16ToValue(buffer68 + (16 * 3 + 3), 16, out h.s4)) throw new NotImplementedException();
+            return h;
+        }
+
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="buffer">表示Hash256文本的字符缓冲区</param>
+        /// <param name="index">从字符缓冲区读取文本的起始位置</param>
+        /// <returns>转化后的Hash256实例</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区长度不足</exception>
+        /// <exception cref="NotImplementedException">文本不是Hash256格式</exception>
+        public static Hash256 ToHash256(char[] buffer, int index)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (index + 68 > buffer.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = buffer)
+            {
+                return ToHash256(p + index);
+            }
+        }
+
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="text">表示Hash256文本的字符缓冲区</param>
+        /// <param name="index">从字符缓冲区读取文本的起始位置</param>
+        /// <returns>转化后的Hash256实例</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">文本长度不足</exception>
+        /// <exception cref="NotImplementedException">文本不是Hash256格式</exception>
+        public static Hash256 ToHash256(string text, int index)
+        {
+            if (text is null) throw new ArgumentNullException();
+            if (index + 68 > text.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = text)
+            {
+                return ToHash256(p + index);
+            }
+        }
+
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="buffer">表示Hash256文本的字符缓冲区</param>
+        /// <param name="index">从字符缓冲区读取文本的起始位置</param>
+        /// <param name="hash">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        public static bool ToHash256(char[] buffer, int index, out Hash256 hash)
+        {
+            hash = default;
+            if (buffer is null) return false;
+            if (index + 68 > buffer.Length) return false;
+
+            fixed (char* p = buffer)
+            {
+                return ToHash256(p + index, out hash);
+            }
+        }
+
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="text">表示Hash256文本的字符缓冲区</param>
+        /// <param name="index">从字符缓冲区读取文本的起始位置</param>
+        /// <param name="hash">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        public static bool ToHash256(string text, int index, out Hash256 hash)
+        {
+            hash = default;
+            if (text is null) return false;
+            if (index + 68 > text.Length) return false;
+
+            fixed (char* p = text)
+            {
+                return ToHash256(p + index, out hash);
             }
         }
 
@@ -200,9 +318,14 @@ namespace Cheng.DataStructure.Hashs
             return false;
         }
 
+        /// <summary>
+        /// 与另一个对象比较是否相等
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Hash256 other)
         {
-            return this == other;
+            return this.s1 == other.s1 && this.s2 == other.s2 && this.s3 == other.s3 && this.s4 == other.s4;
         }
 
         public long GetHashCode64()

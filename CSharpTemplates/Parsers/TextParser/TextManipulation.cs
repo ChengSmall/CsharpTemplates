@@ -475,62 +475,6 @@ namespace Cheng.Texts
         #region 字符串和值
 
         /// <summary>
-        /// 将两个字符组成的十六进制字节文本转化为字节值
-        /// </summary>
-        /// <param name="left">第一位，左侧的十六进制数</param>
-        /// <param name="right">第二位，右侧的十六进制数</param>
-        /// <param name="value">返回的字节值</param>
-        /// <returns>如果成功转化返回true，如果无法转化为十六进制字节值返回false</returns>
-        public static bool X16TextToByte(char left, char right, out byte value)
-        {
-            value = 0;
-
-            #region right
-
-            if (right >= '0' && right <= '9')
-            {
-                value = (byte)((right) - '0');
-            }
-            else if (right >= 'A' && right <= 'F')
-            {
-                value = (byte)(((right) - 'A') + 10);
-            }
-            else if (right >= 'a' && right <= 'f')
-            {
-                value = (byte)(((right) - 'a') + 10);
-            }
-            else
-            {
-                return false;
-            }
-
-            #endregion
-
-            #region left
-
-            if (left >= '0' && left <= '9')
-            {
-                value |= (byte)(((left) - '0') << 4);
-            }
-            else if (left >= 'A' && left <= 'F')
-            {
-                value |= (byte)((((left) - 'A') + 10) << 4);
-            }
-            else if (left >= 'a' && left <= 'f')
-            {
-                value |= (byte)((((left) - 'a') + 10) << 4);
-            }
-            else
-            {
-                return false;
-            }
-
-            #endregion
-
-            return true;
-        }
-
-        /// <summary>
         /// 将一个字节值转化为表示一个十六进制数的两个字符文本
         /// </summary>
         /// <param name="value">字节值</param>
@@ -641,6 +585,406 @@ namespace Cheng.Texts
                 ValueToX16Text(value, toUpper, p + index);
             }
         }
+
+        /// <summary>
+        /// 将两个字符组成的十六进制字节文本转化为字节值
+        /// </summary>
+        /// <param name="left">第一位，左侧的十六进制数</param>
+        /// <param name="right">第二位，右侧的十六进制数</param>
+        /// <param name="value">返回的字节值</param>
+        /// <returns>如果成功转化返回true，如果无法转化为十六进制字节值返回false</returns>
+        public static bool X16TextToByte(char left, char right, out byte value)
+        {
+            value = 0;
+
+            #region right
+
+            if (right >= '0' && right <= '9')
+            {
+                value = (byte)((right) - '0');
+            }
+            else if (right >= 'A' && right <= 'F')
+            {
+                value = (byte)(((right) - 'A') + 10);
+            }
+            else if (right >= 'a' && right <= 'f')
+            {
+                value = (byte)(((right) - 'a') + 10);
+            }
+            else
+            {
+                return false;
+            }
+
+            #endregion
+
+            #region left
+
+            if (left >= '0' && left <= '9')
+            {
+                value |= (byte)(((left) - '0') << 4);
+            }
+            else if (left >= 'A' && left <= 'F')
+            {
+                value |= (byte)((((left) - 'A') + 10) << 4);
+            }
+            else if (left >= 'a' && left <= 'f')
+            {
+                value |= (byte)((((left) - 'a') + 10) << 4);
+            }
+            else
+            {
+                return false;
+            }
+
+            #endregion
+
+            return true;
+        }
+
+        static bool f_X16TextToBit4(char c, out byte value)
+        {
+            if (c >= '0' && c <= '9')
+            {
+                value = (byte)((c) - '0');
+            }
+            else if (c >= 'A' && c <= 'F')
+            {
+                value = (byte)(((c) - 'A') + 10);
+            }
+            else if (c >= 'a' && c <= 'f')
+            {
+                value = (byte)(((c) - 'a') + 10);
+            }
+            else
+            {
+                value = 0;
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="charBuffer">指向表示16进制文本地址的指针</param>
+        /// <param name="count">指示指针指向位置可用的字符长度</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        public static bool X16ToValue(char* charBuffer, int count, out ushort value)
+        {
+            const int size = sizeof(ushort) * 2;
+            if (count > size) count = size;
+            value = 0;
+            byte b;
+            int i;
+            for (i = 0; i < count; i++)
+            {
+                if(!f_X16TextToBit4(charBuffer[i], out b))
+                {
+                    value = 0;
+                    return false;
+                }
+
+                value |= (ushort)(b << (4 * (count - i - 1)));
+
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="buffer">表示16进制文本的字符缓冲区</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this char[] buffer, int index, int count, out ushort value)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (index + count > buffer.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = buffer)
+            {
+                return X16ToValue(p + index, count, out value);
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="strValue">表示16进制文本的字符串</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this string strValue, int index, int count, out ushort value)
+        {
+            if (strValue is null) throw new ArgumentNullException();
+
+            if (index + count > strValue.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = strValue)
+            {
+                return X16ToValue(p + index, count, out value);
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="charBuffer">指向表示16进制文本地址的指针</param>
+        /// <param name="count">指示指针指向位置可用的字符长度</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        public static bool X16ToValue(char* charBuffer, int count, out uint value)
+        {
+            const int size = sizeof(uint) * 2;
+            if (count > size) count = size;
+            value = 0;
+            byte b;
+            int i;
+            for (i = 0; i < count; i++)
+            {
+                if (!f_X16TextToBit4(charBuffer[i], out b))
+                {
+                    value = 0;
+                    return false;
+                }
+
+                value |= ((uint)b << (4 * (count - i - 1)));
+
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="buffer">表示16进制文本的字符缓冲区</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this char[] buffer, int index, int count, out uint value)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (index + count > buffer.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = buffer)
+            {
+                return X16ToValue(p + index, count, out value);
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="strValue">表示16进制文本的字符串</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this string strValue, int index, int count, out uint value)
+        {
+            if (strValue is null) throw new ArgumentNullException();
+
+            if (index + count > strValue.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = strValue)
+            {
+                return X16ToValue(p + index, count, out value);
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="buffer">表示16进制文本的字符缓冲区</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this char[] buffer, int index, int count, out int value)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (index + count > buffer.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = buffer)
+            {
+                fixed (int* vp = &value)
+                {
+                    return X16ToValue(p + index, count, out *(uint*)vp);
+                }
+                
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="buffer">表示16进制文本的字符串</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this char[] buffer, int index, int count, out long value)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (index + count > buffer.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = buffer)
+            {
+                fixed (long* vp = &value)
+                {
+                    return X16ToValue(p + index, count, out *(ulong*)vp);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="strValue">表示16进制文本的字符缓冲区</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this string strValue, int index, int count, out int value)
+        {
+            if (strValue is null) throw new ArgumentNullException();
+
+            if (index + count > strValue.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = strValue)
+            {
+                fixed (int* vp = &value)
+                {
+                    return X16ToValue(p + index, count, out *(uint*)vp);
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="strValue">表示16进制文本的字符串</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this string strValue, int index, int count, out long value)
+        {
+            if (strValue is null) throw new ArgumentNullException();
+
+            if (index + count > strValue.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = strValue)
+            {
+                fixed (long* vp = &value)
+                {
+                    return X16ToValue(p + index, count, out *(ulong*)vp);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="charBuffer">指向表示16进制文本地址的指针</param>
+        /// <param name="count">指示指针指向位置可用的字符长度</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        public static bool X16ToValue(char* charBuffer, int count, out ulong value)
+        {
+            const int size = sizeof(ulong) * 2;
+            if (count > size) count = size;
+            value = 0;
+            byte b;
+            int i;
+            for (i = 0; i < count; i++)
+            {
+                if (!f_X16TextToBit4(charBuffer[i], out b))
+                {
+                    value = 0;
+                    return false;
+                }
+
+                value |= ((ulong)b << (4 * (count - i - 1)));
+
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="buffer">表示16进制文本的字符缓冲区</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this char[] buffer, int index, int count, out ulong value)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (index + count > buffer.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = buffer)
+            {
+                return X16ToValue(p + index, count, out value);
+            }
+        }
+
+        /// <summary>
+        /// 将16进制文本转化为值
+        /// </summary>
+        /// <param name="strValue">表示16进制文本的字符串</param>
+        /// <param name="index">文本的起始位置</param>
+        /// <param name="count">指定要解析文本的字符数量</param>
+        /// <param name="value">转化后的值</param>
+        /// <returns>是否成功转化</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定长度错误</exception>
+        public static bool X16ToValue(this string strValue, int index, int count, out ulong value)
+        {
+            if (strValue is null) throw new ArgumentNullException();
+
+            if (index + count > strValue.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = strValue)
+            {
+                return X16ToValue(p + index, count, out value);
+            }
+        }
+
 
         #endregion
 
