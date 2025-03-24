@@ -72,16 +72,23 @@ namespace Cheng.Algorithm.HashCodes
         {
             Type type = typeof(T);
             BaseHashCode64<T> hash = null;
+            try
+            {
 
-            if (hash == null) hash = f_createInterface(type);
+                if (hash == null) hash = f_createInterface(type);
 
-            if (hash == null) hash = f_creafeBaseType(type);
+                if (hash == null) hash = f_creafeBaseType(type);
 
-            if (hash == null) hash = f_createEnumValueType(type);
+                if (hash == null) hash = f_createEnumValueType(type);
 
-            if (hash == null) hash = f_createNullableValueType(type);
+                if (hash == null) hash = f_createNullableValueType(type);
 
-            return hash ?? f_createDefType(type);
+                return hash ?? f_createDefType(type);
+            }
+            catch (Exception)
+            {
+                return new DefaultHashCode();
+            }
         }
 
         private static BaseHashCode64<T> f_createDefType(Type type)
@@ -429,7 +436,6 @@ namespace Cheng.Algorithm.HashCodes
         /// <returns>实例的64位哈希值</returns>
         public static long GetHashCode64(this float value)
         {
-            if (value == 0) return 0;
             return *(int*)&value;
         }
 
@@ -440,7 +446,6 @@ namespace Cheng.Algorithm.HashCodes
         /// <returns>实例的64位哈希值</returns>
         public static long GetHashCode64(this double value)
         {
-            if (value == 0) return 0;
             return *(long*)&value;
         }
 

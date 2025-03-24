@@ -5,6 +5,11 @@ using System.Collections.Generic;
 namespace Cheng.DataStructure.Collections
 {
 
+    /// <summary>
+    /// 表示一个只读键值对公共接口
+    /// </summary>
+    /// <typeparam name="TKey">键的类型</typeparam>
+    /// <typeparam name="TValue">值的类型</typeparam>
     public interface IReadOnlyDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         /// <summary>
@@ -15,6 +20,7 @@ namespace Cheng.DataStructure.Collections
         /// <exception cref="ArgumentNullException">key为null</exception>
         /// <exception cref="KeyNotFoundException">键不存在</exception>
         TValue this[TKey key] { get; }
+
         /// <summary>
         /// 根据键名访问值
         /// </summary>
@@ -23,18 +29,22 @@ namespace Cheng.DataStructure.Collections
         /// <returns>若成功获取值返回true，若无法成功获取返回false</returns>
         /// <exception cref="ArgumentNullException">key为null</exception>
         bool TryGetValue(TKey key, out TValue value);
+
         /// <summary>
         /// 获取当前键值对集合内拥有的键值对数量
         /// </summary>
         int Count { get; }
+
         /// <summary>
         /// 访问所有的键
         /// </summary>
         IReadOnlyCollection<TKey> Keys { get; }
+
         /// <summary>
         /// 访问所有的值
         /// </summary>
         IReadOnlyCollection<TValue> Values { get; }
+
         /// <summary>
         /// 确认指定键是否存在于该键值对集合中
         /// </summary>
@@ -43,6 +53,7 @@ namespace Cheng.DataStructure.Collections
         /// <exception cref="ArgumentNullException">键为null</exception>
         bool ContainsKey(TKey key);
     }
+
     /// <summary>
     /// 封装一个键值对为只读
     /// </summary>
