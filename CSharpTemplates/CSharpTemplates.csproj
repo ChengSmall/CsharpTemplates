@@ -191,6 +191,7 @@
     <Compile Include="Parsers\TextParser\SafeRelease\SafeReleaseTextReader.cs" />
     <Compile Include="Parsers\TextParser\SafeRelease\SafeReleaseTextWriter.cs" />
     <Compile Include="Parsers\TextParser\StringText\StringRangeReader.cs" />
+    <Compile Include="Parsers\TextParser\TextEnumerator.cs" />
     <Compile Include="Parsers\TextParser\UnicodeEscapeText\UnicodeEscapeTextReader.cs" />
     <Compile Include="Parsers\TextParser\UnicodeEscapeText\UnicodeEscapeTextWriter.cs" />
     <Compile Include="IO\ReadOnlyPartFileStream.cs" />
