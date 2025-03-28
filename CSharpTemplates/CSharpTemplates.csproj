@@ -166,6 +166,7 @@
     <Compile Include="Data\List\RectArray.cs" />
     <Compile Include="Data\ObjectPools\ObjectPool.cs" />
     <Compile Include="Data\Controllers\Structures.cs" />
+    <Compile Include="Data\Text\CMStringBuilder.cs" />
     <Compile Include="IO\IOoperations.cs" />
     <Compile Include="Parsers\CommandParser\CommandParser.cs" />
     <Compile Include="Parsers\StreamParser\SerializeStreamParser.cs" />

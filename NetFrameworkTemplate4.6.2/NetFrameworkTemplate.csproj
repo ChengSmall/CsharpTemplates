@@ -78,7 +78,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compressions\ResourcePackageWinForm\DataStructure.cs" />
     <Compile Include="Compressions\ResourcePackageWinForm\ResourcePackageListView.cs" />
     <Compile Include="Compressions\ZipArchiveCompress.cs" />
     <Compile Include="Processes\API.cs" />
@@ -94,6 +93,7 @@
     <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
     <Compile Include="Winapi\Hooks\WinHooks.cs" />
     <Compile Include="Winapi\WinThreadAPI.cs" />
+    <Compile Include="WinForms\Controls\ControlExtend.cs" />
     <Compile Include="WinForms\ParserToJsonExtend.cs" />
   </ItemGroup>
   <ItemGroup>

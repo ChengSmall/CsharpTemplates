@@ -6,13 +6,21 @@ using System.Text;
 namespace Cheng.Threads
 {
 
-    public delegate void TaskAction();    
+    /// <summary>
+    /// 表示一个单线程任务委托
+    /// </summary>
+    public delegate void TaskAction();
 
-    public delegate void TaskAction<T>(T args);
+    /// <summary>
+    /// 表示一个单线程任务委托
+    /// </summary>
+    /// <typeparam name="T">参数类型</typeparam>
+    /// <param name="args">任务参数</param>
+    public delegate void TaskAction<in T>(T args);
 
-    public delegate bool TaskFunction();
+    //public delegate bool TaskFunction();
 
-    public delegate bool TaskFunction<T>(T args);
+    //public delegate bool TaskFunction<in T>(T args);
 
     /// <summary>
     /// 一个单线程任务

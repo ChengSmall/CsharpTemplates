@@ -7,7 +7,7 @@ namespace Cheng.Memorys
 {
 
     /// <summary>
-    /// 内存和流操作方法，此扩展方法内若没有注释说明，则默认未做安全检查
+    /// 内存和流的扩展功能
     /// </summary>
     public unsafe static class MemoryOperation
     {
@@ -39,6 +39,8 @@ namespace Cheng.Memorys
         }
 
         #endregion
+
+        #region
 
         static void memoryCopyMB4(void* copy, void* to, int sizeMB4)
         {
@@ -86,6 +88,60 @@ namespace Cheng.Memorys
             }
         }
 
+        static void memoryCopyMB4last(void* copy, void* to, int sizeb)
+        {
+            mb4* cp = (mb4*)copy;
+            mb4* top = (mb4*)to;
+
+            int end = -sizeb;
+            for(int i = -1; i >= end; i--)
+            {
+                top[i] = cp[i];
+            }
+        }
+        static void memoryCopy8192last(void* copy, void* to, int sizeb)
+        {
+            byte8192* cp = (byte8192*)copy;
+            byte8192* top = (byte8192*)to;
+            int end = -sizeb;
+            for (int i = -1; i >= end; i--)
+            {
+                top[i] = cp[i];
+            }
+        }
+        static void memroyCopy1024last(void* copy, void* to, int sizeb)
+        {
+            byte1024* cp = (byte1024*)copy;
+            byte1024* top = (byte1024*)to;
+            int end = -sizeb;
+            for (int i = -1; i >= end; i--)
+            {
+                top[i] = cp[i];
+            }
+        }
+        static void memroyCopy128last(void* copy, void* to, int sizeb)
+        {
+            byte128* cp = (byte128*)copy;
+            byte128* top = (byte128*)to;
+            int end = -sizeb;
+            for (int i = -1; i >= end; i--)
+            {
+                top[i] = cp[i];
+            }
+        }
+        static void memroyCopy32last(void* copy, void* to, int sizeb)
+        {
+            byte32* cp = (byte32*)copy;
+            byte32* top = (byte32*)to;
+            int end = -sizeb;
+            for (int i = -1; i >= end; i--)
+            {
+                top[i] = cp[i];
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// 将内存块拷贝到另一块内存当中
         /// </summary>
@@ -95,7 +151,7 @@ namespace Cheng.Memorys
         /// <exception cref="ArgumentOutOfRangeException">拷贝的字节小于0</exception>
         public static void MemoryCopy(this IntPtr copyMemory, IntPtr toMemory, int size)
         {
-            if (size < 0) throw new ArgumentOutOfRangeException("size");
+            if (size < 0) throw new ArgumentOutOfRangeException();
             if (size == 0) return;
             MemoryCopy((void*)copyMemory, (void*)toMemory, size);
         }
@@ -197,6 +253,114 @@ namespace Cheng.Memorys
         }
 
         /// <summary>
+        /// 将内存块拷贝到另一块内存当中，采用从后向前拷贝
+        /// </summary>
+        /// <param name="copyMemory">要拷贝的内存块起始位</param>
+        /// <param name="toMemory">要拷贝到的内存起始位</param>
+        /// <param name="size">要拷贝的内存字节大小</param>
+        /// <exception cref="ArgumentOutOfRangeException">拷贝的字节小于0</exception>
+        public static void MemoryLastCopy(this IntPtr copyMemory, IntPtr toMemory, int size)
+        {
+            if (size < 0) throw new ArgumentOutOfRangeException();
+            if (size == 0) return;
+            MemoryLastCopy((void*)copyMemory, (void*)toMemory, size);
+        }
+
+        /// <summary>
+        /// 将内存块拷贝到另一块内存当中，采用从后向前拷贝
+        /// </summary>
+        /// <param name="copyMemory">要拷贝的内存块起始位</param>
+        /// <param name="toMemory">要拷贝到的目标内存起始位</param>
+        /// <param name="size">要拷贝的内存字节大小</param>
+        public static void MemoryLastCopy(void* copyMemory, void* toMemory, int size)
+        {
+            //const int mb4 = 1024 * 1024 * 4;
+            byte* copy = (byte*)copyMemory, to = (byte*)toMemory;
+
+            //倍率
+            int sizeMagnitude;
+
+            byte* endCopy, endTo;
+            endCopy = copy + size;
+            endTo = to + size;
+            //大于32byte
+
+            if (size > 128)
+            {
+                //大于128byte
+
+                if (size > 1024)
+                {
+
+                    if (size > 8192)
+                    {
+                        //大于8192byte
+                        sizeMagnitude = size / 8192;
+
+                        memoryCopy8192last(endCopy, endTo, sizeMagnitude);
+                        
+                        endCopy -= sizeMagnitude * 8192;
+                        endTo -= sizeMagnitude * 8192;
+                        size %= 8192;
+                    }
+
+                    //大于1024byte，小于等于8192
+                    sizeMagnitude = size / 1024;
+                    memroyCopy1024last(endCopy, endTo, sizeMagnitude);
+
+                    endCopy -= sizeMagnitude * 1024;
+                    endTo -= sizeMagnitude * 1024;
+                    size %= 1024;
+                }
+
+                //大于128byte，小于1024
+                sizeMagnitude = size / 128;
+                memroyCopy128last(endCopy, endTo, sizeMagnitude);
+
+                endCopy -= sizeMagnitude * 128;
+                endTo -= sizeMagnitude * 128;
+                size %= 128;
+            }
+
+
+            sizeMagnitude = size / 4;
+            int lastb = -sizeMagnitude;
+            int i;
+            int* endToi = (int*)endTo;
+            int* endCopyi = (int*)endCopy;
+            for (i = -1; i >= lastb; i--)
+            {
+                endToi--;
+                endCopyi--;
+                *endToi = *endCopyi;
+            }
+
+            size %= 4;
+
+            if(size != 0)
+            {
+                endCopy -= sizeMagnitude * 4;
+                endTo -= sizeMagnitude * 4;
+                if (size == 1)
+                {
+                    endTo[-1] = endCopy[-1];
+                }
+                else if(size == 2)
+                {
+                    endTo[-1] = endCopy[-1];
+                    endTo[-2] = endCopy[-2];
+                }
+                else
+                {
+                    endTo[-1] = endCopy[-1];
+                    endTo[-2] = endCopy[-2];
+                    endTo[-3] = endCopy[-3];
+                }
+            }
+
+        }
+
+        /// <summary>
         /// 将两个内存块中的数据交换
         /// </summary>
         /// <param name="memory1">内存块1</param>
@@ -271,6 +435,56 @@ namespace Cheng.Memorys
             MemoryCopy(m1, tempBuffer, size);
             MemoryCopy(m2, m1, size);
             MemoryCopy(tempBuffer, m2, size);
+        }
+
+        /// <summary>
+        /// 将内存块的数据拷贝到另一个内存块中，并保证完整拷贝
+        /// </summary>
+        /// <param name="copyMemory">要待拷贝的内存</param>
+        /// <param name="toMemory">将要拷贝到的目标内存首地址</param>
+        /// <param name="size">要拷贝的字节大小</param>
+        /// <exception cref="ArgumentNullException">内存块指针是null</exception>
+        public static void MemoryCopyWhole(void* copyMemory, void* toMemory, int size)
+        {
+            if (copyMemory == null || toMemory == null) throw new ArgumentNullException();
+
+            if (copyMemory == toMemory) return;
+
+            if(copyMemory < toMemory)
+            {
+                //原在左侧，目标在右侧，从右烤左
+                MemoryLastCopy(copyMemory, toMemory, size);
+            }
+            else
+            {
+                //原在右侧，目标在左侧，从左烤右
+                MemoryCopy(copyMemory, toMemory, size);
+            }
+
+        }
+
+        /// <summary>
+        /// 将内存块的数据拷贝到另一个内存块中，并保证完整拷贝
+        /// </summary>
+        /// <param name="copyMemory">要待拷贝的内存</param>
+        /// <param name="toMemory">将要拷贝到的目标内存首地址</param>
+        /// <param name="size">要拷贝的字节大小</param>
+        /// <exception cref="ArgumentNullException">内存块指针是null</exception>
+        public static void MemoryCopyWhole(this IntPtr copyMemory, IntPtr toMemory, int size)
+        {
+            void* cp = copyMemory.ToPointer(), to = toMemory.ToPointer();
+            if (cp == null || to == null) throw new ArgumentNullException();
+
+            if (cp == to) return;
+
+            if (cp < to)
+            {
+                MemoryLastCopy(cp, to, size);
+            }
+            else
+            {
+                MemoryCopy(cp, to, size);
+            }
         }
 
         #endregion
