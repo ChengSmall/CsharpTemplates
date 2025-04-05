@@ -11,6 +11,7 @@ namespace Cheng.GameTemplates.PushingBoxes
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化一个空场景
         /// </summary>
@@ -20,6 +21,7 @@ namespace Cheng.GameTemplates.PushingBoxes
             this.height = 0;
             p_grids = new SceneGrid[0, 0];
         }
+
         /// <summary>
         /// 实例化一个指定大小的推箱子场景
         /// </summary>
@@ -33,6 +35,7 @@ namespace Cheng.GameTemplates.PushingBoxes
             this.height = height;
             p_grids = new SceneGrid[width, height];
         }
+
         /// <summary>
         /// 使用已有的二维数组实例化场景
         /// </summary>
@@ -44,6 +47,7 @@ namespace Cheng.GameTemplates.PushingBoxes
             width = grids.GetLength(0);
             height = grids.GetLength(1);
         }
+
         /// <summary>
         /// 拷贝构造一个游戏场景实例
         /// </summary>
@@ -62,10 +66,12 @@ namespace Cheng.GameTemplates.PushingBoxes
         #region 参数
 
         private SceneGrid[,] p_grids;
+
         /// <summary>
         /// 场景长度
         /// </summary>
         public readonly int width;
+
         /// <summary>
         /// 场景高度
         /// </summary>
@@ -76,10 +82,12 @@ namespace Cheng.GameTemplates.PushingBoxes
         #region 功能
 
         #region 参数访问
+
         public int Count => p_grids.Length;
 
-        int ITwoDimensionalArray<SceneGrid>.Width => width;
-        int ITwoDimensionalArray<SceneGrid>.Height => height;
+        public int Width => width;
+
+        public int Height => height;
 
         public SceneGrid this[int x, int y]
         {
@@ -97,6 +105,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get => p_grids;
         }
+
         /// <summary>
         /// 将场景对象转化为字节数组
         /// </summary>
@@ -111,12 +120,13 @@ namespace Cheng.GameTemplates.PushingBoxes
             {              
                 for (i = 0; i < width; i++)
                 {
-                    re[(j * width) + i] = p_grids[i, j].TypeID;
+                    re[(j * width) + i] = p_grids[i, j].typeID;
                 }
             }
 
             return re;
         }
+
         /// <summary>
         /// 将字节数组转化为游戏场景
         /// </summary>
@@ -140,6 +150,21 @@ namespace Cheng.GameTemplates.PushingBoxes
             }
 
             return s;
+        }
+
+        /// <summary>
+        /// 将所有格子设置为指定参数
+        /// </summary>
+        /// <param name="grid"></param>
+        public void SetAll(SceneGrid grid)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    p_grids[x, y] = grid;
+                }
+            }
         }
 
         #endregion

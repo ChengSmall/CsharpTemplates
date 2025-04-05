@@ -7,20 +7,37 @@ using System.Threading.Tasks;
 
 namespace Cheng.GameTemplates.ChineseChess
 {
+
+
+    public enum ChessPlaceOnError
+    {
+
+        /// <summary>
+        /// 无错误
+        /// </summary>
+        None = 0,
+
+
+        PlaceOnOutBounds
+
+    }
+
     public class Chiessontroller
     {
 
         #region 构造
+
         /// <summary>
-        /// 实例化一个玩家操控器，指定棋盘和阵营
+        /// 实例化一个操控器，指定棋盘和阵营
         /// </summary>
         /// <param name="board">要操控的棋盘</param>
         /// <param name="team">所在的阵营</param>
         public Chiessontroller(ChiessBoard board, ChiessTeam team)
         {
-            BaseBoard = board;
+            BaseBoard = board ?? throw new ArgumentNullException();
             PlayerTeam = team;
         }
+
         #endregion
 
         #region 参数
@@ -34,6 +51,7 @@ namespace Cheng.GameTemplates.ChineseChess
         #region 功能
 
         #region 参数访问
+
         /// <summary>
         /// 访问或设置要操控的棋盘
         /// </summary>
@@ -46,6 +64,7 @@ namespace Cheng.GameTemplates.ChineseChess
                 p_board = value ?? throw new ArgumentNullException();
             }
         }
+
         /// <summary>
         /// 访问或设置此操控器的阵营
         /// </summary>
@@ -59,6 +78,7 @@ namespace Cheng.GameTemplates.ChineseChess
                 p_team = value;
             }
         }
+
         /// <summary>
         /// 获取在棋盘上拿起的棋子，若没有拿起棋子则表示一个空结构
         /// </summary>
@@ -70,6 +90,7 @@ namespace Cheng.GameTemplates.ChineseChess
                 return p_board[TranslatePosition(p_selectivePiece.Value)];
             }
         }
+
         /// <summary>
         /// 此控制器是否拿起了一个棋子
         /// </summary>
@@ -77,9 +98,11 @@ namespace Cheng.GameTemplates.ChineseChess
         {
             get => p_selectivePiece.HasValue;
         }
+
         #endregion
 
         #region 功能
+
         /// <summary>
         /// 转化棋盘坐标和相对坐标
         /// </summary>
@@ -121,22 +144,23 @@ namespace Cheng.GameTemplates.ChineseChess
 
             return true;
         }
+
         /// <summary>
         /// 根据相对索引访问指定位置的棋子信息
         /// </summary>
         /// <remarks>
         /// 相对坐标表示为阵营方位的坐标，红色阵营的相对坐标和棋盘默认坐标一致，黑色阵营的相对坐标是默认棋盘坐标旋转180度后的结果，原点从左下角变成了右上角，x轴从右往左，y轴从上到下
         /// </remarks>
-        /// <param name="potion">相对坐标</param>
+        /// <param name="position">相对坐标</param>
         /// <param name="piece">获取的棋子</param>
         /// <param name="myPiece">棋子的阵营是否属于该操控器</param>
         /// <returns>指定的坐标是否棋盘范围内，在范围内返回true，否则返回false</returns>
-        public bool TryGetByPiece(Chessrdinate potion, out ChiessPiece piece, out bool myPiece)
+        public bool TryGetByPiece(Chessrdinate position, out ChiessPiece piece, out bool myPiece)
         {
             piece = default;
             myPiece = false;
-            byte x, y;
-            potion.GetPosition(out x, out y);
+            int x, y;
+            position.GetPosition(out x, out y);
 
             if (x < 0 || y < 0 || x >= ChiessBoard.BoardWidth || y >= ChiessBoard.BoardHeight) return false;
 
@@ -157,21 +181,21 @@ namespace Cheng.GameTemplates.ChineseChess
         /// <summary>
         /// 选择指定坐标的棋子
         /// </summary>
-        /// <param name="potion">相对坐标</param>
+        /// <param name="position">相对坐标</param>
         /// <returns>
         /// 是否成功选择
         /// <para>坐标超出范围或棋子不是同一阵营，返回false；否则返回true</para>
         /// </returns>
-        public bool SelectivePiece(Chessrdinate potion)
+        public bool SelectivePiece(Chessrdinate position)
         {
             ChiessPiece cp;
             bool flag;
             bool ismy;
-            flag = TryGetByPiece(potion, out cp, out ismy);
+            flag = TryGetByPiece(position, out cp, out ismy);
 
             if (flag || (!ismy)) return false;
 
-            p_selectivePiece = potion;
+            p_selectivePiece = position;
 
             return true;
         }
@@ -190,10 +214,12 @@ namespace Cheng.GameTemplates.ChineseChess
             return SelectivePiece(new Chessrdinate(x, y));
         }
 
-        public void PlaceOn()
+
+        public void PlaceOn(Chessrdinate position)
         {
 
         }
+
         #endregion
 
         #endregion

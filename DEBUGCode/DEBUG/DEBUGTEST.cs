@@ -139,7 +139,7 @@ namespace Cheng.DEBUG
             }
         }
 
-        static string defToStr<T>(T obj)
+        public static string defToStr<T>(T obj)
         {
             string str = obj?.ToString();
             if (str is null) return nullstr;

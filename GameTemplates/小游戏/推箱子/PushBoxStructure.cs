@@ -44,12 +44,19 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// </summary>
         Exist = 1
     }
+
     /// <summary>
     /// 表示是否存在地面
     /// </summary>
     public enum SceneGround : byte
     {
+        /// <summary>
+        /// 没有地面
+        /// </summary>
         None = 0,
+        /// <summary>
+        /// 存在地面
+        /// </summary>
         Exist = 1
     }
 
@@ -94,14 +101,16 @@ namespace Cheng.GameTemplates.PushingBoxes
          */
 
         #region 构造
+
         /// <summary>
         /// 使用唯一id构建格子对象
         /// </summary>
         /// <param name="id">id</param>
         public SceneGrid(byte id)
         {
-            p_typeID = id;
+            typeID = id;
         }
+
         /// <summary>
         /// 使用类型枚举实例化有地面的格子
         /// </summary>
@@ -109,24 +118,27 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="traget">是否存在目标点</param>
         public SceneGrid(SceneObject obj, SceneTarget traget)
         {
-            p_typeID = (byte)(((byte)obj & 0b11) | (((byte)((byte)traget & 1)) << 2) | 0b1000);
+            typeID = (byte)(((byte)obj & 0b11) | (((byte)((byte)traget & 1)) << 2) | 0b1000);
         }
+
         /// <summary>
         /// 使用类型枚举实例化一个无目标点且有地面的格子
         /// </summary>
         /// <param name="obj">格子对象</param>
         public SceneGrid(SceneObject obj)
         {
-            p_typeID = (byte)(((byte)obj & 0b11) | 0b1000);
+            typeID = (byte)(((byte)obj & 0b11) | 0b1000);
         }
+
         /// <summary>
         /// 使用终点枚举实例化一个无物品且有地面的格子
         /// </summary>
         /// <param name="traget">终点枚举</param>
         public SceneGrid(SceneTarget traget)
         {
-            p_typeID = (byte)((((byte)((byte)traget & 1)) << 2) | 0b1000);
+            typeID = (byte)((((byte)((byte)traget & 1)) << 2) | 0b1000);
         }
+
         /// <summary>
         /// 使用枚举实例化
         /// </summary>
@@ -135,13 +147,17 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="ground">是否拥有地面</param>
         public SceneGrid(SceneObject obj, SceneTarget traget, SceneGround ground)
         {
-            p_typeID = (byte)(((byte)obj & 0b11) | (((byte)((byte)traget & 1)) << 2) | (((byte)ground & 1) << 3));
+            typeID = (byte)(((byte)obj & 0b11) | (((byte)((byte)traget & 1)) << 2) | (((byte)ground & 1) << 3));
         }
+
         #endregion
 
         #region 参数
 
-        private byte p_typeID;
+        /// <summary>
+        /// 格子类型id
+        /// </summary>
+        public readonly byte typeID;
 
         /// <summary>
         /// 空格子
@@ -155,22 +171,16 @@ namespace Cheng.GameTemplates.PushingBoxes
         #region 参数访问
 
         /// <summary>
-        /// 获取格子类型id
-        /// </summary>
-        public byte TypeID
-        {
-            get => p_typeID;
-        }
-        /// <summary>
         /// 获取格子内的对象
         /// </summary>
         public SceneObject Object
         {
             get
             {
-                return (SceneObject)(p_typeID & 0b11);
+                return (SceneObject)(typeID & 0b11);
             }
         }
+
         /// <summary>
         /// 该格子的目标点枚举
         /// </summary>
@@ -178,9 +188,10 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get
             {
-                return (SceneTarget)((p_typeID >> 2) & 1);
+                return (SceneTarget)((typeID >> 2) & 1);
             }
         }
+
         /// <summary>
         /// 该格子的地面枚举
         /// </summary>
@@ -188,7 +199,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get
             {
-                return (SceneGround)((p_typeID >> 3) & 1);
+                return (SceneGround)((typeID >> 3) & 1);
             }
         }
 
@@ -199,9 +210,10 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get
             {
-                return (((byte)(p_typeID >> 2)) & 1) == 1;
+                return (((byte)(typeID >> 2)) & 1) == 1;
             }
         }
+
         /// <summary>
         /// 获取该对象的值
         /// </summary>
@@ -209,9 +221,10 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="traget">目标点枚举</param>
         public void GetValue(out SceneObject obj, out SceneTarget traget)
         {
-            obj = (SceneObject)(p_typeID & 0b11);
-            traget = (SceneTarget)((p_typeID >> 2) & 1);
+            obj = (SceneObject)(typeID & 0b11);
+            traget = (SceneTarget)((typeID >> 2) & 1);
         }
+
         /// <summary>
         /// 获取该对象的值
         /// </summary>
@@ -220,9 +233,9 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="ground">地面枚举</param>
         public void GetValue(out SceneObject obj, out SceneTarget traget, out SceneGround ground)
         {
-            obj = (SceneObject)(p_typeID & 0b11);
-            traget = (SceneTarget)((p_typeID >> 2) & 1);
-            ground = (SceneGround)((p_typeID >> 3) & 1);
+            obj = (SceneObject)(typeID & 0b11);
+            traget = (SceneTarget)((typeID >> 2) & 1);
+            ground = (SceneGround)((typeID >> 3) & 1);
         }
 
         /// <summary>
@@ -230,8 +243,9 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// </summary>
         public bool IsEmpty
         {
-            get => p_typeID == 0;
+            get => typeID == 0;
         }
+
         /// <summary>
         /// 使用新的对象和该实例内的终点参数返回一个新实例
         /// </summary>
@@ -241,6 +255,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             return new SceneGrid(obj, Traget, Ground);
         }
+
         /// <summary>
         /// 使用指定实例的对象参数和该实例的终点参数返回一个新值
         /// </summary>
@@ -248,13 +263,13 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <returns>新格子对象</returns>
         public SceneGrid NewObjectGrid(SceneGrid grid)
         {
-            return new SceneGrid((byte)((grid.p_typeID & 0b1111_1011) | (p_typeID & 0b100)));
+            return new SceneGrid((byte)((grid.typeID & 0b1111_1011) | (typeID & 0b100)));
         }
 
-        
         #endregion
 
         #region 判断
+
         /// <summary>
         /// 比较相等
         /// </summary>
@@ -263,8 +278,9 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <returns></returns>
         public static bool operator ==(SceneGrid d1, SceneGrid d2)
         {
-            return d1.p_typeID == d2.p_typeID;
+            return d1.typeID == d2.typeID;
         }
+
         /// <summary>
         /// 比较不相等
         /// </summary>
@@ -273,38 +289,40 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <returns></returns>
         public static bool operator !=(SceneGrid d1, SceneGrid d2)
         {
-            return d1.p_typeID != d2.p_typeID;
+            return d1.typeID != d2.typeID;
         }
+
         #endregion
 
         #region 派生
 
         public bool Equals(SceneGrid other)
         {
-            return p_typeID == other.p_typeID;
+            return typeID == other.typeID;
         }
+
         public override bool Equals(object obj)
         {
-            if(obj is SceneGrid d) return p_typeID == d.p_typeID;
+            if(obj is SceneGrid d) return typeID == d.typeID;
             return false;
         }
 
         public override int GetHashCode()
         {
-            return p_typeID;
+            return typeID;
         }
+
         /// <summary>
         /// 返回此格子的文本样式
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            if (p_typeID == 0) return "  ";
+            if (typeID == 0) return "  ";
 
             GetValue(out var obj, out var trg, out var gr);
 
             if (gr == SceneGround.None) return "  ";
-
 
             if(obj == SceneObject.None)
             {
@@ -335,6 +353,34 @@ namespace Cheng.GameTemplates.PushingBoxes
             }
 
             return "□";
+        }
+
+        #endregion
+
+        #region 集成参数
+
+        /// <summary>
+        /// 获取一个玩家站在地面上的格子
+        /// </summary>
+        public static SceneGrid PlayerGrid
+        {
+            get => new SceneGrid(SceneObject.Player);
+        }
+
+        /// <summary>
+        /// 获取一个地面格子
+        /// </summary>
+        public static SceneGrid EmptyObject
+        {
+            get => new SceneGrid(SceneObject.None);
+        }
+
+        /// <summary>
+        /// 获取一个终点格子
+        /// </summary>
+        public static SceneGrid TragetGrid
+        {
+            get => new SceneGrid(SceneTarget.Exist);
         }
 
         #endregion

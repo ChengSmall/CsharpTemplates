@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 namespace Cheng.GameTemplates.PushingBoxes
 {
 
+    public delegate void PushBoxEvent(PushBoxGame game);
+
+    public delegate void PushBoxEvent<in T>(PushBoxGame game, T args);
+
     /// <summary>
     /// 推箱子游戏操作台
     /// </summary>
@@ -14,12 +18,14 @@ namespace Cheng.GameTemplates.PushingBoxes
     {
 
         #region 构造
+
         /// <summary>
         /// 空构造
         /// </summary>
         public PushBoxGame()
         {
         }
+
         /// <summary>
         /// 使用指定场景构造
         /// </summary>
@@ -33,6 +39,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         #endregion
 
         #region 参数
+
         /// <summary>
         /// 游戏场景
         /// </summary>
@@ -42,8 +49,9 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// 该场景内终点所在的坐标
         /// </summary>
         public PointInt2[] finishs;
+
         /// <summary>
-        /// 角色所在位置
+        /// 角色当前所在位置
         /// </summary>
         public PointInt2 playerPos;
 
@@ -53,13 +61,20 @@ namespace Cheng.GameTemplates.PushingBoxes
         #region 功能
 
         #region 参数
+
         /// <summary>
         /// 初始化参数时的临时缓冲区
         /// </summary>
         public List<PointInt2> TragetBuffer => pos_buffer;
+
         #endregion
 
         #region 游戏
+
+        /// <summary>
+        /// 将箱子移动到任意目标点引发的事件
+        /// </summary>
+        public event PushBoxEvent<PointInt2> BoxMoveToTraget;
 
         /// <summary>
         /// 将场景人物移动一个位置
@@ -68,27 +83,27 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="move">要移动的方向</param>
         /// <param name="toMove">移动后的人物位置</param>
         /// <returns>是否成功移动</returns>
-        public bool moveTo(PointInt2 playerPosition, MoveType move, out PointInt2 toMove)
+        internal bool moveTo(PointInt2 playerPosition, MoveType move, out PointInt2 toMove)
         {
             var scene = this.scene;
             int x = playerPosition.x, y = playerPosition.y;
 
             SceneGrid p, objTriget, boxPos;
-            SceneObject obj, o2, boxPosObj;
-            SceneTarget traget;
-            SceneGround ground;
-
+            SceneObject o2, boxPosObj;
+            //SceneTarget traget;
+            //SceneGround ground;
+            bool changeTraget;
             p = scene[x, y];
-            p.GetValue(out obj, out traget, out ground);
+            //p.GetValue(out obj, out traget, out ground);
 
             int width = scene.width, height = scene.height;
 
             int tox, toy;
 
-            int cx, cy;
+            int cx = 0, cy = 0;
 
             toMove = default;
-
+            changeTraget = false;
             if (move == MoveType.Left)
             {
 
@@ -97,7 +112,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                 toy = y;
 
                 #region 推
-                if (tox < 0 || toy < 0 || tox >= width || toy > height) return false;
+                if (tox < 0 || toy < 0 || tox >= width || toy >= height) return false;
 
                 //目标格子
                 objTriget = scene[tox, toy];
@@ -124,6 +139,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                             //开推
                             //Console.WriteLine("不是墙和箱子，开推");
                             scene[cx, cy] = boxPos.NewObjectGrid(objTriget);
+                            changeTraget = scene[cx, cy].IsTraget;
                         }
                         else
                         {
@@ -141,7 +157,16 @@ namespace Cheng.GameTemplates.PushingBoxes
                 //写入人物坐标
                 toMove = new PointInt2(tox, toy);
                 //移动
+
+                //if (!changeTraget) changeTraget = (scene[x, y].IsTraget || scene[toMove.x, toMove.y].IsTraget);
+
                 f_moveToPlayer(scene, new PointInt2(x, y), toMove);
+
+                if (changeTraget)
+                {
+                    BoxMoveToTraget?.Invoke(this, new PointInt2(cx, cy));
+                }
+
                 return true;
                 #endregion
 
@@ -153,7 +178,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                 toy = y;
 
                 #region 推
-                if (tox < 0 || toy < 0 || tox >= width || toy > height) return false;
+                if (tox < 0 || toy < 0 || tox >= width || toy >= height) return false;
 
                 //目标格子
                 objTriget = scene[tox, toy];
@@ -180,6 +205,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                             //开推
                             //Console.WriteLine("不是墙和箱子，开推");
                             scene[cx, cy] = boxPos.NewObjectGrid(objTriget);
+                            changeTraget = scene[cx, cy].IsTraget;
                         }
                         else
                         {
@@ -197,8 +223,14 @@ namespace Cheng.GameTemplates.PushingBoxes
 
                 //写入人物坐标
                 toMove = new PointInt2(tox, toy);
-                //移动
+
                 f_moveToPlayer(scene, new PointInt2(x, y), toMove);
+
+                if (changeTraget)
+                {
+                    BoxMoveToTraget?.Invoke(this, new PointInt2(cx, cy));
+                }
+
                 return true;
                 #endregion
             }
@@ -208,7 +240,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                 toy = y - 1;
 
                 #region 推
-                if (tox < 0 || toy < 0 || tox >= width || toy > height) return false;
+                if (tox < 0 || toy < 0 || tox >= width || toy >= height) return false;
 
                 //目标格子
                 objTriget = scene[tox, toy];
@@ -235,6 +267,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                             //开推
                             //Console.WriteLine("不是墙和箱子，开推");
                             scene[cx, cy] = boxPos.NewObjectGrid(objTriget);
+                            changeTraget = scene[cx, cy].IsTraget;
                         }
                         else
                         {
@@ -252,7 +285,13 @@ namespace Cheng.GameTemplates.PushingBoxes
                 //写入人物坐标
                 toMove = new PointInt2(tox, toy);
                 //移动
+
                 f_moveToPlayer(scene, new PointInt2(x, y), toMove);
+
+                if (changeTraget)
+                {
+                    BoxMoveToTraget?.Invoke(this, new PointInt2(cx, cy));
+                }
                 return true;
                 #endregion
             }
@@ -262,7 +301,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                 toy = y + 1;
 
                 #region 推
-                if (tox < 0 || toy < 0 || tox >= width || toy > height) return false;
+                if (tox < 0 || toy < 0 || tox >= width || toy >= height) return false;
 
                 //目标格子
                 objTriget = scene[tox, toy];
@@ -288,6 +327,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                             //不是墙和箱子
                             //开推
                             scene[cx, cy] = boxPos.NewObjectGrid(objTriget);
+                            changeTraget = scene[cx, cy].IsTraget;
                         }
                         else
                         {
@@ -304,7 +344,13 @@ namespace Cheng.GameTemplates.PushingBoxes
                 //写入人物坐标
                 toMove = new PointInt2(tox, toy);
                 //移动
+
                 f_moveToPlayer(scene, new PointInt2(x, y), toMove);
+
+                if (changeTraget)
+                {
+                    BoxMoveToTraget?.Invoke(this, new PointInt2(cx, cy));
+                }
                 return true;
                 #endregion
             }
@@ -342,6 +388,7 @@ namespace Cheng.GameTemplates.PushingBoxes
             if (flag) playerPos = tom;
             return flag;
         }
+
         /// <summary>
         /// 判断是否胜利
         /// </summary>
@@ -359,7 +406,6 @@ namespace Cheng.GameTemplates.PushingBoxes
                     p = arr[i];
                     if(scene[p.x, p.y].Object != SceneObject.Box)
                     {
-                        //有一个没有箱子
                         return false;
                     }
                 }
@@ -370,7 +416,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <summary>
         /// 从场景初始化参数
         /// </summary>
-        /// <param name="scene">要初始化的场景</param>
+        /// <param name="scene">要初始化的场景，场景内仅限一个玩家</param>
         public void InitSceneArg(PushBoxScene scene)
         {
 
@@ -379,7 +425,6 @@ namespace Cheng.GameTemplates.PushingBoxes
             int x, y;
 
             SceneGrid g;
-
 
             for(x = 0; x < scene.width; x++)
             {
@@ -401,13 +446,15 @@ namespace Cheng.GameTemplates.PushingBoxes
             finishs = ts.ToArray();
             ts.Clear();
         }
+
         /// <summary>
-        /// 从场景参数初始化参数
+        /// 重新从场景参数初始化参数
         /// </summary>
         public void InitSceneArg()
         {
             InitSceneArg(scene);
         }
+
         #endregion
 
         #endregion
