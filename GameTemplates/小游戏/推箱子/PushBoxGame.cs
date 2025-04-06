@@ -74,6 +74,9 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <summary>
         /// 将箱子移动到任意目标点引发的事件
         /// </summary>
+        /// <remarks>
+        /// 参数表示目标点坐标
+        /// </remarks>
         public event PushBoxEvent<PointInt2> BoxMoveToTraget;
 
         /// <summary>

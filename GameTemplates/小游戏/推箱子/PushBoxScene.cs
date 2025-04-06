@@ -106,6 +106,10 @@ namespace Cheng.GameTemplates.PushingBoxes
             get => p_grids;
         }
 
+        #endregion
+
+        #region 参数设置
+
         /// <summary>
         /// 将场景对象转化为字节数组
         /// </summary>
@@ -163,6 +167,59 @@ namespace Cheng.GameTemplates.PushingBoxes
                 for (int y = 0; y < height; y++)
                 {
                     p_grids[x, y] = grid;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将场景数组所有元素实例设置为默认值
+        /// </summary>
+        public void Clear()
+        {
+            Array.Clear(p_grids, 0, p_grids.Length);
+        }
+
+        /// <summary>
+        /// 将所有格子设置为空地面
+        /// </summary>
+        public void ResetEmpty()
+        {
+            var grid = SceneGrid.EmptyObject;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    p_grids[x, y] = grid;
+                }
+            }
+        }
+
+        #endregion
+
+        #region
+
+        /// <summary>
+        /// 获取当前场景内的箱子和目标点数量
+        /// </summary>
+        /// <param name="boxCount">场景内箱子数量</param>
+        /// <param name="tragetCount">场景内目标点数量</param>
+        public void GetObjectCount(out int boxCount, out int tragetCount)
+        {
+            tragetCount = 0;
+            boxCount = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    var grid = p_grids[x, y];
+                    if (grid.IsTraget)
+                    {
+                        tragetCount++;
+                    }
+                    if (grid.Object == SceneObject.Box)
+                    {
+                        boxCount++;
+                    }
                 }
             }
         }

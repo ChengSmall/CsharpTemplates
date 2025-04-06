@@ -94,8 +94,8 @@ namespace Cheng.GameTemplates.PushingBoxes
     {
         /*
          * 物品 前2bit
-         * 目标点 第3bit => 0b00000X00
-         * 地面 第4bit => 0b0000X000
+         * 目标点 第3bit => 0b00000100
+         * 地面 第4bit => 0b00001000
          * 后4bit为预留数值
          * 0表示空对象
          */
@@ -388,7 +388,6 @@ namespace Cheng.GameTemplates.PushingBoxes
         #endregion
 
     }
-
 
 
 }

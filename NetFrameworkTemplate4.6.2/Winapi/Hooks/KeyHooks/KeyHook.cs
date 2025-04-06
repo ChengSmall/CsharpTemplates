@@ -130,12 +130,12 @@ namespace Cheng.Windows.Hooks
 
             public static bool operator ==(KeyHookArgs k1, KeyHookArgs k2)
             {
-                return k1.p_kb.vkCode == k2.p_kb.vkCode && k1.keyState == k2.keyState;
+                return k1.p_kb.vkCode == k2.p_kb.vkCode && k1.keyState == k2.keyState && k1.p_kb.flags == k2.p_kb.flags && k1.p_kb.time == k2.p_kb.time && k1.p_kb.dwExtraInfo == k2.p_kb.dwExtraInfo;
             }
 
             public static bool operator !=(KeyHookArgs k1, KeyHookArgs k2)
             {
-                return k1.p_kb.vkCode != k2.p_kb.vkCode || k1.keyState != k2.keyState;
+                return k1.p_kb.vkCode != k2.p_kb.vkCode || k1.keyState != k2.keyState || k1.p_kb.flags != k2.p_kb.flags || k1.p_kb.time != k2.p_kb.time || k1.p_kb.dwExtraInfo != k2.p_kb.dwExtraInfo;
             }
 
             public bool Equals(KeyHookArgs other)
@@ -152,7 +152,7 @@ namespace Cheng.Windows.Hooks
             public override int GetHashCode()
             {
                 
-                return (int)(((uint)p_kb.vkCode | ((uint)p_kb.scanCode << 8)) ^ ((p_kb.flags ^ p_kb.time) | (((uint)keyState) << 30)));
+                return (int)(((uint)p_kb.vkCode | ((uint)p_kb.scanCode << 15)) ^ ((p_kb.flags ^ p_kb.time) | (((uint)keyState) << 30)));
 
             }
 

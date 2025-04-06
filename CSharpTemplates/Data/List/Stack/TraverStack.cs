@@ -6,10 +6,11 @@ namespace Cheng.DataStructure.Collections
 {
 
     /// <summary>
-    /// 可随意遍历的先进后出可变栈数据结构
+    /// 可访问任意元素的先进后出可变栈数据结构
     /// </summary>
     /// <typeparam name="T">元素类型</typeparam>
-    public class TraverStack<T> : IReadOnlyList<T>
+    [Serializable]
+    public class TraverStack<T> : IReadOnlyList<T>, IList<T>
     {
 
         #region 结构
@@ -155,7 +156,7 @@ namespace Cheng.DataStructure.Collections
                 throw new ArgumentOutOfRangeException();
             }
 
-            p_arr = new T[capacity];
+            p_arr = capacity == 0 ? cp_emptyArray : new T[capacity];
             p_size = 0;
             p_version = 0;
         }
@@ -175,9 +176,18 @@ namespace Cheng.DataStructure.Collections
             if (enumator is ICollection<T> carr)
             {
                 int count = carr.Count;
-                p_arr = new T[count];
-                carr.CopyTo(p_arr, 0);
-                p_size = count;
+                if(count == 0)
+                {
+                    p_arr = cp_emptyArray;
+                    p_size = 0;
+                }
+                else
+                {
+                    p_arr = new T[count];
+                    carr.CopyTo(p_arr, 0);
+                    p_size = count;
+                }
+                
                 return;
             }
 
@@ -187,6 +197,7 @@ namespace Cheng.DataStructure.Collections
             {
                 Push(item);
             }
+            p_version = 0;
         }
 
         #endregion
@@ -201,7 +212,7 @@ namespace Cheng.DataStructure.Collections
 
         private int p_size;
 
-        private int p_version;
+        [NonSerialized] private int p_version;
 
         #endregion
 
@@ -219,7 +230,7 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 按索引顺序从栈顶访问栈元素
+        /// 按索引顺序从栈顶访问或设置栈元素
         /// </summary>
         /// <param name="index">从栈顶开始的索引，范围在[0,<see cref="Count"/>)</param>
         /// <returns>指定栈位的元素</returns>
@@ -228,8 +239,14 @@ namespace Cheng.DataStructure.Collections
         {
             get
             {
-                if (index < 0 || index >= p_size) throw new ArgumentNullException();
+                if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
                 return p_arr[(p_size - 1) - index];
+            }
+            set
+            {
+                if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
+                p_version++;
+                p_arr[(p_size - 1) - index] = value;
             }
         }
 
@@ -241,8 +258,21 @@ namespace Cheng.DataStructure.Collections
         /// <exception cref="ArgumentOutOfRangeException">索引超出元素范围</exception>
         public T GetStackLast(int index)
         {
-            if (index < 0 || index >= p_size) throw new ArgumentNullException();
+            if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
             return p_arr[index];
+        }
+
+        /// <summary>
+        /// 按索引顺序从栈底设置栈元素
+        /// </summary>
+        /// <param name="index">从栈底开始的索引，范围在[0,<see cref="Count"/>)</param>
+        /// <param name="value">要设置的元素</param>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出元素范围</exception>
+        public void SetStackLast(int index, T value)
+        {
+            if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
+            p_version++;
+            p_arr[index] = value;
         }
 
         /// <summary>
@@ -250,9 +280,9 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         public void Clear()
         {
+            p_version++;
             Array.Clear(p_arr, 0, p_size);
             p_size = 0;
-            p_version++;
         }
 
         /// <summary>
@@ -329,7 +359,7 @@ namespace Cheng.DataStructure.Collections
         /// <summary>
         /// 访问或设置内部缓冲区容量
         /// </summary>
-        /// <exception cref="ArgumentException">设置的缓冲区容量小于<see cref="Count"/></exception>
+        /// <exception cref="ArgumentOutOfRangeException">设置的缓冲区容量小于<see cref="Count"/></exception>
         public int Capaity
         {
             get
@@ -345,22 +375,22 @@ namespace Cheng.DataStructure.Collections
                     T[] array = new T[value];
                     Array.Copy(p_arr, 0, array, 0, p_size);
                     p_arr = array;
-                    p_version++;
                 }
                 else
                 {
                     if(value < p_size)
                     {
-                        throw new ArgumentException();
+                        throw new ArgumentOutOfRangeException();
                     }
 
                     T[] array = new T[value];
                     Array.Copy(p_arr, 0, array, 0, p_size);
                     p_arr = array;
-                    p_version++;
                 }
             }
         }
+
+        bool ICollection<T>.IsReadOnly => true;
 
         /// <summary>
         /// 仅将栈顶元素返回
@@ -440,14 +470,57 @@ namespace Cheng.DataStructure.Collections
         /// <param name="item">要压入的元素</param>
         public void Push(T item)
         {
-            if (p_size == p_arr.Length)
+            int length = p_arr.Length;
+            if (p_size == length)
             {
-                T[] array = new T[(p_arr.Length == 0) ? cp_defaultCapacity : (2 * p_arr.Length)];
+                T[] array = new T[(length == 0) ? cp_defaultCapacity : (2 * length)];
                 Array.Copy(p_arr, 0, array, 0, p_size);
                 p_arr = array;
             }
 
             p_arr[p_size++] = item;
+            p_version++;
+        }
+
+        /// <summary>
+        /// 弹出指定数量个元素
+        /// </summary>
+        /// <param name="count">要弹出的元素数</param>
+        /// <exception cref="InvalidOperationException">弹出的元素数超出当前元素数量</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
+        public void PopCount(int count)
+        {
+            if (count == 0) return;
+            if (count < 0) throw new ArgumentOutOfRangeException();
+            if(count > p_size) throw new InvalidOperationException();
+
+            int newCount = p_size - count;
+            Array.Clear(p_arr, newCount, count);
+            p_size -= count;
+            p_version++;
+        }
+
+        /// <summary>
+        /// 压入指定数量个空元素
+        /// </summary>
+        /// <param name="count">要押入的数量</param>
+        public void PushCount(int count)
+        {
+            int length = p_arr.Length;
+            int newSize = count + p_size;
+            if (newSize >= length)
+            {
+                int newLen = length == 0 ? cp_defaultCapacity : 2 * length;
+                if(newLen < newSize)
+                {
+                    newLen = newSize;
+                }
+
+                T[] array = new T[newLen];
+                Array.Copy(p_arr, 0, array, 0, p_size);
+                p_arr = array;
+            }
+            p_size += count;
             p_version++;
         }
 
@@ -475,7 +548,6 @@ namespace Cheng.DataStructure.Collections
             return new Enumerator(this);
         }
 
-
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return this.GetEnumerator();
@@ -484,6 +556,48 @@ namespace Cheng.DataStructure.Collections
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        /// <summary>
+        /// 查找指定元素所在索引，从栈顶开始查找
+        /// </summary>
+        /// <param name="item">待查找元素</param>
+        /// <returns>元素所在索引，若不存在则为-1</returns>
+        public int IndexOf(T item)
+        {
+            return Array.IndexOf(p_arr, item, 0, p_size);
+        }
+
+        /// <summary>
+        /// 查找指定元素所在索引，从栈底开始查找
+        /// </summary>
+        /// <param name="item">待查找元素</param>
+        /// <returns>元素所在索引，若不存在则为-1</returns>
+        public int IndexOfLast(T item)
+        {
+            var i = Array.IndexOf(p_arr, item, 0, p_size);
+            if (i < 0) return -1;
+            return (p_size - 1) - i;
+        }
+
+        void IList<T>.Insert(int index, T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void IList<T>.RemoveAt(int index)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            throw new NotSupportedException();
         }
 
         #endregion

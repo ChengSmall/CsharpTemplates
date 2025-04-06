@@ -98,8 +98,6 @@
     <Compile Include="Webs\Bilibili\BilibiliLiveRoom.cs" />
     <Compile Include="Webs\Bilibili\BilibiliPendant.cs" />
     <Compile Include="Webs\Bilibili\BilibiliSpaceInfo.cs" />
-    <Compile Include="WinApi\Hooks\Hooks.cs" />
-    <Compile Include="WinApi\Hooks\KeyHooks\KeyHook.cs" />
     <Compile Include="WinApi\Kernel32_Other.cs" />
     <Compile Include="WinApi\Memory.cs" />
     <Compile Include="WinApi\Message\MSG.cs" />

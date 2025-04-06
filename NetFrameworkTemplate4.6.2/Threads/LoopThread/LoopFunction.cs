@@ -577,7 +577,7 @@ namespace Cheng.LoopThreads
 
             int i;
             YieldEnumator ye;
-            List<YieldEnumator> list = p_yieldList;
+            var list = p_yieldList;
             bool flag;
 
             //没有则退出循环
@@ -732,7 +732,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 调用此函数后的线程处于线程挂起等待，指定等待时间
+        /// 调用此函数后，当前线程会进入线程挂起等待，指定等待时间
         /// </summary>
         /// <param name="waitTime">要进行线程等待的时间</param>
         protected virtual void ThreadSleep(TimeSpan waitTime)
