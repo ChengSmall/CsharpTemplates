@@ -121,6 +121,10 @@
     <value>索引超出范围</value>
     <comment>异常消息：索引超出范围</comment>
   </data>
+  <data name="Exception_ArgNullError" xml:space="preserve">
+    <value>参数是表示为null的空引用</value>
+    <comment>异常消息：参数是表示为null的空引用</comment>
+  </data>
   <data name="Exception_Base64EncoderError" xml:space="preserve">
     <value>Base64编码出现错误</value>
     <comment>异常消息：Base64编码出现错误</comment>

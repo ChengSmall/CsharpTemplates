@@ -70,6 +70,15 @@ namespace Cheng.Properties {
         }
         
         /// <summary>
+        ///   查找类似 参数是表示为null的空引用 的本地化字符串。
+        /// </summary>
+        internal static string Exception_ArgNullError {
+            get {
+                return ResourceManager.GetString("Exception_ArgNullError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Base64编码出现错误 的本地化字符串。
         /// </summary>
         internal static string Exception_Base64EncoderError {

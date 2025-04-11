@@ -336,7 +336,7 @@ namespace Cheng.GameTemplates.PushingBoxes
             {
                 if (trg == SceneTarget.Exist)
                 {
-                    return "目";
+                    return "田";
                 }
                 return "曰";
               
@@ -370,7 +370,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <summary>
         /// 获取一个地面格子
         /// </summary>
-        public static SceneGrid EmptyObject
+        public static SceneGrid GroundObject
         {
             get => new SceneGrid(SceneObject.None);
         }
@@ -382,6 +382,31 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get => new SceneGrid(SceneTarget.Exist);
         }
+
+        /// <summary>
+        /// 获取一个玩家在目标点的格子
+        /// </summary>
+        public static SceneGrid TragetPlayerGrid
+        {
+            get => new SceneGrid(SceneObject.Player, SceneTarget.Exist);
+        }
+
+        /// <summary>
+        /// 获取一个箱子在目标点的格子
+        /// </summary>
+        public static SceneGrid TragetBoxGrid
+        {
+            get => new SceneGrid(SceneObject.Box, SceneTarget.Exist);
+        }
+
+        /// <summary>
+        /// 获取一个箱子格子
+        /// </summary>
+        public static SceneGrid BoxGrid
+        {
+            get => new SceneGrid(SceneObject.Box);
+        }
+
 
         #endregion
 

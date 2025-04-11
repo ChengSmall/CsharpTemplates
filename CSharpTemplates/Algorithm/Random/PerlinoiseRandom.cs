@@ -30,6 +30,7 @@ namespace Cheng.Algorithm.Randoms.Point
             /// <exception cref="ArgumentException">元素数不为256</exception>
             public PermGetting(byte[] bytes)
             {
+                if (bytes is null) throw new ArgumentNullException();
                 if (bytes.Length != 256) throw new ArgumentException();
 
                 this.bytes = bytes;
@@ -69,10 +70,6 @@ namespace Cheng.Algorithm.Randoms.Point
 
         #region 参数
 
-        //private byte[] perm;
-
-        private PermGetting p_getPerm;
-
         /// <summary>
         /// 实例化柏林噪声算法随机向量生成器，使用随机器随机指定<see cref="PloArray"/>数组
         /// </summary>
@@ -80,7 +77,7 @@ namespace Cheng.Algorithm.Randoms.Point
         /// <exception cref="ArgumentNullException">参数为null</exception>
         public PloRandom(BaseRandom random)
         {
-            if (random is null) throw new ArgumentNullException("random");
+            if (random is null) throw new ArgumentNullException("random", Cheng.Properties.Resources.Exception_ArgNullError);
 
             var perm = new byte[256];
 
@@ -95,25 +92,21 @@ namespace Cheng.Algorithm.Randoms.Point
         /// <summary>
         /// 指定柏林噪声的向量指向随机集合
         /// </summary>
-        /// <param name="perm">集合</param>
+        /// <param name="perm">长度是256且元素不重复的数组</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentException">数组元素数不是256个</exception>
         public PloRandom(byte[] perm)
         {
-            if (perm is null) throw new ArgumentNullException("perm");
-            if (perm.Length != 256)
-            {
-                throw new ArgumentException();
-            }
-            //this.perm = perm;
             f_init(perm);
         }
-
 
         private void f_init(byte[] perm)
         {
             p_getPerm = new PermGetting(perm);
         }
+
+        private PermGetting p_getPerm;
+
         #endregion
 
         #region 访问
@@ -370,7 +363,7 @@ namespace Cheng.Algorithm.Randoms.Point
         /// <exception cref="ArgumentOutOfRangeException">倍频等于或小于0</exception>
         public static double Generate(PermGetting perm, double x, double y, double z, int octave)
         {
-            return Generate(perm, x, y, z, octave);
+            return Generate(perm, x, y, z, octave, 0.5);
         }
 
         #endregion

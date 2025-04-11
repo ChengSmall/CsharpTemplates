@@ -70,7 +70,7 @@ namespace Cheng.DataStructure.Receptacles.UnityEditors
         /// <param name="property">容器字段数据</param>
         /// <param name="label">主标签</param>
         /// <param name="trimLabel">值和最大值的分隔符标签</param>
-        public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label,GUIContent trimLabel)
+        public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label, GUIContent trimLabel)
         {
 
             //获取流存储资源引用

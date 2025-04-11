@@ -7,7 +7,7 @@ namespace Cheng.GameTemplates.PushingBoxes
     /// <summary>
     /// 推箱子的游戏场景
     /// </summary>
-    public class PushBoxScene : ITwoDimensionalArray<SceneGrid>
+    public sealed class PushBoxScene : ITwoDimensionalArray<SceneGrid>
     {
 
         #region 构造
@@ -184,7 +184,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// </summary>
         public void ResetEmpty()
         {
-            var grid = SceneGrid.EmptyObject;
+            var grid = SceneGrid.GroundObject;
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)

@@ -56,22 +56,16 @@ namespace Cheng.Unitys
 
             #region 目录检测
 
-            if (!Cheng.Systems.SystemEnvironment.TryGetCommandArgs(out commandArgs))
-            {
-                commandArgs = null;
-            }
-
             try
             {
                 appDomain = AppDomain.CurrentDomain;
-                baseDirectory = appDomain.BaseDirectory;
             }
             catch (Exception)
             {
                 appDomain = null;
-                baseDirectory = null;
             }
 
+            baseDirectory = appDomain?.BaseDirectory;
             unityDataPath = Application.dataPath;
 
             unityStreamingAssetsPath = Application.streamingAssetsPath;
@@ -125,11 +119,6 @@ namespace Cheng.Unitys
         /// 当前应用程序域，没有则为null
         /// </summary>
         public readonly AppDomain appDomain;
-
-        /// <summary>
-        /// 程序命令行参数，没有则为空数组；若没有程序命令行功能则为null
-        /// </summary>
-        public readonly string[] commandArgs;
 
         /// <summary>
         /// 当前执行程序根目录，若无法获取程序根目录则为null

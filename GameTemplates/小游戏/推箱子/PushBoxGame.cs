@@ -420,8 +420,10 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// 从场景初始化参数
         /// </summary>
         /// <param name="scene">要初始化的场景，场景内仅限一个玩家</param>
+        /// <exception cref="ArgumentNullException">场景实例为null</exception>
         public void InitSceneArg(PushBoxScene scene)
         {
+            if (scene is null) throw new ArgumentNullException("场景对象未引用实例");
 
             List<PointInt2> ts = pos_buffer;
 
@@ -453,6 +455,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <summary>
         /// 重新从场景参数初始化参数
         /// </summary>
+        /// <exception cref="ArgumentNullException">场景实例为null</exception>
         public void InitSceneArg()
         {
             InitSceneArg(scene);

@@ -46,26 +46,116 @@
     <Folder Include="codes\角色控制器\3D\第三人称视角\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="codes\NAudio\BaseAudioReader.cs" />
+    <Compile Include="codes\推箱子\CameraDrawPushBoxScene.cs" />
+    <Compile Include="codes\推箱子\EditorDrawStructure.cs" />
+    <Compile Include="codes\推箱子\Editor\SpriteDrawEditorGUI.cs" />
     <Compile Include="codes\游戏静态参数类\GameParameters.cs" />
     <Compile Include="项目代码\暂未完成功能\CameraOrbitController.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CSCore">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\CSCore.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Registry, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\Microsoft.Win32.Registry.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.Asio">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.Asio.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.Core">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.Flac">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.Flac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.Midi">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.Midi.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.Vorbis">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.Vorbis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.Wasapi">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.Wasapi.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.WinForms">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.WinForms.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NAudio.WinMM">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NAudio.WinMM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NVorbis">
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\NVorbis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\System.Buffers.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\System.Memory.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Net" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\System.Numerics.Vectors.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Security.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\System.Security.AccessControl.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AudioAPI\CodeXml\Dll\System.Security.Principal.Windows.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="UnityEditor">
       <HintPath>..\..\..\..\..\..\Unitys\Unity 2022p\Editor\Data\Managed\UnityEditor.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\Unitys\Unity 2022p\Editor\Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
       <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
       <Name>CSharpTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GameTemplates\GameTemplates.csproj">
+      <Project>{bf887d71-f9bf-46d3-bf92-532b27afab78}</Project>
+      <Name>GameTemplates</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\UnityGames\UnityCSharpTemplates.csproj">
