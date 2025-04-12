@@ -91,9 +91,14 @@ namespace Cheng.GameTemplates.PushingBoxes
 
         public SceneGrid this[int x, int y]
         {
-            get => p_grids[x, y];
+            get
+            {
+                if (x < 0 || x >= width || y < 0 || y >= height) throw new ArgumentOutOfRangeException();
+                return p_grids[x, y];
+            }
             set
             {
+                if (x < 0 || x >= width || y < 0 || y >= height) throw new ArgumentOutOfRangeException();
                 p_grids[x, y] = value;
             }
         }
@@ -105,31 +110,21 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get => p_grids;
         }
+        
+        /// <summary>
+        /// 判断该场景是一个没有格子空场景
+        /// </summary>
+        public bool IsEmptyScene
+        {
+            get
+            {
+                return width == 0 || height == 0;
+            }
+        }
 
         #endregion
 
         #region 参数设置
-
-        /// <summary>
-        /// 将场景对象转化为字节数组
-        /// </summary>
-        /// <returns></returns>
-        public byte[] ToArray()
-        {
-            byte[] re = new byte[p_grids.Length];
-
-            int i, j;
-
-            for (j = 0; j < height; j++)
-            {              
-                for (i = 0; i < width; i++)
-                {
-                    re[(j * width) + i] = p_grids[i, j].typeID;
-                }
-            }
-
-            return re;
-        }
 
         /// <summary>
         /// 将字节数组转化为游戏场景
@@ -194,9 +189,18 @@ namespace Cheng.GameTemplates.PushingBoxes
             }
         }
 
+        /// <summary>
+        /// 返回一个新的相同场景
+        /// </summary>
+        /// <returns></returns>
+        public PushBoxScene Clone()
+        {
+            return new PushBoxScene(this);
+        }
+
         #endregion
 
-        #region
+        #region 计算
 
         /// <summary>
         /// 获取当前场景内的箱子和目标点数量

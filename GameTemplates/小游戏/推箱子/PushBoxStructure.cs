@@ -406,7 +406,14 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get => new SceneGrid(SceneObject.Box);
         }
-
+        
+        /// <summary>
+        /// 获取一个墙壁格子
+        /// </summary>
+        public static SceneGrid WallGrid
+        {
+            get => new SceneGrid(SceneObject.Wall);
+        }
 
         #endregion
 

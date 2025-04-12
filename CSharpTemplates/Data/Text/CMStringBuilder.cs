@@ -898,6 +898,30 @@ namespace Cheng.Texts
             append.Insert(index, p_charBuffer, 0, p_length);
         }
 
+        /// <summary>
+        /// 将此实例的指定段中的字符复制到目标字符数组的指定段中
+        /// </summary>
+        /// <param name="sourceIndex">此实例中开始复制字符的位置</param>
+        /// <param name="destination">将从中复制字符的数组</param>
+        /// <param name="destinationIndex"><paramref name="destination"/>中将从其开始复制字符的起始位置</param>
+        /// <param name="count">要复制的字符数</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定范围超出索引</exception>
+        /// <exception cref="ArgumentException">要拷贝的数组缓冲区长度不够</exception>
+        public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
+        {
+            if (destination is null) throw new ArgumentNullException();
+
+            if (destinationIndex < 0 || sourceIndex < 0 || count < 0 || (sourceIndex + count) > p_length) throw new ArgumentOutOfRangeException();
+
+            if (destinationIndex + count > destination.Length)
+            {
+                throw new System.ArgumentException();
+            }
+
+            Array.Copy(p_charBuffer, sourceIndex, destination, destinationIndex, count);
+        }
+
         #endregion
 
         #region 派生

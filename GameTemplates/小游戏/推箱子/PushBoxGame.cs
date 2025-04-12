@@ -11,6 +11,33 @@ namespace Cheng.GameTemplates.PushingBoxes
 
     public delegate void PushBoxEvent<in T>(PushBoxGame game, T args);
 
+    #region
+
+    ///// <summary>
+    ///// 玩家移动事件参数
+    ///// </summary>
+    //public struct PlayerMove
+    //{
+    //    public PlayerMove(PointInt2 position, MoveType moveType)
+    //    {
+    //        this.position = position;
+    //        this.moveType = moveType;
+    //    }
+
+    //    /// <summary>
+    //    /// 玩家移动后的位置
+    //    /// </summary>
+    //    public readonly PointInt2 position;
+
+    //    /// <summary>
+    //    /// 此次移动的方向
+    //    /// </summary>
+    //    public readonly MoveType moveType;
+
+    //}
+
+    #endregion
+
     /// <summary>
     /// 推箱子游戏操作台
     /// </summary>

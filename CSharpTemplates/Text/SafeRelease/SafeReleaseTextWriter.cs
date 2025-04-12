@@ -1,15 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Cheng.Texts
 {
 
     /// <summary>
-    /// 安全释放封装的文本读取器
+    /// 安全释放封装的文本写入器
     /// </summary>
-    public abstract class SafeReleaseTextReader : TextReader
+    public abstract class SafeReleaseTextWriter : TextWriter
     {
 
         #region 封装
@@ -21,7 +19,7 @@ namespace Cheng.Texts
         /// </summary>
         public override void Close()
         {
-            Dispose(true);
+            Dispose(true, false);
         }
 
         /// <summary>
@@ -30,7 +28,7 @@ namespace Cheng.Texts
         /// <param name="disposing">是否释放托管实例并终止对象终结器</param>
         protected sealed override void Dispose(bool disposing)
         {
-            Dispose(true, false);
+            Dispose(disposing, false);
         }
 
         /// <summary>
@@ -49,6 +47,7 @@ namespace Cheng.Texts
             //----释放----
             ReleaseResources();
             bool flag = Disposing(disposing);
+            base.Dispose(disposing);
             //----释放----
 
             if (disposing && flag && (!notSuppressFinalize))
@@ -99,15 +98,6 @@ namespace Cheng.Texts
         protected void ThrowObjectDisposed()
         {
             if (p_isDispose) throw new ObjectDisposedException(GetType().Name);
-        }
-
-        /// <summary>
-        /// 该方法会判断实例是否释放，若释放则引发<see cref="ObjectDisposedException"/>
-        /// </summary>
-        /// <param name="objectName">异常对象名</param>
-        protected void ThrowObjectDisposed(string objectName)
-        {
-            if (p_isDispose) throw new ObjectDisposedException(objectName);
         }
 
         #endregion

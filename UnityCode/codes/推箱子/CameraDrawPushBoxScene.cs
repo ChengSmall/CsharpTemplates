@@ -7,6 +7,13 @@ using Cheng.GameTemplates.PushingBoxes;
 namespace Cheng.GameTemplates.PushingBoxes
 {
 
+    /// <summary>
+    /// 推箱子场景绘制器
+    /// </summary>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/game/推箱子场景绘制器")]
+#endif
+    [DisallowMultipleComponent]
     public sealed class CameraDrawPushBoxScene : MonoBehaviour
     {
 
@@ -14,7 +21,19 @@ namespace Cheng.GameTemplates.PushingBoxes
 
         public CameraDrawPushBoxScene()
         {
-            drawRect = Vector2.one;
+            drawRect = new Vector2(1, 1);
+            Color initColor = Color.black;
+            groundSprite.color = initColor;
+            playerSprite.color = initColor;
+            boxSprite.color = initColor;
+            wallSprite.color = initColor;
+            targetSprite.color = initColor;
+            playerOnTargetSprite.color = initColor;
+            boxOnTargetSprite.color = initColor;
+            backgroundSprite.color = initColor;
+
+            isTargetCover = false;
+            drawing = true;
         }
 
         #endregion
@@ -27,6 +46,12 @@ namespace Cheng.GameTemplates.PushingBoxes
         [Tooltip("绘制区域\nx参数表示左右两侧的绘制留白，1表示填满；y参数表示上下两侧绘制留白，1表示填满")]
 #endif
         [SerializeField] private Vector2 drawRect;
+
+#if UNITY_EDITOR
+        [Tooltip("地面格子图像")]
+#endif
+        [SerializeField] private SpriteDraw groundSprite;
+
 
 #if UNITY_EDITOR
         [Tooltip("玩家图像")]
@@ -70,7 +95,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         [SerializeField] private bool isTargetCover;
 
 #if UNITY_EDITOR
-        [Tooltip("是否开启图像")]
+        [Tooltip("是否开启图像绘制")]
 #endif
         [SerializeField] private bool drawing;
 
@@ -87,6 +112,15 @@ namespace Cheng.GameTemplates.PushingBoxes
         #region 功能
 
         #region 参数访问
+
+        /// <summary>
+        /// 地面格子图像
+        /// </summary>
+        public SpriteDraw GroundSprite
+        {
+            get => groundSprite;
+            set => groundSprite = value;
+        }
 
         /// <summary>
         /// 玩家绘制图像
@@ -191,6 +225,18 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get => isTargetCover;
             set => isTargetCover = value;
+        }
+
+        /// <summary>
+        /// 是否开启图像绘制
+        /// </summary>
+        public bool Drawing
+        {
+            get => drawing;
+            set
+            {
+                drawing = value;
+            }
         }
 
         #endregion
@@ -337,6 +383,10 @@ namespace Cheng.GameTemplates.PushingBoxes
                         //存在地面
                         drawGridRect = new Rect(pixelRect.x + (x * widthOncePixel), (pixelRect.y + (((scene.height - 1) - y) * heightOncePixel)), widthOncePixel, heightOncePixel);
 
+
+                        drawGridSprite(groundSprite, drawGridRect,
+                                    screen_width, screen_height);
+
                         if (gridObj == SceneObject.None)
                         {
                             if (target == SceneTarget.Exist)
@@ -411,8 +461,7 @@ namespace Cheng.GameTemplates.PushingBoxes
 
             if (eventType == EventType.Repaint)
             {
-
-                DrawingScene();
+                if(drawing) DrawingScene();
 
             }
 

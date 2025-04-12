@@ -33,7 +33,7 @@ namespace Cheng.DataStructure.Collections
         /// <param name="x">1维索引</param>
         /// <param name="y">2维索引</param>
         /// <returns></returns>
-        /// <exception cref="IndexOutOfRangeException">参数超出范围</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
         T this[int x, int y] { get; set; }
 
     }
@@ -66,7 +66,7 @@ namespace Cheng.DataStructure.Collections
         /// <param name="x">1维索引</param>
         /// <param name="y">2维索引</param>
         /// <returns></returns>
-        /// <exception cref="IndexOutOfRangeException">参数超出范围</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
         T this[int x, int y] { get; }
     }
 

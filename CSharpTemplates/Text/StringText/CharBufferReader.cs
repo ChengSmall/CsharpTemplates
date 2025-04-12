@@ -1,55 +1,56 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
+
 
 namespace Cheng.Texts
 {
 
     /// <summary>
-    /// 可对指定范围的字符串进行文本读取的读取器
+    /// 字符数组范围读取器
     /// </summary>
-    public sealed class StringRangeReader : SafeReleaseTextReader
+    public class CharBufferReader : SafeReleaseTextReader
     {
 
         #region 构造
 
         /// <summary>
-        /// 实例化字符串范围读取器
+        /// 实例化可变字符串范围读取器
         /// </summary>
         /// <param name="value">要读取的字符串</param>
         /// <param name="index">字符串指定起始索引</param>
         /// <param name="count">字符串指定范围长度</param>
-        public StringRangeReader(string value, int index, int count)
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public CharBufferReader(char[] value, int index, int count)
         {
-            if(value is null)
+            if (value is null)
             {
-                p_str = value;
+                p_strBuf = value;
                 p_next = 0;
                 p_index = 0;
                 p_count = 0;
                 p_isNull = true;
                 return;
             }
-            
+
             if (index < 0 || count < 0 || index + count > value.Length)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentOutOfRangeException();
             }
             p_isNull = false;
-            p_str = value;
+            p_strBuf = value;
             p_index = index;
             p_next = index;
             p_count = count;
         }
 
         /// <summary>
-        /// 实例化字符串范围读取器，使用全范围读取
+        /// 实例化可变字符串范围读取器，使用全范围读取
         /// </summary>
         /// <param name="value">要读取的字符串</param>
-        public StringRangeReader(string value)
+        public CharBufferReader(char[] value)
         {
-            p_str = value;
+            p_strBuf = value;
             p_index = 0;
             p_isNull = value is null;
             p_next = 0;
@@ -61,14 +62,14 @@ namespace Cheng.Texts
             {
                 p_count = value.Length;
             }
-            
+
         }
 
         #endregion
 
         #region 参数
 
-        private string p_str;
+        private char[] p_strBuf;
 
         private int p_index;
 
@@ -86,14 +87,14 @@ namespace Cheng.Texts
         {
             ThrowObjectDisposed();
             if (p_next >= p_index + p_count) return -1;
-            return p_str[p_next++];
+            return p_strBuf[p_next++];
         }
 
         public override int Peek()
         {
             ThrowObjectDisposed();
             if (p_next >= p_index + p_count) return -1;
-            return p_str[p_next];
+            return p_strBuf[p_next];
         }
 
         public override int Read(char[] buffer, int index, int count)
@@ -111,7 +112,8 @@ namespace Cheng.Texts
             //获取要读取的数
             int rCount = Math.Min(nowCount, count);
 
-            p_str.CopyTo(p_next, buffer, index, rCount);
+            Array.Copy(p_strBuf, p_next, buffer, index, rCount);
+            //p_strBuf.CopyTo(p_next, buffer, index, rCount);
 
             p_next += rCount;
             return rCount;
@@ -132,7 +134,7 @@ namespace Cheng.Texts
 
             int end = p_index + p_count - 1;
             int i;
-            int nc;            
+            int nc;
 
             bool eq;
 
@@ -149,7 +151,7 @@ namespace Cheng.Texts
                         break;
                     }
 
-                    if (newLine[nc] != p_str[strIndex])
+                    if (newLine[nc] != p_strBuf[strIndex])
                     {
                         //不相等
                         eq = false;
@@ -166,8 +168,8 @@ namespace Cheng.Texts
             //要截取的数
             int reCount = i - p_next;
 
-            var str = p_str.Substring(p_next, reCount);
-
+            //var str = p_strBuf.ToString(p_next, reCount);
+            var str = new string(p_strBuf, p_next, reCount);
             p_next += reCount + lc;
             return str;
         }
@@ -177,12 +179,14 @@ namespace Cheng.Texts
             ThrowObjectDisposed();
             if (p_isNull) return string.Empty;
             var end = (p_index + p_count);
-            var s = p_str.Substring(p_next, end - p_next);
+            //var s = p_strBuf.ToString(p_next, end - p_next);
+            var s = new string(p_strBuf, p_next, end - p_next);
             p_next = end;
             return s;
-        }        
+        }
 
         #endregion
+
 
     }
 }
