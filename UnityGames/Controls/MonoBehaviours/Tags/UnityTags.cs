@@ -13,6 +13,9 @@ namespace Cheng.Unitys.Tags
     /// <summary>
     /// Unity标签组，可在同一个对象上定义多个标签
     /// </summary>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/其它/标签组")]
+#endif
     [DisallowMultipleComponent]
     public class UnityTags : MonoBehaviour
     {

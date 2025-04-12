@@ -148,7 +148,7 @@
     <Compile Include="Controls\DataStructure\ObjectPools\UnityBehaviourPool.cs" />
     <Compile Include="Controls\DataStructure\ObjectPools\UnityGameObjectPool.cs" />
     <Compile Include="Controls\DataStructure\ObjectPools\UnityObjectPool.cs" />
-    <Compile Include="Controls\MonoBehaviours\MouseMoveSpeedAxis.cs" />
+    <Compile Include="Controls\MonoBehaviours\Mouse\MouseMoveSpeedAxis.cs" />
     <Compile Include="Controls\MonoBehaviours\Scene\GlobalPersistenceObject.cs" />
     <Compile Include="Controls\MonoBehaviours\Tags\TagsExtend.cs" />
     <Compile Include="Controls\MonoBehaviours\Tags\UnityTags.cs" />
@@ -163,14 +163,13 @@
     <Compile Include="Controls\DataStructure\UnityKeyCodes.cs" />
     <Compile Include="Controls\Extends\UnityRandom.cs" />
     <Compile Include="DEBUG\Extends\UnityDebug.cs" />
-    <Compile Include="DEBUG\MonoBehaviour\UnityFrameTime.cs" />
     <Compile Include="Controls\DataEditor\Receptacles\Editor\ReceptacleUnityEditorDraw.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\DataStructure\Button\Androids\" />
     <Folder Include="Controls\DataStructure\Gun\" />
     <Folder Include="Controls\MonoBehaviours\Camera\3D\" />
-    <Folder Include="Controls\MonoBehaviours\Mouse\" />
+    <Folder Include="DEBUG\MonoBehaviour\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="介绍.xml" />

@@ -1,15 +1,18 @@
 
-
+using System;
 using System.Diagnostics;
+using UnityEngine;
 
 namespace Cheng.Unitys.Debugs
 {
 
     /// <summary>
-    /// UnityEngine调试日志扩展方法
+    /// UnityEngine Debug扩展
     /// </summary>
     public static class UnityDebug
     {
+
+        #region 打印
 
         /// <summary>
         /// 打印对象到日志控制台
@@ -49,6 +52,31 @@ namespace Cheng.Unitys.Debugs
         {
             UnityEngine.Debug.LogError(message, obj);
         }
+
+        #endregion
+
+        #region
+
+        /// <summary>
+        /// 计算当前游戏帧率（每秒帧数）
+        /// </summary>
+        public static int GameFPS
+        {
+            get
+            {
+                return (int)Math.Round(1 / (double)Time.unscaledDeltaTime);
+            }
+        }
+
+        /// <summary>
+        /// 计算当前游戏帧率（每秒帧数）
+        /// </summary>
+        public static float GameFPSFloat
+        {
+            get => 1 / Time.unscaledDeltaTime;
+        }
+
+        #endregion
 
     }
 

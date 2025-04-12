@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections;
 using UnityEngine;
-using Cheng.Unitys.UI;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
@@ -22,6 +19,9 @@ namespace Cheng.Unitys.ColorExtractors
     /// </summary>
     /// <remarks>
     /// </remarks>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/其它/颜色提取器")]
+#endif
     [DisallowMultipleComponent]
     public class ColorExtractor : MonoBehaviour
     {
@@ -56,7 +56,7 @@ namespace Cheng.Unitys.ColorExtractors
         [SerializeField] private UnityEvent<Color> changeColorEvent;
 
 #if UNITY_EDITOR
-        [Tooltip("是否开启Unity事件引发\r\n若该参数为true，则在引发事件时执行Unity持久注册事件，参数为false则不会引发Unity 编辑器内注册的持久性对象事件；\r\n关闭该参数能够提高性能")]
+        [Tooltip("是否开启Unity事件引发\n若该参数为true，则在引发事件时执行Unity持久注册事件，参数为false则不会引发Unity 编辑器内注册的持久性对象事件；\n关闭该参数能够提高性能")]
 #endif
         [SerializeField] protected bool startUnityEvent;
 

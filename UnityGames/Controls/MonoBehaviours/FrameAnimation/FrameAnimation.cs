@@ -19,6 +19,9 @@ namespace Cheng.Unitys.Animators.FrameAnimations
     /// <remarks>
     /// 控制<see cref="UnityEngine.SpriteRenderer"/>渲染器显示图像的帧动画控制器
     /// </remarks>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/2D/动画/帧动画播放器")]
+#endif
     [DisallowMultipleComponent]
     public sealed class FrameAnimation : MonoBehaviour
     {
@@ -38,7 +41,6 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         {
             frameTime = new FrameAnimationParser(0.2f, true);
             sequenceFrame = new List<Sprite>();
-            p_timer = new UnityRealTimer();
             p_nowFrame = 0;
             p_isPlay = false;
         }
@@ -48,6 +50,11 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         #region 参数
 
         #region 外部参数
+
+#if UNITY_EDITOR
+        [Tooltip("是否在脚本初始化后直接播放")]
+#endif
+        [SerializeField] private bool startPlay;
 
 #if UNITY_EDITOR
         [Tooltip("要附加到的渲染器")]
@@ -63,19 +70,22 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         [Tooltip("动画序列帧图像集合")]
 #endif
         [SerializeField]
-        private List<Sprite> sequenceFrame;      
+        private List<Sprite> sequenceFrame;
 
         #endregion
 
         #region 内部参数
+
         /// <summary>
         /// 内部计时器
         /// </summary>
         private UnityRealTimer p_timer;
+
         /// <summary>
         /// 帧动画事件
         /// </summary>
         private FrameAnimationEvent p_frameRenderEvent;
+
         /// <summary>
         /// 完播事件
         /// </summary>
@@ -87,6 +97,7 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         /// 当前播放帧
         /// </summary>
         private int p_nowFrame;
+
         /// <summary>
         /// 是否正在播放
         /// </summary>
@@ -98,6 +109,17 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         #region 功能
 
         #region 参数访问
+
+        /// <summary>
+        /// 是否在脚本启动后直接播放
+        /// </summary>
+        /// <value>该参数只在初始化前设置时有用，设为true在脚本初始化后直接播放，false则不进行播放；当脚本初始化完毕，开始运行后，该参数无效</value>
+        public bool StartPlay
+        {
+            get => startPlay;
+            set => startPlay = value;
+        }
+
         /// <summary>
         /// 要附加到的渲染器
         /// </summary>
@@ -124,6 +146,7 @@ namespace Cheng.Unitys.Animators.FrameAnimations
                 frameTime = new FrameAnimationParser(value, frameTime.LoopPlayback);
             }
         }
+
         /// <summary>
         /// 是否允许循环播放
         /// </summary>
@@ -186,6 +209,7 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         #endregion
 
         #region 动画播放
+
         /// <summary>
         /// 开始或继续播放动画
         /// </summary>
@@ -278,6 +302,7 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         #endregion
 
         #region 事件
+
         /// <summary>
         /// 每次切换一帧后引发的事件
         /// </summary>
@@ -352,20 +377,27 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         #region 运行
 
         private void Awake()
-        {            
+        {
+            p_timer = new UnityRealTimer();
+            p_nowFrame = 0;
+            p_isPlay = false;
+            p_nowPlaySprite = null;
             p_timer.Start();
         }
 
         private void Start()
         {
-            p_nowPlaySprite = null;
+            if (startPlay)
+            {
+                StartAnimation();
+            }
         }
 
         private void OnDestroy()
         {
             p_timer.Reset();
-            p_aLoopEndEvent -= p_aLoopEndEvent;
-            p_frameRenderEvent -= p_frameRenderEvent;
+            p_aLoopEndEvent = null;
+            p_frameRenderEvent = null;
         }
 
         private void OnEnable()
@@ -387,13 +419,15 @@ namespace Cheng.Unitys.Animators.FrameAnimations
                 //帧间隔
                 float frameTime;
 
-                loop = this.frameTime.GetParser(out frameTime);
+                loop = this.frameTime.GetValue(out frameTime);
            
                 //时间经过
                 double elapsed = p_timer.Elapsed;
 
                 if (frameTime == 0 || elapsed >= frameTime)
                 {
+                    //到达停留时间
+                    p_timer.Clear();
 
                     //附加到的渲染器
                     var spr = this.spriteRenderer;
@@ -402,38 +436,62 @@ namespace Cheng.Unitys.Animators.FrameAnimations
                     //帧图数量
                     int count = list.Count;
 
-                    //到达停留时间
-                    p_timer.Clear();
 
-                    if (count == 0) return;
-
-                    int end = count - 1;
-
-                    //切换
-                    p_nowPlaySprite = list[p_nowFrame];
-                    spr.sprite = p_nowPlaySprite;
-                    p_frameRenderEvent?.Invoke(this, p_nowFrame);
-
-                    if (p_nowFrame < end)
+                    if (count == 0)
                     {
-                        p_nowFrame++;
-                    }
-                    else
-                    {
+                        p_nowPlaySprite = null;
+
                         //到达最后一帧
                         p_aLoopEndEvent?.Invoke(this, p_nowFrame);
+                        p_nowFrame = 0;
                         if (loop)
                         {
                             //循环
-                            p_nowFrame = 0;
                         }
-
+                        else
+                        {
+                            p_nowPlaySprite = null;
+                            p_timer.Reset();
+                            p_isPlay = false;
+                        }
                     }
+                    else
+                    {
+
+                        int end = count - 1;
+
+                        //切换
+                        p_nowPlaySprite = list[p_nowFrame];
+                        spr.sprite = p_nowPlaySprite;
+                        p_frameRenderEvent?.Invoke(this, p_nowFrame);
+
+                        if (p_nowFrame < end)
+                        {
+                            p_nowFrame++;
+                        }
+                        else
+                        {
+                            //到达最后一帧
+                            p_aLoopEndEvent?.Invoke(this, p_nowFrame);
+                            if (loop)
+                            {
+                                //循环
+                                p_nowFrame = 0;
+                            }
+                            else
+                            {
+                                p_nowFrame = 0;
+                                p_nowPlaySprite = FirstFrame;
+                                p_timer.Reset();
+                                p_isPlay = false;
+                            }
+                        }
+                    }
+
 
                 }
 
             }
-
 
         }
 

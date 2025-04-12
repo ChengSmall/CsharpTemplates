@@ -15,6 +15,9 @@ namespace Cheng.Unitys.Scenes
     /// <remarks>
     /// <para>在初始化时，将对象设置为全局存在，不受场景影响而销毁</para>
     /// </remarks>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/场景/全局对象初始化")]
+#endif
     [DisallowMultipleComponent]
     public class GlobalPersistenceObject : MonoBehaviour
     {

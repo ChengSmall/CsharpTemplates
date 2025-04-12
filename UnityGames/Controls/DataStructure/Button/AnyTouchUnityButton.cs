@@ -45,9 +45,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
             {
                 if (!Input.touchSupported) ThrowSupportedException();
 
-                var count = Input.touchCount;
-
-                return count > 0;
+                return Input.touchCount > 0;
             }
             set => ThrowSupportedException();
         }
@@ -77,12 +75,12 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
                 }
 
-                return false;               
+                return false;
             }
         }
 
         /// <summary>
-        /// 在当前帧，任意已经触摸在设备上的手指开始抬起则返回true，否则返回false
+        /// 在当前帧，最后一个已经触摸在设备上的手指离开屏幕则返回true，否则返回false
         /// </summary>
         /// <exception cref="NotSupportedException">设备不支持触摸</exception>
         public override bool ButtonUp
@@ -98,14 +96,14 @@ namespace Cheng.ButtonTemplates.UnityButtons
                 {
                     var touch = Input.GetTouch(i);
 
-                    if (touch.phase == TouchPhase.Ended)
+                    if (touch.phase != TouchPhase.Ended)
                     {
-                        return true;
+                        return false;
                     }
 
                 }
 
-                return false;
+                return true;
             }
         }
 
@@ -120,7 +118,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
                 if (!Input.touchSupported) ThrowSupportedException();
                 var count = Input.touchCount;
 
-                if (count == 0) return 0f;              
+                if (count == 0) return 0f;
 
                 if (!Input.touchPressureSupported) return 1f;
 

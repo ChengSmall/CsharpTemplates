@@ -21,6 +21,9 @@ namespace Cheng.Unitys.Cameras
     /// </para>
     /// <para>关闭脚本活动会停止运行和位置检测</para>
     /// </remarks>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/2D/摄像机/2D视差模拟")]
+#endif
     [DisallowMultipleComponent]
     public sealed class DepthSimulationPlanarMove : MonoBehaviour
     {

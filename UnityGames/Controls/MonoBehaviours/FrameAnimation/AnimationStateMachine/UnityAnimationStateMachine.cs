@@ -19,6 +19,9 @@ namespace Cheng.Unitys.Animators.FrameAnimations.FiniteStateMachine
     /// <remarks>
     /// <para>管理<see cref="FrameAnimation"/>动画器的有限状态机</para>
     /// </remarks>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/2D/动画/帧动画有限状态机")]
+#endif
     [DisallowMultipleComponent]
     public sealed class UnityAnimationStateMachine : MonoBehaviour
     {

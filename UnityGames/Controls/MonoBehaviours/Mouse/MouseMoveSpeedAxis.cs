@@ -17,6 +17,9 @@ namespace Cheng.Unitys.Mouses
     /// <summary>
     /// 鼠标移动速率捕获脚本
     /// </summary>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/鼠标/鼠标移动速率捕获")]
+#endif
     public sealed class MouseMoveSpeedAxis : MonoBehaviour
     {
 

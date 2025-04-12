@@ -17,6 +17,9 @@ namespace Cheng.Unitys.UI
     /// <summary>
     /// UI脚本-画布事件捕获
     /// </summary>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/UI/画布事件捕获")]
+#endif
     [RequireComponent(typeof(Canvas))]
     public class CanvasEvent : MonoBehaviour
     {
@@ -67,6 +70,7 @@ namespace Cheng.Unitys.UI
         {
             get => p_mousePosition;
         }
+
         /// <summary>
         /// 上一帧鼠标所在位置
         /// </summary>
@@ -75,6 +79,7 @@ namespace Cheng.Unitys.UI
         {
             get => p_lateFrameMousePosition;
         }
+
         /// <summary>
         /// 当前帧鼠标的移动路程
         /// </summary>

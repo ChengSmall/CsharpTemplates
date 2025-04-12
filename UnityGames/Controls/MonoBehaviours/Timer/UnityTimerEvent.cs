@@ -14,6 +14,9 @@ namespace Cheng.Timers.Unitys
     /// <remarks>
     /// 使用协程等待实现的触发器机制，每次经过特定时间执行一次事件
     /// </remarks>
+#if UNITY_EDITOR
+    [AddComponentMenu("Cheng/其它/计时触发器")]
+#endif
     public sealed class UnityTimerEvent : MonoBehaviour
     {
 
@@ -33,7 +36,7 @@ namespace Cheng.Timers.Unitys
         /// </summary>
 #if UNITY_EDITOR
         [Tooltip("事件执行的时间间隔")]
-        [Min(1E-5f)]
+        [Min(0)]
 #endif
         [SerializeField] private float timeSpanEvent;
 
@@ -162,16 +165,32 @@ namespace Cheng.Timers.Unitys
             object waitObj;
             if (real)
             {
-                waitObj = new WaitForSecondsRealtime(waitTime);
+                if(waitTime == 0)
+                {
+                    waitObj = null;
+                }
+                else
+                {
+                    waitObj = new WaitForSecondsRealtime(waitTime);
+                }
+                
             }
             else
             {
-                waitObj = new WaitForSeconds(waitTime);
+                if (waitTime == 0)
+                {
+                    waitObj = null;
+                }
+                else
+                {
+                    waitObj = new WaitForSeconds(waitTime);
+                }
+                
             }
 
             Loop:
             yield return waitObj;
-            if(invokeAction) this.actionEvent.Invoke();
+            if(invokeAction) this.actionEvent?.Invoke();
             goto Loop;
         }
 

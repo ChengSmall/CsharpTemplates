@@ -46,7 +46,7 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         /// </summary>
         /// <param name="frameTime">获取动画每帧间隔时间的引用</param>
         /// <returns>是否循环播放，循环播放返回true，否则返回false</returns>
-        public bool GetParser(out float frameTime)
+        public bool GetValue(out float frameTime)
         {
             frameTime = this.frameTime;
             return loop;

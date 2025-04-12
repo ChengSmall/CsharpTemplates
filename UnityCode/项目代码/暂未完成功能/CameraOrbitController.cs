@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 
@@ -23,7 +22,6 @@ namespace Cheng.Unitys.Cameras
     /// 这是一个控制摄像机<see cref="controlledCamera"/>在指定对象<see cref="targetObject"/>周围旋转的脚本，可以指定旋转速度和距离对象的长度
     /// </para>
     /// </remarks>
-    [Obsolete("未完成", true)]
     public class CameraOrbitController : MonoBehaviour
     {
 
