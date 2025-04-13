@@ -1633,6 +1633,36 @@ namespace Cheng.Memorys
             }
         }
 
+        /// <summary>
+        /// 将字符转换为小写
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static char ToLopper(this char value)
+        {
+            const char cb = (char)0b00000000_00100000;
+            if (value >= 'A' && value <= 'Z')
+            {
+                value |= cb;
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// 将字符转换为大写
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static char ToUpper(this char value)
+        {
+            const char cb = (char)0b11111111_11011111;
+            if (value >= 'a' && value <= 'z')
+            {
+                return (char)(value & cb);
+            }
+            return value;
+        }
+
 
         #endregion
 

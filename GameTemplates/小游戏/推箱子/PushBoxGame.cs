@@ -1,4 +1,5 @@
 using Cheng.DataStructure.Cherrsdinates;
+using Cheng.DataStructure.Collections;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -51,17 +52,26 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// </summary>
         public PushBoxGame()
         {
+            f_init();
         }
 
         /// <summary>
-        /// 使用指定场景构造
+        /// 使用指定场景初始化
         /// </summary>
         /// <param name="scene"></param>
         /// <exception cref="ArgumentNullException">场景参数为null</exception>
         public PushBoxGame(PushBoxScene scene)
         {
             this.scene = scene ?? throw new ArgumentNullException();
+            f_init();
             InitSceneArg(scene);
+        }
+
+        private void f_init()
+        {
+            pos_buffer = new List<PointInt2>();
+            //p_targetOnBox = new Dictionary<PointInt2, bool>();
+            pos_targetPoses = new ArrayReadOnly<PointInt2>(pos_buffer);
         }
         #endregion
 
@@ -72,17 +82,27 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// </summary>
         public PushBoxScene scene;
 
-        /// <summary>
-        /// 该场景内终点所在的坐标
-        /// </summary>
-        public PointInt2[] finishs;
+        //private PointInt2[] p_targetPos;
+        //private Dictionary<PointInt2, bool> p_targetOnBox;
 
         /// <summary>
         /// 角色当前所在位置
         /// </summary>
-        public PointInt2 playerPos;
+        private PointInt2 playerPos;
 
-        private List<PointInt2> pos_buffer = new List<PointInt2>();
+        private List<PointInt2> pos_buffer;
+        
+        private ArrayReadOnly<PointInt2> pos_targetPoses;
+
+        /// <summary>
+        /// 箱子处于目标点上的数量
+        /// </summary>
+        private int p_boxOnTargetCount;
+
+        /// <summary>
+        /// 所有目标点数量
+        /// </summary>
+        private int p_targetCount;
         #endregion
 
         #region 功能
@@ -94,9 +114,25 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// </summary>
         public List<PointInt2> TragetBuffer => pos_buffer;
 
+        /// <summary>
+        /// 玩家当前所在位置
+        /// </summary>
+        public PointInt2 PlayerPosition
+        {
+            get => playerPos;
+        }
+
+        /// <summary>
+        /// 该场景所有目标点的坐标
+        /// </summary>
+        public ArrayReadOnly<PointInt2> Targets
+        {
+            get => pos_targetPoses;
+        }
+
         #endregion
 
-        #region 游戏
+        #region 事件
 
         /// <summary>
         /// 将箱子移动到任意目标点引发的事件
@@ -107,13 +143,82 @@ namespace Cheng.GameTemplates.PushingBoxes
         public event PushBoxEvent<PointInt2> BoxMoveToTraget;
 
         /// <summary>
+        /// 将箱子推离目标点时引发的事件
+        /// </summary>
+        /// <remarks>参数表示目标点所在的位置</remarks>
+        public event PushBoxEvent<PointInt2> BoxPushAwayByTarget;
+
+        /// <summary>
+        /// 游戏胜利
+        /// </summary>
+        /// <remarks>
+        /// <para>所有的箱子都处于目标点位时引发的事件</para>
+        /// <para>只有在每次移动后才会更新事件，你可以用<see cref="IsVictory"/>直接判断</para>
+        /// </remarks>
+        public event PushBoxEvent Winning;
+
+        #endregion
+
+        #region 封装
+
+        /// <summary>
+        /// 成功移动后的回调
+        /// </summary>
+        /// <param name="origin">移动前的坐标</param>
+        /// <param name="moveTo">移动到的坐标</param>
+        /// <param name="moveType">移动方向</param>
+        private void feInvoke_MoveToGrid(PointInt2 origin, PointInt2 moveTo, MoveType moveType)
+        {
+            bool susumeiIsBox = false;
+            var moveToGrid = scene[moveTo.x, moveTo.y];
+
+            if (moveToGrid.IsTraget)
+            {
+                //移动到目标点
+                //检查前放有箱子
+                var susumeiPos = PositionMoveTo(moveTo, moveType);
+                if (!CheckPosOutArg(susumeiPos))
+                {
+                    //未超出范围
+                    susumeiIsBox = scene[susumeiPos.x, susumeiPos.y].Object == SceneObject.Box;
+                }
+            }
+
+            if (susumeiIsBox)
+            {
+                //将目标点的箱子推离目标点
+                p_boxOnTargetCount--;
+                BoxPushAwayByTarget?.Invoke(this, moveTo);
+            }
+
+
+
+        }
+
+        /// <summary>
+        /// 将箱子移动到任意目标点引发的回调
+        /// </summary>
+        /// <param name="point"></param>
+        private void feInvoke_BoxMoveToTarget(PointInt2 point)
+        {
+            p_boxOnTargetCount++;
+            BoxMoveToTraget?.Invoke(this, point);
+
+            if(p_boxOnTargetCount == p_targetCount)
+            {
+                Winning?.Invoke(this);
+            }
+
+        }
+
+        /// <summary>
         /// 将场景人物移动一个位置
         /// </summary>
         /// <param name="playerPosition">人物坐标</param>
         /// <param name="move">要移动的方向</param>
         /// <param name="toMove">移动后的人物位置</param>
         /// <returns>是否成功移动</returns>
-        internal bool moveTo(PointInt2 playerPosition, MoveType move, out PointInt2 toMove)
+        private bool moveTo(PointInt2 playerPosition, MoveType move, out PointInt2 toMove)
         {
             var scene = this.scene;
             int x = playerPosition.x, y = playerPosition.y;
@@ -194,7 +299,7 @@ namespace Cheng.GameTemplates.PushingBoxes
 
                 if (changeTraget)
                 {
-                    BoxMoveToTraget?.Invoke(this, new PointInt2(cx, cy));
+                    feInvoke_BoxMoveToTarget(new PointInt2(cx, cy));
                 }
 
                 return true;
@@ -258,7 +363,7 @@ namespace Cheng.GameTemplates.PushingBoxes
 
                 if (changeTraget)
                 {
-                    BoxMoveToTraget?.Invoke(this, new PointInt2(cx, cy));
+                    feInvoke_BoxMoveToTarget(new PointInt2(cx, cy));
                 }
 
                 return true;
@@ -320,7 +425,7 @@ namespace Cheng.GameTemplates.PushingBoxes
 
                 if (changeTraget)
                 {
-                    BoxMoveToTraget?.Invoke(this, new PointInt2(cx, cy));
+                    feInvoke_BoxMoveToTarget(new PointInt2(cx, cy));
                 }
                 return true;
                 #endregion
@@ -379,7 +484,7 @@ namespace Cheng.GameTemplates.PushingBoxes
 
                 if (changeTraget)
                 {
-                    BoxMoveToTraget?.Invoke(this, new PointInt2(cx, cy));
+                    feInvoke_BoxMoveToTarget(new PointInt2(cx, cy));
                 }
                 return true;
                 #endregion
@@ -407,6 +512,92 @@ namespace Cheng.GameTemplates.PushingBoxes
             scene[origin.x, origin.y] = new SceneGrid(SceneObject.None, T, G);
         }
 
+        #endregion
+
+        #region 游戏
+
+        /// <summary>
+        /// 指定坐标移动后的坐标
+        /// </summary>
+        /// <param name="position">坐标</param>
+        /// <param name="moveType">移动方位</param>
+        /// <returns>移动后的坐标</returns>
+        public static PointInt2 PositionMoveTo(PointInt2 position, MoveType moveType)
+        {
+            int x, y;
+            switch (moveType)
+            {
+                case MoveType.Left:
+                    x = position.x - 1;
+                    y = position.y;
+                    break;
+                case MoveType.Right:
+                    x = position.x + 1;
+                    y = position.y;
+                    break;
+                case MoveType.Up:
+                    x = position.x;
+                    y = position.y + 1;
+                    break;
+                case MoveType.Down:
+                    x = position.x;
+                    y = position.y - 1;
+                    break;
+                default:
+                    x = position.x;
+                    y = position.y;
+                    break;
+            }
+            return new PointInt2(x, y);
+        }
+
+        /// <summary>
+        /// 检查坐标超出场景
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns>超出场景true，没有超出false</returns>
+        public bool CheckPosOutArg(PointInt2 position)
+        {
+            return (position.x < 0 || position.y < 0 || position.x >= scene.width || position.y > scene.height);
+        }
+
+        /// <summary>
+        /// 检查此坐标向某处移动后是否超出场景范围
+        /// </summary>
+        /// <param name="position">坐标</param>
+        /// <param name="moveType">移动方位</param>
+        /// <returns>超出返回true</returns>
+        public bool CheckPosOutArg(PointInt2 position, MoveType moveType)
+        {
+            int x, y;
+            switch (moveType)
+            {
+                case MoveType.Left:
+                    x = position.x - 1;
+                    y = position.y;
+                    break;
+                case MoveType.Right:
+                    x = position.x + 1;
+                    y = position.y;
+                    break;
+                case MoveType.Up:
+                    x = position.x;
+                    y = position.y + 1;
+                    break;
+                case MoveType.Down:
+                    x = position.x;
+                    y = position.y - 1;
+                    break;
+                default:
+                    x = position.x;
+                    y = position.y;
+                    break;
+            }
+
+            return (x < 0 || y < 0 || x >= scene.width || y >= scene.height);
+
+        }
+
         /// <summary>
         /// 将场景人物移动一个位置
         /// </summary>
@@ -414,8 +605,13 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <returns>是否成功移动</returns>
         public bool MoveTo(MoveType move)
         {
-            bool flag = moveTo(playerPos, move, out var tom);
-            if (flag) playerPos = tom;
+            var nowPos = playerPos;
+            bool flag = moveTo(nowPos, move, out var tom);
+            if (flag)
+            {
+                playerPos = tom;
+                feInvoke_MoveToGrid(nowPos, tom, move);
+            }
             return flag;
         }
 
@@ -426,20 +622,19 @@ namespace Cheng.GameTemplates.PushingBoxes
         {
             get
             {
-                var arr = finishs;
-
-                int length = arr.Length;
-
-                PointInt2 p;
-                for (int i = 0; i < length; i++)
-                {
-                    p = arr[i];
-                    if(scene[p.x, p.y].Object != SceneObject.Box)
-                    {
-                        return false;
-                    }
-                }
-                return true;
+                return p_boxOnTargetCount == p_targetCount;
+                //var arr = pos_buffer;
+                //int length = arr.Count;
+                //PointInt2 p;
+                //for (int i = 0; i < length; i++)
+                //{
+                //    p = arr[i];
+                //    if(scene[p.x, p.y].Object != SceneObject.Box)
+                //    {
+                //        return false;
+                //    }
+                //}
+                //return true;
             }
         }
 
@@ -450,42 +645,57 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <exception cref="ArgumentNullException">场景实例为null</exception>
         public void InitSceneArg(PushBoxScene scene)
         {
-            if (scene is null) throw new ArgumentNullException("场景对象未引用实例");
-
-            List<PointInt2> ts = pos_buffer;
-
-            int x, y;
-
-            SceneGrid g;
-
-            for(x = 0; x < scene.width; x++)
-            {
-
-                for(y = 0; y < scene.height; y++)
-                {
-                    g = scene[x, y];
-                    if(g.Object == SceneObject.Player)
-                    {
-                        playerPos = new PointInt2(x, y);
-                    }
-
-                    if (g.IsTraget) ts.Add(new PointInt2(x, y));
-
-                }
-
-            }
-
-            finishs = ts.ToArray();
-            ts.Clear();
+            this.scene = scene;
+            InitSceneArg();
         }
 
         /// <summary>
-        /// 重新从场景参数初始化参数
+        /// 重新从<see cref="scene"/>参数初始化参数
         /// </summary>
+        /// <remarks>
+        /// 从场景参数<see cref="scene"/>提取数据并初始化游戏控制台，在进行未初始化时，任何其它操作都可能造成未知错误
+        /// </remarks>
         /// <exception cref="ArgumentNullException">场景实例为null</exception>
         public void InitSceneArg()
         {
-            InitSceneArg(scene);
+            var scene = this.scene;
+
+            if (scene is null) throw new ArgumentNullException("场景对象未引用实例");
+
+            List<PointInt2> ts = pos_buffer;
+            ts.Clear();
+
+            p_targetCount = 0;
+            p_boxOnTargetCount = 0;
+            int x, y;
+            SceneGrid g;
+            for (x = 0; x < scene.width; x++)
+            {
+
+                for (y = 0; y < scene.height; y++)
+                {
+                    g = scene[x, y];
+                    g.GetValue(out var obj, out var target);
+                    if (obj == SceneObject.Player)
+                    {
+                        //此处是玩家位置
+                        playerPos = new PointInt2(x, y);
+                    }
+
+                    if (target == SceneTarget.Exist)
+                    {
+                        //此处是目标点
+                        ts.Add(new PointInt2(x, y));
+                        p_targetCount++;
+                        if (obj == SceneObject.Box)
+                        {
+                            //目标点上有箱子
+                            p_boxOnTargetCount++;
+                        }
+                    }
+                }
+            }
+
         }
 
         #endregion

@@ -13,6 +13,7 @@ namespace Cheng.DataStructure.Cherrsdinates
     {
 
         #region 构造
+
         /// <summary>
         /// 初始化一个二维坐标
         /// </summary>
@@ -72,7 +73,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns></returns>
         public long ToInt64()
         {
-            return x ^ (y << 32);
+            return (((uint)x) | (((long)((uint)y)) << 32));
         }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns></returns>
         public static PointInt2 ToPoint(long value)
         {
-            return new PointInt2((int)(value & 0xFFFFFFFF), (int)(value >> 32));
+            return new PointInt2((int)(value & 0xFFFFFFFF), (int)((ulong)value >> 32));
         }
 
         #endregion
@@ -166,7 +167,8 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         public override int GetHashCode()
         {
-            var s = (int)(((uint)this.y << 16) | ((((uint)this.y) >> 16)));
+            int s;
+            s = (int)(((uint)this.y << 16) | ((((uint)this.y) >> 16)));
             return s ^ this.x;
         }
 

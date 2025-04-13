@@ -105,6 +105,7 @@
     <Compile Include="小游戏\推箱子\PushBoxGame.cs" />
     <Compile Include="小游戏\推箱子\PushBoxScene.cs" />
     <Compile Include="小游戏\推箱子\PushBoxStructure.cs" />
+    <Compile Include="小游戏\推箱子\XSB\UDLR.cs" />
     <Compile Include="小游戏\推箱子\XSB\XSBData.cs" />
     <Compile Include="小游戏\推箱子\XSB\XSBlvlReader.cs" />
     <Compile Include="小游戏\推箱子\XSB\XSBReader.cs" />
