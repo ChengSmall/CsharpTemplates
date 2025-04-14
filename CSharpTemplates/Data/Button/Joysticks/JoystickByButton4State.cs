@@ -1,3 +1,4 @@
+using Cheng.Algorithm;
 using System;
 
 namespace Cheng.ButtonTemplates.Joysticks
@@ -36,7 +37,6 @@ namespace Cheng.ButtonTemplates.Joysticks
             p_down = down;
             p_hRev = false;
             p_vRev = false;
-            cp_s2 = (float)System.Math.Sqrt(0.5);
         }
 
         /// <summary>
@@ -58,12 +58,12 @@ namespace Cheng.ButtonTemplates.Joysticks
             p_down = down;
             p_hRev = horizontalReverse;
             p_vRev = verticalReverse;
-            cp_s2 = (float)System.Math.Sqrt(0.5);
         }
 
         #endregion
 
         #region 参数
+
         private BaseButton p_left;
         private BaseButton p_right;
         private BaseButton p_up;
@@ -79,7 +79,6 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// </summary>
         private bool p_vRev;
 
-        private readonly float cp_s2;
         #endregion
 
         #region 功能
@@ -223,8 +222,8 @@ namespace Cheng.ButtonTemplates.Joysticks
                         {
 
                             //左上
-                            horizontal = -cp_s2;
-                            vertical = cp_s2;
+                            horizontal = -Maths.FSqrt0p5;
+                            vertical = Maths.FSqrt0p5;
                         }
 
 
@@ -235,7 +234,7 @@ namespace Cheng.ButtonTemplates.Joysticks
                         {
 
                             //左下
-                            horizontal = -cp_s2;
+                            horizontal = -Maths.FSqrt0p5;
                             vertical = horizontal;
                         }
                         else
@@ -265,8 +264,8 @@ namespace Cheng.ButtonTemplates.Joysticks
                         {
 
                             //右上
-                            horizontal = cp_s2;
-                            vertical = cp_s2;
+                            horizontal = Maths.FSqrt0p5;
+                            vertical = Maths.FSqrt0p5;
                         }
 
                     }
@@ -276,8 +275,8 @@ namespace Cheng.ButtonTemplates.Joysticks
                         {
 
                             //右下
-                            horizontal = cp_s2;
-                            vertical = -cp_s2;
+                            horizontal = Maths.FSqrt0p5;
+                            vertical = -Maths.FSqrt0p5;
                         }
                         else
                         {
@@ -358,8 +357,6 @@ namespace Cheng.ButtonTemplates.Joysticks
             radian = 0;
             length = 0;
 
-            if ((left && right && up && down) || ((!left) && (!right) && (!up) && (!down))) return;
-
             if (left)
             {
 
@@ -380,7 +377,6 @@ namespace Cheng.ButtonTemplates.Joysticks
                             radian = (float)(onceRadian * (90));
                             length = 1;
                         }
-
 
                     }
                     else
@@ -550,8 +546,6 @@ namespace Cheng.ButtonTemplates.Joysticks
 
             angle = 0;
             length = 0;
-
-            if ((left && right && up && down) || ((!left) && (!right) && (!up) && (!down))) return;
 
             if (left)
             {
@@ -756,7 +750,7 @@ namespace Cheng.ButtonTemplates.Joysticks
         }
 
         /// <summary>
-        /// 该实例无法设置
+        /// 无法设置
         /// </summary>
         /// <param name="horizontal"></param>
         /// <param name="vertical"></param>
@@ -767,10 +761,10 @@ namespace Cheng.ButtonTemplates.Joysticks
         }
 
         /// <summary>
-        /// 该实例无法设置
+        /// 无法设置
         /// </summary>
-        /// <param name="horizontal"></param>
-        /// <param name="vertical"></param>
+        /// <param name="radian"></param>
+        /// <param name="length"></param>
         /// <exception cref="NotSupportedException">没有设置权限</exception>
         public override void SetVector(float radian, float length)
         {
@@ -778,10 +772,10 @@ namespace Cheng.ButtonTemplates.Joysticks
         }
 
         /// <summary>
-        /// 该实例无法设置
+        /// 无法设置
         /// </summary>
-        /// <param name="horizontal"></param>
-        /// <param name="vertical"></param>
+        /// <param name="angle"></param>
+        /// <param name="length"></param>
         /// <exception cref="NotSupportedException">没有设置权限</exception>
         public override void SetVectorAngle(float angle, float length)
         {

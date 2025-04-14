@@ -17,26 +17,32 @@ namespace Cheng.Algorithm
         /// <summary>
         /// 2的平方根
         /// </summary>
-        public static double Sqrt2
-        {
-            get
-            {
-                ulong n = 0x3FF6A09E667F3BCD;
-                return *((double*)&n);
-            }
-        }
+        public const double Sqrt2 = 1.4142135623730951;
+
+        /// <summary>
+        /// 2的平方根
+        /// </summary>
+        public const float FSqrt2 = 1.41421354f;
 
         /// <summary>
         /// 3的平方根
         /// </summary>
-        public static double Sqrt3
-        {
-            get
-            {
-                ulong n = 0x3FFBB67AE8584CAA;
-                return *((double*)&n);
-            }
-        }
+        public const double Sqrt3 = 1.7320508075688772;
+
+        /// <summary>
+        /// 3的平方根
+        /// </summary>
+        public const float FSqrt3 = 1.73205078f;
+
+        /// <summary>
+        /// 0.5的平方根
+        /// </summary>
+        public const double Sqrt0p5 = 0.70710678118654757;
+
+        /// <summary>
+        /// 0.5的平方根
+        /// </summary>
+        public const float FSqrt0p5 = 0.707106769f;
 
         /// <summary>
         /// 真空中光线一秒钟的路程，单位米
@@ -46,6 +52,8 @@ namespace Cheng.Algorithm
         #endregion
 
         #region 大小计算
+
+        #region Clamp
 
         /// <summary>
         /// 将值限制在指定范围内
@@ -60,6 +68,7 @@ namespace Cheng.Algorithm
             if (value < min) return min;
             return value;
         }
+
         /// <summary>
         /// 将值限制在指定范围内
         /// </summary>
@@ -73,6 +82,7 @@ namespace Cheng.Algorithm
             if (value < min) return min;
             return value;
         }
+
         /// <summary>
         /// 将值限制在指定范围内
         /// </summary>
@@ -86,6 +96,7 @@ namespace Cheng.Algorithm
             if (value < min) return min;
             return value;
         }
+
         /// <summary>
         /// 将值限制在指定范围内
         /// </summary>
@@ -99,6 +110,7 @@ namespace Cheng.Algorithm
             if (value < min) return min;
             return value;
         }
+
         /// <summary>
         /// 将值限制在指定范围内
         /// </summary>
@@ -112,6 +124,7 @@ namespace Cheng.Algorithm
             if (value < min) return min;
             return value;
         }
+
         /// <summary>
         /// 将值限制在指定范围内
         /// </summary>
@@ -125,6 +138,7 @@ namespace Cheng.Algorithm
             if (value < min) return min;
             return value;
         }
+
         /// <summary>
         /// 将值限制在指定范围内
         /// </summary>
@@ -138,6 +152,7 @@ namespace Cheng.Algorithm
             if (value < min) return min;
             return value;
         }
+
         /// <summary>
         /// 将值限制在指定范围内，使用自定义比较器比较大小
         /// </summary>
@@ -155,6 +170,7 @@ namespace Cheng.Algorithm
             if (comparer.Compare(value, min) < 0) return min;
             return value;
         }
+
         /// <summary>
         /// 将值限制在指定范围内，使用默认比较器比较大小
         /// </summary>
@@ -169,6 +185,10 @@ namespace Cheng.Algorithm
             if (comparer.Compare(value, min) < 0) return min;
             return value;
         }
+
+        #endregion
+
+        #region max
 
         /// <summary>
         /// 比较三个值的大小
@@ -234,6 +254,7 @@ namespace Cheng.Algorithm
             if (a > b) return a > c ? a : c;
             return b > c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -246,6 +267,7 @@ namespace Cheng.Algorithm
             if (a > b) return a > c ? a : c;
             return b > c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -274,6 +296,7 @@ namespace Cheng.Algorithm
             if (comparer.Compare(a, b) > 0) return (comparer.Compare(a, c) > 0) ? a : c;
             return (comparer.Compare(b, c) > 0) ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小，使用默认实现的<see cref="IComparer"/>比较器比较大小
         /// </summary>
@@ -290,6 +313,66 @@ namespace Cheng.Algorithm
         }
 
         /// <summary>
+        /// 选取集合中最大的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">数组</param>
+        /// <returns>数组当中最小的值</returns>
+        /// <exception cref="ArgumentNullException">数组是null</exception>
+        /// <exception cref="ArgumentException">数组元素为0</exception>
+        public static T Max<T>(this IEnumerable<T> collection)
+        {
+            return Max(collection, null);
+        }
+
+        /// <summary>
+        /// 选取集合中最大的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">数组</param>
+        /// <param name="comparer">比较器，null表示使用默认比较器</param>
+        /// <returns>数组当中最小的值</returns>
+        /// <exception cref="ArgumentNullException">数组是null</exception>
+        /// <exception cref="ArgumentException">数组元素为0</exception>
+        public static T Max<T>(this IEnumerable<T> collection, IComparer<T> comparer)
+        {
+            if (collection is null) throw new ArgumentNullException();
+            if (comparer is null) comparer = Comparer<T>.Default;
+            T temp = default;
+            using (var enumator = collection.GetEnumerator())
+            {
+
+                if (!enumator.MoveNext())
+                {
+                    throw new ArgumentException();
+                }
+
+                temp = enumator.Current;
+
+                while (enumator.MoveNext())
+                {
+
+                    T current = enumator.Current;
+
+                    int cv = comparer.Compare(temp, current);
+                    if (cv < 0)
+                    {
+                        //左小
+                        temp = current;
+                    }
+
+                }
+
+            }
+
+            return temp;
+        }
+
+        #endregion
+
+        #region min
+
+        /// <summary>
         /// 比较三个值的大小
         /// </summary>
         /// <param name="a"></param>
@@ -301,6 +384,7 @@ namespace Cheng.Algorithm
             if (a < b) return a < c ? a : c;
             return b < c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -313,6 +397,7 @@ namespace Cheng.Algorithm
             if (a < b) return a < c ? a : c;
             return b < c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -325,6 +410,7 @@ namespace Cheng.Algorithm
             if (a < b) return a < c ? a : c;
             return b < c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -337,6 +423,7 @@ namespace Cheng.Algorithm
             if (a < b) return a < c ? a : c;
             return b < c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -349,6 +436,7 @@ namespace Cheng.Algorithm
             if (a < b) return a < c ? a : c;
             return b < c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -361,6 +449,7 @@ namespace Cheng.Algorithm
             if (a < b) return a < c ? a : c;
             return b < c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -373,6 +462,7 @@ namespace Cheng.Algorithm
             if (a < b) return a < c ? a : c;
             return b < c ? b : c;
         }
+
         /// <summary>
         /// 比较三个值的大小
         /// </summary>
@@ -389,8 +479,9 @@ namespace Cheng.Algorithm
             if (comparer.Compare(a, b) < 0) return (comparer.Compare(a, c) < 0) ? a : c;
             return (comparer.Compare(b, c) < 0) ? b : c;
         }
+
         /// <summary>
-        /// 比较三个值的大小，使用默认比较强
+        /// 比较三个值的大小，使用默认比较器
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>
@@ -404,7 +495,63 @@ namespace Cheng.Algorithm
             return (comparer.Compare(b, c) < 0) ? b : c;
         }
 
+        /// <summary>
+        /// 选取集合中最小的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">数组</param>
+        /// <returns>数组当中最小的值</returns>
+        /// <exception cref="ArgumentNullException">数组是null</exception>
+        /// <exception cref="ArgumentException">数组元素为0</exception>
+        public static T Min<T>(this IEnumerable<T> collection)
+        {
+            return Min(collection, null);
+        }
 
+        /// <summary>
+        /// 选取集合中最小的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">数组</param>
+        /// <param name="comparer">比较器，null表示使用默认比较器</param>
+        /// <returns>数组当中最小的值</returns>
+        /// <exception cref="ArgumentNullException">数组是null</exception>
+        /// <exception cref="ArgumentException">数组元素为0</exception>
+        public static T Min<T>(this IEnumerable<T> collection, IComparer<T> comparer)
+        {
+            if (collection is null) throw new ArgumentNullException();
+            if (comparer is null) comparer = Comparer<T>.Default;
+            T temp = default;
+            using (var enumator = collection.GetEnumerator())
+            {
+
+                if (!enumator.MoveNext())
+                {
+                    throw new ArgumentException();
+                }
+
+                temp = enumator.Current;
+
+                while (enumator.MoveNext())
+                {
+
+                    T current = enumator.Current;
+
+                    int cv = comparer.Compare(temp, current);
+                    if (cv > 0)
+                    {
+                        //左大
+                        temp = current;
+                    }
+
+                }
+
+            }
+
+            return temp;
+        }
+
+        #endregion
 
         #endregion
 
@@ -430,6 +577,7 @@ namespace Cheng.Algorithm
 
             goto Loop;
         }
+
         /// <summary>
         /// 求两值最大公约数
         /// </summary>
@@ -450,12 +598,13 @@ namespace Cheng.Algorithm
 
             goto Loop;
         }
+
         /// <summary>
         /// 求最大公约数
         /// </summary>
         /// <param name="array">值集合</param>
         /// <returns>最大公约数</returns>
-        /// <exception cref="ArgumentException">参数不正确</exception>
+        /// <exception cref="ArgumentException">数组元素为0</exception>
         /// <exception cref="ArgumentNullException">数组为null</exception>
         public static long GreatcommonDivisor(this IList<long> array)
         {
@@ -494,12 +643,13 @@ namespace Cheng.Algorithm
             return temp;
 
         }
+
         /// <summary>
         /// 求最大公约数
         /// </summary>
         /// <param name="array">值集合</param>
         /// <returns>最大公约数</returns>
-        /// <exception cref="ArgumentException">参数不正确</exception>
+        /// <exception cref="ArgumentException">数组元素为0</exception>
         /// <exception cref="ArgumentNullException">数组为null</exception>
         public static int GreatcommonDivisor(this IList<int> array)
         {
@@ -538,6 +688,7 @@ namespace Cheng.Algorithm
             return temp;
 
         }
+
         /// <summary>
         /// 求最大公约数
         /// </summary>
@@ -549,7 +700,7 @@ namespace Cheng.Algorithm
         /// <exception cref="ArgumentNullException">数组为null</exception>
         public static long GreatcommonDivisor<T>(this IList<T> list, Func<T, long> toNum)
         {
-            if (list is null) throw new ArgumentNullException();
+            if (list is null || toNum is null) throw new ArgumentNullException();
 
             int length = list.Count;
 
@@ -584,7 +735,7 @@ namespace Cheng.Algorithm
             return temp;
         }
 
-        #endregion      
+        #endregion
 
     }
 }

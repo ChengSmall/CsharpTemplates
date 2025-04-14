@@ -19,6 +19,7 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化四向按键摇杆
         /// </summary>
@@ -69,17 +70,14 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
         }
 
         #region 静态
-        static float f_getSqrt0_5()
-        {
-            return (float)System.Math.Sqrt(0.5);
-        }
+
         #endregion
 
         #endregion
 
         #region 参数
 
-        private static readonly float cp_sqrt0_5 = f_getSqrt0_5();
+        //private static readonly float cp_sqrt0_5 = f_getSqrt0_5();
 
         [SerializeField] private KeyCode p_left;
 
@@ -242,7 +240,7 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                     if(p_horRev) return right ? -1 : 1;
                     return left ? -1 : 1;
                 }
-
+                const float cp_sqrt0_5 = Maths.FSqrt0p5;
                 //上下不一致
                 if (p_horRev) return right ? -cp_sqrt0_5 : cp_sqrt0_5;
                 return left ? -cp_sqrt0_5 : cp_sqrt0_5;
@@ -276,7 +274,7 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                     if(p_verRev) return up ? -1 : 1;
                     return down ? -1 : 1;
                 }
-
+                const float cp_sqrt0_5 = Maths.FSqrt0p5;
                 //左右不一致
                 if (p_verRev) return up ? -cp_sqrt0_5 : cp_sqrt0_5;
                 return down ? -cp_sqrt0_5 : cp_sqrt0_5;
@@ -311,6 +309,7 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                 down = f_isDown(p_down);
             }
 
+            const float cp_sqrt0_5 = Maths.FSqrt0p5;
             #endregion
 
             #region 判断条件并赋值

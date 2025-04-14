@@ -25,29 +25,52 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// <param name="right">表示向右的按钮</param>
         /// <param name="up">表示向上的按钮</param>
         /// <param name="down">表示向下的按钮</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException">按钮参数是null</exception>
         public JoystickByButton4Power(BaseButton left, BaseButton right, BaseButton up, BaseButton down)
         {
             if (left is null || right is null || up is null || down is null) throw new ArgumentNullException();
 
-            f_init(left, right, up, down);
-        }
-
-        void f_init(BaseButton left, BaseButton right, BaseButton up, BaseButton down)
-        {
             p_left = left;
             p_right = right;
             p_up = up;
             p_down = down;
+            p_isHorReverse = false;
+            p_isVerReverse = false;
         }
+
+        /// <summary>
+        /// 实例化4个按钮
+        /// </summary>
+        /// <param name="left">表示向左的按钮</param>
+        /// <param name="right">表示向右的按钮</param>
+        /// <param name="up">表示向上的按钮</param>
+        /// <param name="down">表示向下的按钮</param>
+        /// <param name="horizontalReverse">是否开启水平翻转</param>
+        /// <param name="verticalReverse">是否开启垂直翻转</param>
+        /// <exception cref="ArgumentNullException">按钮参数是null</exception>
+        public JoystickByButton4Power(BaseButton left, BaseButton right, BaseButton up, BaseButton down, bool horizontalReverse, bool verticalReverse)
+        {
+            if (left is null || right is null || up is null || down is null) throw new ArgumentNullException();
+
+            p_left = left;
+            p_right = right;
+            p_up = up;
+            p_down = down;
+            p_isHorReverse = horizontalReverse;
+            p_isVerReverse = verticalReverse;
+        }
+
         #endregion
 
         #region 参数
+
         private BaseButton p_left;
         private BaseButton p_right;
         private BaseButton p_up;
         private BaseButton p_down;
-        private bool p_isReverse;
+        private bool p_isHorReverse;
+        private bool p_isVerReverse;
+
         #endregion
 
         #region 功能
@@ -73,16 +96,14 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// 表示向下的按钮
         /// </summary>
         public override BaseButton DownButton => p_down;
+
         #endregion
 
         #region 派生
 
         #region 权限判断
 
-        public override bool CanGetFourwayButtons
-        {
-            get => true;
-        }
+        public override bool CanGetFourwayButtons => true;
 
         public override bool CanGetHorizontalComponent
         {
@@ -100,19 +121,27 @@ namespace Cheng.ButtonTemplates.Joysticks
         }
 
         public override bool CanGetHorizontalReverse => true;
+
+        public override bool CanGetVerticalReverse => true;
+
         #endregion
 
         #region 数据
 
         public override bool IsHorizontalReverse
         {
-            get => p_isReverse;
-            set => p_isReverse = value;
+            get => p_isHorReverse;
+            set => p_isHorReverse = value;
+        }
+
+        public override bool IsVerticalReverse
+        {
+            get => p_isVerReverse; 
+            set => p_isVerReverse = value; 
         }
 
         public override void GetVector(out float radian, out float length)
         {
-
             GetVectorRadionAndLength(Horizontal, Vertical, out radian, out length);
         }
 
@@ -127,7 +156,7 @@ namespace Cheng.ButtonTemplates.Joysticks
             get
             {
                 float left, right;
-                if (p_isReverse)
+                if (p_isHorReverse)
                 {
                     right = p_left.Power;
                     left = p_right.Power;
@@ -163,7 +192,7 @@ namespace Cheng.ButtonTemplates.Joysticks
             get
             {
                 float down, up;
-                if (p_isReverse)
+                if (p_isVerReverse)
                 {
                     up = p_left.Power;
                     down = p_right.Power;
@@ -184,7 +213,6 @@ namespace Cheng.ButtonTemplates.Joysticks
                 //if (dz) return up;
                 //if (uz) return -down;
 
-              
                 return up - down;
 
                 //if (down < up) return up - down;
@@ -197,10 +225,12 @@ namespace Cheng.ButtonTemplates.Joysticks
         {
             ThrowNotSupportedException();
         }
+
         public override void SetVectorAngle(float angle, float length)
         {
             ThrowNotSupportedException();
         }
+
         public override void SetVector(float radian, float length)
         {
             ThrowNotSupportedException();

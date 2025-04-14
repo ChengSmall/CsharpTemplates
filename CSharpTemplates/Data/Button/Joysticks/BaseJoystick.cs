@@ -188,11 +188,6 @@ namespace Cheng.ButtonTemplates.Joysticks
         {
             ThrowNotSupportedException();
             throw new NotSupportedException();
-            //if ((!CanGetVector) || (!CanGetComponent)) throw new NotSupportedException();
-
-            //float x, y;
-            //GetAxis(out x, out y);
-            //GetVectorRadionAndLength(x, y, out radian, out length);
         }
 
         /// <summary>
@@ -205,11 +200,6 @@ namespace Cheng.ButtonTemplates.Joysticks
         public virtual void SetVector(float radian, float length)
         {
             ThrowNotSupportedException();
-            //if (!CanSetVector) throw new NotSupportedException();
-            //if (radian < 0 || radian > 1 || length < 0 || length > 1) throw new ArgumentOutOfRangeException();
-            //float x, y;
-            //GetVectorComponent(radian, length, out x, out y);
-            //SetAxis(x, y);
         }
 
         /// <summary>
@@ -264,6 +254,7 @@ namespace Cheng.ButtonTemplates.Joysticks
         #endregion
 
         #region 事件
+
         /// <summary>
         /// 当摇杆数据变化时引发的事件，参数表示变化前的摇杆，x表示横轴，y表示纵轴
         /// </summary>
@@ -279,6 +270,7 @@ namespace Cheng.ButtonTemplates.Joysticks
                 ThrowNotSupportedException();
             }
         }
+
         #endregion
 
         #region 静态方法

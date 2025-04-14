@@ -2,7 +2,9 @@ using System;
 
 namespace Cheng.Algorithm.HashCodes
 {
+
     #region
+
     internal class Int32HashCode64 : BaseHashCode64<int>
     {
         public override long GetHashCode64(int value)
@@ -10,6 +12,7 @@ namespace Cheng.Algorithm.HashCodes
             return value.GetHashCode64();
         }
     }
+
     internal class Int64HashCode64 : BaseHashCode64<long>
     {
         public override long GetHashCode64(long value)
@@ -17,6 +20,7 @@ namespace Cheng.Algorithm.HashCodes
             return value.GetHashCode64();
         }
     }
+
     internal class UInt32HashCode64 : BaseHashCode64<uint>
     {
         public override long GetHashCode64(uint value)
@@ -24,6 +28,7 @@ namespace Cheng.Algorithm.HashCodes
             return value.GetHashCode64();
         }
     }
+
     internal class UInt64HashCode64 : BaseHashCode64<ulong>
     {
         public override long GetHashCode64(ulong value)
@@ -36,28 +41,28 @@ namespace Cheng.Algorithm.HashCodes
     {
         public override long GetHashCode64(short value)
         {
-            return value;
+            return value.GetHashCode64();
         }
     }
     internal class UInt16HashCode64 : BaseHashCode64<ushort>
     {
         public override long GetHashCode64(ushort value)
         {
-            return value;
+            return value.GetHashCode64();
         }
     }
     internal class ByteHashCode64 : BaseHashCode64<byte>
     {
         public override long GetHashCode64(byte value)
         {
-            return value;
+            return value.GetHashCode64();
         }
     }
     internal class SByteHashCode64 : BaseHashCode64<sbyte>
     {
         public override long GetHashCode64(sbyte value)
         {
-            return value;
+            return value.GetHashCode64();
         }
     }
 
@@ -65,7 +70,7 @@ namespace Cheng.Algorithm.HashCodes
     {
         public override long GetHashCode64(char value)
         {
-            return value;
+            return value.GetHashCode64();
         }
     }
     internal class StringHashCode64 : BaseHashCode64<string>

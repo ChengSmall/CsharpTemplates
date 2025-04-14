@@ -33,6 +33,7 @@ namespace Cheng.Algorithm
         {
             return radian / OneRadian;
         }
+
         /// <summary>
         /// 将角度制转化为弧度制
         /// </summary>
