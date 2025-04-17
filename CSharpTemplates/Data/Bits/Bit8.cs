@@ -184,7 +184,7 @@ namespace Cheng.DataStructure.Bits
 
         public int CompareTo(Bit8 other)
         {
-            return p_value < other.p_value ? 1 : (p_value == other.p_value ? 0 : 1);
+            return p_value - other.p_value;
         }
 
         public override bool Equals(object obj)

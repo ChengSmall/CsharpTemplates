@@ -10,6 +10,7 @@ namespace Cheng.Algorithm.Sorts.Comparers
     /// <typeparam name="T"></typeparam>
     public sealed class InvertComparer<T> : Comparer<T>
     {
+
         /// <summary>
         /// 实例化一个反转比较结果的比较器
         /// </summary>
@@ -19,6 +20,7 @@ namespace Cheng.Algorithm.Sorts.Comparers
             this.comparer = comparer ?? throw new ArgumentNullException();
             p_isInvert = true;
         }
+
         /// <summary>
         /// 实例化一个可反转比较结果的比较器
         /// </summary>
@@ -29,6 +31,7 @@ namespace Cheng.Algorithm.Sorts.Comparers
             this.comparer = comparer ?? throw new ArgumentNullException();
             p_isInvert = invert;
         }
+
         private IComparer<T> comparer;
 
         private bool p_isInvert;
@@ -47,7 +50,8 @@ namespace Cheng.Algorithm.Sorts.Comparers
 
         public sealed override int Compare(T x, T y)
         {
-            return p_isInvert ? (-comparer.Compare(x, y)) : comparer.Compare(x, y);
+            var re = comparer.Compare(x, y);
+            return p_isInvert ? (-re) : re;
         }
     }
 

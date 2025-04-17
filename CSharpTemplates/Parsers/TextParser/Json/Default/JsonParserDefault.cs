@@ -85,9 +85,14 @@ namespace Cheng.Json
         private bool p_jsonToKeyIsUnicode;
 
         /// <summary>
-        /// 对象转义字符单引号转义开关
+        /// 对象转义字符单引号从文本到对象的转义开关
         /// </summary>
         private bool p_jsonEscapeCharacterSingleQuotation;
+
+        /// <summary>
+        /// 从对象到文本的单引号转义字符开关
+        /// </summary>
+        private bool p_jsonWriterCharacterSingleQuotation;
 
         #endregion
 
@@ -679,6 +684,7 @@ namespace Cheng.Json
             }
 
         }
+
         #endregion
 
         #region number
@@ -1356,7 +1362,7 @@ namespace Cheng.Json
                 return true;
             }
 
-            if (c == '\'' && p_jsonEscapeCharacterSingleQuotation)
+            if (c == '\'' && p_jsonWriterCharacterSingleQuotation)
             {
                 esc = '\'';
                 return true;
@@ -1744,8 +1750,8 @@ namespace Cheng.Json
             p_jsonToTextIsUnicode = false;
             p_jsonToKeyIsUnicode = false;
             p_numStyles = TextParserNumStylesDefault;
-            p_jsonEscapeCharacterSingleQuotation = false;
-
+            p_jsonEscapeCharacterSingleQuotation = true;
+            p_jsonWriterCharacterSingleQuotation = false;
             try
             {
                 p_cultureInfo = CultureInfo.InvariantCulture;
@@ -1857,11 +1863,14 @@ namespace Cheng.Json
         }
 
         /// <summary>
-        /// 是否将单引号 ( ' ) 字符归类为转义字符检测和转化列表
+        /// 是否将单引号 ( ' ) 字符归类为转义字符检测
         /// </summary>
         /// <value>
-        /// <para>当值为true时，在进行转义字符转化或检测时会将单引号加入检测列表，因此若对象内出现这样的字符串 "it's" 时，会将其中的单引号按转义字符转化到文本，结果是"it\'s"，反之也一样；若值为false时，不会将单引号加入转义字符列表</para>
-        /// <para>该参数默认为false</para>
+        /// <para>
+        /// 当参数为true时，在进行转义字符检测时会将单引号加入检测列表；当遇到字符串 "it \'s" 时，会将 \' 识别为 '
+        /// </para>
+        /// <para>若参数为false，不会将单引号加入转义字符检测列表</para>
+        /// <para>该参数默认为true</para>
         /// </value>
         public bool EscapeCharacterSingleQuotation
         {
@@ -1869,6 +1878,22 @@ namespace Cheng.Json
             set
             {
                 p_jsonEscapeCharacterSingleQuotation = value;
+            }
+        }
+
+        /// <summary>
+        /// 是否将单引号 ( ' ) 字符归类为转义字符转化
+        /// </summary>
+        /// <value>
+        /// <para>当参数为true时，在将json对象实例写入到文本时，会将字符串内的单引号用 \' 的形式写入字符串；false则不会加转义字符 \ </para>
+        /// <para>该参数默认为false</para>
+        /// </value>
+        public bool WriterCharacterSingleQuotation
+        {
+            get => p_jsonWriterCharacterSingleQuotation;
+            set
+            {
+                p_jsonWriterCharacterSingleQuotation = value;
             }
         }
 
@@ -1910,7 +1935,7 @@ namespace Cheng.Json
         /// <para>
         /// 若该值设置为null，则不使用区域信息；将对象转化为文本时，跟随文本写入器的<see cref="TextWriter.FormatProvider"/>
         /// </para>
-        /// <para>初始化时默认为<see cref="CultureInfo.CurrentCulture"/></para>
+        /// <para>初始化时默认为<see cref="CultureInfo.InvariantCulture"/></para>
         /// </value>
         public CultureInfo ParserCultureInfo
         {
@@ -1924,6 +1949,7 @@ namespace Cheng.Json
         #endregion
 
         #region 功能
+
         /// <summary>
         /// 判断将json文本读取器是否拥有有效json格式，且将读取器推进到第一位有效字符的位置
         /// </summary>

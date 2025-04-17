@@ -105,33 +105,50 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// </summary>
         public override BaseButton DownButton => p_down;
 
-        public override bool CanGetFourwayButtons => true;        
-
         #endregion
 
         #region 派生
 
-        public override bool CanGetHorizontalComponent
+        public override JoystickAvailablePermissions AvailablePermissions
         {
             get
             {
-                return p_left.CanGetState && p_right.CanGetState;
-            }
-        }
+                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetFourwayButtons |
+                 JoystickAvailablePermissions.CanSetFourwayButtons |
+                 JoystickAvailablePermissions.CanSetAndGetAllReverse;
 
-        public override bool CanGetVerticalComponent
-        {
-            get
-            {
-                return p_up.CanGetState && p_down.CanGetState;
-            }
-        }
 
-        public override bool CanGetVector
-        {
-            get
-            {
-                return p_left.CanGetState && p_right.CanGetState && p_up.CanGetState && p_down.CanGetState;
+                var leftA = p_left.AvailablePermissions;
+                var rightA = p_right.AvailablePermissions;
+                var upA = p_up.AvailablePermissions;
+                var downA = p_down.AvailablePermissions;
+
+                JoystickAvailablePermissions jp = or;
+
+                bool LR_Power;
+                bool UD_Power;
+
+                LR_Power = (((leftA & (ButtonAvailablePermissions.CanGetState)) == ButtonAvailablePermissions.CanGetState) && ((rightA & (ButtonAvailablePermissions.CanGetState)) == ButtonAvailablePermissions.CanGetState));
+
+                if (LR_Power)
+                {
+                    jp |= JoystickAvailablePermissions.CanGetHorizontalComponent;
+                }
+
+                UD_Power = (((upA & (ButtonAvailablePermissions.CanGetState)) == ButtonAvailablePermissions.CanGetState) && ((downA & (ButtonAvailablePermissions.CanGetState)) == ButtonAvailablePermissions.CanGetState));
+
+                if (UD_Power)
+                {
+                    jp = JoystickAvailablePermissions.CanGetVerticalComponent;
+                }
+
+                if (LR_Power && UD_Power)
+                {
+                    jp |= JoystickAvailablePermissions.CanGetVector;
+                }
+
+                return jp;
+
             }
         }
 
@@ -728,14 +745,6 @@ namespace Cheng.ButtonTemplates.Joysticks
             }
             set { ThrowNotSupportedException(); }
         }
-
-        public override bool CanGetHorizontalReverse => true;
-
-        public override bool CanSetHorizontalReverse => true;
-
-        public override bool CanGetVerticalReverse => true;
-
-        public override bool CanSetVerticalReverse => true;
 
         public override bool IsHorizontalReverse
         { 

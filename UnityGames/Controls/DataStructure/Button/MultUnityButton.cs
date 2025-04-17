@@ -69,46 +69,40 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 权限重写
 
-        public override bool CanGetState
+        public override ButtonAvailablePermissions AvailablePermissions
         {
             get
             {
+                const ButtonAvailablePermissions or = UnityButtonAvailablePromissions |
+                    ButtonAvailablePermissions.CanGetMaxPower | ButtonAvailablePermissions.CanGetMinPower;
+
+                ButtonAvailablePermissions ap = or | ButtonAvailablePermissions.CanGetState |
+                    ButtonAvailablePermissions.CanGetChangeFrameButtonDown |
+                    ButtonAvailablePermissions.CanGetChangeFrameButtonUp |
+                    ButtonAvailablePermissions.CanGetPower;
+
                 int length = p_buttons.Length;
                 for (int i = 0; i < length; i++)
                 {
-                    if (!(p_buttons[i].CanGetState)) return false;
+                    var but = p_buttons[i];
+                    var bap = but.AvailablePermissions;
+
+                    if ((bap & ButtonAvailablePermissions.CanGetState) != ButtonAvailablePermissions.CanGetState)
+                    {
+                        ap &= ~(ButtonAvailablePermissions.AllGetStateAndPower);
+                    }
+                    if ((bap & ButtonAvailablePermissions.CanGetChangeFrameButtonDown) != ButtonAvailablePermissions.CanGetChangeFrameButtonDown)
+                    {
+                        ap &= ~(ButtonAvailablePermissions.CanGetChangeFrameButtonDown);
+                    }
+                    if ((bap & ButtonAvailablePermissions.CanGetChangeFrameButtonUp) != ButtonAvailablePermissions.CanGetChangeFrameButtonUp)
+                    {
+                        ap &= ~(ButtonAvailablePermissions.CanGetChangeFrameButtonUp);
+                    }
                 }
-                return true;
-            }
-        }
 
-        public override bool CanGetPower
-        {
-            get
-            {
-                return CanGetState;
-                //int length = p_buttons.Length;
-                //for (int i = 0; i < length; i++)
-                //{
-                //    if (!(p_buttons[i].CanGetPower)) return false;
-                //}
-                //return true;
-            }
-        }
 
-        public override bool CanGetMaxPower => true;
-
-        public override bool CanGetChangeFrameButtonDown
-        {
-            get
-            {
-                int length = p_buttons.Length;
-                int i;
-                for (i = 0; i < length; i++)
-                {
-                    if (!(p_buttons[i].CanGetChangeFrameButtonDown)) return false;
-                }
-                return true;
+                return ap;
             }
         }
 
@@ -216,6 +210,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
                 return false;
             }
         }
+
         #endregion
 
         #region 集合功能

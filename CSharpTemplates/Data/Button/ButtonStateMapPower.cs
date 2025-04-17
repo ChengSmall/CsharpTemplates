@@ -39,24 +39,26 @@ namespace Cheng.ButtonTemplates
 
         #region 派生
 
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get
+            {
+                const ButtonAvailablePermissions or =
+                    ButtonAvailablePermissions.CanGetInternalButton |
+                    ButtonAvailablePermissions.CanSetInternalButton;
 
-        public override bool CanGetInternalButton => true;
-        public override bool CanSetInternalButton => true;
+                const ButtonAvailablePermissions and = 
+                    ~ButtonAvailablePermissions.CanSetPower;
+
+                return (p_button.AvailablePermissions | or) & and;
+            }
+        }
 
         public override BaseButton InternalButton
         {
             get => p_button;
             set => p_button = value;
         }
-
-
-        public override bool CanGetState => p_button.CanGetState;
-        public override bool CanSetState => p_button.CanSetState;
-        public override bool CanGetPower => p_button.CanSetState;
-        public override bool CanSetPower => false;
-        public override bool CanButtonDownEvent => p_button.CanButtonDownEvent;
-        public override bool CanButtonUpEvent => p_button.CanButtonUpEvent;
-        public override bool CanGetMinPower => p_button.CanGetMinPower;
 
         public override bool ButtonState
         { 
@@ -67,12 +69,22 @@ namespace Cheng.ButtonTemplates
         /// <summary>
         /// 使用按钮状态映射按钮力度
         /// </summary>
-        /// <returns>按钮状态为true时，力度返回<see cref="MaxPower"/>，状态为false时返回<see cref="MinPower"/></returns>
+        /// <returns>
+        /// <para>按钮状态为true时，力度返回<see cref="MaxPower"/>，状态为false时返回<see cref="MinPower"/></para>
+        /// <para>如果没有最大或最小力度的访问权限，则使用1和0代替</para>
+        /// </returns>
         /// <exception cref="NotSupportedException">无法设置按钮力度</exception>
         public override float Power 
         {
             get
             {
+                var ap = p_button.AvailablePermissions;
+
+                if(((ap & ButtonAvailablePermissions.CanGetMaxPower) != ButtonAvailablePermissions.CanGetMaxPower) || ((ap & ButtonAvailablePermissions.CanGetMinPower) != ButtonAvailablePermissions.CanGetMinPower))
+                {
+                    return p_button.ButtonState ? 1 : 0;
+                }
+
                 return p_button.ButtonState ? p_button.MaxPower : p_button.MinPower;
             }
             set
@@ -81,12 +93,6 @@ namespace Cheng.ButtonTemplates
             }
         }
 
-        public override bool CanGetChangeFrameButtonDown => p_button.CanGetChangeFrameButtonDown;
-
-        public override bool CanGetChangeFrameButtonUp => p_button.CanGetChangeFrameButtonUp;
-
-        public override bool CanGetMaxPower => true;
-
         public override float MinPower => p_button.MinPower;
 
         public override float MaxPower => p_button.MaxPower;
@@ -94,8 +100,6 @@ namespace Cheng.ButtonTemplates
         public override bool ButtonUp => p_button.ButtonUp;
 
         public override bool ButtonDown => p_button.ButtonDown;
-
-        public override bool CanButtonClick => p_button.CanButtonClick;
 
         public override long NowFrame => p_button.NowFrame;
 

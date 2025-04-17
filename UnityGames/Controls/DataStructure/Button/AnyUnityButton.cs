@@ -40,15 +40,14 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 权限
 
-        public override bool CanGetState => true;
-
-        public override bool CanGetChangeFrameButtonDown => true;
-
-        public override bool CanGetPower => true;
-
-        public override bool CanGetMaxPower => true;
-
-        public override bool CanGetMinPower => true;
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get => UnityButtonAvailablePromissions | ButtonAvailablePermissions.CanGetState |
+                 ButtonAvailablePermissions.CanGetPower |
+                 ButtonAvailablePermissions.CanGetMaxPower |
+                 ButtonAvailablePermissions.CanGetMinPower |
+                 ButtonAvailablePermissions.CanGetChangeFrameButtonDown;
+        }
 
         #endregion
 
@@ -76,7 +75,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
             }
             set => ThrowSupportedException();
         }
-
 
         public override float Power 
         {

@@ -380,12 +380,7 @@ namespace Cheng.Controllers.Unitys.UnityEditors
             Rect pos_leftMenu, pos_rightMenu;
             Rect pos_joy1Down, pos_joy2Down;
 
-            //Rect pos_joy1_label, pos_joy2_label, pos_joy3_label;
-            //Rect pos_A_label, pos_B_label, pos_X_label, pos_Y_label,
-            //Rect pos_L_label, pos_R_label;
             Rect pos_LZ_label, pos_RZ_label;
-            //Rect pos_leftMenu_label, pos_rightMenu_label;
-            //Rect pos_joy1Down_label, pos_joy2Down_label;
 
             Rect pos_keys_label;
 
@@ -431,7 +426,7 @@ namespace Cheng.Controllers.Unitys.UnityEditors
                 var label_uAxis_her = new GUIContent("横轴");
                 var label_uAxis_ver = new GUIContent("纵轴");
 
-                //三个摇杆绘制            
+                //三个摇杆绘制
 
                 parter.joy1_open = UnityEditorAxisDraw.OnGUIDraw(
                     pos_joy1, pro_joy1, labels.label_joy1,

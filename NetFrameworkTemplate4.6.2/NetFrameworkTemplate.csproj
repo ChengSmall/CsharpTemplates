@@ -24,7 +24,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -84,7 +84,6 @@
     <Compile Include="Processes\ProcessAccessFlags.cs" />
     <Compile Include="Processes\ProcessOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Text\TextCountEnumator.cs" />
     <Compile Include="Threads\LoopThread\LoopFunction.cs" />
     <Compile Include="Threads\LoopThread\LoopStructure.cs" />
     <Compile Include="Threads\SingleThreadTask\SingleTask.cs" />
@@ -107,12 +106,10 @@
     <Folder Include="Algorithm\Pathfindings\" />
     <Folder Include="Device\" />
     <Folder Include="IO\" />
+    <Folder Include="Text\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
-del /q "$(TargetDir)$(TargetName).pdb"
-)
-del /q "$(TargetDir)$(TargetFileName).config"</PostBuildEvent>
+    <PostBuildEvent>del /q "$(TargetDir)$(TargetFileName).config"</PostBuildEvent>
   </PropertyGroup>
 </Project>

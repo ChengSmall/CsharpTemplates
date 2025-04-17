@@ -27,13 +27,20 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 派生
 
-        public override bool CanGetState => Input.touchSupported;
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get
+            {
 
-        public override bool CanGetPower => Input.touchSupported;
+                if(Input.touchSupported) return ButtonAvailablePermissions.CanGetState |
+                 ButtonAvailablePermissions.CanGetPower |
+                 ButtonAvailablePermissions.CanGetChangeFrameButtonUp |
+                 ButtonAvailablePermissions.CanGetChangeFrameButtonDown | 
+                    UnityButtonAvailablePromissions;
 
-        public override bool CanGetChangeFrameButtonDown => Input.touchSupported;
-
-        public override bool CanGetChangeFrameButtonUp => Input.touchSupported;
+                return UnityButtonAvailablePromissions;
+            }
+        }
 
         /// <summary>
         /// 如果有手指触摸在了设备上，返回true，否则返回false

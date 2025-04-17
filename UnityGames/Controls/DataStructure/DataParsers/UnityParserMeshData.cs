@@ -1,3 +1,5 @@
+#if DEBUG
+
 using System;
 using System.Collections.Generic;
 using System.Collections;
@@ -40,3 +42,5 @@ namespace Cheng.Streams.Parsers.Default.Unitys
 
 
 }
+
+#endif

@@ -77,8 +77,6 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
         #region 参数
 
-        //private static readonly float cp_sqrt0_5 = f_getSqrt0_5();
-
         [SerializeField] private KeyCode p_left;
 
         [SerializeField] private KeyCode p_right;
@@ -175,14 +173,11 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
         #region 权限重写
 
-        public sealed override bool CanGetVector => true;
-        public sealed override bool CanGetHorizontalComponent => true;
-        public sealed override bool CanGetVerticalComponent => true;
-        public sealed override bool CanGetHorizontalReverse => true;
-        public sealed override bool CanGetVerticalReverse => true;
-
-        public sealed override bool CanSetHorizontalReverse => true;
-        public sealed override bool CanSetVerticalReverse => true;
+        public override JoystickAvailablePermissions AvailablePermissions
+        {
+            get => JoystickAvailablePermissions.CanSetAndGetAllReverse |
+                   JoystickAvailablePermissions.CanGetAllJoystick;
+        }
 
         /// <summary>
         /// 是否反转横轴
@@ -865,6 +860,8 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
             #endregion
         }
 
+        #region
+
         public sealed override void SetAxis(float horizontal, float vertical)
         {
             ThrowNotSupportedException();
@@ -879,6 +876,8 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
         {
             ThrowNotSupportedException();
         }
+
+        #endregion
 
         #endregion
 

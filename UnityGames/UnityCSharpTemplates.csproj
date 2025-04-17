@@ -44,7 +44,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\UnityEditor\UnityCSharpTemplates.xml</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
@@ -55,7 +55,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\UnityWindows\UnityCSharpTemplates.xml</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
@@ -66,7 +66,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\UnityAndroid\UnityCSharpTemplates.xml</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
@@ -104,7 +104,6 @@
     <Compile Include="Controls\DataEditor\Decimal\UDecimal.cs" />
     <Compile Include="Controls\DataEditor\DisplayNameAttribute.cs" />
     <Compile Include="Controls\DataStructure\Button\AnyUnityButton.cs" />
-    <Compile Include="Controls\DataStructure\Button\ConditionButtons\ConditionButton.cs" />
     <Compile Include="Controls\DataEditor\EditorGUIParser.cs" />
     <Compile Include="Controls\DataStructure\Button\Editor\EditorMultKeyCodeDraw.cs" />
     <Compile Include="Controls\DataStructure\Button\Editor\UnityAxisButtonEditorDraw.cs" />
@@ -123,7 +122,6 @@
     <Compile Include="Controls\DataStructure\Button\UnityNameButton\UnityNameButton.cs" />
     <Compile Include="Controls\DataStructure\Button\MultUnityButton.cs" />
     <Compile Include="Controls\DataStructure\Button\UnityButtonTemplate.cs" />
-    <Compile Include="Controls\DataStructure\Button\UnityClickButton.cs" />
     <Compile Include="Controls\DataStructure\Collection\Editor\UListGUIEditorDraw.cs" />
     <Compile Include="Controls\DataStructure\Collection\UList.cs" />
     <Compile Include="Controls\DataStructure\DataParsers\UnityParserMeshData.cs" />
@@ -167,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\DataStructure\Button\Androids\" />
+    <Folder Include="Controls\DataStructure\Button\ConditionButtons\" />
     <Folder Include="Controls\DataStructure\Gun\" />
     <Folder Include="Controls\MonoBehaviours\Camera\3D\" />
     <Folder Include="DEBUG\MonoBehaviour\" />
@@ -176,9 +175,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
-del /q "$(TargetDir)$(TargetName).pdb"
-)
-del /q "$(TargetDir)$(TargetFileName).config"</PostBuildEvent>
+    <PostBuildEvent>del /q "$(TargetDir)$(TargetFileName).config"</PostBuildEvent>
   </PropertyGroup>
 </Project>

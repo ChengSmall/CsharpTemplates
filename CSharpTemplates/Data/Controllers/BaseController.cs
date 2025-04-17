@@ -79,7 +79,7 @@ namespace Cheng.Controllers
         /// <returns>指定编号索引的摇杆</returns>
         /// <exception cref="NotSupportedException">无法获取指定编号的摇杆</exception>
         /// <exception cref="InvalidCastException">无法将按钮转化成类型<typeparamref name="T"/></exception>
-        public virtual T GetJoystick<T>(int index) where T : BaseJoystick
+        public T GetJoystick<T>(int index) where T : BaseJoystick
         {
             return (T)GetJoystick(index);
         }
@@ -89,36 +89,43 @@ namespace Cheng.Controllers
         /// </summary>
         /// <exception cref="NotSupportedException">无法访问或没有此摇杆</exception>
         public virtual BaseJoystick Joystick1 => GetJoystick(0);
+
         /// <summary>
         /// 获取手柄2号摇杆
         /// </summary>
         /// <exception cref="NotSupportedException">无法访问或没有此摇杆</exception>
         public virtual BaseJoystick Joystick2 => GetJoystick(1);
+
         /// <summary>
         /// 获取手柄3号摇杆
         /// </summary>
         /// <exception cref="NotSupportedException">无法访问或没有此摇杆</exception>
         public virtual BaseJoystick Joystick3 => GetJoystick(2);
+
         /// <summary>
         /// 获取手柄4号摇杆
         /// </summary>
         /// <exception cref="NotSupportedException">无法访问或没有此摇杆</exception>
         public virtual BaseJoystick Joystick4 => GetJoystick(3);
+
         /// <summary>
         /// 获取手柄5号摇杆
         /// </summary>
         /// <exception cref="NotSupportedException">无法访问或没有此摇杆</exception>
         public virtual BaseJoystick Joystick5 => GetJoystick(4);
+
         /// <summary>
         /// 获取手柄6号摇杆
         /// </summary>
         /// <exception cref="NotSupportedException">无法访问或没有此摇杆</exception>
         public virtual BaseJoystick Joystick6 => GetJoystick(5);
+
         /// <summary>
         /// 获取手柄7号摇杆
         /// </summary>
         /// <exception cref="NotSupportedException">无法访问或没有此摇杆</exception>
         public virtual BaseJoystick Joystick7 => GetJoystick(6);
+
         /// <summary>
         /// 获取手柄8号摇杆
         /// </summary>
@@ -147,7 +154,7 @@ namespace Cheng.Controllers
         /// <returns>指定编号索引的按钮</returns>
         /// <exception cref="NotSupportedException">无法获取指定编号的按钮</exception>
         /// <exception cref="InvalidCastException">无法转换到类型<typeparamref name="T"/></exception>
-        public virtual T GetButton<T>(int index) where T : BaseButton
+        public T GetButton<T>(int index) where T : BaseButton
         {
             return (T)GetButton(index);
         }
@@ -343,6 +350,7 @@ namespace Cheng.Controllers
         /// </summary>
         /// <exception cref="NotSupportedException">无法访问或没有此按钮</exception>
         public virtual BaseButton Button32 => GetButton(31);
+
         #endregion
 
         #region 其它

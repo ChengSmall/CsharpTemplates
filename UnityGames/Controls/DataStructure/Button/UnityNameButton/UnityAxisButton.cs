@@ -99,9 +99,11 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 派生
 
-        public override bool CanGetState => true;
-        public override bool CanGetPower => true;
-        public override bool CanGetChangeFrameButtonDown => false;
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get => ButtonAvailablePermissions.AllGetStateAndPower |
+                 UnityButtonAvailablePromissions;
+        }
 
         /// <summary>
         /// 表示按钮状态

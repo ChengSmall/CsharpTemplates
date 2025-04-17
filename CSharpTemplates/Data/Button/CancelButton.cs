@@ -54,40 +54,28 @@ namespace Cheng.ButtonTemplates
 
         #region 派生
 
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get
+            {
+                const ButtonAvailablePermissions or =
+                    ButtonAvailablePermissions.CanGetInternalButton |
+                    ButtonAvailablePermissions.CanSetInternalButton;
 
-        public override bool CanGetInternalButton => true;
-        public override bool CanSetInternalButton => true;
+                const ButtonAvailablePermissions and =
+                    ~(ButtonAvailablePermissions.CanButtonDownEvent |
+                    ButtonAvailablePermissions.CanButtonUpEvent |
+                    ButtonAvailablePermissions.CanButtonClick);
+
+                return (p_button.AvailablePermissions | or) & and;
+            }
+        }
 
         public override BaseButton InternalButton
         {
             get => p_button;
             set => p_button = value;
         }
-
-
-        public override bool CanGetState => p_button.CanGetState;
-
-        public override bool CanSetState => false;
-
-        public override bool CanGetPower => p_button.CanGetPower;
-
-        public override bool CanSetPower => false;
-
-        public override bool CanGetMaxPower => p_button.CanGetMaxPower;
-
-        public override bool CanGetMinPower => p_button.CanGetMinPower;
-
-        public override bool CanButtonDownEvent => false;
-
-        public override bool CanButtonUpEvent => false;
-
-        public override bool CanButtonClick => false;
-
-        public override bool CanGetChangeFrameButtonDown => p_button.CanGetChangeFrameButtonDown;
-
-        public override bool CanGetChangeFrameButtonUp => p_button.CanGetChangeFrameButtonUp;
-
-        public override bool CanGetFrameValue => p_button.CanGetFrameValue;
 
         /// <summary>
         /// 访问按钮状态
@@ -100,7 +88,10 @@ namespace Cheng.ButtonTemplates
             {
                 return ((!p_cancel) && p_button.ButtonState);
             }
-            set => ThrowSupportedException();
+            set
+            {
+                p_button.ButtonState = value;
+            }
         }
 
         /// <summary>
@@ -112,9 +103,12 @@ namespace Cheng.ButtonTemplates
         { 
             get
             {
-                return p_cancel ? (p_button.CanGetMaxPower ? p_button.MinPower : 0) : p_button.Power;
+                return p_cancel ? (p_button.CanGetMinPower ? p_button.MinPower : 0) : p_button.Power;
             }
-            set => ThrowSupportedException();
+            set
+            {
+                p_button.Power = value;
+            }
         }
 
         /// <summary>
@@ -142,7 +136,6 @@ namespace Cheng.ButtonTemplates
                 return ((!p_cancel) && p_button.ButtonUp);
             }
         }
-
 
         public override float MaxPower => p_button.MaxPower;
 

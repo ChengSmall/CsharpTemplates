@@ -248,6 +248,8 @@ namespace Cheng.Algorithm.Compressions.Systems
 
         #region 权限重写
 
+        public override bool CanGetParserData => true;
+
         public override bool CanAddData
         {
             get

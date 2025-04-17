@@ -9,7 +9,6 @@ namespace Cheng.ButtonTemplates
     public abstract class ResourceButton : BaseButton , IDisposable
     {
 
-
         #region 释放
 
         /// <summary>
@@ -77,7 +76,6 @@ namespace Cheng.ButtonTemplates
         }
 
         #endregion
-
 
         #endregion
 

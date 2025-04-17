@@ -201,7 +201,7 @@ namespace Cheng.Controllers.Unitys
 
         #endregion
 
-        #region 功能    
+        #region 功能
 
         #region 参数访问
 
@@ -483,13 +483,6 @@ namespace Cheng.Controllers.Unitys
             }
         }
 
-
-        public override T GetJoystick<T>(int index)
-        {
-            return (T)GetJoystick(index);
-        }
-
-
         public override BaseButton GetButton(int index)
         {
             switch (index)
@@ -521,12 +514,6 @@ namespace Cheng.Controllers.Unitys
                 default:
                     throw new NotSupportedException();
             }
-        }
-
-
-        public override T GetButton<T>(int index)
-        {
-            return (T)GetButton(index);
         }
 
         #endregion

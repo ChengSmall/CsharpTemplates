@@ -82,26 +82,35 @@ namespace Cheng.Controllers
         Button30 = 0b10000000_00000000_00000000_000000,
         Button31 = 0b10000000_00000000_00000000_0000000,
         Button32 = 0b10000000_00000000_00000000_00000000,
+
         /// <summary>
         /// 表示拥有编号为1-4的按钮
         /// </summary>
         Top4 = 0b1111,
+
         /// <summary>
         /// 表示拥有编号为1-8的按钮
         /// </summary>
         Top8 = byte.MaxValue,
+
         /// <summary>
         /// 表示拥有编号为1-10的按钮
         /// </summary>
         Top10 = 0b11_11111111,
+
         /// <summary>
         /// 表示拥有编号为1-12的按钮
         /// </summary>
         Top12 = 0b1111_11111111,
+
         /// <summary>
         /// 表示拥有编号为1-13的按钮
         /// </summary>
         Top13 = 0b00011111_11111111,
+
+        /// <summary>
+        /// 拥有全部32个按钮
+        /// </summary>
         All = uint.MaxValue,
     }
 

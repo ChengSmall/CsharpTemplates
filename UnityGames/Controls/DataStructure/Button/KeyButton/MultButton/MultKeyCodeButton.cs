@@ -92,9 +92,18 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 派生
 
-        public override bool CanGetState => true;
-        public override bool CanGetPower => true;
-        public override bool CanGetChangeFrameButtonDown => true;
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get
+            {
+                return UnityButtonAvailablePromissions |
+                 ButtonAvailablePermissions.CanGetState |
+                 ButtonAvailablePermissions.CanGetChangeFrameButtonUp |
+                 ButtonAvailablePermissions.CanGetChangeFrameButtonDown |
+                 ButtonAvailablePermissions.AllGetPowerPermissions;
+            }
+        }
+
         /// <summary>
         /// 使用<see cref="Input.GetKey(KeyCode)"/>映射多个键码
         /// </summary>
@@ -128,6 +137,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
             }
             set => ThrowSupportedException();
         }
+
         /// <summary>
         /// 使用<see cref="Input.GetKeyDown(KeyCode)"/>映射多个键码
         /// </summary>
@@ -160,6 +170,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
                 return false;
             }
         }
+
         /// <summary>
         /// 使用<see cref="Input.GetKeyUp(KeyCode)"/>映射多个键码
         /// </summary>
@@ -192,6 +203,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
                 return false;
             }
         }
+
         /// <summary>
         /// 使用按钮状态映射力度值，false表示0，true表示1
         /// </summary>
@@ -204,15 +216,23 @@ namespace Cheng.ButtonTemplates.UnityButtons
             set => ThrowSupportedException();
         }
 
-        public override bool CanGetMaxPower => true;
         /// <summary>
         /// 最大值为1
         /// </summary>
-        public override float MaxPower => 1;
+        public override float MaxPower 
+        {
+            get => 1; 
+            set => ThrowSupportedException();
+        }
+
         /// <summary>
         /// 最小值为0
         /// </summary>
-        public override float MinPower => 0;
+        public override float MinPower
+        {
+            get => 0;
+            set => ThrowSupportedException();
+        }
 
         #endregion
 

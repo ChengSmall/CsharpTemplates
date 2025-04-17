@@ -75,19 +75,19 @@ namespace Cheng.DataStructure.Hashs
         public void ValueToString(bool upper, char link, char* strBuffer)
         {
             int index = 0;
-            s1.ValueToX16Text(upper, strBuffer);
+            s1.ValueToFixedX16Text(upper, strBuffer);
             index += 16;
             strBuffer[index] = link;
             index++;
-            s2.ValueToX16Text(upper, strBuffer + index);
+            s2.ValueToFixedX16Text(upper, strBuffer + index);
             index += 16;
             strBuffer[index] = link;
             index++;
-            s3.ValueToX16Text(upper, strBuffer + index);
+            s3.ValueToFixedX16Text(upper, strBuffer + index);
             index += 16;
             strBuffer[index] = link;
             index++;
-            s4.ValueToX16Text(upper, strBuffer + index);
+            s4.ValueToFixedX16Text(upper, strBuffer + index);
         }
 
         /// <summary>

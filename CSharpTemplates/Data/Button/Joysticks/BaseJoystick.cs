@@ -4,6 +4,7 @@ using System;
 
 namespace Cheng.ButtonTemplates.Joysticks
 {
+
     /// <summary>
     /// 摇杆事件委托
     /// </summary>
@@ -19,6 +20,128 @@ namespace Cheng.ButtonTemplates.Joysticks
     public delegate void JoystickEvent<Arg>(BaseJoystick joystick, Arg arg);
 
     /// <summary>
+    /// 摇杆控制器权限枚举
+    /// </summary>
+    [Flags]
+    public enum JoystickAvailablePermissions : uint
+    {
+
+        /// <summary>
+        /// 空值
+        /// </summary>
+        None = 0,
+
+        #region
+
+        #region
+
+        /// <summary>
+        /// 允许获取摇杆水平数据分量
+        /// </summary>
+        CanGetHorizontalComponent = 0b00000001,
+
+        /// <summary>
+        /// 允许获取摇杆垂直数据分量
+        /// </summary>
+        CanGetVerticalComponent = 0b00000010,
+
+        /// <summary>
+        /// 允许设置摇杆水平数据分量
+        /// </summary>
+        CanSetHorizontalComponent = 0b00000100,
+
+        /// <summary>
+        /// 允许设置摇杆垂直数据分量
+        /// </summary>
+        CanSetVerticalComponent = 0b00001000,
+
+        #endregion
+
+        #region
+
+        /// <summary>
+        /// 允许获取摇杆偏移轴数据
+        /// </summary>
+        CanGetVector = 0b00010000,
+
+        /// <summary>
+        /// 允许设置摇杆偏移轴数据
+        /// </summary>
+        CanSetVector = 0b00100000,
+
+        #endregion
+
+        /// <summary>
+        /// 允许访问水平方向摇杆反转参数
+        /// </summary>
+        CanGetHorizontalReverse = 0b01000000,
+
+        /// <summary>
+        /// 允许访问垂直方向摇杆反转参数
+        /// </summary>
+        CanGetVerticalReverse = 0b10000000,
+
+        /// <summary>
+        /// 允许设置水平方向摇杆反转参数
+        /// </summary>
+        CanSetHorizontalReverse = 0b00000001_00000000,
+
+        /// <summary>
+        /// 允许设置垂直方向摇杆反转参数
+        /// </summary>
+        CanSetVerticalReverse = 0b00000010_00000000,
+
+        /// <summary>
+        /// 允许访问和设置两个方向的摇杆反转参数
+        /// </summary>
+        CanSetAndGetAllReverse = CanGetHorizontalReverse | CanGetVerticalReverse |
+            CanSetHorizontalReverse | CanSetVerticalReverse,
+
+        #endregion
+
+        #region
+
+        /// <summary>
+        /// 允许使用摇杆数据改变事件
+        /// </summary>
+        CanChangeEvent = 0b00000100_00000000,
+
+        /// <summary>
+        /// 允许将摇杆参数当作四向按钮获取参数
+        /// </summary>
+        CanGetFourwayButtons = 0b00001000_00000000,
+
+        /// <summary>
+        /// 允许将摇杆参数当作四向按钮设置参数
+        /// </summary>
+        CanSetFourwayButtons = 0b00010000_00000000,
+
+        #endregion
+
+        #region 组合
+
+        /// <summary>
+        /// 允许获取垂直方向和竖直方向以及摇杆偏移数据
+        /// </summary>
+        CanGetAllJoystick = CanGetVector |
+            CanGetHorizontalComponent | CanGetVerticalComponent,
+
+        /// <summary>
+        /// 允许除了<see cref="CanChangeEvent"/>、<see cref="CanGetFourwayButtons"/>和<see cref="CanSetFourwayButtons"/>之外的所有权限
+        /// </summary>
+        NotEventAndButtons = ~(CanGetFourwayButtons | CanChangeEvent | CanSetFourwayButtons),
+
+        /// <summary>
+        /// 拥有所有权限
+        /// </summary>
+        AllPermissions = 0xFFFFFFFF,
+
+        #endregion
+
+    }
+
+
+    /// <summary>
     /// 表示一个摇杆控制器的基类
     /// </summary>
     /// <remarks>
@@ -30,64 +153,73 @@ namespace Cheng.ButtonTemplates.Joysticks
         #region 权限判断
 
         /// <summary>
+        /// 此摇杆的所有权限
+        /// </summary>
+        public virtual JoystickAvailablePermissions AvailablePermissions
+        {
+            get => JoystickAvailablePermissions.None;
+        }
+
+        /// <summary>
         /// 此摇杆是否允许获取摇杆水平数据分量
         /// </summary>
-        public virtual bool CanGetHorizontalComponent => false;
+        public bool CanGetHorizontalComponent => (AvailablePermissions & JoystickAvailablePermissions.CanGetHorizontalComponent) == JoystickAvailablePermissions.CanGetHorizontalComponent;
 
         /// <summary>
         /// 此摇杆是否允许获取摇杆垂直数据分量
         /// </summary>
-        public virtual bool CanGetVerticalComponent => false;
+        public bool CanGetVerticalComponent => (AvailablePermissions & JoystickAvailablePermissions.CanGetVerticalComponent) == JoystickAvailablePermissions.CanGetVerticalComponent;
 
         /// <summary>
         /// 此摇杆是否允许设置摇杆水平数据分量
         /// </summary>
-        public virtual bool CanSetHorizontalComponent => false;
+        public bool CanSetHorizontalComponent => (AvailablePermissions & JoystickAvailablePermissions.CanSetHorizontalComponent) == JoystickAvailablePermissions.CanSetHorizontalComponent;
 
         /// <summary>
         /// 此摇杆是否允许设置摇杆垂直数据分量
         /// </summary>
-        public virtual bool CanSetVerticalComponent => false;
+        public bool CanSetVerticalComponent => (AvailablePermissions & JoystickAvailablePermissions.CanSetVerticalComponent) == JoystickAvailablePermissions.CanSetVerticalComponent;
 
         /// <summary>
         /// 此摇杆是否允许获取摇杆偏移轴数据
         /// </summary>
-        public virtual bool CanGetVector => false;
+        public bool CanGetVector => (AvailablePermissions & JoystickAvailablePermissions.CanGetVector) == JoystickAvailablePermissions.CanGetVector;
 
         /// <summary>
         /// 此摇杆是否允许设置摇杆偏移轴数据
         /// </summary>
-        public virtual bool CanSetVector => false;
+        public bool CanSetVector => (AvailablePermissions & JoystickAvailablePermissions.CanSetVector) == JoystickAvailablePermissions.CanSetVector;
 
         /// <summary>
         /// 此摇杆是否使用摇杆数据改变事件
         /// </summary>
-        public virtual bool CanChangeEvent => false;
+        public bool CanChangeEvent => (AvailablePermissions & JoystickAvailablePermissions.CanChangeEvent) == JoystickAvailablePermissions.CanChangeEvent;
 
         /// <summary>
         /// 是否允许将摇杆参数当作四向按钮获取参数
         /// </summary>
-        public virtual bool CanGetFourwayButtons => false;
+        public bool CanGetFourwayButtons => (AvailablePermissions & JoystickAvailablePermissions.CanGetFourwayButtons) == JoystickAvailablePermissions.CanGetFourwayButtons;
 
         /// <summary>
         /// 是否支持访问水平摇杆轴反转参数
         /// </summary>
-        public virtual bool CanGetHorizontalReverse => false;
+        public bool CanGetHorizontalReverse => (AvailablePermissions & JoystickAvailablePermissions.CanGetHorizontalReverse) == JoystickAvailablePermissions.CanGetHorizontalReverse;
 
         /// <summary>
         /// 是否支持设置水平摇杆轴反转参数
         /// </summary>
-        public virtual bool CanSetHorizontalReverse => false;
+        public bool CanSetHorizontalReverse => (AvailablePermissions & JoystickAvailablePermissions.CanSetHorizontalReverse) == JoystickAvailablePermissions.CanSetHorizontalReverse;
 
         /// <summary>
         /// 是否支持访问垂直摇杆轴反转参数
         /// </summary>
-        public virtual bool CanGetVerticalReverse => false;
+        public bool CanGetVerticalReverse => (AvailablePermissions & JoystickAvailablePermissions.CanGetVerticalReverse) == JoystickAvailablePermissions.CanGetVerticalReverse;
 
         /// <summary>
         /// 是否支持设置垂直摇杆轴反转参数
         /// </summary>
-        public virtual bool CanSetVerticalReverse => false;
+        public bool CanSetVerticalReverse => (AvailablePermissions & JoystickAvailablePermissions.CanSetVerticalReverse) == JoystickAvailablePermissions.CanSetVerticalReverse;
+
         #endregion
 
         #region 参数
@@ -142,36 +274,44 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// 将摇杆左侧偏移当作按钮访问或设置参数
         /// </summary>
         /// <exception cref="NotSupportedException">没有此功能</exception>
+        /// <exception cref="ArgumentNullException">设置的按钮是null</exception>
         public virtual BaseButton LeftButton
         {
             get => ThrowNotSupportedException<BaseButton>();
+            set => ThrowNotSupportedException();
         }
 
         /// <summary>
         /// 将摇杆右侧偏移当作按钮访问或设置参数
         /// </summary>
         /// <exception cref="NotSupportedException">没有此功能</exception>
+        /// <exception cref="ArgumentNullException">设置的按钮是null</exception>
         public virtual BaseButton RightButton
         {
             get => ThrowNotSupportedException<BaseButton>();
+            set => ThrowNotSupportedException();
         }
 
         /// <summary>
         /// 将摇杆上方偏移当作按钮访问或设置参数
         /// </summary>
         /// <exception cref="NotSupportedException">没有此功能</exception>
+        /// <exception cref="ArgumentNullException">设置的按钮是null</exception>
         public virtual BaseButton UpButton
         {
             get => ThrowNotSupportedException<BaseButton>();
+            set => ThrowNotSupportedException();
         }
 
         /// <summary>
         /// 将摇杆下方偏移当作按钮访问或设置参数
         /// </summary>
         /// <exception cref="NotSupportedException">没有此功能</exception>
+        /// <exception cref="ArgumentNullException">设置的按钮是null</exception>
         public virtual BaseButton DownButton
         {
             get => ThrowNotSupportedException<BaseButton>();
+            set => ThrowNotSupportedException();
         }
 
         #endregion

@@ -18,6 +18,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化一个<see cref="KeyCode"/>按钮
         /// </summary>
@@ -25,6 +26,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
         {
             p_buttonKey = default;
         }
+
         /// <summary>
         /// 实例化一个<see cref="KeyCode"/>按钮
         /// </summary>
@@ -33,6 +35,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
         {
             p_buttonKey = key;
         }
+
         #endregion
 
         #region 参数
@@ -56,13 +59,20 @@ namespace Cheng.ButtonTemplates.UnityButtons
             set => p_buttonKey = value;
         }
 
-        /// <summary>
-        /// 允许访问状态
-        /// </summary>
-        public override bool CanGetState => true;
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get
+            {
+                return UnityButtonAvailablePromissions |
+                    ButtonAvailablePermissions.CanGetState |
+                    ButtonAvailablePermissions.CanGetChangeFrameButtonDown |
+                    ButtonAvailablePermissions.CanGetChangeFrameButtonUp |
+                    ButtonAvailablePermissions.CanGetPower |
+                    ButtonAvailablePermissions.CanGetMaxPower |
+                    ButtonAvailablePermissions.CanGetMinPower;
+            }
+        }
 
-        public override bool CanGetChangeFrameButtonDown => true;
-        
         /// <summary>
         /// 访问按钮状态
         /// </summary>
@@ -87,9 +97,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
         {
             get => Input.GetKeyUp(p_buttonKey);
         }
-
-        public override bool CanGetMaxPower => true;
-        public override bool CanGetPower => true;
 
         /// <summary>
         /// 使用按钮状态映射的按钮力度

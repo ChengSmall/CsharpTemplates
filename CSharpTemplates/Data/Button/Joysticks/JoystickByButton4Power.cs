@@ -13,7 +13,7 @@ namespace Cheng.ButtonTemplates.Joysticks
     /// 上下两个按钮表示y轴分量，下负上正；左右两个按钮表示x轴分量，左负右正
     /// </para>
     /// </remarks>
-    public class JoystickByButton4Power : BaseJoystick
+    public sealed class JoystickByButton4Power : BaseJoystick
     {
 
         #region 构造
@@ -68,6 +68,7 @@ namespace Cheng.ButtonTemplates.Joysticks
         private BaseButton p_right;
         private BaseButton p_up;
         private BaseButton p_down;
+
         private bool p_isHorReverse;
         private bool p_isVerReverse;
 
@@ -80,22 +81,38 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// <summary>
         /// 表示向左的按钮
         /// </summary>
-        public override BaseButton LeftButton => p_left;
+        public override BaseButton LeftButton
+        {
+            get => p_left;
+            set => p_left = value ?? throw new ArgumentNullException();
+        }
 
         /// <summary>
         /// 表示向右的按钮
         /// </summary>
-        public override BaseButton RightButton => p_right;
+        public override BaseButton RightButton
+        {
+            get => p_right;
+            set => p_right = value ?? throw new ArgumentNullException();
+        }
 
         /// <summary>
         /// 表示向上的按钮
         /// </summary>
-        public override BaseButton UpButton => p_up;
+        public override BaseButton UpButton 
+        {
+            get => p_up;
+            set => p_up = value ?? throw new ArgumentNullException();
+        }
 
         /// <summary>
         /// 表示向下的按钮
         /// </summary>
-        public override BaseButton DownButton => p_down;
+        public override BaseButton DownButton 
+        {
+            get => p_down;
+            set => p_down = value ?? throw new ArgumentNullException();
+        }
 
         #endregion
 
@@ -103,26 +120,46 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #region 权限判断
 
-        public override bool CanGetFourwayButtons => true;
-
-        public override bool CanGetHorizontalComponent
+        public override JoystickAvailablePermissions AvailablePermissions
         {
-            get => p_left.CanGetPower && p_right.CanGetPower;
+            get
+            {
+                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetFourwayButtons |
+                     JoystickAvailablePermissions.CanSetFourwayButtons |
+                    JoystickAvailablePermissions.CanSetAndGetAllReverse;
+
+                var leftA = p_left.AvailablePermissions;
+                var rightA = p_right.AvailablePermissions;
+                var upA = p_up.AvailablePermissions;
+                var downA = p_down.AvailablePermissions;
+
+                JoystickAvailablePermissions jp = or;
+
+                bool LR_Power;
+                bool UD_Power;
+
+                LR_Power = (((leftA & (ButtonAvailablePermissions.CanGetPower)) == ButtonAvailablePermissions.CanGetPower) && ((rightA & (ButtonAvailablePermissions.CanGetPower)) == ButtonAvailablePermissions.CanGetPower));
+
+                if (LR_Power)
+                {
+                    jp |= JoystickAvailablePermissions.CanGetHorizontalComponent;
+                }
+
+                UD_Power = (((upA & (ButtonAvailablePermissions.CanGetPower)) == ButtonAvailablePermissions.CanGetPower) && ((downA & (ButtonAvailablePermissions.CanGetPower)) == ButtonAvailablePermissions.CanGetPower));
+
+                if (UD_Power)
+                {
+                    jp = JoystickAvailablePermissions.CanGetVerticalComponent;
+                }
+
+                if(LR_Power && UD_Power)
+                {
+                    jp |= JoystickAvailablePermissions.CanGetVector;
+                }
+
+                return jp;
+            }
         }
-
-        public override bool CanGetVerticalComponent
-        {
-            get => p_down.CanGetPower && p_up.CanGetPower;
-        }
-
-        public override bool CanGetVector
-        {
-            get => p_left.CanGetPower && p_right.CanGetPower && p_down.CanGetPower && p_up.CanGetPower;
-        }
-
-        public override bool CanGetHorizontalReverse => true;
-
-        public override bool CanGetVerticalReverse => true;
 
         #endregion
 
@@ -169,19 +206,7 @@ namespace Cheng.ButtonTemplates.Joysticks
 
                 if (left == right) return 0;
 
-                //bool lz, rz;
-                //lz = left == 0;
-                //rz = right == 0;
-                
-                //if (lz && rz) return 0;
-
-                //if(lz) return right;
-
-                //if (rz) return -left;
-
                 return right - left;
-                //if (left < right) return right - left;
-                //else return -(left - right);
 
             }
             set { ThrowNotSupportedException(); }

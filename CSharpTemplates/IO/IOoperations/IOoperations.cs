@@ -14,7 +14,7 @@ namespace Cheng.IO
     /// <summary>
     /// IO扩展操作
     /// </summary>
-    public unsafe static class IOoperations
+    public unsafe static partial class IOoperations
     {
 
         #region 顺序字节转化

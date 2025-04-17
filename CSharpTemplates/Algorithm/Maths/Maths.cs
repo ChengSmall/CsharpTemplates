@@ -197,6 +197,58 @@ namespace Cheng.Algorithm
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <returns>返回其中最大的值</returns>
+        public static sbyte Max(sbyte a, sbyte b, sbyte c)
+        {
+            if (a > b) return a > c ? a : c;
+            return b > c ? b : c;
+        }
+
+        /// <summary>
+        /// 比较三个值的大小
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns>返回其中最大的值</returns>
+        public static byte Max(byte a, byte b, byte c)
+        {
+            if (a > b) return a > c ? a : c;
+            return b > c ? b : c;
+        }
+
+        /// <summary>
+        /// 比较三个值的大小
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns>返回其中最大的值</returns>
+        public static ushort Max(ushort a, ushort b, ushort c)
+        {
+            if (a > b) return a > c ? a : c;
+            return b > c ? b : c;
+        }
+
+        /// <summary>
+        /// 比较三个值的大小
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns>返回其中最大的值</returns>
+        public static short Max(short a, short b, short c)
+        {
+            if (a > b) return a > c ? a : c;
+            return b > c ? b : c;
+        }
+
+        /// <summary>
+        /// 比较三个值的大小
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns>返回其中最大的值</returns>
         public static int Max(int a, int b, int c)
         {
             if(a > b) return a > c ? a : c;
@@ -462,6 +514,59 @@ namespace Cheng.Algorithm
             if (a < b) return a < c ? a : c;
             return b < c ? b : c;
         }
+
+        /// <summary>
+        /// 比较三个值的大小
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns>返回其中最小的值</returns>
+        public static short Min(short a, short b, short c)
+        {
+            if (a < b) return a < c ? a : c;
+            return b < c ? b : c;
+        }
+
+        /// <summary>
+        /// 比较三个值的大小
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns>返回其中最小的值</returns>
+        public static ushort Min(ushort a, ushort b, ushort c)
+        {
+            if (a < b) return a < c ? a : c;
+            return b < c ? b : c;
+        }
+
+        /// <summary>
+        /// 比较三个值的大小
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns>返回其中最小的值</returns>
+        public static byte Min(byte a, byte b, byte c)
+        {
+            if (a < b) return a < c ? a : c;
+            return b < c ? b : c;
+        }
+
+        /// <summary>
+        /// 比较三个值的大小
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns>返回其中最小的值</returns>
+        public static sbyte Min(sbyte a, sbyte b, sbyte c)
+        {
+            if (a < b) return a < c ? a : c;
+            return b < c ? b : c;
+        }
+
 
         /// <summary>
         /// 比较三个值的大小

@@ -7,6 +7,7 @@ using System.Text;
 using System.Reflection;
 using Cheng.Json;
 using Cheng.Memorys;
+using System.Globalization;
 
 namespace Cheng.DEBUG
 {
@@ -269,8 +270,48 @@ namespace Cheng.DEBUG
         {
             if (arr is null) throw new ArgumentNullException();
             if (toStr is null) toStr = defToStr;
+            return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr);
+        }
+
+        /// <summary>
+        /// （DEBUG）遍历集合
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="lineCount">一行显示数</param>
+        /// <param name="fen">每个元素分隔符</param>
+        /// <param name="toStr">字符串转化方法</param>
+        /// <returns></returns>
+        public static string Foreach<T>(this IEnumerable<T> arr, int lineCount = 10, string fen = " ", Func<T, string> toStr = null)
+        {
+            if (arr is null) throw new ArgumentNullException();
+            if (toStr is null) toStr = defToStr;
 
             return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr);
+        }
+
+        static string foreachEnumator<T>(IEnumerator<T> enumator, int lineCount, string fen, Func<T, string> toStr)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int count = 0;
+            T temp;
+
+            while (enumator.MoveNext())
+            {
+                temp = enumator.Current;
+
+
+                if ((count % lineCount == 0) && count != 0)
+                {
+                    sb.AppendLine();
+                }
+
+                sb.Append(toStr.Invoke(temp) + fen);
+
+                count++;
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -511,6 +552,29 @@ namespace Cheng.DEBUG
         public static string ByteValueToStr(this uint value, int highSize)
         {
             return ByteValueToStr((long)value, highSize);
+        }
+
+        /// <summary>
+        /// 返回区域性语言类型文本
+        /// </summary>
+        /// <param name="cultureInfo"></param>
+        /// <returns></returns>
+        public static string ToText(this CultureInfo cultureInfo)
+        {
+            if (cultureInfo is null) return "[Null]";
+            StringBuilder sb = new StringBuilder(32);
+
+            var two = cultureInfo.TwoLetterISOLanguageName;
+            var thr = cultureInfo.ThreeLetterWindowsLanguageName;
+            sb.Append(two);
+            if (!string.IsNullOrEmpty(thr))
+            {
+                sb.Append('-');
+                sb.Append(thr.ToLowerInvariant());
+            }
+            sb.Append(" => ");
+            sb.Append(cultureInfo.DisplayName);
+            return sb.ToString();
         }
 
         #endregion

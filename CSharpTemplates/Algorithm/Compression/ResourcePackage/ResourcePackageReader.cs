@@ -300,6 +300,8 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
         #region 权限重写
 
+        public override bool CanGetParserData => true;
+
         public override bool CanAddData => false;
 
         public override bool CanRemoveData => false;

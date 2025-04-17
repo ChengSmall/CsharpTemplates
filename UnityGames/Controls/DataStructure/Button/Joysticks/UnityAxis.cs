@@ -204,6 +204,17 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
         #region 派生
 
+        public override JoystickAvailablePermissions AvailablePermissions
+        {
+            get
+            {
+                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetAllJoystick |
+                   JoystickAvailablePermissions.CanSetAndGetAllReverse;
+
+                return or;
+            }
+        }
+
         /// <summary>
         /// 访问垂直摇杆的值
         /// </summary>
@@ -234,12 +245,6 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
             set { ThrowNotSupportedException(); }
         }
 
-        public override bool CanGetHorizontalReverse => true;
-        public override bool CanSetHorizontalReverse => true;
-
-        public override bool CanGetVerticalReverse => true;
-        public override bool CanSetVerticalReverse => true;
-
         public override bool IsHorizontalReverse
         {
             get => p_isXReversed;
@@ -251,10 +256,6 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
             get => p_isYReversed;
             set => p_isYReversed = value;
         }
-
-        public override bool CanGetHorizontalComponent => true;
-        public override bool CanGetVerticalComponent => true;
-        public override bool CanGetVector => true;
 
         public override void GetAxis(out float horizontal, out float vertical)
         {

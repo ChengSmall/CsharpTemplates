@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Text;
 using Cheng.Consoles;
 using System.Drawing.Imaging;
+using Cheng.DataStructure.Colors;
 
 namespace Cheng.DEBUG
 {
@@ -85,22 +86,24 @@ namespace Cheng.DEBUG
         /// <summary>
         /// 将图像打印到控制台，需开启虚拟终端
         /// </summary>
-        /// <param name="image"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        public static void printImage(this Bitmap image, int width, int height)
+        /// <param name="image">图像</param>
+        /// <param name="width">指定长度</param>
+        /// <param name="height">指定高度</param>
+        /// <param name="sb">暂存文本的缓冲区</param>
+        public static void printImage(this Bitmap image, int width, int height, StringBuilder sb)
         {
+            if (width == 0 || height == 0) return;
 
             if(width != image.Width || height != image.Height)
             {
                 using (Bitmap pri = new Bitmap(image, width, height))
                 {
-                    printImage(pri);
+                    printImage(pri, sb);
                 }
             }
             else
             {
-                printImage(image);
+                printImage(image, sb);
             }
 
         }
@@ -108,15 +111,27 @@ namespace Cheng.DEBUG
         /// <summary>
         /// 将图像打印到控制台，需开启虚拟终端
         /// </summary>
+        /// <param name="image">图像</param>
+        /// <param name="width">指定长度</param>
+        /// <param name="height">指定高度</param>
+        public static void printImage(this Bitmap image, int width, int height)
+        {
+            printImage(image, width, height, new StringBuilder(width * height));
+        }
+
+        /// <summary>
+        /// 将图像打印到控制台，需开启虚拟终端
+        /// </summary>
         /// <param name="image"></param>
-        public static void printImage(this Bitmap image)
+        /// <param name="sb">暂存文本的缓冲区</param>
+        public static void printImage(this Bitmap image, StringBuilder sb)
         {
             int width = image.Width;
             int height = image.Height;
-
+            if (width == 0 || height == 0) return;
             int x, y;
 
-            StringBuilder sb = new StringBuilder(128);
+            sb.Clear();
 
             byte r, g, b;
 
@@ -132,6 +147,58 @@ namespace Cheng.DEBUG
 
                     sb.AppendANSIColorText(r, g, b, true);
                     sb.AppendANSIColorText(r, g, b, false);
+
+                    sb.Append('■');
+                }
+
+                sb.AppendANSIStyleResetText();
+                sb.AppendLine();
+            }
+
+            Console.Write(sb.ToString());
+        }
+
+        /// <summary>
+        /// 将图像打印到控制台，需开启虚拟终端
+        /// </summary>
+        /// <param name="image"></param>
+        public static void printImage(this Bitmap image)
+        {
+            printImage(image, new StringBuilder(256));
+        }
+
+        /// <summary>
+        /// 向控制台打印指定长宽的图块，需开启虚拟终端
+        /// </summary>
+        /// <param name="width">长度</param>
+        /// <param name="height">行宽</param>
+        /// <param name="color">图块颜色</param>
+        public static void printColorBlock(int width, int height, Colour color)
+        {
+            printColorBlock(width, height, color, new StringBuilder(width * height));
+        }
+
+        /// <summary>
+        /// 向控制台打印指定长宽的图块，需开启虚拟终端
+        /// </summary>
+        /// <param name="width">长度</param>
+        /// <param name="height">行宽</param>
+        /// <param name="color">图块颜色</param>
+        /// <param name="sb">字符缓冲区</param>
+        public static void printColorBlock(int width, int height, Colour color, StringBuilder sb)
+        {
+            sb.Clear();
+
+            int x, y;
+            ;
+            for (y = 0; y < height; y++)
+            {
+
+                for (x = 0; x < width; x++)
+                {
+                    //var color = image.GetPixel(x, y);
+                    sb.AppendANSIColorText(color.r, color.g, color.b, true);
+                    sb.AppendANSIColorText(color.r, color.g, color.b, false);
 
                     sb.Append('■');
                 }

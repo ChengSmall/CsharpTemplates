@@ -14,6 +14,7 @@ namespace Cheng.DataStructure.Cherrsdinates
     {
 
         #region 构造
+
         /// <summary>
         /// 初始化3维结构
         /// </summary>
@@ -26,6 +27,7 @@ namespace Cheng.DataStructure.Cherrsdinates
             this.y = y;
             this.z = z;
         }
+
         /// <summary>
         /// 初始化3维结构
         /// </summary>
@@ -37,6 +39,7 @@ namespace Cheng.DataStructure.Cherrsdinates
             this.y = y;
             z = 0;
         }
+
         #endregion
 
         #region 参数
@@ -71,6 +74,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return new Point3(value, y, z);
         }
+
         /// <summary>
         /// 返回一个y为新值的结构
         /// </summary>
@@ -80,6 +84,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return new Point3(x, value, z);
         }
+
         /// <summary>
         /// 返回一个z为新值的结构
         /// </summary>
@@ -106,6 +111,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return new Point3(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
         }
+
         /// <summary>
         /// 减法运算
         /// </summary>
@@ -116,6 +122,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return new Point3(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
         }
+
         /// <summary>
         /// 乘法运算；将每一个分量乘法计算
         /// </summary>
@@ -126,6 +133,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return new Point3(p1.x * num, p1.y * num, p1.z * num);
         }
+
         /// <summary>
         /// 除法运算；将每一个分量除法计算
         /// </summary>
@@ -140,6 +148,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         #endregion
 
         #region 比较
+
         /// <summary>
         /// 判断相等
         /// </summary>
@@ -150,6 +159,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return p1.x == p2.x && p1.y == p2.y && p1.z == p2.z;
         }
+
         /// <summary>
         /// 判断不相等
         /// </summary>
@@ -160,6 +170,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return p1.x != p2.x || p1.y != p2.y || p1.z != p2.z;
         }
+
         #endregion
 
         #region 转换
@@ -184,7 +195,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// 计算从此坐标到指定坐标的距离
         /// </summary>
         /// <param name="other">指定坐标</param>
-        /// <returns>一个表示距离的二维向量</returns>
+        /// <returns>从此坐标到<paramref name="other"/>的距离</returns>
         public double Distance(Point3 other)
         {
             var xn = other.x - x;
@@ -216,12 +227,14 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <summary>
         /// 返回单位向量
         /// </summary>
-        /// <returns>将该向量长度缩放为1的新向量</returns>
+        /// <returns>将该对象当作向量并把长度缩放为1的新向量</returns>
         public Point3 Normalized
         {
             get
             {
-                return this / System.Math.Sqrt(x * x + y * y + z * z);
+                var re = System.Math.Sqrt(x * x + y * y + z * z);
+                return new Point3(this.x / re, this.y / re, this.z / re);
+                //return this / System.Math.Sqrt(x * x + y * y + z * z);
             }
         }
 
@@ -312,6 +325,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
         }
+
         public long GetHashCode64()
         {
             return x.GetHashCode64() ^ y.GetHashCode64() ^ z.GetHashCode64();

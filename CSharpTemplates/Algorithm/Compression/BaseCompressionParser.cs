@@ -46,9 +46,10 @@ namespace Cheng.Algorithm.Compressions
         /// <summary>
         /// 当前压缩方法所正在解析的文件或数据块
         /// </summary>
-        public abstract Stream ParserData
+        /// <exception cref="NotSupportedException">没有此权限</exception>
+        public virtual Stream ParserData
         {
-            get;
+            get => throw new NotSupportedException();
         }
 
         #endregion
@@ -56,6 +57,11 @@ namespace Cheng.Algorithm.Compressions
         #region 压缩功能
 
         #region 权限
+
+        /// <summary>
+        /// 能否获取内部解析的文件或数据块
+        /// </summary>
+        public virtual bool CanGetParserData => false;
 
         /// <summary>
         /// 该压缩算法是否支持查看当前已压缩的数据路径
@@ -99,7 +105,7 @@ namespace Cheng.Algorithm.Compressions
         public virtual bool CanDeCompressionByPath => false;
 
         /// <summary>
-        /// 是否允许打开指定目录下的压缩流数据进行读写操作
+        /// 是否允许打开指定目录下的压缩流数据进行操作
         /// </summary>
         public virtual bool CanOpenCompressedStreamByPath => false;
 
@@ -252,8 +258,27 @@ namespace Cheng.Algorithm.Compressions
         {
             var inf = this[dataPath];
             var size = inf.BeforeSize;
+
+            if (CanOpenCompressedStreamByPath && (size != -1 && size <= int.MaxValue))
+            {
+                using (var openStream = OpenCompressedStream(dataPath))
+                {
+                    if (openStream.CanRead)
+                    {
+                        byte[] bufs = new byte[size];
+                        openStream.ReadBlock(bufs, 0, (int)size);
+                        return bufs;
+                    }
+                }
+            }
+
             MemoryStream ms = new MemoryStream((size > 0 && size < int.MaxValue) ? (int)size : 4096);
             DeCompressionTo(dataPath, ms);
+            var msBuf = ms.GetBuffer();
+            if (msBuf.Length == ms.Length)
+            {
+                return msBuf;
+            }
             return ms.ToArray();
         }
 
@@ -286,8 +311,28 @@ namespace Cheng.Algorithm.Compressions
         {
             var inf = this[index];
             var size = inf.BeforeSize;
+
+            if (CanOpenCompressedStreamByIndex && (size != -1 && size <= int.MaxValue))
+            {
+                using (var openStream = OpenCompressedStream(index))
+                {
+                    if (openStream.CanRead)
+                    {
+                        byte[] bufs = new byte[size];
+                        openStream.ReadBlock(bufs, 0, (int)size);
+                        return bufs;
+                    }
+                }
+            }
+           
             MemoryStream ms = new MemoryStream((size > 0 && size < int.MaxValue) ? (int)size : 4096);
             DeCompressionTo(index, ms);
+
+            var msBuf = ms.GetBuffer();
+            if(msBuf.Length == ms.Length)
+            {
+                return msBuf;
+            }
             return ms.ToArray();
         }
 
@@ -583,13 +628,16 @@ namespace Cheng.Algorithm.Compressions
                     {
                         throw new ArgumentException();
                     }
+
                     buffer = new char[1024];
-                    StreamReader sr = new StreamReader(open, encoding, false, 1024);
-                    while (true)
+                    using (StreamReader sr = new StreamReader(open, encoding, false, 1024))
                     {
-                        r = sr.Read(buffer, 0, buffer.Length);
-                        if (r == 0) break;
-                        writer.Write(buffer, 0, r);
+                        while (true)
+                        {
+                            r = sr.Read(buffer, 0, buffer.Length);
+                            if (r == 0) break;
+                            writer.Write(buffer, 0, r);
+                        }
                     }
                 }
 
@@ -652,7 +700,7 @@ namespace Cheng.Algorithm.Compressions
 
                 return;
             }
-            if (CanDeCompressionByPath)
+            if (CanDeCompressionByIndex)
             {
                 MemoryStream ms = new MemoryStream(256);
                 DeCompressionTo(index, ms);

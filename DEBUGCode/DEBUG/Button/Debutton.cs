@@ -65,102 +65,13 @@ namespace Cheng.DEBUG
             remove => p_but.ButtonClickEvent -= value;
         }
 
-        public override bool CanGetState
+        public override ButtonAvailablePermissions AvailablePermissions
         {
             get
             {
-                var re = p_but.CanGetState;
-                p_print?.WriteLine("获取参数" + nameof(CanGetState) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanSetState
-        {
-            get
-            {
-                var re = p_but.CanSetState;
-                p_print?.WriteLine("获取参数" + nameof(CanSetState) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanGetPower
-        {
-            get
-            {
-                var re = p_but.CanGetPower;
-                p_print?.WriteLine("获取参数" + nameof(CanGetPower) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanSetPower
-        {
-            get
-            {
-                var re = p_but.CanSetPower;
-                p_print?.WriteLine("获取参数" + nameof(CanSetPower) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanGetMaxPower
-        {
-            get
-            {
-                var re = p_but.CanGetMaxPower;
-                p_print?.WriteLine("获取参数" + nameof(CanGetMaxPower) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanButtonDownEvent
-        {
-            get
-            {
-                var re = p_but.CanButtonDownEvent;
-                p_print?.WriteLine("获取参数" + nameof(CanButtonDownEvent) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanButtonUpEvent
-        {
-            get
-            {
-                var re = p_but.CanButtonUpEvent;
-                p_print?.WriteLine("获取参数" + nameof(CanButtonUpEvent) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanButtonClick
-        {
-            get
-            {
-                var re = p_but.CanButtonClick;
-                p_print?.WriteLine("获取参数" + nameof(CanButtonClick) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanGetChangeFrameButtonDown
-        {
-            get
-            {
-                var re = p_but.CanGetChangeFrameButtonDown;
-                p_print?.WriteLine("获取参数" + nameof(CanGetChangeFrameButtonDown) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanGetChangeFrameButtonUp
-        {
-            get
-            {
-                var re = p_but.CanGetChangeFrameButtonUp;
-                p_print?.WriteLine("获取参数" + nameof(CanGetChangeFrameButtonUp) + ":" + re.ToString());
+                var re = ButtonAvailablePermissions.CanSetAndGetInternalButton |
+                 p_but.AvailablePermissions;
+                p_print?.WriteLine("权限:" + re.ToString());
                 return re;
             }
         }
@@ -256,58 +167,12 @@ namespace Cheng.DEBUG
             }
         }
 
-        public override bool CanGetFrameValue
-        {
-            get
-            {
-                var re = p_but.CanGetFrameValue;
-                p_print?.WriteLine("获取参数" + nameof(CanGetFrameValue) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanGetMinPower
-        {
-            get
-            {
-                var re = p_but.CanGetMinPower;
-                p_print?.WriteLine("获取参数" + nameof(CanGetMinPower) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanSetMaxPower
-        {
-            get
-            {
-                var re = p_but.CanSetMaxPower;
-                p_print?.WriteLine("获取参数" + nameof(CanSetMaxPower) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-        public override bool CanSetMinPower 
-        {
-            get
-            {
-                var re = p_but.CanSetMinPower;
-                p_print?.WriteLine("获取参数" + nameof(CanSetMinPower) + ":" + re.ToString());
-                return re;
-            }
-        }
-
-
-        public override bool CanGetInternalButton => true;
-        public override bool CanSetInternalButton => true;
-
         public override BaseButton InternalButton
         {
             get => p_but;
             set => p_but = value;
         }
 
-
     }
-
 
 }

@@ -124,6 +124,15 @@ namespace Cheng.Properties {
         }
         
         /// <summary>
+        ///   查找类似 路径为空 的本地化字符串。
+        /// </summary>
+        internal static string Exception_PathIsEmpty {
+            get {
+                return ResourceManager.GetString("Exception_PathIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 流已经被释放 的本地化字符串。
         /// </summary>
         internal static string Exception_StreamDisposeText {

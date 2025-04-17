@@ -93,6 +93,7 @@ namespace Cheng.Timers
         #endregion
 
         #region 功能
+
         /// <summary>
         /// 获取当前的时间刻
         /// </summary>
@@ -101,11 +102,12 @@ namespace Cheng.Timers
         {
             get => new DateTime((long)NowTimeTick);
         }
+
         /// <summary>
         /// 获取当前的时间刻tick
         /// </summary>
         /// <returns>在派生类重写此属性，以返回当前时间刻</returns>
-        protected abstract ulong NowTimeTick { get; }        
+        protected abstract ulong NowTimeTick { get; }
 
         /// <summary>
         /// 获取当前计时器的运行时间
@@ -118,6 +120,7 @@ namespace Cheng.Timers
                 return new TimeSpan((long)p_elapsed);
             }
         }
+
         /// <summary>
         /// 获取当前计时器的运行时间
         /// </summary>
@@ -134,6 +137,7 @@ namespace Cheng.Timers
         /// 当前计时器是否正在运行
         /// </summary>
         public bool IsRunning => p_running;
+
         /// <summary>
         /// 获取当前时间缓冲参数
         /// </summary>
@@ -293,11 +297,13 @@ namespace Cheng.Timers
         #endregion
 
         #region 功能
+
         /// <summary>
         /// 获取当前的时间刻
         /// </summary>
         /// <returns>在派生类重写此属性，以返回当前时间刻</returns>
         protected abstract double NowTime { get; }
+
         /// <summary>
         /// 获取当前计时器的运行时间
         /// </summary>

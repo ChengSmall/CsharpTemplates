@@ -48,7 +48,8 @@ namespace Cheng.IO.NetEasys
 
         private readonly bool p_disposeBase;
 
-        private const byte netucXORValue = 163;
+        public const ulong NetEasyUCxorInt64 = 0xA3A3A3A3A3A3A3A3;
+        public const byte NetEasyUCxorValue = 163;
 
         #endregion
 
@@ -82,7 +83,7 @@ namespace Cheng.IO.NetEasys
 
         public override bool CanSeek => p_stream.CanSeek;
 
-        public override bool CanWrite => p_stream.CanWrite;
+        public override bool CanWrite => false;
 
         public override bool CanTimeout => p_stream.CanTimeout;
 
@@ -117,7 +118,7 @@ namespace Cheng.IO.NetEasys
 
         public override void Flush()
         {
-            p_stream?.Flush();
+            //p_stream?.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -129,17 +130,32 @@ namespace Cheng.IO.NetEasys
         public override void SetLength(long value)
         {
             ThrowIsDispose();
-            p_stream.SetLength(value);
+            throw new NotSupportedException();
         }
 
-        public override int Read(byte[] buffer, int offset, int count)
+        public unsafe override int Read(byte[] buffer, int offset, int count)
         {
             ThrowIsDispose();
             var re = p_stream.Read(buffer, offset, count);
 
-            for (int i = offset; i < re; i++)
+            var mb = re / sizeof(ulong);
+
+            fixed (byte* bufPtr = buffer)
             {
-                buffer[i] ^= netucXORValue;
+                int i;
+                
+                ulong* ptrInt64 = (ulong*)(bufPtr + offset);
+                for (i = 0; i < mb; i++, ptrInt64++)
+                {
+                    *(ptrInt64) ^= NetEasyUCxorInt64;
+                }
+                //剩余
+                var sy = re % 8;
+                byte* lastPtr = (byte*)(ptrInt64);
+                for (i = 0; i < sy; i++)
+                {
+                    lastPtr[i] ^= NetEasyUCxorValue;
+                }
             }
 
             return re;
@@ -148,21 +164,7 @@ namespace Cheng.IO.NetEasys
         public override void Write(byte[] buffer, int offset, int count)
         {
             ThrowIsDispose();
-
-            if (buffer is null) throw new ArgumentNullException();
-
-            int end = offset + count;
-            if (end >= buffer.Length || offset < 0 || count < 0)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            for (int i = offset; i < end; i++)
-            {
-                buffer[i] ^= netucXORValue;
-            }
-
-            p_stream.Write(buffer, offset, count);
+            throw new NotSupportedException();
         }
 
         public override int ReadByte()
@@ -170,13 +172,13 @@ namespace Cheng.IO.NetEasys
             ThrowIsDispose();
             var re = p_stream.ReadByte();
             if (re < 0) return -1;
-            return (byte)(re ^ netucXORValue);
+            return (byte)(re ^ NetEasyUCxorValue);
         }
 
         public override void WriteByte(byte value)
         {
             ThrowIsDispose();
-            p_stream.WriteByte((byte)(value ^ netucXORValue));
+            throw new NotSupportedException();
         }
 
         #endregion

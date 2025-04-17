@@ -145,6 +145,10 @@
     <value>不支持此功能</value>
     <comment>异常消息：不支持此功能</comment>
   </data>
+  <data name="Exception_PathIsEmpty" xml:space="preserve">
+    <value>路径为空</value>
+    <comment>异常消息：路径为空</comment>
+  </data>
   <data name="Exception_StreamDisposeText" xml:space="preserve">
     <value>流已经被释放</value>
     <comment>异常消息：流已经被释放</comment>

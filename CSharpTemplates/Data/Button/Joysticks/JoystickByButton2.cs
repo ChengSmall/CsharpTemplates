@@ -43,23 +43,56 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #region 派生
 
-        public override bool CanGetHorizontalComponent
+        public override JoystickAvailablePermissions AvailablePermissions
         {
-            get => p_lr.CanGetPower;
+            get
+            {
+                var pLR = p_lr.AvailablePermissions;
+                var pUD = p_ud.AvailablePermissions;
+
+                JoystickAvailablePermissions jp = JoystickAvailablePermissions.None;
+
+                const ButtonAvailablePermissions buttonGet = (ButtonAvailablePermissions.CanGetPower | ButtonAvailablePermissions.CanGetState);
+
+                const ButtonAvailablePermissions buttonSet = (ButtonAvailablePermissions.CanGetPower | ButtonAvailablePermissions.CanGetState);
+
+                bool lr, ud;
+                lr = (pLR & buttonGet) != 0;
+                ud = (pUD & buttonGet) != 0;
+
+                if (lr)
+                {
+                    jp |= JoystickAvailablePermissions.CanGetHorizontalComponent;
+                }
+                if (ud)
+                {
+                    jp |= JoystickAvailablePermissions.CanGetVerticalComponent;
+                }
+
+                if(lr && ud)
+                {
+                    jp |= JoystickAvailablePermissions.CanGetVector;
+                }
+
+                lr = (pLR & buttonSet) != 0;
+                ud = (pUD & buttonSet) != 0;
+
+                if (lr)
+                {
+                    jp |= JoystickAvailablePermissions.CanSetHorizontalComponent;
+                }
+                if (ud)
+                {
+                    jp |= JoystickAvailablePermissions.CanSetVerticalComponent;
+                }
+                if (lr && ud)
+                {
+                    jp |= JoystickAvailablePermissions.CanSetVector;
+                }
+
+                return jp;
+            }
         }
-
-        public override bool CanGetVerticalComponent => p_ud.CanGetPower;
-
-        public override bool CanSetHorizontalComponent
-        {
-            get => p_lr.CanSetPower;
-        }
-
-        public override bool CanSetVerticalComponent => p_ud.CanSetPower;
-
-        public override bool CanGetVector => p_lr.CanGetPower && p_ud.CanGetPower;
-
-        public override bool CanSetVector => p_lr.CanSetPower && p_ud.CanSetPower;
 
         public override float Horizontal
         {

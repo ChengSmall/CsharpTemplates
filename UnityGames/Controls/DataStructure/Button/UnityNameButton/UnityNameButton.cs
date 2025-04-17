@@ -56,7 +56,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         [SerializeField] private bool p_axisSmooth;
 
-
 #if UNITY_EDITOR
         public const string EditorProperityFieldButtonName = nameof(p_buttonName);
         public const string EditorProperityFieldAxisToolName = nameof(p_axisSmooth);
@@ -66,9 +65,16 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 派生
 
-        public override bool CanGetState => true;
-        public override bool CanGetPower => true;
-        public override bool CanGetChangeFrameButtonDown => true;
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get
+            {
+                return UnityButtonAvailablePromissions |
+                 ButtonAvailablePermissions.AllGetStateAndPower |
+                 ButtonAvailablePermissions.CanGetChangeFrameButtonDown |
+                 ButtonAvailablePermissions.CanGetChangeFrameButtonUp;
+            }
+        }
 
         /// <summary>
         /// 使用<see cref="Input.GetButtonDown(string)"/>获取参数
@@ -117,6 +123,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
         {
             return p_buttonName;
         }
+
         #endregion
 
         #region 功能

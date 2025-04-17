@@ -48,31 +48,25 @@ namespace Cheng.ButtonTemplates
 
         #region 派生
 
-        public override bool CanGetState => p_button.CanGetState;
+        public override ButtonAvailablePermissions AvailablePermissions
+        {
+            get
+            {
+                const ButtonAvailablePermissions or =
+                    ButtonAvailablePermissions.CanGetInternalButton |
+                    ButtonAvailablePermissions.CanSetInternalButton |
+                    ButtonAvailablePermissions.CanGetMaxPower |
+                    ButtonAvailablePermissions.CanGetMinPower | ButtonAvailablePermissions.CanSetMaxPower |
+                    ButtonAvailablePermissions.CanSetMinPower;
 
-        public override bool CanSetState => p_button.CanSetState;
+                //const ButtonAvailablePermissions and =
+                //    ~(ButtonAvailablePermissions.CanButtonDownEvent |
+                //    ButtonAvailablePermissions.CanButtonUpEvent |
+                //    ButtonAvailablePermissions.CanButtonClick);
 
-        public override bool CanGetPower => p_button.CanGetPower;
-
-        public override bool CanSetPower => p_button.CanSetPower;
-
-        public override bool CanGetMaxPower => true;
-
-        public override bool CanGetMinPower => true;
-
-        public override bool CanSetMaxPower => true;
-
-        public override bool CanSetMinPower => true;
-
-        public override bool CanButtonDownEvent => p_button.CanButtonDownEvent;
-
-        public override bool CanButtonUpEvent => p_button.CanButtonUpEvent;
-
-        public override bool CanButtonClick => p_button.CanButtonClick;
-
-        public override bool CanGetChangeFrameButtonDown => p_button.CanGetChangeFrameButtonDown;
-
-        public override bool CanGetChangeFrameButtonUp => p_button.CanGetChangeFrameButtonUp;
+                return (p_button.AvailablePermissions | or);
+            }
+        }
 
         public override bool ButtonState 
         {
@@ -103,9 +97,6 @@ namespace Cheng.ButtonTemplates
         public override bool ButtonUp => p_button.ButtonUp;
 
         public override long NowFrame => p_button.NowFrame;
-
-        public override bool CanGetInternalButton => true;
-        public override bool CanSetInternalButton => true;
 
         public override BaseButton InternalButton
         {

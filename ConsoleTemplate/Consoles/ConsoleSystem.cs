@@ -1,9 +1,15 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Security;
+using System.IO;
+
+using SCol = global::System.Console;
 
 namespace Cheng.Consoles
 {
@@ -191,6 +197,56 @@ namespace Cheng.Consoles
         private static extern uint GetLastError();
 
         #endregion
+
+        #endregion
+
+        #region 扩展
+
+        /// <summary>
+        /// 将控制台的缓冲区大小设置为当前控制台窗口区域大小
+        /// </summary>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="SecurityException">权限错误</exception>
+        public static void SetBufferToWindows()
+        {
+            SCol.SetBufferSize(SCol.WindowLeft + SCol.WindowWidth,
+                SCol.WindowTop + SCol.WindowHeight);
+        }
+
+        /// <summary>
+        /// 设置控制台的缓冲区大小并保证缓冲区不会小于控制台窗口区域
+        /// </summary>
+        /// <param name="width">长度</param>
+        /// <param name="height">行高</param>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="SecurityException">权限错误</exception>
+        public static void SetBufferGreaterThanWindows(int width, int height)
+        {
+            SCol.SetBufferSize(Math.Max(SCol.WindowLeft + SCol.WindowWidth, width),
+                Math.Max(SCol.WindowTop + SCol.WindowHeight, height));
+        }
+
+        /// <summary>
+        /// 设置控制台缓冲区行高并保证高度不会小于控制台窗口区域
+        /// </summary>
+        /// <param name="height">行高</param>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="SecurityException">权限错误</exception>
+        public static void SetBufferHeightGreaterThanWindows(int height)
+        {
+            SCol.BufferHeight = Math.Max(height, SCol.WindowTop + SCol.WindowHeight);
+        }
+
+        /// <summary>
+        /// 设置控制台缓冲区行高并保证长度不会小于控制台窗口区域
+        /// </summary>
+        /// <param name="width">长度</param>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="SecurityException">权限错误</exception>
+        public static void SetBufferWidthGreaterThanWindows(int width)
+        {
+            SCol.BufferHeight = Math.Max(width, SCol.WindowLeft + SCol.WindowWidth);
+        }
 
         #endregion
 

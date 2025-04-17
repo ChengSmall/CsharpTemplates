@@ -15,14 +15,6 @@ namespace Cheng.Controllers
     public abstract class GameController : BaseController
     {
 
-        #region 构造
-
-        #endregion
-
-        #region 参数
-
-        #endregion
-
         #region 功能
 
         /// <summary>
