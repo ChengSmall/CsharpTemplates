@@ -93,7 +93,6 @@
     <Compile Include="Streams\NetEasyUCToAudioStream.cs" />
     <Compile Include="Streams\ReadOnlyFileStream.cs" />
     <Compile Include="structure\GameTimes.cs" />
-    <Compile Include="structure\MindMap\MindMapNode.cs" />
     <Compile Include="Webs\Bilibili\BilibiliErrorException.cs" />
     <Compile Include="Webs\Bilibili\BilibiliLiveRoom.cs" />
     <Compile Include="Webs\Bilibili\BilibiliPendant.cs" />
@@ -118,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Compressions\" />
+    <Folder Include="structure\MindMap\" />
     <Folder Include="Texter\" />
   </ItemGroup>
   <ItemGroup>

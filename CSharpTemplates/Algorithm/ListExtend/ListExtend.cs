@@ -9,7 +9,7 @@ namespace Cheng.Algorithm.Collections
     /// <summary>
     /// 集合扩展
     /// </summary>
-    public unsafe static class ListExtend
+    public unsafe static partial class ListExtend
     {
 
         #region 查
@@ -1347,73 +1347,6 @@ namespace Cheng.Algorithm.Collections
         #endregion
 
         #region 多叉树
-
-        /// <summary>
-        /// 深度优先遍历多叉树
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="tree">要遍历的多叉树</param>
-        /// <param name="action">对每一个元素执行动作，返回值为true则继续遍历，false则终止遍历</param>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void ForeachDepth<T>(this TreeNode<T> tree, Func<TreeNode<T>, bool> action)
-        {
-            if (tree is null || action is null) throw new ArgumentNullException();
-
-            int length;
-            length = tree.Count;
-            TreeNode<T> node;
-            bool flag;
-
-            for (int i = 0; i < length; i++)
-            {
-                node = tree[i];
-                if(node.Count != 0)
-                {
-                    ForeachDepth(node, action);
-                }
-
-                flag = action.Invoke(node);
-                if (!flag) break;
-            }
-
-        }
-
-        /// <summary>
-        /// 广度优先遍历多叉树
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="tree">要遍历的多叉树</param>
-        /// <param name="action">对每一个元素执行动作，返回值为true则继续遍历，false则终止遍历</param>
-        /// <param name="buffer">进行广度遍历时需要的队列缓冲区，该参数调用该函数后结果不定</param>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void ForeachBreadth<T>(this TreeNode<T> tree, Func<TreeNode<T>, bool> action, Queue<TreeNode<T>> buffer)
-        {
-            if (tree is null || action is null || buffer is null) throw new ArgumentNullException();
-
-            buffer.Clear();
-
-            buffer.Enqueue(tree);
-            TreeNode<T> current;
-            int i;
-            int count;
-            bool flag;
-            while (buffer.Count > 0)
-            {
-                current = buffer.Dequeue();
-
-                flag = action.Invoke(current);
-                if (!flag) break;
-
-                count = current.Count;
-
-                for (i = 0; i < count; i++)
-                {
-                    buffer.Enqueue(current[i]);
-                }
-                
-            }
-
-        }
 
         #endregion
 

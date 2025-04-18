@@ -14,6 +14,8 @@ using System.Security;
 using Cheng.Texts;
 using Cheng.Memorys;
 using Cheng.Algorithm.Compressions;
+using Cheng.Algorithm.Trees;
+using Cheng.Algorithm.Collections;
 
 namespace Cheng.IO
 {
@@ -146,7 +148,7 @@ namespace Cheng.IO
                 throw new DirectoryNotFoundException();
             }
             p_root = new DirectoryInfo(directory);
-            f_init();
+            Init();
         }
 
         /// <summary>
@@ -165,10 +167,13 @@ namespace Cheng.IO
                 throw new DirectoryNotFoundException();
             }
             p_root = directoryInfo;
-            f_init();
+            Init();
         }
 
-        private void f_init()
+        /// <summary>
+        /// 使用<see cref="p_root"/>参数初始化索引
+        /// </summary>
+        protected virtual void Init()
         {
             p_rootfullPath = p_root.FullName;
             p_list = new List<FileInfomation>();
@@ -257,6 +262,8 @@ namespace Cheng.IO
         public override bool CanOpenCompressedStreamByIndex => true;
 
         public override bool CanProbePath => true;
+
+        public override bool CanGetEntryEnumrator => true;
 
         #endregion
 
@@ -392,8 +399,9 @@ namespace Cheng.IO
         public override Stream OpenCompressedStream(string dataPath)
         {
             if (string.IsNullOrEmpty(dataPath)) throw new ArgumentException(Cheng.Properties.Resources.Exception_PathIsEmpty);
+
             var path = Path.Combine(p_rootfullPath, dataPath);
-            if (File.Exists(path)) return null;
+            if (!File.Exists(path)) return null;
 
             try
             {
@@ -547,6 +555,72 @@ namespace Cheng.IO
 
         }
 
+        /// <summary>
+        /// 使用<see cref="FileInfo"/>封装的数据节点
+        /// </summary>
+        protected class DataEntry : IDataEntry
+        {
+            public DataEntry(FileInfo fileInfo)
+            {
+                p_file = fileInfo;
+            }
+            private FileInfo p_file;
+
+            public string FullName
+            {
+                get
+                {
+                    try
+                    {
+                        return p_file?.FullName;
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            public string Name
+            {
+                get
+                {
+                    try
+                    {
+                        return p_file?.Name;
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        public override IEnumerator<IDataEntry> GetDataEntryEnumrator()
+        {
+            return p_root.GetFiles("*", SearchOption.AllDirectories).ToOtherItemsByCondition<FileInfo, IDataEntry>(toData).GetEnumerator();
+
+            bool toData(FileInfo t_fileInfo, out IDataEntry dataEntry)
+            {
+                dataEntry = null;
+                if (t_fileInfo is null) return false;
+                try
+                {
+                    if (t_fileInfo.Exists)
+                    {
+                        dataEntry = new DataEntry(t_fileInfo);
+                        return true;
+                    }
+                    return false;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+               
+            }
+        }
 
         #endregion
 

@@ -29,7 +29,7 @@ namespace Cheng.IO
         /// 计算指定目录中所有文件大小的总和，包括子目录
         /// </summary>
         /// <param name="path">目录</param>
-        /// <param name="pathStack">计算时用到的栈区缓冲区</param>
+        /// <param name="pathStack">计算时用到的缓冲栈</param>
         /// <returns>目录下所有文件的大小，以字节为单位；若检测到无法访问内容的目录或文件则将其忽略</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="IOException">IO错误</exception>

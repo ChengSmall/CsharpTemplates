@@ -10,6 +10,7 @@ using Cheng.Memorys;
 using Cheng.Streams;
 using Cheng.IO;
 using Cheng.Algorithm.Collections;
+using Cheng.Algorithm.Trees;
 
 namespace Cheng.Algorithm.Compressions.ResourcePackages
 {
@@ -323,6 +324,8 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         public override bool CanDeCompressionByIndex => true;
 
         public override bool CanDeCompressionByPath => true;
+
+        public override bool CanGetEntryEnumrator => true;
 
         #endregion
 
@@ -731,6 +734,16 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        public override IEnumerator<IDataEntry> GetDataEntryEnumrator()
+        {
+            return p_lists.ToOtherItems(fs_binfoToEnumator).GetEnumerator();
+        }
+
+        static IDataEntry fs_binfoToEnumator(BlockInformation binfo)
+        {
+            return binfo;
         }
 
         #endregion

@@ -6,6 +6,7 @@ using Cheng.Streams;
 using Cheng.Memorys;
 using System.Collections;
 using System.Text;
+using Cheng.Algorithm.Trees;
 
 namespace Cheng.Algorithm.Compressions
 {
@@ -16,7 +17,7 @@ namespace Cheng.Algorithm.Compressions
     /// <remarks>
     /// 派生该类以实现各种数据包或压缩算法的实现
     /// </remarks>
-    public abstract class BaseCompressionParser : SafreleaseUnmanagedResources
+    public abstract class BaseCompressionParser : SafreleaseUnmanagedResources, IDataList
     {
 
         #region 构造
@@ -128,6 +129,11 @@ namespace Cheng.Algorithm.Compressions
         /// 是否具有将数据压缩的功能
         /// </summary>
         public virtual bool CanBeCompressed => false;
+
+        /// <summary>
+        /// 可获取项数据枚举器
+        /// </summary>
+        public virtual bool CanGetEntryEnumrator => false;
 
         #endregion
 
@@ -789,6 +795,40 @@ namespace Cheng.Algorithm.Compressions
             StringWriter swr = new StringWriter();
             DeCompressionToText(index, encoding, swr);
             return swr.ToString();
+        }
+
+        #endregion
+
+        #region 派生
+
+        IDataEntry IDataList.this[int index]
+        {
+            get => this[index];
+        }
+
+        /// <summary>
+        /// 获取一个枚举器，可枚举当前所有项数据路径
+        /// </summary>
+        /// <returns>一个像数据路径接口的枚举器</returns>
+        public virtual IEnumerator<IDataEntry> GetDataEntryEnumrator()
+        {
+            
+            int length = Count;
+            for (int i = 0; i < length; i++)
+            {
+                yield return this[i];
+            }
+
+        }
+
+        IEnumerator<IDataEntry> IEnumerable<IDataEntry>.GetEnumerator()
+        {
+            return GetDataEntryEnumrator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetDataEntryEnumrator();
         }
 
         #endregion

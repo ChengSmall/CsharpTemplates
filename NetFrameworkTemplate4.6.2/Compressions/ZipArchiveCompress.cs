@@ -6,6 +6,7 @@ using System.IO.Compression;
 using Cheng.Memorys;
 using System.Collections;
 using Cheng.Algorithm.Collections;
+using Cheng.Algorithm.Trees;
 
 namespace Cheng.Algorithm.Compressions.Systems
 {
@@ -619,6 +620,52 @@ namespace Cheng.Algorithm.Compressions.Systems
         }
 
         public override bool IsNeedToReleaseResources => true;
+
+        #region
+
+        public override bool CanGetEntryEnumrator => p_mode == ZipArchiveMode.Read || p_mode == ZipArchiveMode.Update;
+
+        private class DataEntry : IDataEntry
+        {
+            public DataEntry(ZipArchiveEntry entry)
+            {
+                p_entry = entry;
+            }
+            private ZipArchiveEntry p_entry;
+
+            public string FullName
+            {
+                get
+                {
+                    if (p_entry.Archive is null) return null;
+                    return p_entry.FullName;
+                }
+            }
+
+            public string Name
+            {
+                get
+                {
+                    if (p_entry.Archive is null) return null;
+                    return p_entry.Name;
+                }
+            }
+        }
+
+        public override IEnumerator<IDataEntry> GetDataEntryEnumrator()
+        {
+            ThrowObjectDisposeException();
+            return p_zip.Entries.ToOtherItemsByCondition<ZipArchiveEntry, IDataEntry>(fs_ZipArcToDataEntry).GetEnumerator();
+        }
+
+        static bool fs_ZipArcToDataEntry(ZipArchiveEntry entry, out IDataEntry data)
+        {
+            data = new DataEntry(entry);
+            if (entry?.Archive is null) return false;
+            return true;
+        }
+
+        #endregion
 
         #endregion
 

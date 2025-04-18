@@ -424,7 +424,6 @@ namespace Cheng.Streams
             int bufCount;
             int re;
 
-
             //获取缓存可用量
             bufCount = p_bufPosEnd - p_bufPos + 1;
             //bufCount = f_bufferHaveReadCount(p_bufPos, p_bufPosEnd);
@@ -766,6 +765,16 @@ namespace Cheng.Streams
 
             if (count < 0 || offset < 0 || offset + count > len) throw new ArgumentOutOfRangeException();
 
+            if (p_nowPos > p_endPos)
+            {
+                return 0;
+            }
+            else if(p_nowPos < p_startPos)
+            {
+                throwOutRange();
+                return 0;
+            }
+
             //截断流剩余长度
             var length = (p_endPos + 1) - p_nowPos;
 
@@ -826,6 +835,7 @@ namespace Cheng.Streams
         }
 
         #region 无实现
+
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotSupportedException();
@@ -838,6 +848,15 @@ namespace Cheng.Streams
         {
             throw new NotSupportedException();
         }
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        {
+            throw new NotSupportedException();
+        }
+        public override void EndWrite(IAsyncResult asyncResult)
+        {
+            throw new NotSupportedException();
+        }
+
         #endregion
 
         #endregion

@@ -45,12 +45,11 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
     public class ResourcePackageListView
     {
 
-        #region ai
+        #region 结构
 
         private static TNode f_initTree(ResReaderPack pack)
         {
-            TreeAction treeAction = new TreeAction();
-            return treeAction.DataListToTreeNode(pack);
+            return TreeAction.ListToTreeNode(pack, new char[] { '\\', '/' }, "\\");
         }
 
         private class ResReaderEntry : IDataEntry
@@ -102,11 +101,17 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
             {
                 get => p_list.Count;
             }
+
+            public IEnumerator<IDataEntry> GetEnumerator()
+            {
+                return p_list.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
         }
-
-        #endregion
-
-        #region 结构
 
         #endregion
 
@@ -141,7 +146,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
 
             ResReaderPack resReader = new ResReaderPack(p_pack);
 
-            //p_tree = f_initTreeNode(resReader);           
+            //p_tree = f_initTreeNode(resReader);
 
             //f_initTreeParent(p_tree);
 

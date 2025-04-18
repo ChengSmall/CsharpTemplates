@@ -8,7 +8,7 @@ namespace Cheng.Algorithm.Trees
 {
 
     /// <summary>
-    /// 一个表示树状图的节点的公共接口
+    /// 表示树状图节点数据所在位置的公共接口
     /// </summary>
     public interface IDataEntry
     {
@@ -16,10 +16,13 @@ namespace Cheng.Algorithm.Trees
         /// <summary>
         /// 数据在包内的相对路径
         /// </summary>
+        /// <remarks>
+        /// <para>相对路径的路径节点采用符号'\'分割</para>
+        /// </remarks>
         string FullName { get; }
 
         /// <summary>
-        /// 此数据的文件或文件夹名称
+        /// 此数据的文件名称
         /// </summary>
         string Name { get; }
 
@@ -28,7 +31,7 @@ namespace Cheng.Algorithm.Trees
     /// <summary>
     /// 表示节点集合的公共接口
     /// </summary>
-    public interface IDataList
+    public interface IDataList : IEnumerable<IDataEntry>
     {
 
         /// <summary>
@@ -51,6 +54,7 @@ namespace Cheng.Algorithm.Trees
     /// </summary>
     public struct TreeNodeData
     {
+
         /// <summary>
         /// 初始化节点数据
         /// </summary>
@@ -65,178 +69,187 @@ namespace Cheng.Algorithm.Trees
         }
 
         /// <summary>
-        /// 该节点数据的完整路径或目录，根节点表示为null
+        /// 该节点数据的完整路径或目录，如果是根节点则为null
         /// </summary>
         public readonly string dataPath;
 
         /// <summary>
-        /// 该节点文件名或文件夹名，根节点表示为null
+        /// 该节点文件名或文件夹名，如果是根节点则为null
         /// </summary>
         public readonly string name;
 
         /// <summary>
-        /// 该节点是否为文件，文件表示true，文件夹表示false
+        /// 该节点是否为文件；true表示文件，false表示文件夹
         /// </summary>
         public readonly bool isFile;
 
+        public override string ToString()
+        {
+            if (dataPath is null) return "<root>";
+            return dataPath;
+        }
+
     }
 
-    /// <summary>
-    /// 树状图转换器
-    /// </summary>
-    /// <remarks>
-    /// 用于将文件数据列表转换为
-    /// </remarks>
-    public class TreeAction
-    {
+    #region
 
-        /// <summary>
-        /// 创建树状图
-        /// </summary>
-        /// <param name="list">集合</param>
-        /// <param name="nodeLookupBuffer">字典缓冲区</param>
-        /// <param name="splitFullNameChars"><分割路径用的可用路径分隔符/param>
-        /// <param name="pathSeparator">组装路径时用的路径分隔符</param>
-        /// <returns>根节点</returns>
-        private static TreeNode<TreeNodeData> f_sDataListToTreeNode(IDataList list, Dictionary<string, TreeNode<TreeNodeData>> nodeLookupBuffer, char[] splitFullNameChars, string pathSeparator)
-        {
+    //public class TreeNode<T>
+    //{
 
-            //字典来存储所有节点，以便按其完整路径快速查找
-            Dictionary<string, TreeNode<TreeNodeData>> nodeLookup = nodeLookupBuffer;
-            //nodeLookup.Clear();
+    //    public TreeNode(T node)
+    //    {
+    //        p_list = new List<TreeNode<T>>();
+    //        Value = node;
+    //    }
 
-            //创建根节点
-            TreeNode<TreeNodeData> root = new TreeNode<TreeNodeData>(default);
+    //    public TreeNode()
+    //    {
+    //        p_list = new List<TreeNode<T>>();
+    //    }
 
-            TreeNode<TreeNodeData> currentNode = root;
+    //    /// <summary>
+    //    /// 储存子节点
+    //    /// </summary>
+    //    private List<TreeNode<T>> p_list;
 
-            //使用空字符串作为根节点的键
-            nodeLookup[""] = root;
+    //    /// <summary>
+    //    /// 当前节点的数据
+    //    /// </summary>
+    //    public T Value { get; set; }
 
-            //填充字典并构建树结构
-            for (int t_entryIndex = 0; t_entryIndex < list.Count; t_entryIndex++)
-            {
-                var entry = list[t_entryIndex];
+    //    /// <summary>
+    //    /// 子节点数量
+    //    /// </summary>
+    //    public int Count => p_list.Count;
 
-                if (entry.FullName is null) throw new ArgumentNullException();
+    //    /// <summary>
+    //    /// 按索引访问子节点
+    //    /// </summary>
+    //    /// <param name="index"></param>
+    //    /// <returns></returns>
+    //    public TreeNode<T> this[int index]
+    //    {
+    //        get => p_list[index];
+    //        set => p_list[index] = value;
+    //    }
 
-                var parts = entry.FullName.Split(splitFullNameChars, StringSplitOptions.RemoveEmptyEntries);
-                TreeNode<TreeNodeData> parentNode = currentNode;
+    //    /// <summary>
+    //    /// 添加一个子节点
+    //    /// </summary>
+    //    /// <param name="node"></param>
+    //    public void Add(TreeNode<T> node)
+    //    {
+    //        p_list.Add(node);
+    //    }
 
-                //遍历路径部分以查找或创建正确的父节点
-                for (int i = 0; i < parts.Length - 1; i++)
-                {
-                    //string key = string.Join("/", parts, 0, i + 1);
-                    string key = string.Join(pathSeparator, parts, 0, i + 1);
-                    if (!nodeLookup.ContainsKey(key))
-                    {
-                        //为路径的这一部分创建一个新节点
-                        //var newData = new TreeNodeData(string.Join("/", parts, 0, i + 1), parts[i], false);
-                        var newData = new TreeNodeData(string.Join(pathSeparator, parts, 0, i + 1), parts[i], false);
-                        TreeNode<TreeNodeData> newNode = new TreeNode<TreeNodeData> (newData);
-                        parentNode.Add(newNode);
-                        nodeLookup[key] = newNode;
-                    }
+    //    /// <summary>
+    //    /// 按索引删除一个子节点
+    //    /// </summary>
+    //    /// <param name="index"></param>
+    //    public void RemoveAt(int index)
+    //    {
+    //        p_list.RemoveAt(index);
+    //    }
 
-                    //移动到路径下一部分的父节点
-                    parentNode = nodeLookup[key];
-                }
+    //}
 
-                //创建叶子节点并将其添加到其父节点
-                //假设它是一个文件，因为它在列表中
-                var leafData = new TreeNodeData(entry.FullName, entry.Name, true); 
-                
-                //TreeNode<TreeNodeData> leafNode = new TreeNode<TreeNodeData> { Value = leafData };
-                TreeNode<TreeNodeData> leafNode = new TreeNode<TreeNodeData>(leafData);
-                parentNode.Add(leafNode);
-                //将叶子节点存储在查找中以确保完整性，尽管这不是严格必要的
-                nodeLookup[entry.FullName] = leafNode; 
+    #endregion
 
-            }
+    #region test
 
-            return root;
-        }
+    //internal static class TreeFunc
+    //{
 
-        #region
+    //    /// <summary>
+    //    /// 将一系列节点集合转化为树状结构
+    //    /// </summary>
+    //    /// <param name="list">节点集合</param>
+    //    /// <param name="splitChars">节点间可用的分隔符</param>
+    //    /// <returns>树结构的根节点，包含从<paramref name="list"/>转换的若干子节点和节点数据</returns>
+    //    /// <exception cref="ArgumentNullException">参数是null</exception>
+    //    /// <exception cref="NotImplementedException">节点路径的分隔符'\'之间存在空节点名</exception>
+    //    public static TreeNode<TreeNodeData> ListToTree(IDataList list, char[] splitChars)
+    //    {
+    //        if (list is null) throw new ArgumentNullException();
 
-        public TreeAction()
-        {
-            p_nodeLookup = new Dictionary<string, TreeNode<TreeNodeData>>();
-            p_sep = new char[] { '/', '\\' };
-        }
+    //        //待完成
 
-        #endregion
+    //        // 初始化根节点
+    //        TreeNode<TreeNodeData> root = new TreeNode<TreeNodeData>(new TreeNodeData(null, null, false));
 
-        #region
+    //        foreach (IDataEntry entry in list)
+    //        {
+    //            string fullName = entry.FullName;
+    //            string[] parts = fullName.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
 
-        private Dictionary<string, TreeNode<TreeNodeData>> p_nodeLookup;
+    //            // 检查路径是否合法
+    //            foreach (string part in parts)
+    //            {
+    //                if (string.IsNullOrEmpty(part))
+    //                    throw new NotImplementedException("节点路径的分隔符'\\'之间存在空节点名");
+    //            }
 
-        private char[] p_sep;
+    //            if (parts.Length == 0)
+    //                continue; // 忽略空路径（例如FullName为空）
 
-        #endregion
+    //            TreeNode<TreeNodeData> currentParent = root;
 
-        #region 功能
+    //            // 遍历除最后一个部分外的所有路径段（构建文件夹）
+    //            for (int i = 0; i < parts.Length - 1; i++)
+    //            {
+    //                string folderName = parts[i];
+    //                TreeNode<TreeNodeData> existingFolder = FindChildFolder(currentParent, folderName);
 
-        /// <summary>
-        /// 使用数据列表来创建树状图
-        /// </summary>
-        /// <param name="list">文件数据列表</param>
-        /// <returns>一个可按节点访问的树状结构</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="Exception">其它错误</exception>
-        public TreeNode<TreeNodeData> DataListToTreeNode(IDataList list)
-        {
-            if (list is null) throw new ArgumentNullException();
-            p_nodeLookup.Clear();
-            var re = f_sDataListToTreeNode(list, p_nodeLookup, p_sep, "\\");
-            p_nodeLookup.Clear();
+    //                if (existingFolder == null)
+    //                {
+    //                    // 构建当前文件夹的完整路径
+    //                    string parentPath = currentParent.Value.dataPath;
+    //                    string currentPath = parentPath == null ? folderName : $"{parentPath}\\{folderName}";
+    //                    TreeNodeData folderData = new TreeNodeData(currentPath, folderName, false);
+    //                    TreeNode<TreeNodeData> newFolder = new TreeNode<TreeNodeData>(folderData);
+    //                    currentParent.Add(newFolder);
+    //                    existingFolder = newFolder;
+    //                }
 
-            return re;
-        }
+    //                currentParent = existingFolder;
+    //            }
 
-        /// <summary>
-        /// 使用数据列表来创建树状图
-        /// </summary>
-        /// <param name="list">文件数据列表</param>
-        /// <param name="pathSeparator">用于拼接路径的路径分隔符</param>
-        /// <returns>一个可按节点访问的树状结构</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="Exception">其它错误</exception>
-        public TreeNode<TreeNodeData> DataListToTreeNode(IDataList list, string pathSeparator)
-        {
-            if (list is null || pathSeparator is null) throw new ArgumentNullException();
-            
-            p_nodeLookup.Clear();
-            var re = f_sDataListToTreeNode(list, p_nodeLookup, p_sep, pathSeparator);
-            p_nodeLookup.Clear();
+    //            // 添加文件节点
+    //            //string fileName = parts[parts.Length - 1];
+    //            TreeNodeData fileData = new TreeNodeData(entry.FullName, entry.Name, true);
+    //            TreeNode<TreeNodeData> fileNode = new TreeNode<TreeNodeData>(fileData);
+    //            currentParent.Add(fileNode);
+    //        }
 
-            return re;
-        }
+    //        return root;
 
-        /// <summary>
-        /// 使用数据列表来创建树状图
-        /// </summary>
-        /// <param name="list">文件数据列表</param>
-        /// <param name="pathSeparator">用于拼接路径的路径分隔符</param>
-        /// <param name="splitFullNameChars">用于分割路径时的可用路径分隔符</param>
-        /// <returns>一个可按节点访问的树状结构</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentException">参数不正确</exception>
-        /// <exception cref="Exception">其它错误</exception>
-        public TreeNode<TreeNodeData> DataListToTreeNode(IDataList list, string pathSeparator, char[] splitFullNameChars)
-        {
-            if (list is null || pathSeparator is null || splitFullNameChars is null) throw new ArgumentNullException();
-            if (splitFullNameChars.Length == 0) throw new ArgumentException();
+    //    }
 
-            p_nodeLookup.Clear();
-            var re = f_sDataListToTreeNode(list, p_nodeLookup, splitFullNameChars, pathSeparator);
-            p_nodeLookup.Clear();
+    //    private static TreeNode<TreeNodeData> FindChildFolder(TreeNode<TreeNodeData> parent, string folderName)
+    //    {
+    //        var ind = parent.FindIndex<TreeNode<TreeNodeData>>(findFunc);
+    //        if(ind < 0)
+    //        {
+    //            return null;
+    //        }
+    //        return parent[ind];
 
-            return re;
-        }
+    //        bool findFunc(TreeNode<TreeNodeData> t_treeNode)
+    //        {
+    //            return ((!t_treeNode.Value.isFile) && t_treeNode.Value.name == folderName);
+    //        }
 
-        #endregion
+    //        //for (int i = 0; i < parent.Count; i++)
+    //        //{
+    //        //    TreeNode<TreeNodeData> child = parent[i];
+    //        //    if (!child.Value.isFile && child.Value.name == folderName)
+    //        //        return child;
+    //        //}
+    //        //return null;
+    //    }
 
-}
+    //}
+
+    #endregion
 
 }

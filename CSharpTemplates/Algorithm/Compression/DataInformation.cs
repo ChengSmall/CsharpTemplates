@@ -1,3 +1,4 @@
+using Cheng.Algorithm.Trees;
 using System;
 
 namespace Cheng.Algorithm.Compressions
@@ -6,7 +7,7 @@ namespace Cheng.Algorithm.Compressions
     /// <summary>
     /// 压缩数据信息，派生该类以实现相应可访问的数据信息
     /// </summary>
-    public abstract class DataInformation
+    public abstract class DataInformation : IDataEntry
     {
 
         #region 结构
@@ -56,6 +57,26 @@ namespace Cheng.Algorithm.Compressions
         /// 该数据的修改时间，无法访问返回null
         /// </summary>
         public virtual DateTime? ModifiedTime => null;
+
+        string IDataEntry.FullName
+        {
+            get
+            {
+                var path = DataPath;
+                if (path is null) throw new NotSupportedException();
+                return path;
+            }
+        }
+
+        string IDataEntry.Name
+        {
+            get
+            {
+                var path = DataName;
+                if (path is null) throw new NotSupportedException();
+                return path;
+            }
+        }
 
         #endregion
 

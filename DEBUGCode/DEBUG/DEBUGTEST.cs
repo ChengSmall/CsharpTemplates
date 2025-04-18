@@ -339,7 +339,8 @@ namespace Cheng.DEBUG
 
                 obj = list[i];
 
-                sb.Append(toStr.Invoke(obj) + fen);
+                sb.Append(toStr.Invoke(obj));
+                if (i + 1 < length) sb.Append(fen);
                 ct++;
 
                 if (i != end)
@@ -381,7 +382,8 @@ namespace Cheng.DEBUG
 
                 obj = list[i];
 
-                sb.Append(toStr.Invoke(obj) + fen);
+                sb.Append(toStr.Invoke(obj));
+                if (i + 1 < length) sb.Append(fen);
                 ct++;
 
                 if (i != end)
