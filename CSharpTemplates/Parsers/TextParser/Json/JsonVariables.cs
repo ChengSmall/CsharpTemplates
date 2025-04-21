@@ -1091,7 +1091,7 @@ namespace Cheng.Json
 
         public override string ToString(IFormatProvider formatProvider)
         {
-            return value ? TrueJsonText.ToString(formatProvider) : FalseJsonText.ToString(formatProvider);            
+            return value ? TrueJsonText.ToString(formatProvider) : FalseJsonText.ToString(formatProvider);
         }
 
         public static implicit operator bool?(JsonBoolean jobj)

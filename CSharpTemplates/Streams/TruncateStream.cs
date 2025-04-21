@@ -208,7 +208,7 @@ namespace Cheng.Streams
             var buf = p_buffer;
 
             //获取缓存容量
-            //int count = f_bufferNextCount(buf.Length, p_bufPosEnd);            
+            //int count = f_bufferNextCount(buf.Length, p_bufPosEnd);
             //int count = buf.Length - (p_bufPosEnd + 1);
             int count = buf.Length;
 
@@ -786,7 +786,8 @@ namespace Cheng.Streams
             if(length > ((p_endPos - p_startPos) + 1))
             {
                 //超过范围
-                throwOutRange();
+                //throwOutRange();
+                return 0;
             }
 
             int reCount;

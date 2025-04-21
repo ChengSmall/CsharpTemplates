@@ -305,6 +305,15 @@ namespace Cheng.Algorithm.Compressions.Systems
 
         #region 派生
 
+        private ZipArchiveEntry f_getEntryBySPath(string path)
+        {
+            var p1 = path?.Replace('\\', '/');
+            var p2 = path?.Replace('/', '\\');
+            var e = p_zip.GetEntry(p1);
+            if (e is null) e = p_zip.GetEntry(p2);
+            return e;
+        }
+
         public override void DeCompressionToText(int index, Encoding encoding, TextWriter writer)
         {
             ThrowObjectDisposeException();
@@ -333,7 +342,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override void DeCompressionToText(string dataPath, Encoding encoding, TextWriter writer)
         {
             ThrowObjectDisposeException();
-            var et = p_zip.GetEntry(dataPath);
+            var et = f_getEntryBySPath(dataPath);
             if (et is null) throw new ArgumentException();
 
             using (var open = et.Open())
@@ -355,7 +364,7 @@ namespace Cheng.Algorithm.Compressions.Systems
 
         public override bool TryGetInformation<T>(string dataPath, out T information)
         {
-            var ez = p_zip.GetEntry(dataPath);
+            var ez = f_getEntryBySPath(dataPath);
             if(ez is null)
             {
                 information = null;
@@ -370,7 +379,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         {
             ThrowObjectDisposeException();
 
-            var et = p_zip.GetEntry(dataPath);
+            var et = f_getEntryBySPath(dataPath);
 
             if(et is null) et = p_zip.CreateEntry(dataPath);
 
@@ -380,7 +389,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override Stream OpenCompressedStream(string dataPath)
         {
             ThrowObjectDisposeException();
-            var et = p_zip.GetEntry(dataPath);
+            var et = f_getEntryBySPath(dataPath);
             if (et is null) return null;
 
             return et.Open();
@@ -390,7 +399,6 @@ namespace Cheng.Algorithm.Compressions.Systems
         {
             ThrowObjectDisposeException();
             var es = p_zip.Entries;
-            if (index < 0 || index >= es.Count) throw new ArgumentOutOfRangeException();
 
             var et = es[index];
             return et.Open();
@@ -399,11 +407,11 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override bool CreatePath(string dataPath)
         {
             ThrowObjectDisposeException();
-            var entry = p_zip.GetEntry(dataPath);
+            var entry = f_getEntryBySPath(dataPath);
 
             if(entry is null)
             {
-                p_zip.CreateEntry(dataPath);
+                p_zip.CreateEntry(dataPath.Replace('/', '\\'));
                 return true;
             }
             return false;
@@ -412,6 +420,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override void Add(Stream stream, string dataPath)
         {
             ThrowObjectDisposeException();
+            dataPath = dataPath?.Replace('\\', '/');
             var zip = p_zip.CreateEntry(dataPath);
             using (var file = zip.Open())
             {
@@ -426,7 +435,7 @@ namespace Cheng.Algorithm.Compressions.Systems
             int count = list.Count;
             List<ZipArchiveEntry> addzip = new List<ZipArchiveEntry>(count);
             int i;
-            
+
             for (i = 0; i < list.Count; i++)
             {
                 addzip.Add(list[i]);
@@ -442,11 +451,11 @@ namespace Cheng.Algorithm.Compressions.Systems
             ThrowObjectDisposeException();
             if (data is null) throw new ArgumentNullException();
 
-            var et = p_zip.GetEntry(dataPath);
+            var et = f_getEntryBySPath(dataPath);
 
             if(et is null)
             {
-                et = p_zip.CreateEntry(dataPath);
+                et = p_zip.CreateEntry(dataPath.Replace('\\', '/'));
             }
             
             using (var open = et.Open())
@@ -460,11 +469,11 @@ namespace Cheng.Algorithm.Compressions.Systems
             ThrowObjectDisposeException();
             if (stream is null) throw new ArgumentNullException();
 
-            var et = p_zip.GetEntry(dataPath);
+            var et = f_getEntryBySPath(dataPath);
 
             if (et is null)
             {
-                et = p_zip.CreateEntry(dataPath);
+                et = p_zip.CreateEntry(dataPath.Replace('\\', '/'));
             }
 
             using (var open = et.Open())
@@ -472,13 +481,12 @@ namespace Cheng.Algorithm.Compressions.Systems
                 stream.CopyToStream(open, p_buffer);
             }
 
-            throw new NotSupportedException();
         }
 
         public override bool Remove(string dataPath)
         {
             ThrowObjectDisposeException();
-            var entry = p_zip.GetEntry(dataPath);
+            var entry = f_getEntryBySPath(dataPath);
             if (entry is null) return false;
             entry.Delete();
             return true;
@@ -498,14 +506,15 @@ namespace Cheng.Algorithm.Compressions.Systems
             get
             {
                 ThrowObjectDisposeException();
-                return new ZipArchiveInf(p_zip.GetEntry(dataPath));
+                dataPath = dataPath?.Replace('\\', '/');
+                return new ZipArchiveInf(f_getEntryBySPath(dataPath));
             }
         }
 
         public override T GetInformation<T>(string dataPath)
         {
             ThrowObjectDisposeException();
-            return new ZipArchiveInf(p_zip.GetEntry(dataPath)) as T;
+            return new ZipArchiveInf(f_getEntryBySPath(dataPath)) as T;
         }
 
         public override int Count
@@ -527,7 +536,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override bool ContainsData(string dataPath)
         {
             ThrowObjectDisposeException();
-            return p_zip.GetEntry(dataPath) != null;
+            return f_getEntryBySPath(dataPath) != null;
         }
 
         public override IEnumerable<string> EnumatorFileName()
@@ -554,7 +563,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override void DeCompressionTo(string dataPath, Stream stream)
         {
             ThrowObjectDisposeException();
-            var entry = p_zip.GetEntry(dataPath);
+            var entry = f_getEntryBySPath(dataPath);
             if (entry == null) throw new ArgumentException();
 
             using (var open = entry.Open())
@@ -567,7 +576,8 @@ namespace Cheng.Algorithm.Compressions.Systems
         {
             ThrowObjectDisposeException();
             if (data is null || dataPath is null) throw new ArgumentNullException();
-            var entry = p_zip.CreateEntry(dataPath);
+            var entry = f_getEntryBySPath(dataPath);
+            if(entry is null) entry = p_zip.CreateEntry(dataPath?.Replace('/', '\\'));
 
             using (var open = entry.Open())
             {
@@ -593,6 +603,7 @@ namespace Cheng.Algorithm.Compressions.Systems
             ThrowObjectDisposeException();
             var entry = p_zip.Entries[index];
             if (entry == null) throw new InvalidOperationException();
+
             MemoryStream ms;
             using (var open = entry.Open())
             {
@@ -606,17 +617,20 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override byte[] DeCompressionToData(string dataPath)
         {
             ThrowObjectDisposeException();
-            var et = p_zip.GetEntry(dataPath);
-            if(et is null)
+            var entry = p_zip.GetEntry(dataPath);
+            if(entry is null)
             {
                 throw new ArgumentException();
             }
-            //var size = et.CompressedLength;
-            //var inf = GetInformation(dataPath);
-            MemoryStream ms = new MemoryStream(256);
 
-            DeCompressionTo(dataPath, ms);
-            return ms.ToArray();
+            MemoryStream ms;
+            using (var open = entry.Open())
+            {
+                if (entry.Length > int.MaxValue) throw new InsufficientMemoryException();
+                ms = new MemoryStream((int)entry.Length);
+                open.CopyToStream(ms, p_buffer);
+            }
+            return (ms.Length == ms.GetBuffer().Length) ? ms.GetBuffer() : ms.ToArray();
         }
 
         public override bool IsNeedToReleaseResources => true;

@@ -99,6 +99,7 @@ namespace Cheng.Json
         #region 封装
 
         #region 读取
+
         /// <summary>
         /// 读取字符到缓冲区charArrayBuffer
         /// </summary>
@@ -162,6 +163,7 @@ namespace Cheng.Json
         #endregion
 
         #region 判断
+
         /// <summary>
         /// 判断<paramref name="ch"/>是否属于<paramref name="cs"/>集合内的元素
         /// </summary>
@@ -176,6 +178,7 @@ namespace Cheng.Json
             }
             return false;
         }
+
         /// <summary>
         /// 判断类型
         /// </summary>
@@ -442,6 +445,7 @@ namespace Cheng.Json
 
             return false;
         }
+
         #endregion
 
         #region string
@@ -1515,15 +1519,7 @@ namespace Cheng.Json
 
         private void f_writeBool(TextWriter wr, bool value)
         {
-            var nf = p_cultureInfo?.NumberFormat;
-            if (nf is null)
-            {
-                wr.Write(value);
-            }
-            else
-            {
-                wr.Write(value.ToString(nf));
-            }
+            wr.Write(value ? JsonBoolean.TrueJsonText : JsonBoolean.FalseJsonText);
         }
 
         private void f_writeNull(TextWriter wr)
