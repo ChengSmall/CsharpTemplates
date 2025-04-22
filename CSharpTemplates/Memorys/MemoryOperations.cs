@@ -1421,6 +1421,42 @@ namespace Cheng.Memorys
         }
 
         /// <summary>
+        /// 比较两块内存中的数据是否相同
+        /// </summary>
+        /// <param name="ptr1">地址1</param>
+        /// <param name="ptr2">地址2</param>
+        /// <param name="length">比较的长度</param>
+        /// <returns></returns>
+        public static bool EqualsMemory(void* ptr1, void* ptr2, int length)
+        {
+            long* xlp = (long*)ptr1, ylp = (long*)ptr2;
+            if (xlp == ylp) return true;
+
+            int i;
+            int size8 = length / 8;
+            int sf8 = length % 8;
+
+            for (i = 0; i < size8; i++)
+            {
+                if ((*(xlp + i)) != (*(ylp + i))) return false;
+            }
+
+            if (sf8 != 0)
+            {
+                xlp += i;
+                ylp += i;
+
+                for (i = 0; i < sf8; i++)
+                {
+                    if ((*(((byte*)xlp) + i)) != (*(((byte*)ylp) + i))) return false;
+                }
+
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// 比较两个字节数组的内存数据是否相等
         /// </summary>
         /// <param name="buffer1"></param>
@@ -1437,6 +1473,32 @@ namespace Cheng.Memorys
             fixed(byte* bp = buffer1, bp2 = buffer2)
             {
                 return EqualsMemory(new IntPtr(bp), new IntPtr(bp2), length);
+            }
+        }
+
+        /// <summary>
+        /// 比较两个字节数组的指定范围内存数据是否相等
+        /// </summary>
+        /// <param name="buffer1">要比较的字节数组1</param>
+        /// <param name="offset"><paramref name="buffer1"/>从0开始的内存偏移</param>
+        /// <param name="buffer2">要比较的字节数组1</param>
+        /// <param name="offset2"><paramref name="buffer2"/>从0开始的内存偏移</param>
+        /// <param name="count">要比较的数量</param>
+        /// <returns>如果给定范围是数据完全一致，返回true；不一致返回false</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">给定内存范围超出数组范围</exception>
+        public static bool EqualsBytes(this byte[] buffer1, int offset, byte[] buffer2, int offset2, int count)
+        {
+            if (buffer1 is null || buffer2 is null) throw new ArgumentNullException();
+
+            if ((offset < 0 || offset2 < 0) || (offset + count > buffer1.Length || offset2 + count > buffer2.Length))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bp = buffer1, bp2 = buffer2)
+            {
+                return EqualsMemory(bp + offset, bp2 + offset2, count);
             }
         }
 
