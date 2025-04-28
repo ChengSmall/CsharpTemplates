@@ -90,9 +90,6 @@
   <ItemGroup>
     <Compile Include="Moudles\Experiences\Experiences.cs" />
     <Compile Include="Moudles\Experiences\UpgradeRules.cs" />
-    <Compile Include="Moudles\Experiences\UpgradeRulesTemplates\MinecraftLevelRule.cs" />
-    <Compile Include="Moudles\Experiences\UpgradeRulesTemplates\SekiroExpRule.cs" />
-    <Compile Include="Moudles\Experiences\UpgradeRulesTemplates\War3LevelExpRule.cs" />
     <Compile Include="Moudles\Numgenerator\Numgenerator.cs" />
     <Compile Include="Moudles\Numgenerator\NumgeneratorBaseStructure.cs" />
     <Compile Include="Moudles\Randoms\DynamicalProbabilityRweardPool.cs" />

@@ -26,13 +26,14 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\UnityCode.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -46,7 +47,7 @@
     <Folder Include="codes\角色控制器\3D\第三人称视角\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="codes\NAudio\BaseAudioReader.cs" />
+    <Compile Include="codes\NAudio\NAudioWarpper.cs" />
     <Compile Include="codes\推箱子\CameraDrawPushBoxScene.cs" />
     <Compile Include="codes\推箱子\EditorDrawStructure.cs" />
     <Compile Include="codes\推箱子\Editor\SpriteDrawEditorGUI.cs" />

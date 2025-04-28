@@ -10,8 +10,6 @@ using UnityEditor;
 #endif
 
 using UObj = UnityEngine.Object;
-using URandom = UnityEngine.Random;
-using NAudio.Flac;
 using Cheng.Streams;
 using NAudio.Wave;
 using Cheng.Memorys;
@@ -19,46 +17,79 @@ using Cheng.Memorys;
 namespace Cheng.Unitys.NAudios
 {
 
-    public abstract class BaseAudioReader : MonoBehaviour
+    /// <summary>
+    /// 将NAudio封装为Unity音频容器
+    /// </summary>
+    public sealed class NAudioWarpper : SafreleaseUnmanagedResources
     {
 
-        #region
+        #region 构造
 
-        public BaseAudioReader()
+        /// <summary>
+        /// 使用NAudio库的音频流解码器创建一个Unity音频容器
+        /// </summary>
+        /// <param name="waveStream">音频流解码器</param>
+        /// <param name="clipName">Unity音频容器名称，空表示默认类名</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="EndOfStreamException">在播放时出现意外数据</exception>
+        public NAudioWarpper(WaveStream waveStream, string clipName) : this(waveStream, clipName, true, false)
         {
-            audioName = string.Empty;
+        }
+
+        /// <summary>
+        /// 使用NAudio库的音频流解码器创建一个Unity音频容器
+        /// </summary>
+        /// <param name="waveStream">音频流解码器</param>
+        /// <param name="clipName">Unity音频容器名称，空表示默认类名</param>
+        /// <param name="onDispose">是否在销毁对象时连待销毁传入的<paramref name="waveStream"/>；默认为true销毁对象</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="EndOfStreamException">在播放时出现意外数据</exception>
+        public NAudioWarpper(WaveStream waveStream, string clipName, bool onDispose) : this(waveStream, clipName, onDispose, false)
+        {
+        }
+
+        /// <summary>
+        /// 使用NAudio库的音频流解码器创建一个Unity音频容器
+        /// </summary>
+        /// <param name="waveStream">音频流解码器</param>
+        /// <param name="clipName">Unity音频容器名称，空表示默认类名</param>
+        /// <param name="onDispose">是否在销毁对象时连待销毁传入的<paramref name="waveStream"/>；默认为true销毁对象</param>
+        /// <param name="_3D">是否采用3D音效，默认为false</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="EndOfStreamException">在播放时出现意外数据</exception>
+        public NAudioWarpper(WaveStream waveStream, string clipName, bool onDispose, bool _3D)
+        {
+            if (waveStream is null) throw new ArgumentNullException(nameof(waveStream), "参数是null");
+            if (string.IsNullOrEmpty(clipName)) clipName = nameof(NAudioWarpper);
+            p_waveStream = waveStream;
+            p_onDispose = onDispose;
+            p_audioClip = f_createAudioClipFromWaveStream(waveStream, clipName, _3D);
         }
 
         #endregion
 
         #region 参数
 
-        #region
-
-#if UNITY_EDITOR
-        [Tooltip("创建音频流时的名称")]
-#endif
-        [SerializeField] protected string audioName;
-
-        #endregion
-
-        #region 内部参数
-
         /// <summary>
         /// u3d音频源
         /// </summary>
-        protected AudioClip audioClip;
+        private AudioClip p_audioClip;
 
         /// <summary>
         /// 音频流解码器
         /// </summary>
-        protected WaveStream audioReader;
+        private WaveStream p_waveStream;
 
+        /// <summary>
+        /// 数据缓冲区
+        /// </summary>
         private byte[] blockAlignBuffer;
 
-        #endregion
+        private bool p_onDispose;
 
         #endregion
+
+        #region 功能
 
         #region 封装
 
@@ -143,38 +174,20 @@ namespace Cheng.Unitys.NAudios
 
         private void fe_AudioReader(float[] data)
         {
-            if (audioReader is null)
-            {
-                Debug.LogError("解码器没有初始化");
-                return;
-            }
+            ThrowObjectDisposeException("已经销毁U3D音频容器");
 
-            int length = data.Length;
-            var waveFormat = audioReader.WaveFormat;
-            try
-            {
-                sfe_audioReader((short)waveFormat.Channels, waveFormat.SampleRate, (short)waveFormat.BitsPerSample, waveFormat.BlockAlign, audioReader, data, blockAlignBuffer);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError(ex.Message);
-            }
+            var waveFormat = p_waveStream.WaveFormat;
+            sfe_audioReader((short)waveFormat.Channels, waveFormat.SampleRate, (short)waveFormat.BitsPerSample, waveFormat.BlockAlign, p_waveStream, data, blockAlignBuffer);
         }
 
         private void fe_AudioSetPosition(int position)
         {
-            if(audioReader is null)
-            {
-                Debug.LogError("解码器没有初始化");
-            }
-            else
-            {
-                audioReader.Position = position;
-            }
-            
+            ThrowObjectDisposeException("已经销毁U3D音频容器");
+            p_waveStream.Position = position;
+
         }
 
-        private AudioClip f_createAudioClipFromWaveStream(WaveStream waveStream, string clipName)
+        private AudioClip f_createAudioClipFromWaveStream(WaveStream waveStream, string clipName, bool _3D)
         {
             // 获取音频格式信息
             WaveFormat waveFormat = waveStream.WaveFormat;
@@ -192,92 +205,61 @@ namespace Cheng.Unitys.NAudios
                 sampleCount,                  // 样本数量（长度）
                 channels,                     // 声道数
                 frequency,                    // 采样率
-                true,                         // 是否3D音频（通常设为false）
+                _3D,                         // 是否3D音频（通常设为false）
                 fe_AudioReader, fe_AudioSetPosition
             );
 
             return audioClip;
         }
 
-        /// <summary>
-        /// 从已经初始化好的音频流解码器创建<see cref="AudioClip"/>到<see cref="audioClip"/>
-        /// </summary>
-        protected virtual void initAudio()
-        {
-            try
-            {
-                audioClip = f_createAudioClipFromWaveStream(audioReader, audioName);
-            }
-            catch (Exception ex)
-            {
-                StringBuilder sb = new StringBuilder(64);
-                sb.Append("音频流初始化错误:");
-                sb.AppendLine(ex.Message);
-                sb.Append("错误类型:");
-                sb.AppendLine(ex.GetType().FullName);
-                Debug.LogError(sb.ToString());
-
-                destoryAudio();
-            }
-
-        }
-
-        /// <summary>
-        /// 销毁和释放脚本内的资源
-        /// </summary>
-        protected virtual void destoryAudio()
-        {
-            if (audioClip != null) Destroy(audioClip);
-
-            if (audioReader != null)
-            {
-                audioReader.Close();
-            }
-
-            audioClip = null;
-            audioReader = null;
-        }
-
         #endregion
-
-        #region 功能
 
         #region 参数访问
 
         /// <summary>
-        /// 访问或设置初始化时创建的音频流名称
+        /// 获取封装好的Unity音频数据容器
         /// </summary>
-        public string AudioName
+        /// <exception cref="ObjectDisposedException">已经销毁对象</exception>
+        public AudioClip U3DAudioClip
         {
-            get => audioName;
-            set => audioName = value ?? string.Empty;
+            get
+            {
+                ThrowObjectDisposeException();
+                return p_audioClip;
+            }
+        }
+
+        #endregion
+
+        #region 销毁
+
+        protected override bool Disposeing(bool disposeing)
+        {
+            if (disposeing)
+            {
+                if (p_audioClip != null) UObj.Destroy(p_audioClip);
+
+                if (p_onDispose)
+                {
+                    p_waveStream?.Close();
+                }
+            }
+
+            p_audioClip = null;
+            p_waveStream = null;
+            blockAlignBuffer = null;
+            return true;
         }
 
         /// <summary>
-        /// 获取创建的音频流，若没有创建或以销毁则为null
+        /// 调用该函数销毁创建的Unity资源和托管资源
         /// </summary>
-        public AudioClip AudioStreamClip
+        public override void Close()
         {
-            get => audioClip;
+            Dispose(true);
         }
 
         #endregion
-
-        #endregion
-
-        #region 运行
-
-
-        protected virtual void Awake()
-        {
-
-        }
-
-
-        protected virtual void OnDestroy()
-        {
-            destoryAudio();
-        }
 
         #endregion
 

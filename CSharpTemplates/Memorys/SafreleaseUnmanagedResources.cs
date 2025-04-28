@@ -118,7 +118,7 @@ namespace Cheng.Memorys
         }
 
         /// <summary>
-        /// 调用该方法，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
+        /// 调用该函数，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
         /// </summary>
         protected void ThrowObjectDisposeException()
         {
@@ -126,12 +126,22 @@ namespace Cheng.Memorys
         }
 
         /// <summary>
-        /// 调用该方法，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
+        /// 调用该函数，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
         /// </summary>
         /// <param name="objName">引发异常的对象名称</param>
         protected void ThrowObjectDisposeException(string objName)
         {
             if (p_isDispose) throw new ObjectDisposedException(objName);
+        }
+
+        /// <summary>
+        /// 调用该函数，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
+        /// </summary>
+        /// <param name="objName">引发异常的对象名称</param>
+        /// <param name="message">异常消息</param>
+        protected void ThrowObjectDisposeException(string objName, string message)
+        {
+            if (p_isDispose) throw new ObjectDisposedException(objName, message);
         }
 
         #endregion
