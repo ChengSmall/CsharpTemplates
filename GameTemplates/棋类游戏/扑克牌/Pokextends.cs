@@ -13,27 +13,41 @@ namespace Cheng.GameTemplates.Pokers
         #region 初始化功能
 
         /// <summary>
+        /// 获取一个可获取到一副或多副扑克牌的迭代器
+        /// </summary>
+        /// <param name="allowJoker">每一副是否允许有鬼牌</param>
+        /// <param name="count">扑克牌副数量</param>
+        /// <returns>可连续生成出一副或多副扑克牌的迭代器</returns>
+        public static IEnumerable<Poker> GetPokerCards(bool allowJoker, int count)
+        {
+            int i, j;
+
+            for (int c = 0; c < count; c++)
+            {
+                for (j = 1; j < 5; j++)
+                {
+                    for (i = 1; i < ((int)PokerNum.K + 1); i++)
+                    {
+                        yield return new Poker((PokerNum)i, (PokerFlower)j);
+                    }
+                }
+
+                if (allowJoker)
+                {
+                    yield return Poker.LittleJoker;
+                    yield return Poker.Joker;
+                }
+            }
+        }
+
+        /// <summary>
         /// 获取一个可获取到一整副扑克牌的迭代器
         /// </summary>
         /// <param name="allowJoker">是否允许有鬼牌</param>
         /// <returns>可连续生成出一整副扑克的迭代器</returns>
         public static IEnumerable<Poker> GetPokerCards(bool allowJoker)
         {
-            int i, j;
-
-            for (j  = 1; j < 5; j++)
-            {
-                for (i = 1; i < 14; i ++)
-                {
-                    yield return new Poker((PokerNum)i, (PokerFlower)j);
-                }
-            }
-
-            if (allowJoker)
-            {
-                yield return Poker.LittleJoker;
-                yield return Poker.Joker;
-            }
+            return GetPokerCards(allowJoker, 1);
         }
 
         /// <summary>
@@ -42,7 +56,7 @@ namespace Cheng.GameTemplates.Pokers
         /// <returns>可连续生成出54张扑克的迭代器</returns>
         public static IEnumerable<Poker> GetPokerCards()
         {
-            return GetPokerCards(true);
+            return GetPokerCards(true, 1);
         }
 
         /// <summary>
@@ -66,7 +80,7 @@ namespace Cheng.GameTemplates.Pokers
             //int index = 0;
             for (j = 1; j < 5; j++)
             {
-                for (i = 1; i < 14; i++)
+                for (i = 1; i < ((int)PokerNum.K + 1); i++)
                 {
                     pokers[index] = new Poker((PokerNum)i, (PokerFlower)j);
                     index++;
@@ -76,7 +90,7 @@ namespace Cheng.GameTemplates.Pokers
             if (length >= 53)
             {
                 pokers[index++] = Poker.LittleJoker;
-                if(length >= 54) pokers[index++] = Poker.Joker;
+                if(length >= 54) pokers[index] = Poker.Joker;
             }
         }
 

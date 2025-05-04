@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Cheng.Texts;
 using Cheng.Algorithm.HashCodes;
+using Cheng.IO;
 
 namespace Cheng.DataStructure.Hashs
 {
@@ -58,7 +59,7 @@ namespace Cheng.DataStructure.Hashs
         /// <summary>
         /// 该结构的字节大小
         /// </summary>
-        public const int Size = 32;
+        public const int Size = sizeof(ulong) * 4;
 
         #endregion
 
@@ -183,8 +184,8 @@ namespace Cheng.DataStructure.Hashs
         /// <summary>
         /// 将表示Hash256的文本转化为Hash256
         /// </summary>
-        /// <param name="text">表示Hash256文本的字符缓冲区</param>
-        /// <param name="index">从字符缓冲区读取文本的起始位置</param>
+        /// <param name="text">表示Hash256文本</param>
+        /// <param name="index">从字符文本读取的起始位置</param>
         /// <returns>转化后的Hash256实例</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">文本长度不足</exception>
@@ -222,8 +223,8 @@ namespace Cheng.DataStructure.Hashs
         /// <summary>
         /// 将表示Hash256的文本转化为Hash256
         /// </summary>
-        /// <param name="text">表示Hash256文本的字符缓冲区</param>
-        /// <param name="index">从字符缓冲区读取文本的起始位置</param>
+        /// <param name="text">表示Hash256文本</param>
+        /// <param name="index">从字符文本读取的起始位置</param>
         /// <param name="hash">转化后的值</param>
         /// <returns>是否成功转化</returns>
         public static bool ToHash256(string text, int index, out Hash256 hash)
@@ -236,6 +237,63 @@ namespace Cheng.DataStructure.Hashs
             {
                 return ToHash256(p + index, out hash);
             }
+        }
+
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="text">表示Hash256文本</param>
+        /// <returns>转化后的Hash256实例</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">文本长度不足</exception>
+        /// <exception cref="NotImplementedException">文本不是Hash256格式</exception>
+        public static Hash256 ToHash256(string text)
+        {
+            if (text is null) throw new ArgumentNullException();
+            if (68 > text.Length) throw new ArgumentOutOfRangeException();
+
+            fixed (char* p = text)
+            {
+                return ToHash256(p);
+            }
+        }
+
+        #endregion
+
+        #region 字节数组转换
+
+        /// <summary>
+        /// 将字节数组转化为<see cref="Hash256"/>
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <param name="offset">字节数组的起始位置</param>
+        /// <returns>转化后的实例</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定范围的长度不足32字节</exception>
+        public static Hash256 BytesToHash256(byte[] buffer, int offset)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (offset < 0 || offset + 32 > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            fixed (byte* bp = buffer)
+            {
+                return BytesToHash256(bp + offset);
+            }
+        }
+
+        /// <summary>
+        /// 将字节序列转化为<see cref="Hash256"/>
+        /// </summary>
+        /// <param name="buffer">字节序列首地址</param>
+        /// <returns>转化后的实例</returns>
+        public static Hash256 BytesToHash256(byte* buffer)
+        {
+            return new Hash256(IOoperations.OrderToUInt64(new IntPtr(buffer)),
+                IOoperations.OrderToUInt64(new IntPtr(buffer + 8)),
+                IOoperations.OrderToUInt64(new IntPtr(buffer + 16)),
+                IOoperations.OrderToUInt64(new IntPtr(buffer + 24)));
         }
 
         #endregion

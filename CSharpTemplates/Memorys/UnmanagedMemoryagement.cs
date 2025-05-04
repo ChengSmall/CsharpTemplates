@@ -32,7 +32,7 @@ namespace Cheng.Memorys
         #region 参数
 
         private long p_byteSize;
-        private Dictionary<IntPtr, int> p_list;        
+        private Dictionary<IntPtr, int> p_list;
 
         #endregion
 
@@ -49,7 +49,6 @@ namespace Cheng.Memorys
                         f_freeFunc(item.Key);
                     }
                     p_list.Clear();
-                    p_byteSize = -1;
                 }
             }
             else
@@ -61,7 +60,8 @@ namespace Cheng.Memorys
                 //p_list.Clear();
                 //p_byteSize = -1;
             }
-
+            p_byteSize = -1;
+            p_list = null;
             return true;
         }
 
@@ -105,7 +105,7 @@ namespace Cheng.Memorys
                 {
                     return size;
                 }
-            }           
+            }
             return -1;
         }
 
@@ -122,7 +122,7 @@ namespace Cheng.Memorys
             ThrowObjectDisposeException();
             if (cb <= 0) throw new ArgumentOutOfRangeException();
             lock (p_list)
-            {               
+            {
                 var ptr = Marshal.AllocHGlobal(cb);
                 p_list.Add(ptr, cb);
                 p_byteSize += cb;

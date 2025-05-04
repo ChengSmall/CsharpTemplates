@@ -99,7 +99,7 @@ namespace Cheng.DataStructure.BoundedContainers
         }
 
         /// <summary>
-        /// 增加值，并判断增加后是否溢出
+        /// 增加值，并判断是否溢出
         /// </summary>
         /// <param name="value">要增加的值</param>
         /// <param name="reValue">增加后的值</param>
@@ -117,7 +117,7 @@ namespace Cheng.DataStructure.BoundedContainers
         }
 
         /// <summary>
-        /// 减少值，并判断增加后是否溢出
+        /// 减少值，并判断是否溢出
         /// </summary>
         /// <param name="value">要减少的值</param>
         /// <param name="reValue">减少后的值</param>
@@ -205,7 +205,7 @@ namespace Cheng.DataStructure.BoundedContainers
         /// </summary>
         public bc OverFlowMin
         {
-            get => this.min - this.value;
+            get => this.value - this.min;
         }
 
         /// <summary>

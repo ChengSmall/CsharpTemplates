@@ -1021,7 +1021,7 @@ namespace Cheng.Memorys
         /// 完整读取流数据的字节序列
         /// </summary>
         /// <remarks>
-        /// <para>此函数会不断调用<see cref="Stream.Read(byte[], int, int)"/>读取数据，直至读取的字节数等于参数<paramref name="count"/>或流内无法读取</para>
+        /// <para>此函数会不断读取数据，直至读取的字节数等于参数<paramref name="count"/>或流内无法读取</para>
         /// </remarks>
         /// <param name="stream">读取的流</param>
         /// <param name="buffer">读取到的缓冲区</param>
@@ -1048,6 +1048,40 @@ namespace Cheng.Memorys
                 offset += rsize;
                 count -= rsize;
                 re += rsize;
+            }
+            return re;
+        }
+
+        /// <summary>
+        /// 完整读取流数据的字节序列
+        /// </summary>
+        /// <remarks>
+        /// <para>此函数会不断读取数据，直至读取的字节数等于参数<paramref name="count"/>或流内无法读取</para>
+        /// </remarks>
+        /// <param name="stream">读取的流</param>
+        /// <param name="buffer">读取到的缓冲区首地址</param>
+        /// <param name="count">要读取的字节数量</param>
+        /// <returns>实际读取的字节数量；若返回的值小于<paramref name="count"/>表示剩余字节数小于要读取的字节数，返回0表示流已到达结尾</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数不正确</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">不支持方法</exception>
+        /// <exception cref="ObjectDisposedException">资源已释放</exception>
+        public static int ReadBlock(this Stream stream, byte* buffer, int count)
+        {
+            if (stream is null) throw new ArgumentNullException();
+            if (count < 0) throw new ArgumentOutOfRangeException(getArgOutOfRangeReadBlock());
+            //int index = offset;
+            //int rsize;
+            int re = 0;
+            int index = 0;
+            while (count != 0)
+            {
+                int reb = stream.ReadByte();
+                if (reb < 0) break;
+                buffer[index] = (byte)reb;
+                re++;
+                count--;
             }
             return re;
         }

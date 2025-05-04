@@ -160,27 +160,12 @@ namespace Cheng.DEBUG
         /// 获取指定文件的Hash256
         /// </summary>
         /// <param name="filePath">文件路径</param>
-        /// <param name="buffer32">不少于32字节的缓冲区</param>
-        /// <param name="readBuffer">不少于32字节的第二个缓冲区</param>
-        /// <returns></returns>
-        public static Hash256 ToHash256ByFile(this string filePath, byte[] buffer32, byte[] readBuffer)
-        {
-            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-            {
-                return file.ToHash256(buffer32, readBuffer);
-            }
-        }
-
-        /// <summary>
-        /// 获取指定文件的Hash256
-        /// </summary>
-        /// <param name="filePath">文件路径</param>
         /// <returns></returns>
         public static Hash256 ToHash256ByFile(this string filePath)
         {
             using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             {
-                return file.ToHash256(new byte[32], new byte[32]);
+                return file.ToHash256();
             }
         }
 
@@ -243,6 +228,80 @@ namespace Cheng.DEBUG
             }
 
             return timer.Elapsed;
+        }
+
+        #endregion
+
+        #region 信息
+
+        /// <summary>
+        /// 获取流对象的信息
+        /// </summary>
+        /// <param name="stream">流对象</param>
+        /// <param name="append">输出的信息</param>
+        public static void GetInformation(this Stream stream, StringBuilder append)
+        {
+            if (stream is null || append is null) throw new ArgumentNullException();
+
+            bool canRead = stream.CanRead;
+            bool canSeek = stream.CanSeek;
+            bool canWrite = stream.CanWrite;
+            bool canTimeout = stream.CanTimeout;
+
+            append.Append("流类型:");
+            append.Append(stream.GetType().AssemblyQualifiedName);
+            if((!canRead) && (!canSeek) && (!canWrite))
+            {
+                append.AppendLine();
+                append.Append("无法进行任何操作的流");
+                return;
+            }
+            append.AppendLine();
+            append.Append("访问权限:");
+            if (canRead)
+            {
+                append.Append("可读");
+            }
+            if (canWrite)
+            {
+                if (canRead) append.Append(',');
+                append.Append("可写");
+            }
+            if (canSeek)
+            {
+                if (canRead || canWrite) append.Append(',');
+                append.Append("可查");
+            }
+            if (canTimeout)
+            {
+                if (canRead || canWrite || canSeek) append.Append(',');
+                append.Append("可超时");
+            }
+
+            if (canSeek)
+            {
+                append.AppendLine();
+                var len = stream.Length;
+                var pos = stream.Position;
+                append.Append("当前位置:");
+                append.Append(pos);
+                append.Append(' ');
+                append.Append("流长度:");
+                append.Append(len);
+            }
+
+        }
+
+        /// <summary>
+        /// 获取流对象的信息
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns>输出的信息</returns>
+        public static string GetInformation(this Stream stream)
+        {
+            StringBuilder sb = new StringBuilder(32);
+            GetInformation(stream, sb);
+            return sb.ToString();
         }
 
         #endregion

@@ -507,22 +507,31 @@ namespace Cheng.Algorithm.HashCodes
         public static long GetHashCode64(this string str)
         {
             if (str is null) return 0;
-
             int length = str.Length;
             if (length == 0) return 1;
 
-            const long first = 1125899906842597L;
-            const long mio = 1540483477;
+            //const long first = 1125899906842597L;
+            //const long mio = 1540483477;
 
-            long hash;
+            //long hash;
+            //hash = first;
+            //for (int i = 0; i < length; i++)
+            //{
+            //    hash = (hash * mio) ^ str[i];
+            //}
+            //return hash;
 
-            hash = first;
+            const ulong FNV_OFFSET_BASIS = 14695981039346656037UL;
+            const ulong FNV_PRIME = 1099511628211UL;
+
+            ulong hash = FNV_OFFSET_BASIS;
             for (int i = 0; i < length; i++)
             {
-                hash = (hash * mio) ^ str[i];
+                var c = str[i];
+                hash = (hash ^ c) * FNV_PRIME;
             }
-            
-            return hash;          
+            return (long)hash;
+
         }
 
         #endregion

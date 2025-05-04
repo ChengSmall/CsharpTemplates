@@ -48,7 +48,7 @@ namespace Cheng.GameTemplates.Pokers
     public enum PokerFlower : byte
     {
         /// <summary>
-        /// 无花色
+        /// 空值
         /// </summary>
         None = 0,
         /// <summary>
@@ -161,6 +161,18 @@ namespace Cheng.GameTemplates.Pokers
         }
 
         /// <summary>
+        /// 该值是否符合一个扑克牌值
+        /// </summary>
+        public bool IsPoker
+        {
+            get
+            {
+                GetValue(out PokerNum n, out PokerFlower f);
+                return (n > PokerNum.None && n <= PokerNum.Joker) && (f > PokerFlower.None && f < PokerFlower.Plum_Blossoms);
+            }
+        }
+
+        /// <summary>
         /// 当前扑克是否为一个空实例（id == 0）
         /// </summary>
         public bool IsEmpty
@@ -206,7 +218,7 @@ namespace Cheng.GameTemplates.Pokers
 
         #endregion
 
-        #region 比较
+        #region 运算符
 
         /// <summary>
         /// 比较相等
@@ -234,17 +246,56 @@ namespace Cheng.GameTemplates.Pokers
         {
             return p1.id < p2.id;
         }
+
         public static bool operator >(Poker p1, Poker p2)
         {
             return p1.id > p2.id;
         }
+
         public static bool operator <=(Poker p1, Poker p2)
         {
             return p1.id <= p2.id;
         }
+
         public static bool operator >=(Poker p1, Poker p2)
         {
             return p1.id >= p2.id;
+        }
+
+        /// <summary>
+        /// 直接转换id值
+        /// </summary>
+        /// <param name="p"></param>
+        public static implicit operator byte(Poker p)
+        {
+            return p.id;
+        }
+
+        /// <summary>
+        /// 强转扑克
+        /// </summary>
+        /// <param name="id"></param>
+        public static explicit operator Poker(byte id)
+        {
+            return new Poker(id);
+        }
+
+        /// <summary>
+        /// 强转扑克
+        /// </summary>
+        /// <param name="id"></param>
+        public static explicit operator Poker(int id)
+        {
+            return new Poker((byte)id);
+        }
+
+        /// <summary>
+        /// 强转扑克
+        /// </summary>
+        /// <param name="id"></param>
+        public static explicit operator Poker(uint id)
+        {
+            return new Poker((byte)id);
         }
 
         #endregion

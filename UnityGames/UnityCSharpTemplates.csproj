@@ -128,6 +128,7 @@
     <Compile Include="Controls\DataStructure\GameController\Editor\UnityXBoxGameControllerEditorDraw.cs" />
     <Compile Include="Controls\DataStructure\GameController\UnityXBoxGameController.cs" />
     <Compile Include="Controls\Extends\UnityObjExtend.cs" />
+    <Compile Include="Controls\MonoBehaviours\Camera\2D\CameraCurtain.cs" />
     <Compile Include="Controls\MonoBehaviours\Camera\2D\DepthSimulationPlanarMove.cs" />
     <Compile Include="Controls\Camera\CameraExends.cs" />
     <Compile Include="Controls\MonoBehaviours\Canvas\CanvasEvent.cs" />

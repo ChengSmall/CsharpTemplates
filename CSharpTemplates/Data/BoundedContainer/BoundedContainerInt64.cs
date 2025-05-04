@@ -206,7 +206,7 @@ namespace Cheng.DataStructure.BoundedContainers
         /// </summary>
         public bc OverFlowMin
         {
-            get => this.min - this.value;
+            get => this.value - this.min;
         }
 
         /// <summary>

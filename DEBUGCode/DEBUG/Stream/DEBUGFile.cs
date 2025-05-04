@@ -42,7 +42,7 @@ namespace Cheng.DEBUG
         /// <returns></returns>
         public static FileStream OpenFile(this string filePath)
         {
-            return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
         }
 
     }
