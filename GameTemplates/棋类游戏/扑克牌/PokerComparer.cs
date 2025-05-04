@@ -83,7 +83,7 @@ namespace Cheng.Algorithm.Sorts.Comparers.Pokers
                 if (pn == PokerNum.A)
                 {
                     count_A++;
-                    point += 10; //默认按10点算
+                    point += 11; //默认按11点算
                 }
                 else
                 {
@@ -95,7 +95,7 @@ namespace Cheng.Algorithm.Sorts.Comparers.Pokers
             for(i = count_A; i > 0 && point > 21; i--)
             {
                 //将其中一个A牌变为1
-                point -= 9;
+                point -= 10;
             }
 
             return point;
