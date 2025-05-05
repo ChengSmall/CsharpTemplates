@@ -117,6 +117,7 @@
     <Compile Include="Data\BoundedContainer\BoundedContainerInt64.cs" />
     <Compile Include="Data\Button\CancelButton.cs" />
     <Compile Include="Data\Button\ConditionalButton.cs" />
+    <Compile Include="Data\Button\Joysticks\ReversibleJoystick.cs" />
     <Compile Include="Data\Controllers\GameController.cs" />
     <Compile Include="Algorithm\HashCodes\BaseHashCodes.cs" />
     <Compile Include="Algorithm\HashCodes\DelegateHashCode64.cs" />

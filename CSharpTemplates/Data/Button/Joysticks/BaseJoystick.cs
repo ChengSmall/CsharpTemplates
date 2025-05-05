@@ -31,9 +31,9 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// </summary>
         None = 0,
 
-        #region
+        #region 摇杆参数
 
-        #region
+        #region 摇杆分量
 
         /// <summary>
         /// 允许获取摇杆水平数据分量
@@ -57,7 +57,7 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #endregion
 
-        #region
+        #region 偏移轴
 
         /// <summary>
         /// 允许获取摇杆偏移轴数据
@@ -70,6 +70,8 @@ namespace Cheng.ButtonTemplates.Joysticks
         CanSetVector = 0b00100000,
 
         #endregion
+
+        #region 反转参数
 
         /// <summary>
         /// 允许访问水平方向摇杆反转参数
@@ -99,7 +101,9 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #endregion
 
-        #region
+        #endregion
+
+        #region 其它
 
         /// <summary>
         /// 允许使用摇杆数据改变事件
@@ -115,6 +119,21 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// 允许将摇杆参数当作四向按钮设置参数
         /// </summary>
         CanSetFourwayButtons = 0b00010000_00000000,
+
+        /// <summary>
+        /// 允许获取内部封装的摇杆
+        /// </summary>
+        CanGetInternalJoystick = 0b00100000_00000000,
+
+        /// <summary>
+        /// 允许设置内部封装的摇杆
+        /// </summary>
+        CanSetInternalJoystick = 0b01000000_00000000,
+
+        /// <summary>
+        /// 允许访问和设置内部封装的摇杆
+        /// </summary>
+        CanGetSetInternalJoystick = CanGetInternalJoystick | CanSetInternalJoystick,
 
         #endregion
 
@@ -311,6 +330,17 @@ namespace Cheng.ButtonTemplates.Joysticks
         public virtual BaseButton DownButton
         {
             get => ThrowNotSupportedException<BaseButton>();
+            set => ThrowNotSupportedException();
+        }
+
+        /// <summary>
+        /// 访问或设置内部封装的摇杆对象
+        /// </summary>
+        /// <exception cref="NotSupportedException">没有此功能</exception>
+        /// <exception cref="ArgumentNullException">设置的摇杆是null</exception>
+        public virtual BaseJoystick InternalJoystick
+        {
+            get => ThrowNotSupportedException<BaseJoystick>();
             set => ThrowNotSupportedException();
         }
 

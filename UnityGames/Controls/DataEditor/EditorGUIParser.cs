@@ -44,7 +44,26 @@ namespace Cheng.Unitys.Editors
         /// </summary>
         public const float ToggleHeight = 18;
 
+
+        static GUIContent sp_notRecTypeError;
+
+        /// <summary>
+        /// 显示为 "ERROR 不是已知可绘制类"的错误表示标签
+        /// </summary>
+        public static GUIContent NotTypeDrawingError
+        {
+            get
+            {
+                if (sp_notRecTypeError is null)
+                {
+                    sp_notRecTypeError = new GUIContent("ERROR", "不是已知可绘制类");
+                }
+                return sp_notRecTypeError;
+            }
+        }
+
 #endif
+
 
         #endregion
 

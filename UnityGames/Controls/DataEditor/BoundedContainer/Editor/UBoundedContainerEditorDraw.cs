@@ -103,7 +103,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
         /// <returns>GUI高度</returns>
         public static float GetHeight(SerializedProperty property, GUIContent label, Type fieldGenericType)
         {
-            return EditorGUIParser.AllFieldHeight;
+            return EditorGUIParser.AllFieldHeight * 2;
 
             //if (fieldGenericType == typeof(int) || fieldGenericType == typeof(long) || fieldGenericType == typeof(short) || fieldGenericType == typeof(float) || fieldGenericType == typeof(double) || fieldGenericType == typeof(UDecimal))
             //{
@@ -134,7 +134,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
             }
             else
             {
-                position.SectionLength(0.5f, 0, out pos_label, out pos_value);
+                position.SectionLength(0.35f, 0, out pos_label, out pos_value);
                 EditorGUI.LabelField(pos_label, label);
             }
 
@@ -151,26 +151,39 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
         /// <param name="temp">临时标签实例</param>
         public static void OnGUIDrawing(Rect position, SerializedProperty property, Type fieldGenericType, GUIContent temp)
         {
-            if (fieldGenericType == typeof(int) || fieldGenericType == typeof(long) || fieldGenericType == typeof(short))
+
+            Rect pos_field = position.SetHeightFromTop(EditorGUIParser.OnceHeight);
+            Rect pos_min, pos_value, pos_max;
+
+            //第一行给滑动条
+            pos_value = pos_field;
+            //移动到第二行
+            pos_field = pos_field.MoveHeight(EditorGUIParser.AllFieldHeight);
+            pos_field.SectionLength(0.5f, 5f, out pos_min, out pos_max);
+            //pos_min = pos_field.LeftTrim(0.2f);
+            //pos_max = pos_field.RightTrim(0.2f);
+
+            if (fieldGenericType == typeof(UBoundedContainer<int>) || fieldGenericType == typeof(UBoundedContainer<long>) || fieldGenericType == typeof(UBoundedContainer<short>))
             {
-                DrawingInt(position, property, temp);
+                DrawingInt(pos_min, pos_max, pos_value, property, temp);
             }
-            else if (fieldGenericType == typeof(float) || fieldGenericType == typeof(double))
+            else if (fieldGenericType == typeof(UBoundedContainer<float>) || fieldGenericType == typeof(UBoundedContainer<double>))
             {
-                DrawingFloat(position, property, temp);
+                DrawingFloat(pos_min, pos_max, pos_value, property, temp);
             }
-            else if (fieldGenericType == typeof(UDecimal))
+            else if (fieldGenericType == typeof(UBoundedContainer<UDecimal>))
             {
-                DrawingUDecimal(position, property, temp);
+                DrawingUDecimal(pos_min, pos_max, pos_value, property, temp);
             }
             else
             {
                 var defc = GUI.color;
                 var defCont = GUI.contentColor;
                 GUI.contentColor = Color.yellow;
-                temp.text = "ERROR";
-                temp.tooltip = "不是已知可绘制类";
-                EditorGUI.LabelField(position, temp);
+                var error = EditorGUIParser.NotTypeDrawingError;
+                //temp.text = "ERROR";
+                //temp.tooltip = "不是已知可绘制类";
+                EditorGUI.LabelField(position, error);
                 GUI.color = defc;
                 GUI.contentColor = defCont;
                 //EditorGUI.HelpBox(position, "不是已知可绘制类", MessageType.Warning);
@@ -181,10 +194,12 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
         /// <summary>
         /// 绘制字段 - 整数
         /// </summary>
-        /// <param name="position">位置</param>
+        /// <param name="pos_max">最大值绘制区域</param>
+        /// <param name="pos_min">最小值绘制区域</param>
+        /// <param name="pos_value">值绘制区域</param>
         /// <param name="property">字段信息</param>
         /// <param name="temp">临时标签对象</param>
-        public static void DrawingInt(Rect position, SerializedProperty property, GUIContent temp)
+        public static void DrawingInt(Rect pos_min, Rect pos_max, Rect pos_value, SerializedProperty property, GUIContent temp)
         {
             var pro_value = property.FindPropertyRelative(UBoundedContainer<int>.cp_valueFieldName);
             var pro_max = property.FindPropertyRelative(UBoundedContainer<int>.cp_maxFieldName);
@@ -192,14 +207,6 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
             //分割标签区域和控件区域
             //position.SectionLength(0.5f, 0, out Rect pos_label, out Rect pos_field);
-
-            Rect pos_field = position;
-            Rect pos_min, pos_value, pos_max;
-
-            pos_min = pos_field.LeftTrim(0.24f);
-            pos_max = pos_field.RightTrim(0.24f);
-
-            pos_value = pos_field.ShortenLengthToScale(0.25f, 0.25f);
 
             //获取值
             var min = pro_min.intValue;
@@ -216,7 +223,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
                 if(newMin > newMax) //限制最小值不超最大值
                 {
-                    newMin = newMax;
+                    newMax = newMin;
                 }
 
             }
@@ -227,7 +234,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
                 if (newMax < newMin) //限制最大值不超最大值
                 {
-                    newMax = newMin;
+                    newMin = newMax;
                 }
             }
 
@@ -247,15 +254,20 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
                 EditorGUI.LabelField(pos_value, temp);
             }
 
+            pro_min.intValue = newMin;
+            pro_max.intValue = newMax;
+
         }
 
         /// <summary>
         /// 绘制字段 - 浮点数
         /// </summary>
-        /// <param name="position">位置</param>
+        /// <param name="pos_max">最大值绘制区域</param>
+        /// <param name="pos_min">最小值绘制区域</param>
+        /// <param name="pos_value">值绘制区域</param>
         /// <param name="property">字段信息</param>
         /// <param name="temp">临时标签对象</param>
-        public static void DrawingFloat(Rect position, SerializedProperty property, GUIContent temp)
+        public static void DrawingFloat(Rect pos_min, Rect pos_max, Rect pos_value, SerializedProperty property, GUIContent temp)
         {
             var pro_value = property.FindPropertyRelative(UBoundedContainer<int>.cp_valueFieldName);
             var pro_max = property.FindPropertyRelative(UBoundedContainer<int>.cp_maxFieldName);
@@ -263,14 +275,6 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
             //分割标签区域和控件区域
             //position.SectionLength(0.5f, 0, out Rect pos_label, out Rect pos_field);
-
-            Rect pos_field = position;
-            Rect pos_min, pos_value, pos_max;
-
-            pos_min = pos_field.LeftTrim(0.24f);
-            pos_max = pos_field.RightTrim(0.24f);
-
-            pos_value = pos_field.ShortenLengthToScale(0.25f, 0.25f);
 
             //获取值
             var min = pro_min.floatValue;
@@ -287,7 +291,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
                 if (newMin > newMax) //限制最小值不超最大值
                 {
-                    newMin = newMax;
+                    newMax = newMin;
                 }
 
             }
@@ -298,7 +302,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
                 if (newMax < newMin) //限制最大值不超最大值
                 {
-                    newMax = newMin;
+                    newMin = newMax;
                 }
             }
 
@@ -318,15 +322,19 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
                 EditorGUI.LabelField(pos_value, temp);
             }
 
+            pro_min.floatValue = newMin;
+            pro_max.floatValue = newMax;
         }
 
         /// <summary>
         /// 绘制字段 - 64位浮点数
         /// </summary>
-        /// <param name="position">位置</param>
+        /// <param name="pos_max">最大值绘制区域</param>
+        /// <param name="pos_min">最小值绘制区域</param>
+        /// <param name="pos_value">值绘制区域</param>
         /// <param name="property">字段信息</param>
         /// <param name="temp">临时标签对象</param>
-        public static void DrawingDouble(Rect position, SerializedProperty property, GUIContent temp)
+        public static void DrawingDouble(Rect pos_min, Rect pos_max, Rect pos_value, SerializedProperty property, GUIContent temp)
         {
             var pro_value = property.FindPropertyRelative(UBoundedContainer<int>.cp_valueFieldName);
             var pro_max = property.FindPropertyRelative(UBoundedContainer<int>.cp_maxFieldName);
@@ -334,14 +342,6 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
             //分割标签区域和控件区域
             //position.SectionLength(0.5f, 0, out Rect pos_label, out Rect pos_field);
-
-            Rect pos_field = position;
-            Rect pos_min, pos_value, pos_max;
-
-            pos_min = pos_field.LeftTrim(0.24f);
-            pos_max = pos_field.RightTrim(0.24f);
-
-            pos_value = pos_field.ShortenLengthToScale(0.25f, 0.25f);
 
             //获取值
             var min = pro_min.doubleValue;
@@ -358,7 +358,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
                 if (newMin > newMax) //限制最小值不超最大值
                 {
-                    newMin = newMax;
+                    newMax = newMin;
                 }
 
             }
@@ -369,7 +369,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
                 if (newMax < newMin) //限制最大值不超最大值
                 {
-                    newMax = newMin;
+                    newMin = newMax;
                 }
             }
 
@@ -389,16 +389,19 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
                 EditorGUI.LabelField(pos_value, temp);
             }
 
+            pro_min.doubleValue = newMin;
+            pro_max.doubleValue = newMax;
         }
 
         /// <summary>
         /// 绘制字段 - 十进制数
         /// </summary>
-        /// <param name="position">位置</param>
+        /// <param name="pos_max">最大值绘制区域</param>
+        /// <param name="pos_min">最小值绘制区域</param>
+        /// <param name="pos_value">值绘制区域</param>
         /// <param name="property">字段信息</param>
         /// <param name="temp">临时标签对象</param>
-        public static void DrawingUDecimal(Rect position, SerializedProperty property, GUIContent temp)
-
+        public static void DrawingUDecimal(Rect pos_min, Rect pos_max, Rect pos_value, SerializedProperty property, GUIContent temp)
         {
             var pro_value = property.FindPropertyRelative(UBoundedContainer<int>.cp_valueFieldName);
             var pro_max = property.FindPropertyRelative(UBoundedContainer<int>.cp_maxFieldName);
@@ -406,14 +409,6 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
             //分割标签区域和控件区域
             //position.SectionLength(0.5f, 0, out Rect pos_label, out Rect pos_field);
-
-            Rect pos_field = position;
-            Rect pos_min, pos_value, pos_max;
-
-            pos_min = pos_field.LeftTrim(0.24f);
-            pos_max = pos_field.RightTrim(0.24f);
-
-            pos_value = pos_field.ShortenLengthToScale(0.25f, 0.25f);
 
             //获取值
             //var min = pro_min.doubleValue;
@@ -436,7 +431,7 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
 
                 if (newMin > newMax) //限制最小值不超最大值
                 {
-                    newMin = newMax;
+                    newMax = newMin;
                 }
 
             }
@@ -445,9 +440,9 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
             {
                 //最大值被修改
 
-                if (newMax < newMin) //限制最大值不超最大值
+                if (newMax < newMin) //限制最小值不超最大值
                 {
-                    newMax = newMin;
+                    newMin = newMax;
                 }
             }
 
@@ -468,6 +463,11 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
                 temp.image = null;
                 EditorGUI.LabelField(pos_value, temp);
             }
+
+            DecimalUnityEditorDraw.SetPropertyValue(pro_min, newMin);
+            DecimalUnityEditorDraw.SetPropertyValue(pro_max, newMax);
+            //pro_min.doubleValue = newMin;
+            //pro_max.doubleValue = newMax;
 
         }
 

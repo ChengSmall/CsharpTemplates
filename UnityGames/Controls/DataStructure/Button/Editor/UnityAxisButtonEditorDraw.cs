@@ -136,10 +136,10 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
             Rect basePos = new Rect(position.x, position.y, position.width, EditorGUIParser.OnceHeight);
 
-            pos_Name = basePos.ShortenLengthFormRight(EditorGUIParser.ToggleWidth + 3);
+            //pos_Name = basePos.ShortenLengthFormRight(EditorGUIParser.ToggleWidth + 2);
+            //pos_smooth = basePos.ShortenLengthFormLeft(position.width - (EditorGUIParser.ToggleWidth + 2));
 
-
-            pos_smooth = basePos.ShortenLengthFormLeft(pos_Name.width);
+            basePos.SectionLengthByValue(basePos.width - (EditorGUIParser.ToggleWidth), 2, out pos_Name, out pos_smooth);
 
             //basePos = basePos.MoveHeight(EditorGUIParser.AllFieldHeight);
 
@@ -155,9 +155,12 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
             pro_smooth.boolValue = EditorGUI.Toggle(pos_smooth, pro_smooth.boolValue);
 
-            pro_mid.floatValue = EditorGUI.DelayedFloatField(pos_mid, "mid", pro_mid.floatValue);
+            pos_mid.SectionLength(0.3f, 5, out Rect mid_label, out Rect mid_value);
 
-            //EditorGUI.LabelField(pos_label, label);
+            EditorGUI.LabelField(mid_label, new GUIContent("mid", "Power映射State的中轴值"));
+
+            pro_mid.floatValue = EditorGUI.DelayedFloatField(mid_value, pro_mid.floatValue);
+
 
             #endregion
 

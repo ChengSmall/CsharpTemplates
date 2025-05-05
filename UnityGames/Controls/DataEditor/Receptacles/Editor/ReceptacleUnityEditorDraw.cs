@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using Cheng.Unitys.Editors;
+using Cheng.Unitys;
 
 namespace Cheng.DataStructure.Receptacles.UnityEditors
 {
@@ -38,7 +39,7 @@ namespace Cheng.DataStructure.Receptacles.UnityEditors
                 //使其不超过最大值
                 if (newValue > newMax)
                 {
-                    newValue = newMax;
+                    newMax = newValue;
                 }
             }
 
@@ -78,7 +79,7 @@ namespace Cheng.DataStructure.Receptacles.UnityEditors
                 //使其不超过最大值
                 if (newValue > newMax)
                 {
-                    newValue = newMax;
+                    newMax = newValue;
                 }
             }
 
@@ -118,7 +119,7 @@ namespace Cheng.DataStructure.Receptacles.UnityEditors
                 //使其不超过最大值
                 if (newValue > newMax)
                 {
-                    newValue = newMax;
+                    newMax = newValue;
                 }
             }
 
@@ -158,7 +159,7 @@ namespace Cheng.DataStructure.Receptacles.UnityEditors
                 //使其不超过最大值
                 if (newValue > newMax)
                 {
-                    newValue = newMax;
+                    newMax = newValue;
                 }
             }
 
@@ -201,7 +202,7 @@ namespace Cheng.DataStructure.Receptacles.UnityEditors
                 //使其不超过最大值
                 if (newValue > newMax)
                 {
-                    newValue = newMax;
+                    newMax = newValue;
                 }
             }
 
@@ -371,22 +372,30 @@ namespace Cheng.DataStructure.Receptacles.UnityEditors
             {
                 ReceptacleValueDrawing.DrawingDouble(rect_value, rect_maxValue, pro_value, pro_maxValue);
             }
-            else if (typeof(ReceptacleValue<decimal>) == fieldValueType)
+            else if (typeof(ReceptacleValue<UDecimal>) == fieldValueType)
             {
                 ReceptacleValueDrawing.DrawingUDecimal(rect_value, rect_maxValue, pro_value, pro_maxValue);
             }
-            else if (typeof(ReceptacleValue<short>) == fieldValueType)
+            else if (typeof(ReceptacleValue<short>) == fieldValueType || typeof(ReceptacleValue<byte>) == fieldValueType)
             {
                 ReceptacleValueDrawing.DrawingInt(rect_value, rect_maxValue, pro_value, pro_maxValue);
             }
             else
             {
                 //value绘制
-                EditorGUI.PropertyField(rect_value, pro_value);
-                //maxValue绘制
-                EditorGUI.PropertyField(rect_maxValue, pro_maxValue);
-
-                //EditorGUI.LabelField();
+                //EditorGUI.PropertyField(rect_value, pro_value);
+                ////maxValue绘制
+                //EditorGUI.PropertyField(rect_maxValue, pro_maxValue);
+                var defc = GUI.color;
+                var defCont = GUI.contentColor;
+                GUI.contentColor = Color.yellow;
+                var temp = EditorGUIParser.NotTypeDrawingError;
+                //temp.text = "ERROR";
+                //temp.tooltip = "不是已知可绘制类";
+                EditorGUI.LabelField(position, temp);
+                GUI.color = defc;
+                GUI.contentColor = defCont;
+                //EditorGUI.LabelField(position, NotRecTypeError);
 
             }
 
