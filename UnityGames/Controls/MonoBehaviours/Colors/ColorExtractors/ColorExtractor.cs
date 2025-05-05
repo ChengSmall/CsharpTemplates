@@ -183,6 +183,7 @@ namespace Cheng.Unitys.ColorExtractors
             color = UnityEngine.Color.HSVToRGB(hue, svExtraclor.Saturation, svExtraclor.Value);
             InvokeChangeColorEvent(color);
         }
+
         #endregion
 
         /// <summary>

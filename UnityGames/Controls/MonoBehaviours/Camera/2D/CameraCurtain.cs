@@ -72,6 +72,9 @@ namespace Cheng.Unitys.Cameras
         /// <summary>
         /// 摄像机幕布渲染器
         /// </summary>
+        /// <value>
+        /// <para>该参数需要是一个能够完全遮盖摄像机画面的图像渲染器，用于在启动遮罩时使用该参数遮盖摄像机</para>
+        /// </value>
         public SpriteRenderer CurtainRenderer
         {
             get => curtainRenderer;
@@ -168,7 +171,6 @@ namespace Cheng.Unitys.Cameras
                 tmc = curtainRenderer.color;
                 tmc.a = a;
                 curtainRenderer.color = tmc;
-                
 
             }
             //完毕
@@ -238,6 +240,14 @@ namespace Cheng.Unitys.Cameras
 
         private void OnValidate()
         {
+            if (curtainRenderer == null)
+            {
+                curtainRenderer = null;
+            }
+            if (nowCamera == null)
+            {
+                nowCamera = null;
+            }
         }
 
         #endregion

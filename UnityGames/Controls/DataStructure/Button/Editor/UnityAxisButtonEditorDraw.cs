@@ -55,7 +55,7 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var t = Tooltip;           
+            var t = Tooltip;
             if(t != null) label.tooltip = t.tooltip;
 
             OnGUIDraw(position, property, label);
@@ -73,6 +73,8 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
         /// <summary>
         /// 获取<see cref="UnityAxisButton"/>字段的GUI高度
         /// </summary>
+        /// <param name="property"></param>
+        /// <param name="label"></param>
         /// <returns></returns>
         public static float GetHeight()
         {
@@ -84,8 +86,30 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
         /// </summary>
         /// <param name="position">字段绘制区域</param>
         /// <param name="property">字段存储信息</param>
-        /// <param name="label">字段显示标签</param>
+        /// <param name="label">字段显示标签；null或空表示不绘制标签</param>
         public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label)
+        {
+            Rect pos_label, pos_value;
+
+            if(label is null || label == GUIContent.none)
+            {
+                pos_value = position;
+            }
+            else
+            {
+                position.SectionLength(0.5f, 0, out pos_label, out pos_value);
+                EditorGUI.LabelField(pos_label, label);
+            }
+
+            OnGUIDrawing(pos_value, property);
+        }
+
+        /// <summary>
+        /// 绘制<see cref="UnityAxisButton"/>字段
+        /// </summary>
+        /// <param name="position">字段绘制区域</param>
+        /// <param name="property">字段存储信息</param>
+        public static void OnGUIDrawing(Rect position, SerializedProperty property)
         {
 
             #region
@@ -112,8 +136,8 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
             Rect basePos = new Rect(position.x, position.y, position.width, EditorGUIParser.OnceHeight);
 
-            pos_Name = basePos.ShortenLengthFormRight(EditorGUIParser.ToggleWidth + 3);      
-            
+            pos_Name = basePos.ShortenLengthFormRight(EditorGUIParser.ToggleWidth + 3);
+
 
             pos_smooth = basePos.ShortenLengthFormLeft(pos_Name.width);
 
@@ -125,7 +149,7 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
             #region 绘制
 
-            EditorGUI.PropertyField(pos_Name, pro_name, label);
+            pro_name.stringValue = EditorGUI.DelayedTextField(pos_Name, pro_name.stringValue);
 
             //pro_name.stringValue = EditorGUI.DelayedTextField(pos_Name, pro_name.stringValue);
 

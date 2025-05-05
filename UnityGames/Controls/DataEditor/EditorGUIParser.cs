@@ -1,10 +1,10 @@
-#if UNITY_EDITOR
 
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEditor;
+
+//using UnityEditor;
 
 namespace Cheng.Unitys.Editors
 {
@@ -16,6 +16,8 @@ namespace Cheng.Unitys.Editors
     {
 
         #region 常量
+
+#if UNITY_EDITOR
 
         /// <summary>
         /// UI参数---一行脚本参数的基本高度
@@ -42,11 +44,13 @@ namespace Cheng.Unitys.Editors
         /// </summary>
         public const float ToggleHeight = 18;
 
+#endif
+
         #endregion
 
         #region 扩展函数
 
-        #region Rect        
+        #region Rect
 
         /// <summary>
         /// 将指定矩形按长度切割，并返回切割的左半边矩形
@@ -238,6 +242,39 @@ namespace Cheng.Unitys.Editors
             float x = rect.x, y = rect.y;
 
             float midX = mid * width;
+
+            float spareB = spareLength / 2;
+
+            //float leftWidth;
+            float rightOri;
+
+            //中间忽略分割
+            //leftWidth = midX - spareB;
+            rightOri = midX + spareB;
+
+            left = new Rect(x, y, (midX - spareB), height);
+
+            right = new Rect(x + rightOri, y, width - rightOri, height);
+
+        }
+
+        /// <summary>
+        /// 将矩形沿纵轴切开
+        /// </summary>
+        /// <param name="rect">矩形</param>
+        /// <param name="mid">要切开的纵轴切线长度值，范围在[0,<see cref="Rect.width"/>]，该值表示切开后左侧的长度</param>
+        /// <param name="spareLength">从中间线向两端平均延申的长度，该长度所在的矩形会被舍弃</param>
+        /// <param name="left">切割好的左侧矩形</param>
+        /// <param name="right">切割好的右侧矩形</param>
+        public static void SectionLengthByValue(this Rect rect, float mid, float spareLength, out Rect left, out Rect right)
+
+        {
+            float width = rect.width;
+            float height = rect.height;
+
+            float x = rect.x, y = rect.y;
+
+            float midX = mid;
 
             float spareB = spareLength / 2;
 
@@ -539,6 +576,25 @@ namespace Cheng.Unitys.Editors
             }
         }
 
+        /// <summary>
+        /// 以正中心为轴，将矩形沿纵轴缩短到指定长度
+        /// </summary>
+        /// <param name="rect">矩形</param>
+        /// <param name="length">保持的长度</param>
+        /// <returns>新的矩形</returns>
+        public static Rect ShortenToLengthByCenter(this Rect rect, float length)
+        {
+            //var width = rect.width;
+            //float height = rect.height;
+            //半个
+            //float BL = length / 2;
+            //float BW = rect.width / 2;
+            //x向右移动 半个 width 再向左移动 BL
+            float x = rect.x + ((rect.width / 2) - (length / 2));
+
+            return new Rect(x, rect.y, length, rect.height);
+        }
+
         #endregion
 
         #endregion
@@ -546,5 +602,6 @@ namespace Cheng.Unitys.Editors
     }
 
 }
+#if UNITY_EDITOR
 
 #endif

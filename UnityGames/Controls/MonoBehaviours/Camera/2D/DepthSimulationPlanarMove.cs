@@ -45,7 +45,7 @@ namespace Cheng.Unitys.Cameras
         #region 外部参数
 
 #if UNITY_EDITOR
-        [Tooltip("要逐帧移动的对象变换")]        
+        [Tooltip("要逐帧移动的对象变换")]
 #endif
         [SerializeField] private Transform moveObject;
 
@@ -60,7 +60,7 @@ namespace Cheng.Unitys.Cameras
         [SerializeField] private Vector2 movementRatio;
         
 #if UNITY_EDITOR
-        [Tooltip("在运行时是否不进行检查参数为null\n参数为false时每帧运行前会检查参数是否为null；true则不会检查")]
+        [Tooltip("在运行时是否不进行检查参数为null\n参数为false时每帧运行前会检查参数是否为null，相对会消耗更多性能；true则不会检查")]
 #endif
         [SerializeField] private bool qukeRunUpdate = true;
 
@@ -68,6 +68,9 @@ namespace Cheng.Unitys.Cameras
 
         #region 内部参数
 
+        /// <summary>
+        /// 上一帧位置
+        /// </summary>
         private Vector3 p_lastCameraPos;
         
         #endregion
@@ -112,7 +115,8 @@ namespace Cheng.Unitys.Cameras
         /// </summary>
         /// <value>
         /// <para>在运行时是否不进行空引用检查</para>
-        /// <para>参数设为false时每帧运行时会检查参数是否为null；true则不会检查</para>
+        /// <para>参数设为false时每帧运行时会检查参数是否为null，这相对会消耗更多性能；true则不会检查</para>
+        /// <para>参数默认为true</para>
         /// </value>
         public bool QukeRunUpdate
         {
@@ -129,11 +133,10 @@ namespace Cheng.Unitys.Cameras
 
         private void f_runUpdate()
         {
-            //获取摄像机变换组件
-            Transform cameraTrans = workingCamera.transform;
-            
+            //Transform cameraTrans = workingCamera.transform;
+
             //获取camera位置
-            var camera_pos = cameraTrans.position;
+            var camera_pos = workingCamera.transform.position;
 
             //计算摄像机的移动距离
             var moveCamera = camera_pos - p_lastCameraPos;
@@ -146,7 +149,7 @@ namespace Cheng.Unitys.Cameras
             //保存当前camera位置
             p_lastCameraPos = camera_pos;
             
-            if (objMove.x == 0 && objMove.y == 0) return;
+            if (objMove.x == 0 && objMove.y == 0) return; //如果是0则不移动
 
             //获得移动的对象位置
             Vector3 nowPos = moveObject.position;
@@ -176,11 +179,8 @@ namespace Cheng.Unitys.Cameras
 
         private void OnDestroy()
         {
-
-#if !UNITY_EDITOR
             moveObject = null;
             workingCamera = null;
-#endif
         }
 
         #endregion

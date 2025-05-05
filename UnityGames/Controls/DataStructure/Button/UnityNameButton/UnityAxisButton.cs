@@ -161,8 +161,8 @@ namespace Cheng.ButtonTemplates.UnityButtons
         /// 获取或访问轴力度时是否使用平滑处理方法
         /// </summary>
         /// <value>
-        /// 当值设为true时，<see cref="Power"/>属性使用<see cref="Input.GetAxis(string)"/>获取值；设为false时，<see cref="Power"/>属性使用<see cref="Input.GetAxisRaw(string)"/>获取值<br/>
-        /// 此值默认为true
+        /// <para>当值设为true时，<see cref="Power"/>属性使用<see cref="Input.GetAxis(string)"/>获取值；设为false时，<see cref="Power"/>属性使用<see cref="Input.GetAxisRaw(string)"/>获取值</para>
+        /// <para>此值默认为true</para>
         /// </value>
         public bool AxisSmooth
         {

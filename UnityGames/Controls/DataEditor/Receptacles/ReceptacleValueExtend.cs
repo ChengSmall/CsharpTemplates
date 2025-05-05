@@ -1,3 +1,4 @@
+using Cheng.Unitys;
 using System;
 
 
@@ -10,7 +11,7 @@ namespace Cheng.DataStructure.Receptacles
     public static class ReceptacleValueExtend
     {
 
-        #region 
+        #region
 
         #region ToRec
 
@@ -99,7 +100,7 @@ namespace Cheng.DataStructure.Receptacles
         /// 将结构转化为<see cref="decimal"/>容器
         /// </summary>
         /// <returns></returns>
-        public static ReceptacleDecimal ToReceptacle(this ReceptacleValue<decimal> value)
+        public static ReceptacleDecimal ToReceptacle(this ReceptacleValue<UDecimal> value)
         {
             return new ReceptacleDecimal(value.value, value.maxValue);
         }
@@ -203,9 +204,9 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="rec"></param>
         /// <returns>转化后的值</returns>
-        public static ReceptacleValue<decimal> ToReceptacle(this ReceptacleDecimal rec)
+        public static ReceptacleValue<UDecimal> ToReceptacle(this ReceptacleDecimal rec)
         {
-            return new ReceptacleValue<decimal>(rec.value, rec.maxValue);
+            return new ReceptacleValue<UDecimal>(rec.value, rec.maxValue);
         }
 
         #endregion

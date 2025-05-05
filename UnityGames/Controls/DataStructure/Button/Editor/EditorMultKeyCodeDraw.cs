@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 
+using Cheng.Unitys.Editors;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -127,11 +128,11 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
             if (!listPro.isExpanded)
             {
                 //不展开
-                return 20f;
+                return EditorGUIParser.AllFieldHeight;
             }
 
             //展开
-            return (listPro.arraySize * 20f) + 40f;
+            return (listPro.arraySize * EditorGUIParser.AllFieldHeight) + 40f;
         }
 
         #endregion

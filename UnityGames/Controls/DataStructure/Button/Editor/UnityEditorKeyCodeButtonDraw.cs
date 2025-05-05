@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using Cheng.Unitys.Editors;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -42,14 +43,22 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
         /// </summary>
         /// <param name="position">绘制位置</param>
         /// <param name="property">字段储存信息</param>
-        /// <param name="label">字段标签</param>
+        /// <param name="label">字段标签；null或空不绘制标签</param>
         public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label)
         {
-            var keyProperty = property.FindPropertyRelative(KeyCodeButton.EditorProperityFieldName);
+            Rect pos_label, pos_value;
 
-            //keyProperty.intValue = (int)((KeyCode)EditorGUI.EnumPopup(position, label, (KeyCode)keyProperty.intValue));
+            if (label is null || label == GUIContent.none)
+            {
+                pos_value = position;
+            }
+            else
+            {
+                position.SectionLength(0.5f, 0, out pos_label, out pos_value);
+                EditorGUI.LabelField(pos_label, label);
+            }
 
-            EditorGUI.PropertyField(position, keyProperty, label);
+            OnGUIDrawing(pos_value, property);
         }
 
         /// <summary>
@@ -57,7 +66,7 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
         /// </summary>
         /// <param name="position">绘制位置</param>
         /// <param name="property">字段储存信息</param>
-        public static void OnGUIDraw(Rect position, SerializedProperty property)
+        public static void OnGUIDrawing(Rect position, SerializedProperty property)
         {
             var keyProperty = property.FindPropertyRelative(KeyCodeButton.EditorProperityFieldName);
 
@@ -66,7 +75,7 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
             //keyProperty.intValue = (int)((KeyCode)EditorGUI.EnumPopup(position, (KeyCode)keyProperty.intValue));
 
-            EditorGUI.PropertyField(position, keyProperty, GUIContent.none);
+            EditorGUI.PropertyField(position, keyProperty);
         }
 
     }

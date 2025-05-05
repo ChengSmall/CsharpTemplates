@@ -16,7 +16,7 @@ namespace Cheng.Unitys.Editors
     /// 绘制<see cref="decimal"/>类型的十进制数到GUI的重绘脚本
     /// </summary>
     [CustomPropertyDrawer(typeof(UDecimal))]
-    public class DecimalUnityEditorDraw : PropertyDrawer
+    public sealed class DecimalUnityEditorDraw : PropertyDrawer
     {
 
         #region 绘制
@@ -87,10 +87,45 @@ namespace Cheng.Unitys.Editors
         public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label)
         {
 
-            var pro_1 = property.FindPropertyRelative("i1");
-            var pro_2 = property.FindPropertyRelative("i2");
-            var pro_3 = property.FindPropertyRelative("i3");
-            var pro_4 = property.FindPropertyRelative("i4");
+            UDecimal ud;
+
+            try
+            {
+                ud = GetPropertyValue(property);
+                var nud = DrawDecimalValue(position, ud, label);
+                if(nud != ud)
+                {
+                    SetPropertyValue(property, nud);
+                }
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder(32);
+                sb.AppendLine("Decimal对象绘制失效");
+                sb.Append("错误信息:");
+                sb.AppendLine(ex.Message);
+                sb.Append("错误类型:");
+                sb.AppendLine(ex.GetType().FullName);
+                sb.AppendLine("堆栈跟踪:");
+                sb.Append(ex.StackTrace);
+                Debug.LogWarning(sb.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 绘制<see cref="UDecimal"/>，并将可能修改后的值返回
+        /// </summary>
+        /// <param name="position">位置</param>
+        /// <param name="property">对象信息</param>
+        /// <param name="label">标签；null或空标签表示不绘制标签</param>
+        /// <returns>绘制后的值</returns>
+        public static UDecimal OnGUIDrawValue(Rect position, SerializedProperty property, GUIContent label)
+        {
+
+            var pro_1 = property.FindPropertyRelative(UDecimal.fieldName_i1);
+            var pro_2 = property.FindPropertyRelative(UDecimal.fieldName_i2);
+            var pro_3 = property.FindPropertyRelative(UDecimal.fieldName_i3);
+            var pro_4 = property.FindPropertyRelative(UDecimal.fieldName_i4);
 
             var v1 = pro_1.intValue;
             var v2 = pro_2.intValue;
@@ -99,46 +134,71 @@ namespace Cheng.Unitys.Editors
 
             //初始化数据
             UDecimal ud = new UDecimal(v1, v2, v3, v4);
-            var dec = ud.ToDec();
 
-            var f = decimal.ToDouble(dec);
+            return DrawDecimalValue(position, ud, label);
 
-            f = EditorGUI.DoubleField(position, label, f);
+        }
 
-            ////返回数值字符串
-            //var dec_str = dec.ToString();
-            ////用字符串绘制值
-            //dec_str = EditorGUI.DelayedTextField(position, label, dec_str);
+        /// <summary>
+        /// 获取<see cref="UDecimal"/>字段信息的值
+        /// </summary>
+        /// <param name="property">字段信息</param>
+        /// <returns>获取的值</returns>
+        public static UDecimal GetPropertyValue(SerializedProperty property)
+        {
 
-            try
+            var pro_1 = property.FindPropertyRelative(UDecimal.fieldName_i1);
+            var pro_2 = property.FindPropertyRelative(UDecimal.fieldName_i2);
+            var pro_3 = property.FindPropertyRelative(UDecimal.fieldName_i3);
+            var pro_4 = property.FindPropertyRelative(UDecimal.fieldName_i4);
+
+            var v1 = pro_1.intValue;
+            var v2 = pro_2.intValue;
+            var v3 = pro_3.intValue;
+            var v4 = pro_4.intValue;
+
+            return new UDecimal(v1, v2, v3, v4);
+        }
+
+        /// <summary>
+        /// 设置<see cref="UDecimal"/>字段信息的值
+        /// </summary>
+        /// <param name="property">字段信息</param>
+        /// <param name="value">要设置的值</param>
+        public static void SetPropertyValue(SerializedProperty property, UDecimal value)
+        {
+            var pro_1 = property.FindPropertyRelative(UDecimal.fieldName_i1);
+            var pro_2 = property.FindPropertyRelative(UDecimal.fieldName_i2);
+            var pro_3 = property.FindPropertyRelative(UDecimal.fieldName_i3);
+            var pro_4 = property.FindPropertyRelative(UDecimal.fieldName_i4);
+
+            pro_1.intValue = value.i1;
+            pro_2.intValue = value.i2;
+            pro_3.intValue = value.i3;
+            pro_4.intValue = value.i4;
+
+        }
+
+        /// <summary>
+        /// 绘制一个 <see cref="UDecimal"/>
+        /// </summary>
+        /// <param name="position">位置</param>
+        /// <param name="value">值</param>
+        /// <param name="label">标签；null或空标签表示不绘制</param>
+        /// <returns>可能修改后的值</returns>
+        public static UDecimal DrawDecimalValue(Rect position, UDecimal value, GUIContent label)
+        {
+            var f = decimal.ToDouble(value.ToDec());
+            if (label is null || GUIContent.none == label)
             {
-                dec = new decimal(f);
-
-                //有效则重写写入
-                ud = new UDecimal(dec);
-                ud.GetValue(out v1, out v2, out v3, out v4);
-                pro_1.intValue = v1;
-                pro_2.intValue = v2;
-                pro_3.intValue = v3;
-                pro_4.intValue = v4;
+                f = EditorGUI.DelayedDoubleField(position, f);
             }
-            catch (Exception ex)
+            else
             {
-                Debug.LogError("Decimal GUI 错误:" + ex.Message + Environment.NewLine + ex.GetType().FullName);
+                f = EditorGUI.DelayedDoubleField(position, label, f);
             }
-
-            //解析用户输入
-            //if(decimal.TryParse(dec_str, out dec))
-            //{
-            //    //有效则重写写入
-            //    ud = new UDecimal(dec);
-            //    ud.GetValue(out v1, out v2, out v3, out v4);
-            //    pro_1.intValue = v1;
-            //    pro_2.intValue = v2;
-            //    pro_3.intValue = v3;
-            //    pro_4.intValue = v4;
-            //}
-
+          
+            return new UDecimal(new decimal(f));
         }
 
         #endregion

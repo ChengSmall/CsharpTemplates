@@ -8,8 +8,11 @@ namespace Cheng.Unitys
 {
 
     /// <summary>
-    /// Unity GUI <see cref="decimal"/> 绘制类型投影
+    /// Unity GUI <see cref="decimal"/> 绘制类型
     /// </summary>
+    /// <remarks>
+    /// <para>让 Unity 对<see cref="decimal"/>类型也能够在检查器查看和修改的 GUI 绘制封装结构</para>
+    /// </remarks>
     [Serializable]
     public unsafe struct UDecimal : IEquatable<UDecimal>, IComparable<UDecimal>, IFormattable, IHashCode64
     {
@@ -22,7 +25,22 @@ namespace Cheng.Unitys
         /// <param name="dec"></param>
         public UDecimal(decimal dec)
         {
-            this = *(UDecimal*)&dec;
+            int* p = (int*)&dec;
+
+            if (Cheng.Memorys.MemoryOperation.IsBigEndian)
+            {
+                this.i1 = p[3];
+                this.i2 = p[2];
+                this.i3 = p[1];
+                this.i4 = p[0];
+            }
+            else
+            {
+                this.i1 = p[0];
+                this.i2 = p[1];
+                this.i3 = p[2];
+                this.i4 = p[3];
+            }
         }
 
         /// <summary>
@@ -44,14 +62,21 @@ namespace Cheng.Unitys
 
         #region 参数
 
-#pragma warning disable IDE0044
+        internal static bool p_isBigEnd = Cheng.Memorys.MemoryOperation.IsBigEndian;
 
-        [SerializeField] private int i1;
-        [SerializeField] private int i2;
-        [SerializeField] private int i3;
-        [SerializeField] private int i4;
+        [SerializeField] internal int i1;
+        [SerializeField] internal int i2;
+        [SerializeField] internal int i3;
+        [SerializeField] internal int i4;
 
-#pragma warning restore IDE0044
+#if UNITY_EDITOR
+
+        public const string fieldName_i1 = nameof(i1);
+        public const string fieldName_i2 = nameof(i2);
+        public const string fieldName_i3 = nameof(i3);
+        public const string fieldName_i4 = nameof(i4);
+
+#endif
 
         #endregion
 
@@ -80,9 +105,24 @@ namespace Cheng.Unitys
         /// <returns></returns>
         public decimal ToDec()
         {
-            var t = this;
-            UDecimal* up = &t;
-            return *(decimal*)up;            
+            decimal d;
+            int* di = (int*)&d;
+            if (Cheng.Memorys.MemoryOperation.IsBigEndian)
+            {
+                di[0] = i4;
+                di[1] = i3;
+                di[2] = i2;
+                di[3] = i1;
+            }
+            else
+            {
+                di[0] = i1;
+                di[1] = i2;
+                di[2] = i3;
+                di[3] = i4;
+            }
+
+            return d;
         }
 
         #endregion
@@ -142,6 +182,48 @@ namespace Cheng.Unitys
             return ToDec().GetHashCode64();
         }
 
+        /// <summary>
+        /// 比较相等
+        /// </summary>
+        /// <param name="d1"></param>
+        /// <param name="d2"></param>
+        /// <returns></returns>
+        public static bool operator ==(UDecimal d1, UDecimal d2)
+        {
+            return d1.i1 == d2.i1 && d1.i2 == d2.i2 && d1.i3 == d2.i3 && d1.i4 == d2.i4;
+        }
+
+        /// <summary>
+        /// 比较不相等
+        /// </summary>
+        /// <param name="d1"></param>
+        /// <param name="d2"></param>
+        /// <returns></returns>
+        public static bool operator !=(UDecimal d1, UDecimal d2)
+        {
+            return d1.i1 != d2.i1 || d1.i2 != d2.i2 || d1.i3 != d2.i3 || d1.i4 != d2.i4;
+        }
+
+        public static bool operator >(UDecimal d1, UDecimal d2)
+        {
+            return d1.ToDec() > d2.ToDec();
+        }
+
+        public static bool operator <(UDecimal d1, UDecimal d2)
+        {
+            return d1.ToDec() < d2.ToDec();
+        }
+
+        public static bool operator >=(UDecimal d1, UDecimal d2)
+        {
+            return d1.ToDec() >= d2.ToDec();
+        }
+
+        public static bool operator <=(UDecimal d1, UDecimal d2)
+        {
+            return d1.ToDec() <= d2.ToDec();
+        }
+
         #endregion
 
         #region 类型转换
@@ -190,10 +272,11 @@ namespace Cheng.Unitys
 
     }
 
+
     /// <summary>
     /// 编辑器数据方法扩展
     /// </summary>
-    public static partial class DataEditorExd
+    public static class DataEditorExd
     {
 
         /// <summary>
@@ -209,3 +292,6 @@ namespace Cheng.Unitys
     }
 
 }
+#if UNITY_EDITOR
+
+#endif

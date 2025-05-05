@@ -1,3 +1,4 @@
+using Cheng.Unitys;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -72,7 +73,7 @@ namespace Cheng.DataStructure.BoundedContainers
         /// </summary>
         /// <param name="ubc"></param>
         /// <returns></returns>
-        public static BoundedContainerDecimal ToBC(this UBoundedContainer<decimal> ubc)
+        public static BoundedContainerDecimal ToBC(this UBoundedContainer<UDecimal> ubc)
         {
             ubc.GetValue(out var value, out var min, out var max);
             return new BoundedContainerDecimal(value, min, max);
@@ -133,9 +134,9 @@ namespace Cheng.DataStructure.BoundedContainers
         /// </summary>
         /// <param name="bc"></param>
         /// <returns></returns>
-        public static UBoundedContainer<decimal> ToBC(this BoundedContainerDecimal bc)
+        public static UBoundedContainer<UDecimal> ToBC(this BoundedContainerDecimal bc)
         {
-            return new UBoundedContainer<decimal>(bc.value, bc.min, bc.max);
+            return new UBoundedContainer<UDecimal>(bc.value, bc.min, bc.max);
         }
 
     }

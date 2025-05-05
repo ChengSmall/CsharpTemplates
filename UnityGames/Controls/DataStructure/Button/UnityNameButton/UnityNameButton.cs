@@ -21,6 +21,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化一个Unity虚拟按钮
         /// </summary>
@@ -30,6 +31,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
             ButtonName = name;
             p_axisSmooth = true;
         }
+
         /// <summary>
         /// 实例化一个Unity虚拟按钮
         /// </summary>
@@ -38,6 +40,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
             p_buttonName = string.Empty;
             p_axisSmooth = true;
         }
+
         /// <summary>
         /// 实例化一个Unity虚拟按钮
         /// </summary>
@@ -48,6 +51,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
             ButtonName = name;
             p_axisSmooth = axismooth;
         }
+
         #endregion
 
         #region 参数
@@ -153,6 +157,5 @@ namespace Cheng.ButtonTemplates.UnityButtons
         #endregion
 
     }
-
 
 }

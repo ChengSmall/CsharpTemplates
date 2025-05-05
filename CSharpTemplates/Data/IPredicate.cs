@@ -2,6 +2,7 @@
 
 namespace Cheng.DataStructure
 {
+
     /// <summary>
     /// 表示一个谓词结构公共接口
     /// </summary>
