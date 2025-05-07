@@ -8,8 +8,9 @@ using UnityEditor;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Text;
+using Cheng.Unitys.Editors;
 
-namespace Cheng.Unitys.Editors
+namespace Cheng.Unitys.DataStructure.Editors
 {
 
     /// <summary>
@@ -41,7 +42,7 @@ namespace Cheng.Unitys.Editors
             {
                 if (p_isGettip) return p_tip;
                 p_isGettip = true;
-                p_tip = this.fieldInfo.GetCustomAttribute<TooltipAttribute>();                
+                p_tip = this.fieldInfo.GetCustomAttribute<TooltipAttribute>();
                 return p_tip;
             }
         }

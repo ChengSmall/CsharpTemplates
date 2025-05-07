@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace Cheng.Unitys
+namespace Cheng.Unitys.DataStructure
 {
 
     /// <summary>

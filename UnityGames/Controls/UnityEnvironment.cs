@@ -20,7 +20,7 @@ namespace Cheng.Unitys
         /// <summary>
         /// 退出游戏
         /// </summary>
-        /// <remarks>根据环境退出unity游戏，若处于unity编辑器中则退出播放；处于打包的windows，mac，linux游戏时则表示退出游戏进程</remarks>
+        /// <remarks>根据环境退出unity游戏，若处于unity编辑器中则退出播放；处于打包的游戏时则表示退出游戏进程</remarks>
         public static void ExitGame()
         {
 #if UNITY_EDITOR
@@ -34,7 +34,7 @@ namespace Cheng.Unitys
         /// 退出游戏
         /// </summary>
         /// <param name="exitCode">播放器应用程序在 Windows、Mac 和 Linux 上终止时返回的可选退出代码。默认值为0</param>
-        /// <remarks>根据环境退出unity，若处于unity编辑器中则退出播放；处于已打包环境则表示退出游戏进程</remarks>
+        /// <remarks>根据环境退出unity游戏，若处于unity编辑器中则退出播放；处于打包的游戏时则表示退出游戏进程</remarks>
         public static void ExitGame(int exitCode)
         {
 

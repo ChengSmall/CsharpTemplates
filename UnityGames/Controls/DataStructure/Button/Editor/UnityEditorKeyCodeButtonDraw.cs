@@ -75,7 +75,7 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
             //keyProperty.intValue = (int)((KeyCode)EditorGUI.EnumPopup(position, (KeyCode)keyProperty.intValue));
 
-            EditorGUI.PropertyField(position, keyProperty);
+            keyProperty.intValue = (int)((KeyCode)EditorGUI.EnumPopup(position, (KeyCode)keyProperty.intValue));
         }
 
     }

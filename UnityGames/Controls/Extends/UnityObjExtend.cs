@@ -130,13 +130,13 @@ namespace Cheng.Unitys
         /// <remarks>
         /// <para>
         /// 对于 Unity 的每个<see cref="UObj"/>对象，都会关联一个UnityEngine内部句柄，因此所有派生于<see cref="UObj"/>的类都属于“非托管对象”；<br/>
-        /// 当使用<see cref="UObj.Destroy(UObj)"/>销毁对象后，C#脚本的原生对象仍然可能流存一些时间，但是此时的对象已经失去实质作用了；<br/>
-        /// 由于Unity内部判空的方法过于隐晦，因此该函数的作用就是更清晰的判断对象是否被销毁
+        /// 当使用<see cref="UObj.Destroy(UObj)"/>销毁对象后，C#脚本的托管对象仍然可能存在一些时间，但是此时的对象已经失去实质作用了；<br/>
+        /// 由于Unity内部判空的方法较为杂乱，因此该函数的作用就是更清晰的判断对象是否被销毁
         /// </para>
         /// </remarks>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
-        /// <returns>如果返回为true，则表示对象处于实例化场景中；返回为false，表示对象的Unity实例判空机制为false但脚本对象仍流存；返回null表示脚本对象的引用为null</returns>
+        /// <returns>如果返回为true，则表示对象处于实例化场景中；返回为false，表示对象的Unity实例判空机制为false但脚本对象仍存在；返回null表示脚本对象的引用为null</returns>
         public static bool? IsNotNull<T>(this T obj) where T : UObj
         {
             if ((object)obj is null) return null;

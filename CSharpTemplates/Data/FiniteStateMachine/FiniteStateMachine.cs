@@ -10,7 +10,7 @@ namespace Cheng.DataStructure.FiniteStateMachine
     /// 有限状态机
     /// </summary>
     /// <typeparam name="T">表示一个状态的参数类型</typeparam>
-    public class StateMachine<T> : ReleaseDestructor
+    public class StateMachine<T> : SafreleaseUnmanagedResources
     {
 
         #region 释放
@@ -235,13 +235,13 @@ namespace Cheng.DataStructure.FiniteStateMachine
         {
             add
             {
-                if (!IsNotDispose) throw new ObjectDisposedException(string.Empty);
+                ThrowObjectDisposeException();
                 if (p_runNodeEvent is null) p_runNodeEvent += value;
                 else lock (p_runNodeEvent) p_runNodeEvent += value;
             }
             remove
             {
-                if (!IsNotDispose) throw new ObjectDisposedException(string.Empty);
+                ThrowObjectDisposeException();
                 if (p_runNodeEvent is null) return;
                 else lock (p_runNodeEvent) p_runNodeEvent -= value;
             }
@@ -255,13 +255,13 @@ namespace Cheng.DataStructure.FiniteStateMachine
         {
             add
             {
-                if (!IsNotDispose) throw new ObjectDisposedException(string.Empty);
+                ThrowObjectDisposeException();
                 if (p_stopNodeEvent is null) p_stopNodeEvent += value;
                 else lock (p_stopNodeEvent) p_stopNodeEvent += value;
             }
             remove
             {
-                if (!IsNotDispose) throw new ObjectDisposedException(string.Empty);
+                ThrowObjectDisposeException();
                 if (p_stopNodeEvent is null) return;
                 else lock (p_stopNodeEvent) p_stopNodeEvent -= value;
             }

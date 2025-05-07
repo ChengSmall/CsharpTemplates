@@ -2,4 +2,15 @@
 <介绍>
 	Unity可用的DLL库，需要CSharpTemplates项目前置；
 	编译期编译成三份：U3D编辑器(UnityEditor)，打包到windows系统(UnityWindows)，打包到移动端安卓(UnityAndroid)
+	
+	<预编译符号>
+		PLATFORM_ANDROID = 安卓平台
+		UNITY_ANDROID = 安卓平台
+		UNITY_STANDALONE_WIN = windows平台
+		UNITY_STANDALONE = 独立的平台（Mac，Windows或Linux）
+		UNITY_EDITOR = 处于Unity编辑器环境
+
+		HAVE_MOUSE = 存在鼠标的平台
+		HAVE_TOUCH = 始终可使用触控的平台
+	</预编译符号>
 </介绍>

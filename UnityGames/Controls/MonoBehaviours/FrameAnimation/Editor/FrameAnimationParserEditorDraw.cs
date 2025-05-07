@@ -4,6 +4,8 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
+using Cheng.Unitys.Editors;
+
 namespace Cheng.Unitys.Animators.FrameAnimations
 {
 
@@ -11,7 +13,7 @@ namespace Cheng.Unitys.Animators.FrameAnimations
     /// 重绘检查器动画脚本参数
     /// </summary>
     [CustomPropertyDrawer(typeof(FrameAnimationParser))]
-    public class FrameAnimationParserEditorDraw : PropertyDrawer
+    public sealed class FrameAnimationParserEditorDraw : PropertyDrawer
     {
 
         #region 初始化绘制器
@@ -24,6 +26,22 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         #region 参数
 
         private GUIContent p_toggleLabel;
+
+        private TooltipAttribute p_tip;
+        private bool p_tipCreate = false;
+        private TooltipAttribute Tooltip
+        {
+            get
+            {
+
+                if (!p_tipCreate)
+                {
+                    p_tipCreate = true;
+                    p_tip = this.fieldInfo.GetCustomAttribute<TooltipAttribute>();
+                }
+                return p_tip;
+            }
+        }
 
         static GUIContent f_createToggleLoopLabel()
         {
@@ -41,24 +59,17 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         /// <param name="field"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        static GUIContent f_createGUILabel(GUIContent label, FieldInfo field)
+        GUIContent f_createGUILabel(GUIContent label)
         {
-            TooltipAttribute att;
-
-            att = Attribute.GetCustomAttribute(field, typeof(TooltipAttribute)) as TooltipAttribute;
-            //att = field.GetCustomAttribute<TooltipAttribute>();
-
-            if (att is null) return label;
-
-            return new GUIContent(label.text, label.image, att.tooltip);            
+            var att = Tooltip;
+            if(att != null) label.tooltip = att.tooltip;
+            return label;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
 
-            FieldInfo field = this.fieldInfo;
-
-            label = f_createGUILabel(label, field);
+            label = f_createGUILabel(label);
 
             OnGUIDraw(position, property, label, p_toggleLabel);
 
@@ -77,55 +88,66 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         /// <param name="toggleLabel">循环播放开关标签</param>
         public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label, GUIContent toggleLabel)
         {
+            Rect pos_value, pos_label;
+
+            if (label is null || label == GUIContent.none)
+            {
+                pos_value = position;
+            }
+            else
+            {
+                position.SectionLength(0.4f, 0, out pos_label, out pos_value);
+                EditorGUI.LabelField(pos_label, label);
+            }
+
+
+            OnGUIDrawing(pos_value, property, toggleLabel);
+
+        }
+
+        /// <summary>
+        /// 绘制一个<see cref="FrameAnimationParser"/>
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="property"></param>
+        /// <param name="toggleLabel"></param>
+        public static void OnGUIDrawing(Rect position, SerializedProperty property, GUIContent toggleLabel)
+        {
 
             //字段数据
             var frameTimePro = property.FindPropertyRelative(FrameAnimationParser.FrameTimeName);
             var loopPro = property.FindPropertyRelative(FrameAnimationParser.LoopName);
 
-            //总长度
-            float allWdith = position.width;
+            Rect pos_frameTime, pos_toggle, pos_toggleLabel;
 
             //开关长度
-            const float loopWidth = 35f + 18f;
+            const float loopWidth_Label = 30f;
 
-            float y = position.y;
-            float height = position.height;
-            float x = position.x;
+            //切割frametime和循环开关
+            position.SectionRightLengthByValue(loopWidth_Label + EditorGUIParser.ToggleWidth + 2, 0,
+                out pos_frameTime, out pos_toggle);
 
-            //标签长度
-            float labeLength;
-
-            //labeLength = (drawLabel.text.Length * p_textAPixed) + 20f;
-            labeLength = (allWdith * 0.38f);
-
-            //浮点值框长度
-            float frameTimeLength = (allWdith * 0.62f);
-
-            //标签位置
-            Rect labelPos = new Rect(x, y, labeLength, height);
-
-            //浮点值框位置
-            Rect frameTimePos = new Rect(x + labeLength, y, frameTimeLength - (loopWidth + 10f), height);
-
-            //开关位置
-            Rect loopBoolPos = new Rect(x + (allWdith - (loopWidth)), y, loopWidth, height);
+            pos_toggle.SectionRightLengthByValue(EditorGUIParser.ToggleWidth + 2, 0,
+                out pos_toggleLabel, out pos_toggle);
 
             //-------绘制-----------
 
             //绘制字段标签
 
-            EditorGUI.LabelField(labelPos, label, GUIContent.none);
+            //EditorGUI.LabelField(labelPos, label, GUIContent.none);
 
             //左侧绘制浮点型数据
 
-            var vre = EditorGUI.FloatField(frameTimePos, GUIContent.none, frameTimePro.floatValue);
+            var vre = EditorGUI.FloatField(pos_frameTime, frameTimePro.floatValue);
 
             if (vre < 0) vre = 0;
             frameTimePro.floatValue = vre;
 
-            //右侧绘制布尔开关
+            //开关标签
+            EditorGUI.LabelField(pos_toggleLabel, toggleLabel);
 
-            loopPro.boolValue = EditorGUI.ToggleLeft(loopBoolPos, toggleLabel, loopPro.boolValue);
+            //右侧绘制布尔开关
+            loopPro.boolValue = EditorGUI.Toggle(pos_toggle, loopPro.boolValue);
 
             //-------绘制-----------
         }

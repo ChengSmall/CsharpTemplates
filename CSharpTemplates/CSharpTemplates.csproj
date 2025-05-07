@@ -89,6 +89,7 @@
     <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64EncoderException.cs" />
     <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64StreamWriter.cs" />
     <Compile Include="Algorithm\ListExtend\ListExtend.Cover.cs" />
+    <Compile Include="Algorithm\Sort\Comparers\BinaryStringComparer.cs" />
     <Compile Include="Algorithm\Tree\TreeNodeExtend\TreeNodeExtend.cs" />
     <Compile Include="Algorithm\Random\BufferedRandom.cs" />
     <Compile Include="Algorithm\Random\SynchronizedRandom.cs" />

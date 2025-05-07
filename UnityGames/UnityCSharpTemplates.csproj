@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,HAVE_MOUSE,HAVE_TOUCH</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -29,7 +29,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID</DefineConstants>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID,HAVE_TOUCH,HAVE_MOUSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -40,7 +40,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityEditor|AnyCPU'">
     <OutputPath>bin\UnityEditor\</OutputPath>
-    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE</DefineConstants>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,HAVE_MOUSE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\UnityEditor\UnityCSharpTemplates.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -51,7 +51,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityWindows|AnyCPU'">
     <OutputPath>bin\UnityWindows\</OutputPath>
-    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_STANDALONE</DefineConstants>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_STANDALONE,HAVE_MOUSE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\UnityWindows\UnityCSharpTemplates.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -62,7 +62,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityAndroid|AnyCPU'">
     <OutputPath>bin\UnityAndroid\</OutputPath>
-    <DefineConstants>TRACE;PLATFORM_ANDROID,UNITY_ANDROID</DefineConstants>
+    <DefineConstants>TRACE;PLATFORM_ANDROID,UNITY_ANDROID,HAVE_TOUCH</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\UnityAndroid\UnityCSharpTemplates.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -125,8 +125,11 @@
     <Compile Include="Controls\DataStructure\Collection\Editor\UListGUIEditorDraw.cs" />
     <Compile Include="Controls\DataStructure\Collection\UList.cs" />
     <Compile Include="Controls\DataStructure\DataParsers\UnityParserMeshData.cs" />
+    <Compile Include="Controls\DataStructure\Disabledable\Disabledable.cs" />
+    <Compile Include="Controls\DataStructure\Disabledable\DisabledableEditorDraw.cs" />
     <Compile Include="Controls\DataStructure\GameController\Editor\UnityXBoxGameControllerEditorDraw.cs" />
     <Compile Include="Controls\DataStructure\GameController\UnityXBoxGameController.cs" />
+    <Compile Include="Controls\DataStructure\MouseORTouch\MouseORTouchState.cs" />
     <Compile Include="Controls\Extends\UnityObjExtend.cs" />
     <Compile Include="Controls\MonoBehaviours\Camera\2D\CameraCurtain.cs" />
     <Compile Include="Controls\MonoBehaviours\Camera\2D\DepthSimulationPlanarMove.cs" />

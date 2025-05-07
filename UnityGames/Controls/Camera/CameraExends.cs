@@ -13,6 +13,8 @@ namespace Cheng.Unitys.Cameras
     public static unsafe class CameraExends
     {
 
+        #region RectTransform
+
         /// <summary>
         /// 将2D摄像机下指定像素坐标转化到矩形变换中的内部坐标
         /// </summary>
@@ -135,6 +137,38 @@ namespace Cheng.Unitys.Cameras
             return new Vector2(target_world_size.x / transPos_world_size.x,
                 target_world_size.y / transPos_world_size.y);
         }
+
+        #endregion
+
+        #region 像素转换空间
+
+        /// <summary>
+        /// 按屏幕像素坐标获取摄像机所渲染的世界位置
+        /// </summary>
+        /// <param name="camera">摄像机</param>
+        /// <param name="pixelPos">摄像机渲染的画面所在的像素坐标，从左下角开始（0,0）到右上角的像素长宽<paramref name="screen"/>；z数据单独表示为指定空间坐标与当前摄像机的距离，采用unity场景单位</param>
+        /// <param name="screen">指定屏幕渲染的像素单位的长宽，x表示长度，y表示宽度</param>
+        /// <returns>从<paramref name="pixelPos"/>转换到在unity场景中的坐标位置</returns>
+        public static Vector3 ViewportScenePosition(this Camera camera, Vector3 pixelPos, Vector2 screen)
+        {
+            //获取归一化相对位置
+            float gx = pixelPos.x / (screen.x - 1);
+            float gy = pixelPos.y / (screen.y - 1);
+            return camera.ViewportToWorldPoint(new Vector3(gx, gy, pixelPos.z));
+        }
+
+        /// <summary>
+        /// 按屏幕像素坐标获取摄像机所渲染的世界位置
+        /// </summary>
+        /// <param name="camera">摄像机</param>
+        /// <param name="pixelPos">摄像机渲染的画面所在的像素坐标，从左下角开始（0,0）到右上角的屏幕分辨率像素长宽；z数据单独表示为指定空间坐标与当前摄像机的距离，采用unity场景单位</param>
+        /// <returns>从<paramref name="pixelPos"/>转换到在unity场景中的坐标位置</returns>
+        public static Vector3 ViewportScenePosition(this Camera camera, Vector3 pixelPos)
+        {
+            return ViewportScenePosition(camera, pixelPos, new Vector2(Screen.width, Screen.height));
+        }
+
+        #endregion
 
     }
 

@@ -17,7 +17,7 @@ namespace Cheng.Controllers.Unitys
     /// Unity手柄参数——XBox手柄
     /// </summary>
     [Serializable]
-    public class UnityXBoxGameController : GameController
+    public sealed class UnityXBoxGameController : GameController
     {
 
         #region 构造
