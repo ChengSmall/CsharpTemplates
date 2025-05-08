@@ -10,6 +10,7 @@ namespace Cheng.Algorithm.Randoms
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化一个随机数生成器，使用计算机时间戳作为种子
         /// </summary>
@@ -17,6 +18,7 @@ namespace Cheng.Algorithm.Randoms
         {
             Seed = DateTime.UtcNow.Ticks;
         }
+
         /// <summary>
         /// 使用指定随机种子实例化一个随机数生成器
         /// </summary>
@@ -25,6 +27,7 @@ namespace Cheng.Algorithm.Randoms
         {
             p_seed = seed;
         }
+
         #endregion
 
         #region 参数

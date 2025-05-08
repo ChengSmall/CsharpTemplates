@@ -109,8 +109,9 @@ namespace Cheng.Algorithm.Randoms
         /// <summary>
         /// 获取一个随机整数
         /// </summary>
-        /// <returns>一个随机的整数，范围在[0, 2147483647)</returns>
+        /// <returns>一个随机整数，范围在[0, 2147483647)</returns>
         public abstract int Next();
+
         /// <summary>
         /// 获取一个范围在[<paramref name="min"/>,<paramref name="max"/>)的随机数
         /// </summary>
@@ -127,11 +128,12 @@ namespace Cheng.Algorithm.Randoms
         /// <summary>
         /// 获取一个随机长整型值
         /// </summary>
-        /// <returns>一个随机得长整型值，范围在[0,9223372036854775807)</returns>
+        /// <returns>一个随机长整型值，范围在[0,9223372036854775807)</returns>
         public virtual long NextLong()
         {
             return ((long)Next()) | ((long)Next() << 31) | ((long)Next(0, 4) << 62);
         }
+
         /// <summary>
         /// 获取一个范围在[<paramref name="min"/>,<paramref name="max"/>)的随机数
         /// </summary>
@@ -153,6 +155,7 @@ namespace Cheng.Algorithm.Randoms
         {
             return Next() / 2147483647d;
         }
+
         /// <summary>
         /// 获取一个范围在[0,1)的单浮点随机数
         /// </summary>
@@ -176,6 +179,7 @@ namespace Cheng.Algorithm.Randoms
             return (float)(min + ((max - min) * (Next(0, 8388607) / 8388607f)));
             //return (float)(min + (NextDouble() * (max - min)));
         }
+
         /// <summary>
         /// 获取一个指定范围的双浮点数
         /// </summary>
@@ -203,8 +207,8 @@ namespace Cheng.Algorithm.Randoms
             {
                 buffer[i] = (byte)Next(0, 256);
             }
-
         }
+
         /// <summary>
         /// 用随机数填充指定字节数组的元素。
         /// </summary>
@@ -233,10 +237,8 @@ namespace Cheng.Algorithm.Randoms
         /// <returns>
         /// 生成器生成的参数是否小于概率参数，参数越接近1返回true的概率越大；当参数大于或等于1时，返回值永远为true；参数小于0时，返回值永远为false；
         /// </returns>
-        /// <exception cref="ArgumentException">参数是<see cref="double.NaN"/></exception>
         public virtual bool NextDouble(double probability)
         {
-            if (double.IsNaN(probability)) throw new ArgumentException();
             return NextDouble() < probability;
         }
 

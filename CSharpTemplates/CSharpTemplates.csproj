@@ -147,6 +147,10 @@
     <Compile Include="Data\Hash\Hash256.cs" />
     <Compile Include="Data\List\DelegateArray.cs" />
     <Compile Include="Data\List\Stack\TraverStack.cs" />
+    <Compile Include="Data\NumGenerators\DynamicNumber.cs" />
+    <Compile Include="Data\NumGenerators\NumGenerator.cs" />
+    <Compile Include="Data\NumGenerators\NumGeneratorMath.cs" />
+    <Compile Include="Data\NumGenerators\NumGeneratorRandom.cs" />
     <Compile Include="Data\Receptacle\ReceptacleByte.cs" />
     <Compile Include="Data\Receptacle\ReceptacleDecimal.cs" />
     <Compile Include="Data\Receptacle\ReceptacleDouble.cs" />
