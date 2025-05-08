@@ -18,7 +18,7 @@ namespace Cheng.Unitys.Cameras
     /// 2D摄像机幕布渐变遮罩
     /// </summary>
 #if UNITY_EDITOR
-    [AddComponentMenu("Cheng/2D/摄像机/幕布遮罩")]
+    [AddComponentMenu("Cheng/2D/渲染/幕布遮罩")]
 #endif
     [DisallowMultipleComponent]
     public sealed class CameraCurtain : MonoBehaviour
@@ -36,10 +36,10 @@ namespace Cheng.Unitys.Cameras
 
         #region 外部参数
 
-#if UNITY_EDITOR
-        [Tooltip("要管理的摄像机")]
-#endif
-        [SerializeField] private Camera nowCamera = null;
+//#if UNITY_EDITOR
+//        [Tooltip("要管理的摄像机")]
+//#endif
+//        [SerializeField] private Camera nowCamera = null; 我tm是傻逼，放了个没用的参数在这儿
 
 #if UNITY_EDITOR
         [Tooltip("摄像机幕布渲染器")]
@@ -59,15 +59,6 @@ namespace Cheng.Unitys.Cameras
         #region 功能
 
         #region 参数访问
-
-        /// <summary>
-        /// 要管理的摄像机
-        /// </summary>
-        public Camera NowCamera
-        {
-            get => nowCamera;
-            set => nowCamera = value;
-        }
 
         /// <summary>
         /// 摄像机幕布渲染器
@@ -235,7 +226,7 @@ namespace Cheng.Unitys.Cameras
         private void OnDestroy()
         {
             curtainRenderer = null;
-            nowCamera = null;
+            //nowCamera = null;
         }
 
         private void OnValidate()
@@ -244,10 +235,10 @@ namespace Cheng.Unitys.Cameras
             {
                 curtainRenderer = null;
             }
-            if (nowCamera == null)
-            {
-                nowCamera = null;
-            }
+            //if (nowCamera == null)
+            //{
+            //    nowCamera = null;
+            //}
         }
 
         #endregion

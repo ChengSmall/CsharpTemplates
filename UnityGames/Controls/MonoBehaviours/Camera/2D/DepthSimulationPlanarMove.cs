@@ -1,9 +1,13 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+using Cheng.Algorithm;
 
 #if UNITY_EDITOR
 using Cheng.Unitys.Editors;
 #endif
+
+using UObj = UnityEngine.Object;
+using GObj = UnityEngine.GameObject;
 
 namespace Cheng.Unitys.Cameras
 {
@@ -12,13 +16,7 @@ namespace Cheng.Unitys.Cameras
     /// 2D平面移动时的z轴视差模拟
     /// </summary>
     /// <remarks>
-    /// <para>脚本所在对象会根据摄像机<see cref="WorkingCamera"/>的移动按<see cref="MovementRatio"/>比例移动，以造成z轴视觉偏差</para>
-    /// <para>
-    /// 移动比例越接近1，代表对象距离摄像机焦点越远；越接近0，表示离摄像机焦点越近；<br/>
-    /// 等于0时则表示物体的z轴处于摄像机焦点坐标；<br/>
-    /// 若小于0，则表示比摄像机焦点更接近摄像机；<br/>
-    /// 值的绝对值如果超过1，则不会出现视差错觉效果
-    /// </para>
+    /// <para>脚本所在对象会根据参数<see cref="DepthSimulationPlanarMove.WorkingCameraTransform"/>的移动按<see cref="DepthSimulationPlanarMove.MovementRatio"/>比例移动，以造成z轴视觉偏差</para>
     /// <para>关闭脚本活动会停止运行和位置检测</para>
     /// </remarks>
 #if UNITY_EDITOR
@@ -36,6 +34,9 @@ namespace Cheng.Unitys.Cameras
             workingCamera = null;
             moveObject = null;
             p_lastCameraPos = default;
+            moveType = Space.World;
+            moveing = true;
+            qukeRunUpdate = true;
         }
 
         #endregion
@@ -50,19 +51,29 @@ namespace Cheng.Unitys.Cameras
         [SerializeField] private Transform moveObject;
 
 #if UNITY_EDITOR
-        [Tooltip("要运行的2D正交摄像机")]
+        [Tooltip("要运行的2D正交摄像机变换")]
 #endif
-        [SerializeField] private Camera workingCamera;
+        [SerializeField] private Transform workingCamera;
 
 #if UNITY_EDITOR
-        [Tooltip("对象相对摄像机的移动比例")]
+        [Tooltip("对象相对摄像机的移动比例\n移动比例越接近1，代表对象距离摄像机焦点越远；越接近0，表示离摄像机焦点越近\n等于0时表示物体的虚拟z轴处于摄像机焦点处\n若值小于0，则表示比摄像机焦点更接近摄像机")]
 #endif
         [SerializeField] private Vector2 movementRatio;
-        
+
+#if UNITY_EDITOR
+        [Tooltip("对象的移动空间类型")]
+#endif
+        [SerializeField] private Space moveType;
+
+#if UNITY_EDITOR
+        [Tooltip("是否启用移动\n只有在勾选该参数时脚本才会移动对象\n将该参数取消勾选时脚本会暂停移动对象，但是再次勾选后脚本会记录上次的移动状态继续以相对位置移动；如果是取消运行脚本，再次运行时，脚本不会记录上一次运行的状态，而是以启动时对象的位置作为基准重新开始移动")]
+#endif
+        [SerializeField] private bool moveing;
+
 #if UNITY_EDITOR
         [Tooltip("在运行时是否不进行检查参数为null\n参数为false时每帧运行前会检查参数是否为null，相对会消耗更多性能；true则不会检查")]
 #endif
-        [SerializeField] private bool qukeRunUpdate = true;
+        [SerializeField] private bool qukeRunUpdate;
 
         #endregion
 
@@ -80,10 +91,10 @@ namespace Cheng.Unitys.Cameras
         #region 参数访问
 
         /// <summary>
-        /// 要运行的2D正交摄像机
+        /// 要运行的2D正交摄像机所在变换
         /// </summary>
-        /// <remarks>请确保在游戏脚本运行前该参数有摄像机实例</remarks>
-        public Camera WorkingCamera
+        /// <remarks>请确保在游戏脚本运行前该参数有实例</remarks>
+        public Transform WorkingCameraTransform
         {
             get => workingCamera;
             set => workingCamera = value;
@@ -92,6 +103,12 @@ namespace Cheng.Unitys.Cameras
         /// <summary>
         /// 访问或设置对象相对摄像机的移动比例
         /// </summary>
+        /// <value>
+        /// <para>移动比例越接近1，代表对象距离摄像机焦点越远；越接近0，表示离摄像机焦点越近</para>
+        /// <para>等于0时表示物体的虚拟z轴处于摄像机焦点处</para>
+        /// <para>若值小于0，则表示比摄像机焦点更接近摄像机</para>
+        /// <para>绝对值如果超过1，则不会出现视差错觉效果</para>
+        /// </value>
         public Vector2 MovementRatio
         {
             get => movementRatio;
@@ -127,35 +144,80 @@ namespace Cheng.Unitys.Cameras
             }
         }
 
+        /// <summary>
+        /// 移动对象时的空间坐标类型
+        /// </summary>
+        public Space MoveType
+        {
+            get => moveType;
+            set
+            {
+                moveType = value;
+            }
+        }
+
+
+        /// <summary>
+        /// 是否启用移动
+        /// </summary>
+        /// <value>
+        /// <para>只有将参数设为true时脚本才会移动对象</para>
+        /// <para>将该参数设为false时脚本会暂停移动对象，但是再次设为true后脚本会记录上次的移动状态继续以相对位置移动；如果是将<see cref="Behaviour.enabled"/>参数设为false或脚本因为其他原因停止运作，再次运行时，脚本不会记录上一次运行的状态，而是以启动时对象的位置作为基准重新开始移动</para>
+        /// </value>
+        public bool Moving
+        {
+            get => moveing;
+            set
+            {
+                moveing = value;
+            }
+        }
+
         #endregion
 
         #region 运行
 
+        /// <summary>
+        /// 手动运行一帧移动
+        /// </summary>
+        /// <param name="cameraPosition">指定当前帧摄像机对象所在的场景坐标位置</param>
+        /// <param name="moveObjectPosition">指定要移动的对象所在位置</param>
+        /// <param name="movementRatio">对象相对摄像机的移动比例</param>
+        /// <param name="lastPosition">上一帧摄像机对象所在的场景位置</param>
+        /// <returns>要移动的对象所在的新位置</returns>
+        public static Vector3 UpdateMove(Vector3 cameraPosition, Vector3 moveObjectPosition, Vector2 movementRatio, ref Vector3 lastPosition)
+        {
+
+            //获取camera位置
+            //var camera_pos = cameraPosition;
+
+            //计算摄像机的移动距离
+            var moveCamera = cameraPosition - lastPosition;
+
+            //计算对象移动距离
+            Vector2 objMove = new Vector2(moveCamera.x * movementRatio.x, moveCamera.y * movementRatio.y);
+
+            //保存当前camera位置
+            lastPosition = cameraPosition;
+
+            //移动
+            return new Vector3(moveObjectPosition.x + objMove.x, moveObjectPosition.y + objMove.y, moveObjectPosition.z);
+        }
+
         private void f_runUpdate()
         {
             //Transform cameraTrans = workingCamera.transform;
-
-            //获取camera位置
-            var camera_pos = workingCamera.transform.position;
-
-            //计算摄像机的移动距离
-            var moveCamera = camera_pos - p_lastCameraPos;
-
-            Vector2 objMove;
-
-            //计算对象移动距离
-            objMove = new Vector2(moveCamera.x * movementRatio.x, moveCamera.y * movementRatio.y);
-
-            //保存当前camera位置
-            p_lastCameraPos = camera_pos;
-            
-            if (objMove.x == 0 && objMove.y == 0) return; //如果是0则不移动
-
-            //获得移动的对象位置
-            Vector3 nowPos = moveObject.position;
-
-            //移动
-            moveObject.position = new Vector3(nowPos.x + objMove.x, nowPos.y + objMove.y, nowPos.z);
+            if (moveing)
+            {
+                if (moveType == Space.Self)
+                {
+                    moveObject.localPosition = UpdateMove(workingCamera.transform.localPosition, moveObject.localPosition, this.movementRatio, ref p_lastCameraPos);
+                }
+                else
+                {
+                    moveObject.position = UpdateMove(workingCamera.transform.position, moveObject.position, this.movementRatio, ref p_lastCameraPos);
+                }
+            }
         }
 
         private void LateUpdate()
@@ -190,3 +252,6 @@ namespace Cheng.Unitys.Cameras
     }
 
 }
+#if UNITY_EDITOR
+
+#endif
