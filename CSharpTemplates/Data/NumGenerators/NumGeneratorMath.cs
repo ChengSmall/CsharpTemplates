@@ -34,7 +34,7 @@ namespace Cheng.DataStructure.NumGenerators
             /// <summary>
             /// 除法运算 x作为被除数 y作为除数
             /// </summary>
-            Dev,
+            Div,
 
             /// <summary>
             /// 求余数 x作为被除数 y作为除数
@@ -168,7 +168,7 @@ namespace Cheng.DataStructure.NumGenerators
                     return x - y;
                 case OperationType.Mult:
                     return x * y;
-                case OperationType.Dev:
+                case OperationType.Div:
                     return x / y;
                 case OperationType.Mod:
                     return x % y;

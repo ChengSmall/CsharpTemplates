@@ -196,6 +196,7 @@
     <Compile Include="Parsers\StreamParser\StreamParserException.cs" />
     <Compile Include="Parsers\StreamParser\StreamParserStructure.cs" />
     <Compile Include="Parsers\TextParser\BaseTextParser.cs" />
+    <Compile Include="Parsers\TextParser\Json\ToValue\JsonToNumber.cs" />
     <Compile Include="Text\BufferedText\BufferedTextWriter.cs" />
     <Compile Include="Text\BufferedText\BufferedTextReader.cs" />
     <Compile Include="Parsers\TextParser\Json\JsonDictionary.cs" />
@@ -271,6 +272,7 @@
     <None Include="Algorithm\Compression\ResourcePackage\资源包数据格式.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Parsers\TextParser\Json\ToValue\值获取结构.json" />
     <None Include="简介.xml" />
   </ItemGroup>
   <ItemGroup>

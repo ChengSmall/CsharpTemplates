@@ -62,8 +62,6 @@ namespace Cheng.Unitys.DataStructure
 
         #region 参数
 
-        internal static bool p_isBigEnd = Cheng.Memorys.MemoryOperation.IsBigEndian;
-
         [SerializeField] internal int i1;
         [SerializeField] internal int i2;
         [SerializeField] internal int i3;

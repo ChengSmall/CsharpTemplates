@@ -60,10 +60,32 @@ namespace Cheng.DataStructure.NumGenerators
         }
 
         /// <summary>
+        /// 初始化整数值
+        /// </summary>
+        /// <param name="value">整数值</param>
+        public DynamicNumber(int value)
+        {
+            this = default;
+            this.valueInteger = value;
+            type = NumType.Integer;
+        }
+
+        /// <summary>
         /// 初始化浮点值
         /// </summary>
         /// <param name="value">浮点值</param>
         public DynamicNumber(double value)
+        {
+            this = default;
+            this.valueRealNum = value;
+            type = NumType.RealNumber;
+        }
+
+        /// <summary>
+        /// 初始化浮点值
+        /// </summary>
+        /// <param name="value">浮点值</param>
+        public DynamicNumber(float value)
         {
             this = default;
             this.valueRealNum = value;
@@ -117,15 +139,83 @@ namespace Cheng.DataStructure.NumGenerators
 
         #region 转换
 
+        /// <summary>
+        /// 设置新的数据类型并返回新设置的值
+        /// </summary>
+        /// <param name="type">要使用的新数值类型</param>
+        /// <returns>新类型设置的值</returns>
+        public DNum SetType(NumType type)
+        {
+            long v = valueInteger;
+            return new DNum(type, &v);
+        }
+
+        #region 强转重写
+
         public static implicit operator DynamicNumber(long value)
         {
             return new DynamicNumber(value);
         }
 
+        public static explicit operator DynamicNumber(ulong value)
+        {
+            return new DynamicNumber((long)value);
+        }
+
+        public static implicit operator DynamicNumber(int value)
+        {
+            return new DynamicNumber((long)value);
+        }
+
+        public static implicit operator DynamicNumber(uint value)
+        {
+            return new DynamicNumber((long)value);
+        }
+
+
+        public static implicit operator DynamicNumber(short value)
+        {
+            return new DynamicNumber((long)value);
+        }
+
+        public static implicit operator DynamicNumber(ushort value)
+        {
+            return new DynamicNumber((long)value);
+        }
+
+        public static implicit operator DynamicNumber(byte value)
+        {
+            return new DynamicNumber((long)value);
+        }
+
+        public static implicit operator DynamicNumber(sbyte value)
+        {
+            return new DynamicNumber((long)value);
+        }
+
+
+        public static implicit operator DynamicNumber(char value)
+        {
+            return new DynamicNumber((long)value);
+        }
+
+
         public static implicit operator DynamicNumber(double value)
         {
             return new DynamicNumber(value);
         }
+
+        public static implicit operator DynamicNumber(float value)
+        {
+            return new DynamicNumber((double)value);
+        }
+
+
+        public static explicit operator DynamicNumber(decimal value)
+        {
+            return new DynamicNumber((double)value);
+        }
+
 
         public static explicit operator long(DynamicNumber value)
         {
@@ -138,6 +228,68 @@ namespace Cheng.DataStructure.NumGenerators
             if (value.type == NumType.Integer) return value.valueInteger;
             return value.valueRealNum;
         }
+
+        public static explicit operator float(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return value.valueInteger;
+            return (float)value.valueRealNum;
+        }
+
+        public static explicit operator int(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return (int)value.valueInteger;
+            return (int)value.valueRealNum;
+        }
+
+        public static explicit operator uint(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return (uint)value.valueInteger;
+            return (uint)value.valueRealNum;
+        }
+
+        public static explicit operator short(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return (short)value.valueInteger;
+            return (short)value.valueRealNum;
+        }
+
+        public static explicit operator ushort(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return (ushort)value.valueInteger;
+            return (ushort)value.valueRealNum;
+        }
+
+        public static explicit operator byte(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return (byte)value.valueInteger;
+            return (byte)value.valueRealNum;
+        }
+
+        public static explicit operator sbyte(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return (sbyte)value.valueInteger;
+            return (sbyte)value.valueRealNum;
+        }
+
+
+        public static explicit operator char(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return (char)value.valueInteger;
+            return (char)value.valueRealNum;
+        }
+
+        /// <summary>
+        /// 强转为十进制数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <exception cref="System.OverflowException">超出范围</exception>
+        public static explicit operator decimal(DynamicNumber value)
+        {
+            if (value.type == NumType.Integer) return (decimal)value.valueInteger;
+            return (decimal)value.valueRealNum;
+        }
+
+        #endregion
 
         #endregion
 

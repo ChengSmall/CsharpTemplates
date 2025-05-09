@@ -104,7 +104,7 @@ namespace Cheng.Parsers.CommandParsers
         /// <summary>
         /// 装载命令执行单位的字典
         /// </summary>
-        protected Dictionary<string, ExecuteCommandAction> p_parsers;        
+        protected Dictionary<string, ExecuteCommandAction> p_parsers;
 
         /// <summary>
         /// 命令字符串分隔符
