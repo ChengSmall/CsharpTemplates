@@ -95,7 +95,7 @@ namespace Cheng.Windows.Hooks
             }
 
             /// <summary>
-            /// 获取将<see cref="KeyHookArgs.key"/>转化为<see cref="System.Windows.Forms.Keys"/>的参数
+            /// 将<see cref="KeyHookArgs.VkCode"/>转化为<see cref="System.Windows.Forms.Keys"/>并返回
             /// </summary>
             public Keys Keys
             {
@@ -210,8 +210,24 @@ namespace Cheng.Windows.Hooks
         private object p_eventThreadSafe;
         #endregion
 
-        #region 派生
-        
+        #region 功能
+
+        /// <summary>
+        /// 访问或设置挂钩事件在托管对象中的回调开关
+        /// </summary>
+        /// <value>
+        /// <para>设为true启用对象内的委托事件，设为false关闭对象的委托事件</para>
+        /// <para>注意，该参数仅用于管理托管对象内的委托事件是否被调用，并不会关闭挂钩回调句柄</para>
+        /// </value>
+        public bool Active
+        {
+            get => p_active;
+            set
+            {
+                p_active = value;
+            }
+        }
+
         protected override void HookCallBack(HookArgs args)
         {
             if (args.code == 0)
@@ -244,7 +260,7 @@ namespace Cheng.Windows.Hooks
         /// </summary>
         /// <remarks>
         /// <para>将键盘事件挂钩安装到挂钩链，监控windows键盘事件</para>
-        /// <para>每当</para>
+        /// <para>每当按下键盘按键时，无论进程是否处于前台还是后台，窗口是否拥有焦点，都会引发事件</para>
         /// </remarks>
         public event HookAction<KeyHookArgs> KeyHookEvent
         {

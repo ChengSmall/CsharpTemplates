@@ -113,6 +113,7 @@
     <Compile Include="Controls\DataStructure\Button\Editor\UnityEditorNameButtonDraw.cs" />
     <Compile Include="Controls\DataStructure\Button\Joysticks\Editor\UnityKeyCode4JoystickEditorDraw.cs" />
     <Compile Include="Controls\DataStructure\Button\Joysticks\UnityAxis.cs" />
+    <Compile Include="Controls\DataStructure\Button\Joysticks\UnityJoystickExtend.cs" />
     <Compile Include="Controls\DataStructure\Button\Joysticks\UnityKeyCode4Joystick.cs" />
     <Compile Include="Controls\DataStructure\Button\KeyButton\KeyCodeButton.cs" />
     <Compile Include="Controls\DataStructure\Button\KeyButton\MultButton\MultKeyCodeButton.cs" />

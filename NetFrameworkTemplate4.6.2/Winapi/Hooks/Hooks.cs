@@ -43,7 +43,7 @@ namespace Cheng.Windows.Hooks
     }
 
     /// <summary>
-    /// 提供使用挂钩对应用程序截获消息、鼠标操作和击键等事件进行处理的方法
+    /// 提供使用挂钩对应用程序截获消息、鼠标操作和击键等事件进行处理的基类
     /// </summary>
     public abstract unsafe class Hook : ReleaseDestructor
     {
@@ -59,6 +59,8 @@ namespace Cheng.Windows.Hooks
             {
                 if (WinHooks.UnhookWindowsHookEx(p_hookID)) p_hookID = null;
             }
+
+            p_callback = null;
         }
 
         /// <summary>
@@ -90,12 +92,14 @@ namespace Cheng.Windows.Hooks
         /// <exception cref="Win32Exception">引发win32错误</exception>
         public Hook(HookID id, int threadID)
         {
-            p_hookID = WinHooks.SetWindowsHookEx(id, f_callBack, null, (uint)threadID);
+            p_callback = f_callBack;
+            p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, null, (uint)threadID);
             if (p_hookID == null)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
             //p_threadSafe = new object();
+            p_active = true;
         }
 
         /// <summary>
@@ -107,12 +111,14 @@ namespace Cheng.Windows.Hooks
         /// <exception cref="Win32Exception">引发win32错误</exception>
         public Hook(HookID id, int threadID, IntPtr handleMod)
         {
-            p_hookID = WinHooks.SetWindowsHookEx(id, f_callBack, handleMod.ToPointer(), (uint)threadID);
+            p_callback = f_callBack;
+            p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, handleMod.ToPointer(), (uint)threadID);
             if (p_hookID == null)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
             //p_threadSafe = new object();
+            p_active = true;
         }
 
         /// <summary>
@@ -120,6 +126,7 @@ namespace Cheng.Windows.Hooks
         /// </summary>
         protected Hook()
         {
+            p_callback = f_callBack;
         }
 
         /// <summary>
@@ -131,21 +138,30 @@ namespace Cheng.Windows.Hooks
         /// <exception cref="Win32Exception">引发win32错误</exception>
         protected void initCtor(HookID id, int threadID, IntPtr handleMod)
         {
-            p_hookID = WinHooks.SetWindowsHookEx(id, f_callBack, handleMod.ToPointer(), (uint)threadID);
+            p_callback = f_callBack;
+            p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, handleMod.ToPointer(), (uint)threadID);
             if (p_hookID == null)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
+            p_active = true;
         }
 
         #endregion
 
         #region 参数
 
+        protected ProcCallBack p_callback;
+
         /// <summary>
         /// 挂钩句柄
         /// </summary>
         protected void* p_hookID;
+
+        /// <summary>
+        /// 开启或关闭挂钩事件触发后在该对象的回调
+        /// </summary>
+        protected bool p_active;
 
         #endregion
 
@@ -154,8 +170,7 @@ namespace Cheng.Windows.Hooks
         private void* f_callBack(int nCode, void* wParam, void* lParam)
         {
             //IntPtr w = new IntPtr(wParam), l = new IntPtr(lParam);
-            HookCallBack(new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam)));         
-
+            if(p_active) HookCallBack(new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam)));
             return WinHooks.CallNextHookEx(p_hookID, nCode, wParam, lParam);
         }
 

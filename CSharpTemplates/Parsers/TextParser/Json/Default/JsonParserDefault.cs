@@ -1130,69 +1130,98 @@ namespace Cheng.Json
                 flag = addKeyValue(key, item, json);
                 if (!flag) return false;
 
-                if (nextChar == -1)
+
+                //跳过忽略文本
+                flag = f_jumpIngoringText(reader);
+                if (!flag) return false;
+
+                //读取下一个
+                flag = read(reader, out c);
+                if (!flag) return false;
+
+                //属于 } 结束
+                if (c == end) return true;
+                //没有 } 也不是 , 错误json代码
+                if (c != fen) return false;
+
+                //拥有分隔符
+                //跳过忽略文本
+                flag = f_jumpIngoringText(reader);
+                if (!flag) return false;
+
+                //peek一下
+                flag = peek(reader, out c);
+                //拥有 } 是空分隔符
+                if (flag && c == end)
                 {
-
-                    //跳过忽略文本
-                    flag = f_jumpIngoringText(reader);
-                    if (!flag) return false;
-
-                    //读取分隔符
-                    flag = read(reader, out c);
-                    if (!flag) return false;
-
-                    //结束
-                    if (c == end) return true;
-                    if (c != fen) return false;
-
-                    //跳过忽略文本
-                    flag = f_jumpIngoringText(reader);
-                    if (!flag) return false;
-
-                    flag = peek(reader, out c);
-                    //是空分隔符
-                    if (flag && c == end) return true;
+                    //推进一格
+                    read(reader, out _);
+                    return true;
                 }
-                else
-                {
 
-                    if (nextChar == fen)
-                    {
-                        //下一位是分隔符
+                //if (nextChar == -1)
+                //{
 
-                        //跳过忽略文本
-                        flag = f_jumpIngoringText(reader);
-                        if (!flag) return false;
+                //    //跳过忽略文本
+                //    flag = f_jumpIngoringText(reader);
+                //    if (!flag) return false;
 
-                        flag = peek(reader, out c);
-                        //是空分隔符
-                        if (flag && c == end) return true;
+                //    //读取分隔符
+                //    flag = read(reader, out c);
+                //    if (!flag) return false;
 
-                    }
-                    else
-                    {
-                        //跳过忽略文本
-                        flag = f_jumpIngoringText(reader);
-                        if (!flag) return false;
+                //    //结束
+                //    if (c == end) return true;
+                //    if (c != fen) return false;
 
-                        //读取分隔符
-                        flag = read(reader, out c);
-                        if (!flag) return false;
+                //    //跳过忽略文本
+                //    flag = f_jumpIngoringText(reader);
+                //    if (!flag) return false;
 
-                        //结束
-                        if (c == end) return true;
-                        if (c != fen) return false;
+                //    flag = peek(reader, out c);
+                //    //是空分隔符
+                //    if (flag && c == end) return true;
+                //}
+                //else
+                //{
 
-                        //跳过忽略文本
-                        flag = f_jumpIngoringText(reader);
-                        if (!flag) return false;
+                //    if (nextChar == fen)
+                //    {
+                //        //下一位是分隔符
 
-                        flag = peek(reader, out c);
-                        //是空分隔符
-                        if (flag && c == end) return true;
-                    }
+                //        //跳过忽略文本
+                //        flag = f_jumpIngoringText(reader);
+                //        if (!flag) return false;
 
-                }
+                //        flag = peek(reader, out c);
+                //        //是空分隔符
+                //        if (flag && c == end) return true;
+
+                //    }
+                //    else
+                //    {
+                //        //跳过忽略文本
+                //        flag = f_jumpIngoringText(reader);
+                //        if (!flag) return false;
+
+                //        //读取分隔符
+                //        flag = read(reader, out c);
+                //        if (!flag) return false;
+
+                //        //结束
+                //        if (c == end) return true;
+                //        if (c != fen) return false;
+
+                //        //跳过忽略文本
+                //        flag = f_jumpIngoringText(reader);
+                //        if (!flag) return false;
+
+                //        flag = peek(reader, out c);
+                //        //是空分隔符
+                //        if (flag && c == end) return true;
+                //    }
+
+                //}
 
             }
 
@@ -1292,7 +1321,7 @@ namespace Cheng.Json
             {
                 //键值对
                 json = new JsonDictionary();
-                flag = ConverDict(reader, (JsonDictionary)json);
+                flag = ConverDict(reader, json.JsonObject);
                 if (flag)
                 {
                     return true;
@@ -1305,7 +1334,7 @@ namespace Cheng.Json
                 //集合
                 json = new JsonList();
 
-                flag = ConverList(reader, (JsonList)json);
+                flag = ConverList(reader, json.Array);
                 if (flag)
                 {
                     return true;

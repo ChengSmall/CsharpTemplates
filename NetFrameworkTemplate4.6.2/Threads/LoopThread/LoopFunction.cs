@@ -59,7 +59,7 @@ namespace Cheng.LoopThreads
 
         private void f_init()
         {
-            p_timeScale = 1;           
+            p_timeScale = 1;
 
             p_runTime = TimeSpan.Zero;
             p_frame = 0;
@@ -79,11 +79,12 @@ namespace Cheng.LoopThreads
 
             p_threadSafe_initEvent = new object();
             p_threadSafe_updateEvent = new object();
+            p_threadSafe_lateUpdateEvent = new object();
             p_threadSafe_fixedUpdateScaleEvent = new object();
             p_threadSafe_fixedUpdateEvent = new object();
             p_threadSafe_exceptionEvent = new object();
             p_threadSafe_yieldEnumatorMoveEvent = new object();
-
+            p_threadSafe_loopExitEvent = new object();
         }
 
         #endregion
@@ -185,6 +186,9 @@ namespace Cheng.LoopThreads
         private object p_threadSafe_updateEvent;
         private LoopThreadAction p_updateEvent;
 
+        private object p_threadSafe_lateUpdateEvent;
+        private LoopThreadAction p_lateUpdateEvent;
+
         private object p_threadSafe_fixedUpdateEvent;
         private LoopThreadAction p_fixedUpdateEvent;
 
@@ -199,6 +203,9 @@ namespace Cheng.LoopThreads
 
         private object p_threadSafe_yieldEnumatorMoveEvent;
         private LoopThreadAction<object> p_yieldEnumatorMoveEvent;
+
+        private object p_threadSafe_loopExitEvent;
+        private LoopThreadAction p_loopExitEvent;
         #endregion
 
         #region 协程
@@ -443,6 +450,27 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
+        /// 所有<see cref="UpdateEvent"/>事件执行后执行该事件
+        /// </summary>
+        public event LoopThreadAction LateUpdateEvent
+        {
+            add
+            {
+                lock (p_threadSafe_lateUpdateEvent)
+                {
+                    p_lateUpdateEvent += value;
+                }
+            }
+            remove
+            {
+                lock (p_threadSafe_lateUpdateEvent)
+                {
+                    p_lateUpdateEvent -= value;
+                }
+            }
+        }
+
+        /// <summary>
         /// 每经过一定时间发生的事件，时间间隔使用<see cref="FixedTime"/>
         /// </summary>
         public event LoopThreadAction FixedUpdateEvent
@@ -530,24 +558,27 @@ namespace Cheng.LoopThreads
         /// <summary>
         /// 在循环退出时引发一次的事件
         /// </summary>
-        public event LoopThreadAction LoopExitEvent;
+        public event LoopThreadAction LoopExitEvent
+        {
+            add
+            {
+                lock (p_threadSafe_loopExitEvent)
+                {
+                    p_loopExitEvent += value;
+                }
+            }
+            remove
+            {
+                lock (p_threadSafe_loopExitEvent)
+                {
+                    p_loopExitEvent -= value;
+                }
+            }
+        }
+
         #endregion
 
         #region 循环套件
-
-        /*
-            //头
-            f_loopFirst();
-
-            //帧
-            f_updateFunc();
-
-            //枚举器
-            f_enumator();
-
-            //尾
-            f_loopEnd();
-         */
         
         #endregion
 
@@ -659,13 +690,10 @@ namespace Cheng.LoopThreads
         /// <summary>
         /// 第一次循环前调用
         /// </summary>
-        protected virtual void LoopStartInvoke()
-        {
-        }
+        protected virtual void LoopStartInvoke() { }
 
         private void f_loopStartInit()
         {
-
             p_startTime = DateTime.UtcNow;
             p_lastTime = p_startTime;
             p_nowTime = p_startTime;
@@ -676,7 +704,15 @@ namespace Cheng.LoopThreads
             f_fixedLateCallTime = p_startTime;
 
             LoopStartInvoke();
-            p_initEvent?.Invoke(this);
+            try
+            {
+                p_initEvent?.Invoke(this);
+            }
+            catch (Exception ex)
+            {
+                f_exception(ex);
+            }
+            
         }
 
         private void f_loopFirst()
@@ -688,7 +724,7 @@ namespace Cheng.LoopThreads
 
             p_nowFrameTime = p_nowTime - p_lastTime;
 
-            p_runTime += p_nowFrameTime;          
+            p_runTime += p_nowFrameTime;
 
             p_nowScaleFrameTime = new TimeSpan((long)(p_nowFrameTime.Ticks * p_timeScale));
 
@@ -714,19 +750,24 @@ namespace Cheng.LoopThreads
         /// </summary>
         protected virtual void EndLoopWaitFPS()
         {
-
             if (p_fps > 0)
             {
-
-                //计算等待时间
-                var waitTime = TimeSpan.FromSeconds((1d / p_fps)) - this.p_nowFrameTime;
-
-                //var sw = new System.Threading.SpinWait();
-
-                if (waitTime > TimeSpan.Zero)
+                try
                 {
-                    ThreadSleep(waitTime);
+                    //计算等待时间
+                    var waitTime = TimeSpan.FromSeconds((1d / p_fps)) - this.p_nowFrameTime;
+
+                    //var sw = new System.Threading.SpinWait();
+
+                    if (waitTime >= TimeSpan.Zero)
+                    {
+                        ThreadSleep(waitTime);
+                    }
                 }
+                catch (Exception)
+                {
+                }
+
             }
 
         }
@@ -762,17 +803,32 @@ namespace Cheng.LoopThreads
         private void f_update()
         {
             Update();
-            if (p_updateEvent != null)
+            try
             {
-                try
-                {
-                    p_updateEvent.Invoke(this);
-                }
-                catch (Exception ex)
-                {
-                    f_exception(ex);
-                }
-            }        
+                p_updateEvent?.Invoke(this);
+            }
+            catch (Exception ex)
+            {
+                f_exception(ex);
+            }
+        }
+
+        /// <summary>
+        /// 所有<see cref="UpdateEvent"/>事件发生后调用
+        /// </summary>
+        protected virtual void LateUpdate() { }
+
+        private void f_lateUpdate()
+        {
+            LateUpdate();
+            try
+            {
+                p_lateUpdateEvent?.Invoke(this);
+            }
+            catch (Exception ex)
+            {
+                f_exception(ex);
+            }
         }
 
         /// <summary>
@@ -782,27 +838,20 @@ namespace Cheng.LoopThreads
 
         private void f_fixedUpdate()
         {
-            
             if (p_nowTime - f_fixedLateCallTime >= p_fixedUpdateTimeSpan)
             {
                 f_fixedLateCallTime = p_nowTime;
 
                 FixedUpdate();
-                if (p_fixedUpdateEvent != null)
+                try
                 {
-                    try
-                    {
-                        p_fixedUpdateEvent.Invoke(this);
-                    }
-                    catch (Exception ex)
-                    {
-                        f_exception(ex);
-                    }
+                    p_fixedUpdateEvent?.Invoke(this);
                 }
-                
+                catch (Exception ex)
+                {
+                    f_exception(ex);
+                }
             }
-            
-            
         }
 
         /// <summary>
@@ -812,31 +861,29 @@ namespace Cheng.LoopThreads
 
         private void f_fixedScaleUpdate()
         {
-            
             if (p_nowScaleTime - f_fixedLateCallScaleTime >= p_fixedUpdateTimeSpan)
             {
                 f_fixedLateCallScaleTime = p_nowScaleTime;
 
                 FixedScaleUpdate();
-                if(p_fixedUpdateScaleEvent != null)
+                try
                 {
-                    try
-                    {
-                        p_fixedUpdateScaleEvent.Invoke(this);
-                    }
-                    catch (Exception ex)
-                    {
-                        f_exception(ex);
-                    }
+                    p_fixedUpdateScaleEvent?.Invoke(this);
                 }
-                    
+                catch (Exception ex)
+                {
+                    f_exception(ex);
+                }
+
             }
             
         }
 
         private void f_updateFunc()
-        {            
+        {
+            p_dyeltaTime = p_nowFrameTime;
             f_update();
+            f_lateUpdate();
             p_dyeltaTime = p_fixedUpdateTimeSpan;
             f_fixedUpdate();
             p_dyeltaTime = p_nowScaleFrameTime;
@@ -846,10 +893,18 @@ namespace Cheng.LoopThreads
 
         private void f_exitLoopInvoke()
         {
-            ExitLoop();
             p_yieldAddBuffer.Clear();
             p_yieldList.Clear();
-            LoopExitEvent?.Invoke(this);
+            ExitLoop();
+            try
+            {
+                p_loopExitEvent?.Invoke(this);
+            }
+            catch (Exception ex)
+            {
+                f_exception(ex);
+            }
+            
         }
 
         /// <summary>
@@ -860,6 +915,7 @@ namespace Cheng.LoopThreads
         /// <summary>
         /// 要执行的循环函数
         /// </summary>
+        /// <exception cref="LoopStartException">循环已经被执行或已经关闭</exception>
         protected void LoopFunctionMethod()
         {
             if (f_loop)
@@ -869,7 +925,7 @@ namespace Cheng.LoopThreads
             //开始
             f_loop = true;
             f_start = true;
-            
+
             f_loopStartInit();
 
             while (f_start)

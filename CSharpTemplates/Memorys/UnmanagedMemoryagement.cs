@@ -207,7 +207,6 @@ namespace Cheng.Memorys
                 IntPtr ip = new IntPtr(ptr);
                 return FreeMemory(ip);
             }
-           
         }
 
         /// <summary>

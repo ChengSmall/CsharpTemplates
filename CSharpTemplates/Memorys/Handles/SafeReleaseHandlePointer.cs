@@ -1,5 +1,7 @@
 
 
+using System;
+
 namespace Cheng.IO
 {
 
@@ -10,13 +12,25 @@ namespace Cheng.IO
     {
 
         /// <summary>
-        /// 保证在托管实例释放前安全释放非托管资源
+        /// 使用对象终结器保证在托管实例释放前安全释放非托管资源
         /// </summary>
         ~SafeReleaseHandlePointer()
         {
             Dispose(false);
         }
 
+
+        protected SafeReleaseHandlePointer() : base()
+        {
+        }
+
+        /// <summary>
+        /// 初始化句柄
+        /// </summary>
+        /// <param name="handle"></param>
+        protected SafeReleaseHandlePointer(IntPtr handle) : base(handle)
+        {
+        }
     }
 
 }

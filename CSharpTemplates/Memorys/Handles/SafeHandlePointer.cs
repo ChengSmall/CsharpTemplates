@@ -79,6 +79,24 @@ namespace Cheng.IO
             }
         }
 
+        /// <summary>
+        /// 在派生类重写需要调用基实现
+        /// </summary>
+        protected override void UnmanagedReleasources()
+        {
+            if (DisposeHandle(handlePtr))
+            {
+                handlePtr = IntPtr.Zero;
+            }
+        }
+
+        /// <summary>
+        /// 重写该函数用于释放指定句柄
+        /// </summary>
+        /// <param name="handle">要释放的句柄</param>
+        /// <returns>是否成功释放</returns>
+        protected abstract bool DisposeHandle(IntPtr handle);
+
         #endregion
 
     }

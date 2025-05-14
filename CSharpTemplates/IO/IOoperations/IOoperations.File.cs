@@ -17,8 +17,6 @@ namespace Cheng.IO
 
         #region File
 
-        #region 文件
-
         #region Hash256
 
         unsafe static class Hash256Generator
@@ -585,8 +583,9 @@ namespace Cheng.IO
 
         #endregion
 
-        #endregion
-
+        /// <summary>
+        /// 路径相关扩展
+        /// </summary>
         public static class Path
         {
 
@@ -644,6 +643,141 @@ namespace Cheng.IO
                     return false;
                 }
             }
+
+        }
+
+        /// <summary>
+        /// 文件相关扩展
+        /// </summary>
+        public static partial class File
+        {
+
+            #region 文件头验证
+
+            /// <summary>
+            /// 简单读取流的多个字节并返回完整性
+            /// </summary>
+            /// <param name="stream"></param>
+            /// <param name="buffer">读取到的内存</param>
+            /// <param name="byteCount">要读取的字节数</param>
+            /// <returns>是否完整读取</returns>
+            static bool f_readBytes(Stream stream, byte* buffer, int byteCount)
+            {
+                for (int i = 0; i < byteCount; i++)
+                {
+                    int re = stream.ReadByte();
+                    if (re < 0) return false;
+                    buffer[i] = (byte)re;
+                }
+                return true;
+            }
+
+            /// <summary>
+            /// 验证给定的流是否拥有iso光盘映像文件头
+            /// </summary>
+            /// <param name="stream">要验证的流</param>
+            /// <returns>是否拥有iso光盘映像文件头</returns>
+            /// <exception cref="ArgumentNullException">参数是null</exception>
+            /// <exception cref="NotSupportedException">没有读取和查找权限</exception>
+            /// <exception cref="IOException">操作流时IO错误</exception>
+            /// <exception cref="ObjectDisposedException">流已释放</exception>
+            public static bool CheckISO(Stream stream)
+            {
+                if (stream is null) throw new ArgumentNullException(nameof(stream));
+
+                if (!(stream.CanSeek && stream.CanRead)) throw new NotSupportedException();
+
+                // 32768 字节
+                const int IsoHeaderOffset = 0x8000;
+                //需读取的总字节数
+                const int IsoHeaderLength = 7;
+
+                // 检查是否足够大
+                if (stream.Length < IsoHeaderOffset + IsoHeaderLength)
+                {
+                    return false;
+                }
+
+                // 定位到文件头起始位置
+                stream.Seek(IsoHeaderOffset, SeekOrigin.Begin);
+
+                // 读取关键字节
+                byte* buffer = stackalloc byte[IsoHeaderLength];
+
+                //byte[] buffer = new byte[IsoHeaderLength];
+                int i;
+                int re;
+                for (i = 0; i < IsoHeaderLength; i++)
+                {
+                    re = stream.ReadByte();
+                    if (re < 0) return false;
+                    buffer[i] = (byte)re;
+                }
+
+                //int bytesRead = stream.Read(buffer, 0, IsoHeaderLength);
+                //if (bytesRead < IsoHeaderLength)
+                //{
+                //    return false;
+                //}
+
+                // 验证起始和结束标志
+                if (buffer[0] != 0x01 || buffer[6] != 0x01)
+                {
+                    return false;
+                }
+
+                // 验证 "CD001" 标识
+                return buffer[1] == 'C' &&
+                    buffer[2] == 'D' &&
+                    buffer[3] == '0' &&
+                    buffer[4] == '0' &&
+                    buffer[5] == '1';
+                //string identifier = System.Text.Encoding.ASCII.GetString(buffer, 1, 5);
+                //return identifier == "CD001";
+            }
+
+            /// <summary>
+            /// 验证给定的流是否拥有zip压缩文件任意一种文件头
+            /// </summary>
+            /// <param name="stream">要验证的流，从当前位置开始读取数据</param>
+            /// <returns>是否拥有zip压缩文件任意一种文件头</returns>
+            /// <exception cref="ArgumentNullException">参数是null</exception>
+            /// <exception cref="NotSupportedException">没有读取权限</exception>
+            /// <exception cref="IOException">读取流时IO错误</exception>
+            /// <exception cref="ObjectDisposedException">流已释放</exception>
+            public static bool CheckZIP(Stream stream)
+            {
+                if (stream is null) throw new ArgumentNullException(nameof(stream));
+
+                if (!(stream.CanRead)) throw new NotSupportedException();
+
+                /*
+                0x04034B50, // 本地文件头 (Local File Header) - "PK\x03\x04"
+                0x02014B50, // 中央目录文件头 (Central Directory Header) - "PK\x01\x02"
+                0x06054B50, // 中央目录结束记录 (End of Central Directory) - "PK\x05\x06"
+                0x06064B50, // ZIP64 中央目录结束记录 (ZIP64 EOCD) - "PK\x06\x06"
+                0x07064B50  // ZIP64 定位器 (ZIP64 EOCD Locator) - "PK\x06\x07"
+                */
+                //var fs = stream;
+                //if (stream.Length < 4) return false; // 文件过小
+
+                byte* header = stackalloc byte[4];
+                if (!f_readBytes(stream, header, 4)) return false;
+
+                if(header[0] == 'P' && header[1] == 'K')
+                {
+                    if (header[2] == 0x03 && header[3] == 0x04) return true;
+                    if (header[2] == 0x01 && header[3] == 0x02) return true;
+                    if (header[2] == 0x05 && header[3] == 0x06) return true;
+                    if (header[2] == 0x06 && header[3] == 0x06) return true;
+                    if (header[2] == 0x06 && header[3] == 0x07) return true;
+                }
+
+                return false;
+
+            }
+
+            #endregion
 
         }
 

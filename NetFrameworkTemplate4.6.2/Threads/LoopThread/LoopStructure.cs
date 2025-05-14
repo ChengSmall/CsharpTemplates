@@ -5,44 +5,50 @@ using System.Collections;
 namespace Cheng.LoopThreads
 {
 
+    #region 事件参数
+
     /// <summary>
     /// 循环线程的事件委托
     /// </summary>
     /// <param name="loop">引发此事件的实例</param>
     /// <param name="obj">事件对应的参数</param>
     public delegate void LoopThreadAction<in T>(LoopFunction loop, T obj);
+
     /// <summary>
     /// 循环线程的事件委托
     /// </summary>
     /// <param name="loop">引发此事件的实例</param>
     public delegate void LoopThreadAction(LoopFunction loop);
 
-    #region 事件参数
-
-
     #endregion
 
     #region 协程参数
+
     /// <summary>
     /// 协程封装
     /// </summary>
     internal class YieldEnumator
     {
         internal YieldEnumator() { }
+
         public YieldEnumator(IEnumerator enr)
         {
             enumator = enr;
             isNextFrame = true;
         }
+
         /// <summary>
         /// 下次推进的时间
         /// </summary>
         internal DateTime nextTime;
+
         internal IEnumerator enumator;
+
         /// <summary>
         /// 推进时间是否为缩放时间
         /// </summary>
         internal bool nextTimeIsScale;
+
         /// <summary>
         /// 是为每帧推进
         /// </summary>
@@ -59,6 +65,7 @@ namespace Cheng.LoopThreads
             this.nextTime = nextTime;
             nextTimeIsScale = isScale;
         }
+
         /// <summary>
         /// 设置下次推进时间为下一帧
         /// </summary>
@@ -66,6 +73,7 @@ namespace Cheng.LoopThreads
         {
             isNextFrame = true;
         }
+
         /// <summary>
         /// 判断此帧是否需要推进
         /// </summary>
@@ -83,6 +91,7 @@ namespace Cheng.LoopThreads
 
             return nextTime <= loop.p_nowTime;
         }
+
         /// <summary>
         /// 推进枚举器一次
         /// </summary>
@@ -91,6 +100,7 @@ namespace Cheng.LoopThreads
         {
             return enumator.MoveNext();
         }
+
         /// <summary>
         /// 获取此时迭代的元素
         /// </summary>
@@ -101,7 +111,9 @@ namespace Cheng.LoopThreads
                 return enumator.Current;
             }
         }
+
     }
+
     /// <summary>
     /// 嵌套枚举器
     /// </summary>
@@ -157,6 +169,7 @@ namespace Cheng.LoopThreads
     /// </summary>
     public class YieldWaitTime
     {
+
         /// <summary>
         /// 实例化一个协程等待参数，指定下次执行的时间间隔
         /// </summary>
@@ -166,6 +179,7 @@ namespace Cheng.LoopThreads
             if (time < TimeSpan.Zero) time = TimeSpan.Zero;
             this.time = time;
         }
+
         /// <summary>
         /// 实例化一个协程等待参数，指定下次执行的时间间隔
         /// </summary>
@@ -175,16 +189,19 @@ namespace Cheng.LoopThreads
             if (seconds < 0) seconds = 0;
             time = TimeSpan.FromSeconds(seconds);
         }
+
         /// <summary>
         /// 下次时间间隔
         /// </summary>
         internal TimeSpan time;
     }
+
     /// <summary>
     /// 协程等待参数，等待指定缩放时间
     /// </summary>
     public class YieldWaitScaleTime
     {
+
         /// <summary>
         /// 实例化一个协程等待参数，指定下次执行的缩放时间间隔
         /// </summary>
@@ -194,6 +211,7 @@ namespace Cheng.LoopThreads
             if (time < TimeSpan.Zero) time = TimeSpan.Zero;
             this.time = time;
         }
+
         /// <summary>
         /// 实例化一个协程等待参数，指定下次执行的缩放时间间隔
         /// </summary>
@@ -206,12 +224,13 @@ namespace Cheng.LoopThreads
 
         internal TimeSpan time;
     }
+
     /// <summary>
     /// 协程等待参数，嵌套执行枚举器
     /// </summary>
-    /// <remarks>过多嵌套协程枚举器容易堆栈内存不足；你可以将调用堆栈设置更高</remarks>
     public class YieldNestEnumator
     {
+
         /// <summary>
         /// 实例化一个协程等待参数，执行指定枚举器
         /// </summary>
@@ -235,6 +254,7 @@ namespace Cheng.LoopThreads
     /// </summary>
     public class LoopThreadException : Exception
     {
+
         public LoopThreadException() : base()
         {
         }
@@ -278,9 +298,11 @@ namespace Cheng.LoopThreads
         {
         }
     }
+
     #endregion
 
     #region 计时器
+
     /// <summary>
     /// 一个循环线程计时器
     /// </summary>
@@ -325,6 +347,7 @@ namespace Cheng.LoopThreads
     /// </summary>
     public sealed class LoopThreadScaleTimer : TickTimeTimer
     {
+
         /// <summary>
         /// 实例化一个计时器
         /// </summary>
@@ -346,6 +369,7 @@ namespace Cheng.LoopThreads
         }
 
         private LoopFunction p_loop;
+
         protected override DateTime NowTime => p_loop.p_nowScaleTime;
 
         protected override ulong NowTimeTick => (ulong)p_loop.p_nowScaleTime.Ticks;

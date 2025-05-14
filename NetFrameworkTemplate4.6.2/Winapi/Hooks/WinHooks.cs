@@ -84,11 +84,25 @@ namespace Cheng.Windows.Hooks
         MsgFilter = -1,
     }
 
+    /// <summary>
+    /// 与 <see cref="WinHooks.SetWindowsHookEx(HookID, ProcCallBack, void*, uint)"/> 一起使用的回调函数
+    /// </summary>
+    /// <param name="nCode">指定钩子过程是否必须处理消息</param>
+    /// <param name="wParam">指定是否已从队列中删除消息</param>
+    /// <param name="lParam">指向包含消息详细信息的 MSG 结构的指针</param>
+    /// <returns>
+    /// 调用<see cref="WinHooks.CallNextHookEx(void*, int, void*, void*)"/>返回的挂钩链句柄
+    /// <para>
+    /// 如果<paramref name="nCode"/>小于零，则钩子过程必须返回 <see cref="WinHooks.CallNextHookEx(void*, int, void*, void*)"/> 返回的值；<br/>
+    /// 如果<paramref name="nCode"/>大于或等于零，则强烈建议调用 <see cref="WinHooks.CallNextHookEx(void*, int, void*, void*)"/> 并返回它返回的值；否则，安装有 <see cref="HookID.GetMessage"/> 钩子的其他应用程序不会收到钩子通知，可能会因此出现错误行为
+    /// </para>
+    /// </returns>
+    public unsafe delegate void* ProcCallBack(int nCode, void* wParam, void* lParam);
 
     /// <summary>
-    /// 挂钩api
+    /// （不安全代码）windows挂钩api
     /// </summary>
-    internal unsafe static class WinHooks
+    public unsafe static class WinHooks
     {
 
         /// <summary>
@@ -97,19 +111,30 @@ namespace Cheng.Windows.Hooks
         public const string dllName = "user32.dll";
 
         /// <summary>
-        /// 与 <see cref="SetWindowsHookEx(HookID, ProcCallBack, void*, uint)"/> 一起使用的回调函数
+        /// 将应用程序定义的挂钩过程安装到挂钩链中
         /// </summary>
-        /// <param name="nCode">指定钩子过程是否必须处理消息</param>
-        /// <param name="wParam">指定是否已从队列中删除消息</param>
-        /// <param name="lParam">指向包含消息详细信息的 MSG 结构的指针</param>
+        /// <remarks>
+        /// 需要安装挂钩过程来监视系统的某些类型的事件；<br/>
+        /// 这些事件与特定线程或与调用线程位于同一桌面中的所有线程相关联
+        /// </remarks>
+        /// <param name="idHook">要安装的挂钩过程的类型</param>
+        /// <param name="lpfn">
+        /// <para>指向挂钩过程的指针</para>
+        /// <para>如果 <paramref name="dwThreadId"/> 参数为零或指定由其他进程创建的线程的标识符， 则 <paramref name="lpfn"/> 参数必须指向 DLL 中的挂钩过程；否则，<paramref name="lpfn"/> 可以指向与当前进程关联的代码中的挂钩过程</para>
+        /// </param>
+        /// <param name="hMod">
+        /// <para>DLL 的句柄，包含 <paramref name="lpfn"/> 参数指向的挂钩过程</para>
+        /// <para>如果 <paramref name="dwThreadId"/> 参数指定当前进程创建的线程，并且挂钩过程位于与当前进程关联的代码中，则必须将该 <paramref name="hMod"/> 设置为 null</para>
+        /// </param>
+        /// <param name="dwThreadId">
+        /// <para>要与之关联的挂钩过程所在线程的标识符</para>
+        /// <para>如果此参数为0，则对于桌面应用，挂钩过程会关联当前线程所在桌面运行的所有现有线程</para>
+        /// </param>
         /// <returns>
-        /// 调用<see cref="CallNextHookEx(void*, int, void*, void*)"/>返回的挂钩链句柄
-        /// <para>
-        /// 如果<paramref name="nCode"/>小于零，则钩子过程必须返回 <see cref="CallNextHookEx(void*, int, void*, void*)"/> 返回的值；<br/>
-        /// 如果<paramref name="nCode"/>大于或等于零，则强烈建议调用 <see cref="CallNextHookEx(void*, int, void*, void*)"/> 并返回它返回的值；否则，安装有 <see cref="HookID.GetMessage"/> 钩子的其他应用程序不会收到钩子通知，可能会因此出现错误行为
-        /// </para>
+        /// 如果函数成功，则返回值是挂钩过程的句柄；如果函数失败，则返回值为null；要获得更多的错误信息，请调用<see cref="Marshal.GetLastWin32Error"/>
         /// </returns>
-        public delegate void* ProcCallBack(int nCode, void* wParam, void* lParam);
+        [DllImport(dllName, SetLastError = true)]
+        public static extern void* SetWindowsHookEx(HookID idHook, [MarshalAs(UnmanagedType.FunctionPtr)] ProcCallBack lpfn, void* hMod, uint dwThreadId);
 
         /// <summary>
         /// 将应用程序定义的挂钩过程安装到挂钩链中
@@ -132,20 +157,21 @@ namespace Cheng.Windows.Hooks
         /// <para>如果此参数为0，则对于桌面应用，挂钩过程会关联当前线程所在桌面运行的所有现有线程</para>
         /// </param>
         /// <returns>
-        /// 如果函数成功，则返回值是挂钩过程的句柄；如果函数失败，则返回值为null；要获得更多的错误信息，请调用<see cref="Kernel32_Other.GetLastError"/>
+        /// 如果函数成功，则返回值是挂钩过程的句柄；如果函数失败，则返回值为null；要获得更多的错误信息，请调用<see cref="Marshal.GetLastWin32Error"/>
         /// </returns>
-        [DllImport(dllName, SetLastError = true)]
-        public static extern void* SetWindowsHookEx(HookID idHook, [MarshalAs(UnmanagedType.FunctionPtr)] ProcCallBack lpfn, void* hMod, uint dwThreadId);
+        [DllImport(dllName, SetLastError = true, EntryPoint = "SetWindowsHookEx")]
+        public static extern void* SetWindowsHookEx(int idHook, [MarshalAs(UnmanagedType.FunctionPtr)] ProcCallBack lpfn, void* hMod, uint dwThreadId);
+
 
         /// <summary>
-        /// 删除 <see cref="SetWindowsHookEx(HookID, ProcCallBack, void*, uint)"/> 函数安装在挂钩链中的挂钩过程
+        /// 删除<see cref="SetWindowsHookEx(HookID, ProcCallBack, void*, uint)"/>函数安装在挂钩链中的挂钩过程
         /// </summary>
         /// <param name="hhk">要移除的挂钩的句柄
         /// <para>此参数是由先前调用 <see cref="SetWindowsHookEx(HookID, ProcCallBack, void*, uint)"/> 获取的返回值</para>
         /// </param>
         /// <returns>
         /// 是否成功删除；成功返回true，否则返回false；
-        /// <para>要获得更多的错误信息，请调用<see cref="Kernel32_Other.GetLastError"/></para>
+        /// <para>要获得更多的错误信息，请调用<see cref="Marshal.GetLastWin32Error"/></para>
         /// </returns>
         [DllImport(dllName, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -167,7 +193,7 @@ namespace Cheng.Windows.Hooks
         /// <param name="lParam">传递给当前挂钩过程的 lParam 值；此参数的含义取决于与当前挂钩链关联的挂钩类型</param>
         /// <returns>
         /// 此值由链中的下一个挂钩过程返回
-        /// <para>当前挂钩过程还必须返回此值；返回值的含义取决于挂钩类型</para>
+        /// <para>当前挂钩过程必须返回此值；返回值的含义取决于挂钩类型</para>
         /// </returns>
         [DllImport(dllName, SetLastError = true)]
         public static extern void* CallNextHookEx(void* hhk, int nCode, void* wParam, void* lParam);

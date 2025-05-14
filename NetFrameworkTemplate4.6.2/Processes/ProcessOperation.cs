@@ -20,11 +20,16 @@ namespace Cheng.Windows.Processes
 
         protected override bool Disposeing(bool disposeing)
         {
-            
             if (p_independentHandle)
             {
                 //是独立句柄单独释放
-                if(p_handle != null) WinAPI.CloseHandle(p_handle);
+                if(p_handle != null)
+                {
+                    if (WinAPI.CloseHandle(p_handle))
+                    {
+                        p_handle = null;
+                    }
+                }
             }
 
             if (p_isFreeProcess && disposeing)
@@ -34,7 +39,7 @@ namespace Cheng.Windows.Processes
             }
 
             p_process = null;
-            p_handle = null;
+           
 
             return true;
         }
@@ -82,13 +87,13 @@ namespace Cheng.Windows.Processes
         /// <param name="access">句柄操作权限</param>
         /// <exception cref="ArgumentException">参数不正确</exception>
         /// <exception cref="InvalidOperationException">无法打开进程句柄</exception>
-        /// <exception cref="NotSupportedException">无法访问句柄</exception>
+        /// <exception cref="Win32Exception">无法打开进程句柄</exception>
         public ProcessOperation(int processID, ProcessAccessFlags access)
         {
             p_handle = WinAPI.OpenProcess((uint)access, false, processID);
             if (p_handle == null)
             {
-                throw new NotSupportedException();
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
             p_process = Process.GetProcessById(processID);
@@ -337,10 +342,10 @@ namespace Cheng.Windows.Processes
             fixed (T* tp = &value)
             {
                 *tp = default;
-                ulong rsize;
+                IntPtr rsize;
                 bool flag = WinAPI.ReadProcessMemory(p_handle, processAddress.ToPointer(), tp, (uint)sizeof(T), &rsize);
 
-                return flag && (rsize == (ulong)sizeof(T));
+                return flag && (((int)rsize) == (int)sizeof(T));
             }
         }
 
@@ -355,9 +360,9 @@ namespace Cheng.Windows.Processes
         public bool Write<T>(IntPtr processAddress, T value) where T : unmanaged
         {
             ThrowObjectDisposeException();
-            ulong rsize;
+            IntPtr rsize;
             bool flag = WinAPI.WriteProcessMemory(p_handle, processAddress.ToPointer(), &value, (uint)sizeof(T), &rsize);
-            return flag && (rsize == (ulong)sizeof(T));
+            return flag && ((int)rsize == (int)sizeof(T));
         }
 
         /// <summary>
@@ -434,13 +439,18 @@ namespace Cheng.Windows.Processes
             int length = pros.Length;
             int i;
             ProcessModule pm;
-            int id = -1;
+            Process pd = null;
+            //int id = -1;
             for (i = 0; i < length; i++)
             {
                 try
                 {
                     pm = pros[i].MainModule;
-                    if (pm.ModuleName == name && id == -1) id = pros[i].Id;
+                    if (pd is null && pm.ModuleName == name)
+                    {
+                        pd = pros[i];
+                        continue;
+                    }
                 }
                 catch (Exception)
                 {
@@ -449,9 +459,9 @@ namespace Cheng.Windows.Processes
                 pros[i].Close();
             }
 
-            if (id == -1) return null;
+            if (pd is null) return null;
 
-            return new ProcessOperation(id);
+            return new ProcessOperation(pd);
 
         }
 
@@ -469,6 +479,7 @@ namespace Cheng.Windows.Processes
 
             int length = pros.Length;
             int i;
+
             ProcessModule pm;
             int id = -1;
             for (i = 0; i < length; i++)
@@ -476,7 +487,7 @@ namespace Cheng.Windows.Processes
                 try
                 {
                     pm = pros[i].MainModule;
-                    if (pm.ModuleName == name && id == -1) id = pros[i].Id;
+                    if (id == -1 && pm.ModuleName == name) id = pros[i].Id;
                 }
                 catch (Exception)
                 {
