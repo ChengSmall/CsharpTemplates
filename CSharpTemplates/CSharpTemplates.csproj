@@ -178,7 +178,10 @@
     <Compile Include="Data\List\RectArray.cs" />
     <Compile Include="Data\ObjectPools\ObjectPool.cs" />
     <Compile Include="Data\Controllers\Structures.cs" />
+    <Compile Include="Data\Stream\StreamBlock.cs" />
     <Compile Include="Data\Text\CMStringBuilder.cs" />
+    <Compile Include="IO\FileInfos\CFileInfo.cs" />
+    <Compile Include="IO\FileInfos\SystemFile.cs" />
     <Compile Include="IO\IOoperations\IOoperations.cs" />
     <Compile Include="IO\IOoperations\IOoperations.File.cs" />
     <Compile Include="IO\IOoperations\IOoperations.Stream.cs" />

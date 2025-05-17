@@ -161,7 +161,7 @@ namespace Cheng.Algorithm.Collections
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="O"></typeparam>
         /// <param name="item">原对象</param>
-        /// <param name="convertItem">用于获取转化后的另一个对象引用</param>
+        /// <param name="convertItem">用于获取转化后的另一个对象的引用</param>
         /// <returns>
         /// <para>如果返回true，表示转化成功</para>
         /// <para>返回false，表示对象<paramref name="item"/>无法转化为另一个类型</para>

@@ -11,6 +11,8 @@ using Cheng.Streams;
 using Cheng.IO;
 using Cheng.Algorithm.Collections;
 using Cheng.Algorithm.Trees;
+using Cheng.Algorithm.Sorts.Comparers;
+using Cheng.DataStructure.Streams;
 
 namespace Cheng.Algorithm.Compressions.ResourcePackages
 {
@@ -37,7 +39,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
     /// </para>
     /// </remarks>
     public unsafe class ResourcePackageReader : BaseCompressionParser, IEnumerable<ResourcePackageReader.BlockInformation>
-    {        
+    {
 
         #region 结构
 
@@ -207,13 +209,14 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
                 //读取字符串长度
 
-                rib = stream.ReadBlock(buffer8, 0, 2);
-                if(rib != 2)
+                //rib = stream.ReadBlock(buffer8, 0, 2);
+                rib = stream.ReadByte();
+                if(rib < 0)
                 {
                     throw new InvalidDataException();
                 }
 
-                ushort strLength = buffer8.ToStructure<ushort>(0);
+                byte strLength = (byte)(rib + 1);
 
                 byte[] strBuf = new byte[strLength * 2];
                 //读取字符串内存
@@ -226,7 +229,13 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                 fixed (byte* strBufPtr = strBuf)
                 {
                     //获取key
-                    key = new string((char*)strBufPtr, 0, strLength);
+                    char[] strcs = new char[strLength];
+                    for (int i = 0; i < strLength; i++)
+                    {
+                        strcs[i] = (char)Cheng.IO.IOoperations.OrderToUInt16(new IntPtr(strBufPtr + (i * 2)));
+                    }
+                    key = new string(strcs);
+                    //key = new string((char*)strBufPtr, 0, strLength);
                 }
 
                 //读取块
@@ -235,12 +244,13 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
                 rib = stream.ReadBlock(buffer8, 0, 8);
                 if (rib != 8) throw new InvalidDataException();
-                pos = buffer8.ToStructure<long>();
+                //pos = buffer8.ToStructure<long>();
+                pos = buffer8.OrderToInt64();
 
                 rib = stream.ReadBlock(buffer8, 0, 8);
                 if (rib != 8) throw new InvalidDataException();
-                len = buffer8.ToStructure<long>();
-
+                //len = buffer8.ToStructure<long>();
+                len = buffer8.OrderToInt64();
                 //StreamBlock block = new StreamBlock(pos, len);
                 StreamIndex sindex = new StreamIndex(key, new StreamBlock(pos, len));
                 //p_datas.Add(key, block);
@@ -259,7 +269,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
         #endregion
 
-        #region 释放 无
+        #region 释放
         // 无
         #endregion
 
@@ -358,7 +368,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                 //检查的路径
                 var ipath = inf.index.path;
 
-                //比较 path 和 ipath 的前导值一致                
+                //比较 path 和 ipath 的前导值一致
 
                 var ir = ipath.IndexOf(path, StringComparison.Ordinal);
 
@@ -396,6 +406,36 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             }
         }
 
+        /// <summary>
+        /// 读取流数据并判断数据是否符合数据包标头
+        /// </summary>
+        /// <param name="stream">要从中读取标头数据的流，需要提前设置到标头数据所在位置</param>
+        /// <returns>是否符合标头数据</returns>
+        /// <exception cref="ArgumentNullException">流对象是null</exception>
+        /// <exception cref="NotSupportedException">流没有读取权限</exception>
+        /// <exception cref="Exception">读取数据时有其它错误</exception>
+        public static bool EqualDataHeader(Stream stream)
+        {
+            byte* header = stackalloc byte[9]
+            {
+                0x43, 0x68, 0x65, 0x6E, 0x67, 0x50, 0x61, 0x63, 0x6B
+            };
+
+            byte* buf = stackalloc byte[9];
+
+            var re = stream.ReadBlock(buf, 9);
+            if (re != 9) return false;
+
+            return buf[0] == header[0] &&
+                buf[1] == header[1] &&
+                buf[2] == header[2] &&
+                buf[3] == header[3] &&
+                buf[4] == header[4] &&
+                buf[5] == header[5] &&
+                buf[6] == header[6] &&
+                buf[7] == header[7] &&
+                buf[8] == header[8];
+        }
 
         #endregion
 
@@ -464,6 +504,13 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         {
             ThrowObjectDisposeException();
             p_lists.Sort(index, count, comparer ?? throw new ArgumentNullException());
+        }
+
+        public override void SortInformationIndex(IComparer<DataInformation> comparer, int index, int count)
+        {
+
+            var tc = new ToOtherComparer<BlockInformation, DataInformation>((obj) => obj, comparer);
+            p_lists.Sort(index, count, tc);
         }
 
         /// <summary>

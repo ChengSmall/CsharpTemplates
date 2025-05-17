@@ -3,89 +3,11 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Cheng.DataStructure.Streams;
+using Cheng.IO;
 
 namespace Cheng.Algorithm.Compressions.ResourcePackages
 {
-
-    /// <summary>
-    /// 表示流数据块位置
-    /// </summary>
-    public struct StreamBlock : IEquatable<StreamBlock>
-    {
-
-        #region 构造
-
-        /// <summary>
-        /// 初始化流数据块位置结构
-        /// </summary>
-        /// <param name="position">起始位</param>
-        /// <param name="length">数据长度</param>
-        public StreamBlock(long position, long length)
-        {
-            this.position = position;
-            this.length = length;
-        }
-
-        #endregion
-
-        #region 字段
-
-        /// <summary>
-        /// 起始位
-        /// </summary>
-        public readonly long position;
-
-        /// <summary>
-        /// 长度
-        /// </summary>
-        public readonly long length;
-
-        #endregion
-
-        #region 功能
-
-        public static bool operator ==(StreamBlock s1, StreamBlock s2)
-        {
-            return s1.position == s2.position && s1.length == s2.length;
-        }
-
-        public static bool operator !=(StreamBlock s1, StreamBlock s2)
-        {
-            return s1.position != s2.position || s1.length != s2.length;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is StreamBlock s) return this == s;
-            return false;
-        }
-
-        public bool Equals(StreamBlock other)
-        {
-            return this.position == other.position && this.length == other.length;
-        }
-
-        public override int GetHashCode()
-        {
-            return position.GetHashCode() ^ length.GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(32);
-            sb.Append(nameof(position));
-            sb.Append(':');
-            sb.Append(position);
-            sb.Append(' ');
-            sb.Append(nameof(length));
-            sb.Append(':');
-            sb.Append(length);
-            return sb.ToString();
-        }
-
-        #endregion
-
-    }
 
     /// <summary>
     /// 数据索引
@@ -186,16 +108,16 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// </summary>
         /// <param name="file">待存文件</param>
         /// <param name="dataPath">存储到的包索引，指定资源包相对位置</param>
-        public FileInfoIndex(FileInfo file, string dataPath)
+        public FileInfoIndex(CFileInfo file, string dataPath)
         {
             this.file = file;
             this.dataPath = dataPath;
         }
 
         /// <summary>
-        /// 要存储的文件
+        /// 要存储的文件数据
         /// </summary>
-        public readonly FileInfo file;
+        public readonly CFileInfo file;
 
         /// <summary>
         /// 要存储到的资源包所在的索引路径

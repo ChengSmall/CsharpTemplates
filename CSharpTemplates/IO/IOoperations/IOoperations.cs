@@ -692,6 +692,191 @@ namespace Cheng.IO
 
         }
 
+
+        /// <summary>
+        /// 将字节数组的内存按顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>要转化的值</returns>
+        /// <exception cref="ArgumentNullException">字节数组为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节数组范围小于要转化的值大小</exception>
+        public static uint OrderToUInt32(this byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if ( sizeof(uint) > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return OrderToUInt32(new IntPtr(bptr));
+            }
+
+        }
+
+        /// <summary>
+        /// 将字节数组的内存按顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>要转化的值</returns>
+        /// <exception cref="ArgumentNullException">字节数组为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节数组范围小于要转化的值大小</exception>
+        public static int OrderToInt32(this byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (sizeof(uint) > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return OrderToInt32(new IntPtr(bptr));
+            }
+
+        }
+
+        /// <summary>
+        /// 将字节数组的内存按顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>要转化的值</returns>
+        /// <exception cref="ArgumentNullException">字节数组为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节数组范围小于要转化的值大小</exception>
+        public static ulong OrderToUInt64(this byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (sizeof(ulong) > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return OrderToUInt64(new IntPtr(bptr));
+            }
+
+        }
+
+        /// <summary>
+        /// 将字节数组的内存按顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>要转化的值</returns>
+        /// <exception cref="ArgumentNullException">字节数组为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节数组范围小于要转化的值大小</exception>
+        public static long OrderToInt64(this byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (sizeof(long) > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return OrderToInt64(new IntPtr(bptr));
+            }
+
+        }
+
+        /// <summary>
+        /// 将字节数组的内存按顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>要转化的值</returns>
+        /// <exception cref="ArgumentNullException">字节数组为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节数组范围小于要转化的值大小</exception>
+        public static ushort OrderToUInt16(this byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (sizeof(ushort) > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return OrderToUInt16(new IntPtr(bptr));
+            }
+
+        }
+
+        /// <summary>
+        /// 将字节数组的内存按顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>要转化的值</returns>
+        /// <exception cref="ArgumentNullException">字节数组为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节数组范围小于要转化的值大小</exception>
+        public static short OrderToInt16(this byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (sizeof(short) > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return OrderToInt16(new IntPtr(bptr));
+            }
+
+        }
+
+        /// <summary>
+        /// 将字节数组的内存按顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>要转化的值</returns>
+        /// <exception cref="ArgumentNullException">字节数组为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节数组范围小于要转化的值大小</exception>
+        public static float OrderToFloat(this byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (sizeof(float) > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return OrderToFloat(new IntPtr(bptr));
+            }
+
+        }
+
+        /// <summary>
+        /// 将字节数组的内存按顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>要转化的值</returns>
+        /// <exception cref="ArgumentNullException">字节数组为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定字节数组范围小于要转化的值大小</exception>
+        public static double OrderToDouble(this byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+
+            if (sizeof(double) > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return OrderToDouble(new IntPtr(bptr));
+            }
+
+        }
+
         #endregion
 
         #endregion

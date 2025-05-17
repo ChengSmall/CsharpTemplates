@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Compressions\ResourcePackageWinForm\ResourcePackageListView.cs" />
     <Compile Include="Compressions\ZipArchiveCompress.cs" />
+    <Compile Include="IO\FileSysInfo\SysFileInfos.cs" />
     <Compile Include="Processes\API.cs" />
     <Compile Include="Processes\ProcessAccessFlags.cs" />
     <Compile Include="Processes\ProcessOperation.cs" />
@@ -121,7 +122,6 @@
   <ItemGroup>
     <Folder Include="Algorithm\Pathfindings\" />
     <Folder Include="Device\" />
-    <Folder Include="IO\" />
     <Folder Include="Text\" />
   </ItemGroup>
   <ItemGroup>

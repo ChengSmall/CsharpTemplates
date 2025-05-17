@@ -7,6 +7,7 @@ using Cheng.Memorys;
 using System.Collections;
 using System.Text;
 using Cheng.Algorithm.Trees;
+using Cheng.Algorithm.Sorts.Comparers;
 
 namespace Cheng.Algorithm.Compressions
 {
@@ -602,6 +603,37 @@ namespace Cheng.Algorithm.Compressions
         public virtual void SortInformationIndex(IComparer comparer)
         {
             SortInformationIndex(comparer, 0, Count);
+        }
+
+        /// <summary>
+        /// 重新排序数据当前数据信息的index索引
+        /// </summary>
+        /// <param name="comparer">排序规则</param>
+        /// <param name="index">要排序的起始索引</param>
+        /// <param name="count">要排序的元素数量</param>
+        /// <exception cref="ArgumentException">索引错误</exception>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="NotSupportedException">没有此功能的权限</exception>
+        /// <exception cref="ObjectDisposedException">基础流已关闭</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public virtual void SortInformationIndex(IComparer<DataInformation> comparer, int index, int count)
+        {
+            var cp = new GenericComparer<DataInformation>(comparer);
+            SortInformationIndex(cp, 0, Count);
+        }
+
+        /// <summary>
+        /// 重新排序数据当前数据信息的index索引
+        /// </summary>
+        /// <param name="comparer">排序规则</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="NotSupportedException">没有此功能的权限</exception>
+        /// <exception cref="ObjectDisposedException">基础流已关闭</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public virtual void SortInformationIndex(IComparer<DataInformation> comparer)
+        {
+            var cp = new GenericComparer<DataInformation>(comparer);
+            SortInformationIndex(cp);
         }
 
         #endregion

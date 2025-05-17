@@ -9,6 +9,7 @@ using Cheng.Algorithm.Compressions;
 using Cheng.Memorys;
 using Cheng.Streams;
 using Cheng.IO;
+using Cheng.IO.Systems;
 
 namespace Cheng.Algorithm.Compressions.ResourcePackages
 {
@@ -188,8 +189,8 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             int length = list.Count;
             for (i = 0; i < length; i++)
             {
-                //+1头 +2长度数据 + 16固定包索引
-                re += (1 + 2 + 16);
+                //+1头 +1长度数据 + 16固定包索引
+                re += (1 + 1 + 16);
 
                 var fi = list[i];
 
@@ -466,14 +467,14 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                     p_packing = false;
                     yield break;
                 }
-                if (fi.dataPath.Length > ushort.MaxValue)
+                if (fi.dataPath.Length <= 0 || fi.dataPath.Length > 256)
                 {
                     //错误
                     p_packing = false;
                     yield break;
                 }
 
-                ushort strLen;
+                byte strLen;
                 int strSize;
                 long fileSize;
 
@@ -483,35 +484,46 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                     pack.WriteByte(cp_haveIndex);
 
                     //写入字符串长度
-                    strLen = (ushort)fi.dataPath.Length;
+                    strLen = (byte)(fi.dataPath.Length - 1);
 
-                    strLen.ToByteArray(p_transBuffer);
-
-                    pack.Write(p_transBuffer, 0, 2);
+                    pack.WriteByte(strLen);
+                    //strLen.ToByteArray(p_transBuffer);
+                    //pack.Write(p_transBuffer, 0, 2);
 
                     //写入字符串
+
                     //字符串字节长度
-                    strSize = strLen * 2;
-                    if (p_transBuffer.Length < strSize)
+                    strSize = (strLen + 1) * 2;
+
+                    for (int stri = 0; i < fi.dataPath.Length; i++)
                     {
-                        var ns = p_transBuffer.Length * 2;
-                        p_transBuffer = new byte[ns > strSize ? ns : strSize];
+                        var pathC = fi.dataPath[stri];
+                        pack.WriteByte((byte)((pathC) & 0xF));
+                        pack.WriteByte((byte)((pathC >> 8) & 0xF));
                     }
 
-                    fi.dataPath.ToByteArray(0, p_transBuffer, 0);
-                    //写入数据
-                    pack.Write(p_transBuffer, 0, strSize);
+
+                    //if (p_transBuffer.Length < strSize)
+                    //{
+                    //    var ns = p_transBuffer.Length * 2;
+                    //    p_transBuffer = new byte[ns > strSize ? ns : strSize];
+                    //}
+                    //fi.dataPath.ToByteArray(0, p_transBuffer, 0);
+                    ////写入数据
+                    //pack.Write(p_transBuffer, 0, strSize);
 
                     //写入数据位置和长度
 
                     fileSize = fi.file.Length;
 
                     //位置
-                    nextSize.ToByteArray(p_transBuffer);
+                    nextSize.OrderToByteArray(p_transBuffer, 0);
+                    //nextSize.ToByteArray(p_transBuffer);
                     pack.Write(p_transBuffer, 0, sizeof(long));
 
                     //长度
-                    fileSize.ToByteArray(p_transBuffer);
+                    fileSize.OrderToByteArray(p_transBuffer, 0);
+                    //fileSize.ToByteArray(p_transBuffer);
                     pack.Write(p_transBuffer, 0, sizeof(long));
 
                 }
@@ -534,7 +546,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             //写入终止符
             pack.WriteByte(cp_notIndex);
 
-            FileStream readFile;
+            Stream readFile;
 
             //开始写入文件
             for (i = 0; i < list.Count; i++)
@@ -546,7 +558,8 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
                 try
                 {
-                    readFile = new FileStream(fi.file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    //readFile = new FileStream(fi.file.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    readFile = fi.file.OpenStream(CFileAccess.Read);
                 }
                 catch (Exception ex)
                 {
@@ -720,7 +733,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                     continue;
                 }
 
-                p_list.Add(new FileInfoIndex(item, toPath));
+                p_list.Add(new FileInfoIndex(new SysFileInfo(item), toPath));
             }
         }
 
@@ -757,7 +770,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                     continue;
                 }
 
-                p_list.Add(new FileInfoIndex(item, toPath));
+                p_list.Add(new FileInfoIndex(new SysFileInfo(item), toPath));
             }
 
         }
