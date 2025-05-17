@@ -181,7 +181,9 @@
     <Compile Include="Data\Text\CMStringBuilder.cs" />
     <Compile Include="IO\IOoperations\IOoperations.cs" />
     <Compile Include="IO\IOoperations\IOoperations.File.cs" />
+    <Compile Include="IO\IOoperations\IOoperations.Stream.cs" />
     <Compile Include="IO\RootToFolderIndexer.cs" />
+    <Compile Include="Memorys\FixedByteBlock.cs" />
     <Compile Include="Parsers\CommandParser\CommandParser.cs" />
     <Compile Include="Parsers\StreamParser\SerializeStreamParser.cs" />
     <Compile Include="Data\List\ReadOnlyList.cs" />

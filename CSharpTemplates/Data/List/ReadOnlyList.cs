@@ -62,6 +62,7 @@ namespace Cheng.DataStructure.Collections
         private static readonly T[] emptyArray = new T[0];
 
         private readonly IList<T> p_list;
+
         /// <summary>
         /// 使用索引访问集合
         /// </summary>
@@ -72,6 +73,7 @@ namespace Cheng.DataStructure.Collections
         {
             get => p_list[index];
         }
+
         /// <summary>
         /// 判断并获取指定索引的值
         /// </summary>
@@ -85,6 +87,7 @@ namespace Cheng.DataStructure.Collections
             value = p_list[index];
             return true;
         }
+
         /// <summary>
         /// 集合元素数
         /// </summary>
@@ -94,6 +97,7 @@ namespace Cheng.DataStructure.Collections
         {
             return p_list.GetEnumerator();
         }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return p_list.GetEnumerator();
