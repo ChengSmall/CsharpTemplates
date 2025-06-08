@@ -241,7 +241,13 @@ namespace Cheng.DEBUG
         /// <param name="append">输出的信息</param>
         public static void GetInformation(this Stream stream, StringBuilder append)
         {
-            if (stream is null || append is null) throw new ArgumentNullException();
+            if (append is null) throw new ArgumentNullException();
+
+            if(stream is null)
+            {
+                append.Append("流对象是null");
+                return;
+            }
 
             bool canRead = stream.CanRead;
             bool canSeek = stream.CanSeek;

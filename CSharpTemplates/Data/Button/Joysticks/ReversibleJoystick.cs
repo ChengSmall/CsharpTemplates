@@ -1,3 +1,4 @@
+using Cheng.Algorithm;
 using Cheng.DataStructure.Cherrsdinates;
 using System;
 using System.Collections.Generic;
@@ -58,13 +59,11 @@ namespace Cheng.ButtonTemplates.Joysticks
         {
             get
             {
-                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetSetInternalJoystick;
+                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetSetInternalJoystick |
+                  JoystickAvailablePermissions.CanSetAndGetAllReverse;
 
-                const JoystickAvailablePermissions my =
-                    JoystickAvailablePermissions.CanSetAndGetAllReverse |
-                    JoystickAvailablePermissions.CanGetAllJoystick;
 
-                return (p_joy.AvailablePermissions & my) | or;
+                return (p_joy.AvailablePermissions | or);
             }
         }
 
@@ -141,12 +140,58 @@ namespace Cheng.ButtonTemplates.Joysticks
         public override void GetVectorAngle(out float angle, out float length)
         {
             GetVector(out angle, out length);
-            angle = (float)(angle / (Math.PI / 180d));
+            angle = (float)(angle / Maths.OneRadian);
         }
 
         public override void GetAxis(out float horizontal, out float vertical)
         {
             p_joy.GetAxis(out horizontal, out vertical);
+            if (p_isRevHor)
+            {
+                horizontal = -horizontal;
+            }
+            if (p_isRevVer)
+            {
+                vertical = -vertical;
+            }
+        }
+
+        public override void GetVectorD(out double radian, out double length)
+        {
+            p_joy.GetVectorD(out radian, out length);
+
+            if (p_isRevHor)
+            {
+                if (p_isRevVer)
+                {
+                    //双反转
+                    radian = BaseJoystick.ToReverseVector(radian);
+                }
+                else
+                {
+                    //水平反转
+                    radian = BaseJoystick.ToReverseHorizontal(radian);
+                }
+            }
+            else
+            {
+                if (p_isRevVer)
+                {
+                    //垂直反转
+                    radian = BaseJoystick.ToReverseVertical(radian);
+                }
+            }
+        }
+
+        public override void GetVectorAngleD(out double angle, out double length)
+        {
+            GetVectorD(out angle, out length);
+            angle = (angle / Maths.OneRadian);
+        }
+
+        public override void GetAxisD(out double horizontal, out double vertical)
+        {
+            p_joy.GetAxisD(out horizontal, out vertical);
             if (p_isRevHor)
             {
                 horizontal = -horizontal;

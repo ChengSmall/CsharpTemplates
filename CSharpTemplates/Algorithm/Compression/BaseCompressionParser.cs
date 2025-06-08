@@ -8,6 +8,7 @@ using System.Collections;
 using System.Text;
 using Cheng.Algorithm.Trees;
 using Cheng.Algorithm.Sorts.Comparers;
+using Cheng.DataStructure.Collections;
 
 namespace Cheng.Algorithm.Compressions
 {
@@ -18,7 +19,7 @@ namespace Cheng.Algorithm.Compressions
     /// <remarks>
     /// 派生该类以实现各种数据包或压缩算法的实现
     /// </remarks>
-    public abstract class BaseCompressionParser : SafreleaseUnmanagedResources, IDataList
+    public abstract class BaseCompressionParser : SafreleaseUnmanagedResources, IDataList, IReadOnlyList<DataInformation>
     {
 
         #region 构造
@@ -135,6 +136,11 @@ namespace Cheng.Algorithm.Compressions
         /// 可获取项数据枚举器
         /// </summary>
         public virtual bool CanGetEntryEnumrator => false;
+
+        /// <summary>
+        /// 能使用<see cref="GetEnumerator"/>获取数据信息枚举器
+        /// </summary>
+        public virtual bool CanGetEnumerator => false;
 
         #endregion
 
@@ -861,6 +867,16 @@ namespace Cheng.Algorithm.Compressions
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetDataEntryEnumrator();
+        }
+
+        /// <summary>
+        /// 返回一个能够访问所有数据信息的枚举器
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException">没有权限</exception>
+        public virtual IEnumerator<DataInformation> GetEnumerator()
+        {
+            throw new NotSupportedException();
         }
 
         #endregion

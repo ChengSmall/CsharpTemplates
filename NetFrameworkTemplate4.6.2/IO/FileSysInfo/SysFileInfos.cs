@@ -8,9 +8,9 @@ using Cheng.Algorithm.Collections;
 
 namespace Cheng.IO.Systems
 {
-    
+
     /// <summary>
-    /// 版本更迭系统目录对象封装
+    /// .Net 4.0版系统目录对象封装
     /// </summary>
     public class NSysDirectoryInfo : SysDirectoryInfo
     {

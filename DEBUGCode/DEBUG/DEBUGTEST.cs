@@ -470,7 +470,7 @@ namespace Cheng.DEBUG
         /// <param name="value"></param>
         /// <param name="highSize">最高等级，0表示最大到字节，1表示KB，2表示MB，其它表示GB</param>
         /// <returns></returns>
-        public static string ByteValueToStr(this long value, int highSize)
+        public static string ToFileSizeStr(this long value, int highSize)
         {
             const int kb = 1024;
 
@@ -478,25 +478,25 @@ namespace Cheng.DEBUG
 
             const long gb = mb * 1024L;
 
-            if(value < kb)
+            if (value < kb)
             {
-                return value.ToString() + " Byte";
+                return value.ToString() + "Byte";
             }
-            if(highSize == 0) return value.ToString() + " Byte";
+            if (highSize == 0) return value.ToString() + "Byte";
 
             if (value < mb)
             {
-                return ((double)value / kb).ToString("G6") + " KB";
+                return ((double)value / kb).ToString("0.######") + "KB";
             }
-            if (highSize == 1) return ((double)value / kb).ToString("G6") + " KB";
+            if (highSize == 1) return ((double)value / kb).ToString("0.#######") + "KB";
 
             if (value < gb * 2)
             {
-                return ((double)value / mb).ToString("G6") + " MB";
+                return ((double)value / mb).ToString("0.######") + "MB";
             }
-            if (highSize == 2) return ((double)value / mb).ToString("G6") + " MB";
+            if (highSize == 2) return ((double)value / mb).ToString("0.########") + "MB";
 
-            return ((double)value / gb).ToString("G8") + " GB";
+            return ((double)value / gb).ToString() + "GB";
         }
 
         /// <summary>
@@ -505,7 +505,7 @@ namespace Cheng.DEBUG
         /// <param name="value"></param>
         /// <param name="highSize">最高等级，0表示最大到字节，1表示KB，2表示MB，其它表示GB</param>
         /// <returns></returns>
-        public static string ByteValueToStr(this ulong value, int highSize)
+        public static string ToFileSizeStr(this ulong value, int highSize)
         {
             const uint kb = 1024;
 
@@ -515,23 +515,23 @@ namespace Cheng.DEBUG
 
             if (value < kb)
             {
-                return value.ToString() + " Byte";
+                return value.ToString() + "Byte";
             }
-            if (highSize == 0) return value.ToString() + " Byte";
+            if (highSize == 0) return value.ToString() + "Byte";
 
             if (value < mb)
             {
-                return ((double)value / kb).ToString("G6") + " KB";
+                return ((double)value / kb).ToString("0.######") + "KB";
             }
-            if (highSize == 1) return ((double)value / kb).ToString("G6") + " KB";
+            if (highSize == 1) return ((double)value / kb).ToString("0.#######") + "KB";
 
             if (value < gb * 2)
             {
-                return ((double)value / mb).ToString("G6") + " MB";
+                return ((double)value / mb).ToString("0.######") + "MB";
             }
-            if (highSize == 2) return ((double)value / mb).ToString("G6") + " MB";
+            if (highSize == 2) return ((double)value / mb).ToString("0.########") + "MB";
 
-            return ((double)value / gb).ToString("G8") + " GB";
+            return ((double)value / gb).ToString() + "GB";
         }
 
         /// <summary>
@@ -540,9 +540,9 @@ namespace Cheng.DEBUG
         /// <param name="value"></param>
         /// <param name="highSize">最高等级，0表示最大到字节，1表示KB，2表示MB，其它表示GB</param>
         /// <returns></returns>
-        public static string ByteValueToStr(this int value, int highSize)
+        public static string ToFileSizeStr(this int value, int highSize)
         {
-            return ByteValueToStr((long)value, highSize);
+            return ToFileSizeStr((long)value, highSize);
         }
 
         /// <summary>
@@ -551,9 +551,9 @@ namespace Cheng.DEBUG
         /// <param name="value"></param>
         /// <param name="highSize">最高等级，0表示最大到字节，1表示KB，2表示MB，其它表示GB</param>
         /// <returns></returns>
-        public static string ByteValueToStr(this uint value, int highSize)
+        public static string ToFileSizeStr(this uint value, int highSize)
         {
-            return ByteValueToStr((long)value, highSize);
+            return ToFileSizeStr((long)value, highSize);
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace Cheng.DataStructure.Streams
     /// <summary>
     /// 表示流数据块位置
     /// </summary>
-    public struct StreamBlock : IEquatable<StreamBlock>, IHashCode64
+    public struct StreamBlock : IEquatable<StreamBlock>, IHashCode64, IComparable<StreamBlock>
     {
 
         #region 构造
@@ -99,6 +99,21 @@ namespace Cheng.DataStructure.Streams
         {
             return position ^ length;
         }
+
+        /// <summary>
+        /// 先比较原始位置，后比较长度大小的比较器
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public int CompareTo(StreamBlock other)
+        {
+            if (position == other.position)
+            {
+                return length < other.length ? -1 : (length == other.length ? 0 : 1);
+            }
+            return position < other.position ? -1 : 1;
+        }
+
 
         #endregion
 

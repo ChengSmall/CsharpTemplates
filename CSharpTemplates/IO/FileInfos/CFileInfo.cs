@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using Cheng.Algorithm.Collections;
 using System.Linq;
+using Cheng.DataStructure;
 
 namespace Cheng.IO
 {
@@ -171,6 +172,11 @@ namespace Cheng.IO
         /// <returns>如果是true则该对象属于<see cref="CFileInfo"/>类派生对象，否则是<see cref="CDirectoryInfo"/>类派生对象</returns>
         public abstract bool IsFile { get; }
 
+        /// <summary>
+        /// 刷新对象状态函数<see cref="Refresh"/>是否有效
+        /// </summary>
+        public virtual bool CanRefresh => false;
+
         #endregion
 
         #region 派生
@@ -190,7 +196,6 @@ namespace Cheng.IO
                 return Path.GetFileName(FullPath);
             }
         }
-
         /// <summary>
         /// 当前对象是否实际存在于硬盘、驱动器或其它硬件设施内，或者存在于某个封装器内的实际引用
         /// </summary>
@@ -297,6 +302,27 @@ namespace Cheng.IO
             }
         }
 
+        /// <summary>
+        /// 刷新对象状态
+        /// </summary>
+        /// <remarks>
+        /// <para>调用该函数用于刷新对象状态</para>
+        /// <para>在派生类实现该函数，用于刷新对象的实际状态</para>
+        /// </remarks>
+        /// <exception cref="Exception">出现错误</exception>
+        public virtual void Refresh()
+        {
+        }
+
+        /// <summary>
+        /// 返回对象的<see cref="Name"/>
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Name;
+        }
+
         #endregion
 
     }
@@ -352,15 +378,32 @@ namespace Cheng.IO
         /// </returns>
         public virtual bool CanDelete => false;
 
+        /// <summary>
+        /// 允许在当前目录下创建一个或多个子目录
+        /// </summary>
+        public virtual bool CanCreateSubdirectory => false;
+
+        /// <summary>
+        /// 允许在该目录下创建文件对象
+        /// </summary>
+        public virtual bool CanCreateFileInfo => false;
+
+        /// <summary>
+        /// 在目录下创建文件对象时是否能够创建实际存在的硬件资源
+        /// </summary>
+        public virtual bool CanCreateFileInfoExists => false;
+
         #endregion
 
         #region 功能
 
         #region
 
-        public override CDirectoryInfo DirectoryInfo => this;
+        public sealed override CFileInfo FileInfo => throw new NotSupportedException();
 
-        public override bool IsFile => false;
+        public sealed override CDirectoryInfo DirectoryInfo => this;
+
+        public sealed override bool IsFile => false;
 
         /// <summary>
         /// 获取当前目录的父级目录，如果没有父级目录则为null
@@ -373,7 +416,7 @@ namespace Cheng.IO
         public virtual CDirectoryInfo Root => null;
 
         /// <summary>
-        /// 创建一个目录
+        /// 创建当前目录
         /// </summary>
         /// <exception cref="NotSupportedException">没有操作权限</exception>
         /// <exception cref="Exception">其它错误</exception>
@@ -396,6 +439,50 @@ namespace Cheng.IO
         /// <exception cref="NotSupportedException">没有操作权限</exception>
         /// <exception cref="Exception">其它错误</exception>
         public virtual CDirectoryInfo CopyTo(string directory) => throw new NotSupportedException();
+
+        /// <summary>
+        /// 在指定路径上创建一个或多个子目录
+        /// </summary>
+        /// <param name="path">
+        /// <para>表示当前目录下的子目录相对路径</para>
+        /// </param>
+        /// <returns>创建后的最后一层目录</returns>
+        /// <exception cref="NotSupportedException">没有权限</exception>
+        /// <exception cref="ArgumentNullException">路径是null</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public virtual CDirectoryInfo CreateSubdirectory(string path)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 在当前目录下创建一个文件对象并返回
+        /// </summary>
+        /// <param name="fileName">要创建的文件名称</param>
+        /// <param name="createExists">
+        /// 在创建文件对象时是否创建实际引用，如果文件已存在则不会再创建；如果<see cref="CanCreateFileInfoExists"/>是false则该参数无效
+        /// </param>
+        /// <returns>创建的文件对象</returns>
+        /// <exception cref="NotSupportedException">没有操作权限</exception>
+        /// <exception cref="ArgumentNullException">文件名是null</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public virtual CFileInfo CreateFileInfo(string fileName, bool createExists)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 返回当前目录下的一个文件对象
+        /// </summary>
+        /// <param name="fileName">要创建的文件名称</param>
+        /// <returns>创建的文件对象</returns>
+        /// <exception cref="NotSupportedException">没有操作权限</exception>
+        /// <exception cref="ArgumentNullException">文件名是null</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public virtual CFileInfo CreateFileInfo(string fileName)
+        {
+            return CreateFileInfo(fileName, false);
+        }
 
         #endregion
 
@@ -675,7 +762,7 @@ namespace Cheng.IO
     /// <summary>
     /// 可扩展的文件数据系统
     /// </summary>
-    public abstract class CFileInfo : CFileSystemInfo
+    public abstract class CFileInfo : CFileSystemInfo, IGettingStream
     {
 
         #region 权限
@@ -701,30 +788,46 @@ namespace Cheng.IO
         /// <summary>
         /// 允许打开流数据
         /// </summary>
-        public bool CanOpenStream => false;
+        public virtual bool CanOpenStream => false;
 
         /// <summary>
         /// 允许创建流数据
         /// </summary>
-        public bool CanCreateStream => false;
+        public virtual bool CanCreateStream => false;
 
         /// <summary>
         /// 允许拷贝文件到其它位置
         /// </summary>
-        public bool CanCopyFile => false;
+        public virtual bool CanCopyFile => false;
 
         /// <summary>
         /// 允许移动文件到其它位置
         /// </summary>
-        public bool CanMoveFile => false;
+        public virtual bool CanMoveFile => false;
+
+        /// <summary>
+        /// 能否获取文件所在的目录对象
+        /// </summary>
+        public virtual bool CanCurrentDirectory => false;
 
         #endregion
 
         #region 功能
 
-        public override CFileInfo FileInfo => this;
+        public sealed override CDirectoryInfo DirectoryInfo => throw new NotSupportedException();
 
-        public override bool IsFile => true;
+        public sealed override CFileInfo FileInfo => this;
+
+        public sealed override bool IsFile => true;
+
+        /// <summary>
+        /// 获取当前文件所在的目录对象
+        /// </summary>
+        /// <exception cref="NotSupportedException">没有操作权限</exception>
+        public virtual CDirectoryInfo CurrentDirectory
+        {
+            get => throw new NotSupportedException();
+        }
 
         /// <summary>
         /// 访问对象的扩展名
@@ -775,7 +878,7 @@ namespace Cheng.IO
         /// <exception cref="ArgumentException">参数错误</exception>
         /// <exception cref="NotSupportedException">没有打开权限</exception>
         /// <exception cref="Exception">对象的其它错误</exception>
-        public virtual Stream OpenStream(CFileAccess access) => OpenStream(access, CFileShare.ReadWrite | CFileShare.Delete);
+        public virtual Stream OpenStream(CFileAccess access) => OpenStream(access, CFileShare.ReadWrite);
 
         /// <summary>
         /// 创建当前文件所在的流数据
@@ -833,6 +936,37 @@ namespace Cheng.IO
         public virtual CFileInfo CopyTo(string toPath)
         {
             return CopyTo(toPath, false);
+        }
+
+        long IGettingStream.StreamLength
+        {
+            get
+            {
+                return IGettingStreamLength;
+            }
+        }
+
+        Stream IGettingStream.OpenStream()
+        {
+            return GettingOpenStream();
+        }
+
+        /// <summary>
+        /// 实现<see cref="IGettingStream"/>接口的<see cref="IGettingStream.StreamLength"/>可重写返回值
+        /// </summary>
+        protected virtual long IGettingStreamLength
+        {
+            get => CanGetLength ? Length : -1;
+        }
+
+        /// <summary>
+        /// 实现<see cref="IGettingStream"/>接口的<see cref="IGettingStream.OpenStream"/>可重写函数
+        /// </summary>
+        /// <returns><see cref="IGettingStream.OpenStream"/>函数的返回值</returns>
+        protected virtual Stream GettingOpenStream()
+        {
+            if (CanOpenStream) return OpenStream(CFileAccess.Read);
+            return null;
         }
 
         #endregion

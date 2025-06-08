@@ -151,9 +151,10 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
         protected override bool Disposing(bool disposing)
         {
             f_flushOver();
+            p_writer?.Flush();
             if (disposing && p_disposeBaseWriter)
             {
-                p_writer?.Flush();
+                p_writer.Close();
             }
             p_writer = null;
             return true;

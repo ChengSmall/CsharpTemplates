@@ -208,7 +208,8 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
         {
             get
             {
-                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetAllJoystick |
+                const JoystickAvailablePermissions or =
+                    JoystickAvailablePermissions.CanGetAllJoystick |
                    JoystickAvailablePermissions.CanSetAndGetAllReverse;
 
                 return or;

@@ -1082,6 +1082,7 @@ namespace Cheng.Memorys
                 buffer[index] = (byte)reb;
                 re++;
                 count--;
+                index++;
             }
             return re;
         }
@@ -1734,7 +1735,7 @@ namespace Cheng.Memorys
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static char ToLopper(this char value)
+        public static char ToLower(this char value)
         {
             const char cb = (char)0b00000000_00100000;
             if (value >= 'A' && value <= 'Z')

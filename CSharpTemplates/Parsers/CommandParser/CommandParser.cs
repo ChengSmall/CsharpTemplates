@@ -20,7 +20,6 @@ namespace Cheng.Parsers.CommandParsers
         bool Execute(string command);
     }
 
-
     /// <summary>
     /// 执行后续命令的解析器
     /// </summary>

@@ -510,17 +510,6 @@ namespace Cheng.Algorithm.HashCodes
             int length = str.Length;
             if (length == 0) return 1;
 
-            //const long first = 1125899906842597L;
-            //const long mio = 1540483477;
-
-            //long hash;
-            //hash = first;
-            //for (int i = 0; i < length; i++)
-            //{
-            //    hash = (hash * mio) ^ str[i];
-            //}
-            //return hash;
-
             const ulong FNV_OFFSET_BASIS = 14695981039346656037UL;
             const ulong FNV_PRIME = 1099511628211UL;
 
@@ -531,7 +520,6 @@ namespace Cheng.Algorithm.HashCodes
                 hash = (hash ^ c) * FNV_PRIME;
             }
             return (long)hash;
-
         }
 
         #endregion

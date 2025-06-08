@@ -90,8 +90,6 @@
   <ItemGroup>
     <Compile Include="Moudles\Experiences\Experiences.cs" />
     <Compile Include="Moudles\Experiences\UpgradeRules.cs" />
-    <Compile Include="Moudles\Numgenerator\Numgenerator.cs" />
-    <Compile Include="Moudles\Numgenerator\NumgeneratorBaseStructure.cs" />
     <Compile Include="Moudles\Randoms\DynamicalProbabilityRweardPool.cs" />
     <Compile Include="Moudles\Randoms\FixedProbabilityRewardPool.cs" />
     <Compile Include="Moudles\Randoms\RewardPoolParameter.cs" />
@@ -114,11 +112,11 @@
     <Compile Include="棋类游戏\象棋\ChiessStructrue.cs" />
     <Compile Include="棋类游戏\黑白格子棋模板\BWChessStructure.cs" />
     <Compile Include="棋类游戏\黑白格子棋模板\BWChessBoard.cs" />
-    <Compile Include="游戏数据结构\纪元年历\ERADateTime.cs" />
-    <Compile Include="游戏数据结构\纪元年历\ERATimeSpan.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Moudles\Numgenerator\" />
     <Folder Include="棋类游戏\象棋\AI\" />
+    <Folder Include="游戏数据结构\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

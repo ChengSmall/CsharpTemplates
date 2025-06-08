@@ -152,51 +152,6 @@ namespace Cheng.Algorithm.Trees
                 currentParent.Add(fileNode);
             }
 
-            //foreach (IDataEntry entry in list)
-            //{
-            //    string fullName = entry.FullName;
-            //    string[] parts = fullName.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
-
-            //    if (parts.Length == 0)
-            //        continue; // 忽略空路径（例如FullName为空）
-
-            //    // 检查路径是否合法
-            //    foreach (string part in parts)
-            //    {
-            //        //节点路径的分隔符'\\'之间存在空节点名
-            //        if (string.IsNullOrEmpty(part))
-            //            throw new NotImplementedException();
-            //    }
-
-            //    TreeNode<TreeNodeData> currentParent = root;
-
-            //    // 遍历除最后一个部分外的所有路径段（构建文件夹）
-            //    for (int i = 0; i < parts.Length - 1; i++)
-            //    {
-            //        string folderName = parts[i];
-            //        TreeNode<TreeNodeData> existingFolder = FindChildFolder(currentParent, folderName);
-
-            //        if (existingFolder == null)
-            //        {
-            //            // 构建当前文件夹的完整路径
-            //            string parentPath = currentParent.Value.dataPath;
-            //            string currentPath = parentPath == null ? folderName : $"{parentPath}{pathSeparator}{folderName}";
-            //            TreeNodeData folderData = new TreeNodeData(currentPath, folderName, false);
-            //            TreeNode<TreeNodeData> newFolder = new TreeNode<TreeNodeData>(folderData);
-            //            currentParent.Add(newFolder);
-            //            existingFolder = newFolder;
-            //        }
-
-            //        currentParent = existingFolder;
-            //    }
-
-            //    // 添加文件节点
-            //    //string fileName = parts[parts.Length - 1];
-            //    TreeNodeData fileData = new TreeNodeData(entry.FullName, entry.Name, true);
-            //    TreeNode<TreeNodeData> fileNode = new TreeNode<TreeNodeData>(fileData);
-            //    currentParent.Add(fileNode);
-            //}
-
             return root;
 
         }
@@ -251,15 +206,12 @@ namespace Cheng.Algorithm.Trees
 
         public TreeAction()
         {
-            //p_nodeLookup = new Dictionary<string, TreeNode<TreeNodeData>>();
             p_sep = new char[] { '/', '\\' };
         }
 
         #endregion
 
         #region
-
-        //private Dictionary<string, TreeNode<TreeNodeData>> p_nodeLookup;
 
         private char[] p_sep;
 
@@ -278,11 +230,7 @@ namespace Cheng.Algorithm.Trees
         public TreeNode<TreeNodeData> DataListToTreeNode(IDataList list)
         {
             if (list is null) throw new ArgumentNullException();
-            //p_nodeLookup.Clear();
-            var re = f_sDataListToTreeNode(list, p_sep, "\\");
-            //p_nodeLookup.Clear();
-
-            return re;
+            return f_sDataListToTreeNode(list, p_sep, "\\");
         }
 
         /// <summary>
@@ -297,12 +245,8 @@ namespace Cheng.Algorithm.Trees
         public TreeNode<TreeNodeData> DataListToTreeNode(IDataList list, string pathSeparator)
         {
             if (list is null || pathSeparator is null) throw new ArgumentNullException();
-            
-            //p_nodeLookup.Clear();
-            var re = f_sDataListToTreeNode(list, p_sep, pathSeparator);
-            //p_nodeLookup.Clear();
 
-            return re;
+            return f_sDataListToTreeNode(list, p_sep, pathSeparator);
         }
 
         /// <summary>
@@ -321,16 +265,12 @@ namespace Cheng.Algorithm.Trees
             if (list is null || pathSeparator is null || splitFullNameChars is null) throw new ArgumentNullException();
             if (splitFullNameChars.Length == 0) throw new ArgumentException();
 
-            //p_nodeLookup.Clear();
-            var re = f_sDataListToTreeNode(list, splitFullNameChars, pathSeparator);
-            //p_nodeLookup.Clear();
-
-            return re;
+            return f_sDataListToTreeNode(list, splitFullNameChars, pathSeparator);
         }
 
         #endregion
 
-}
+    }
 
     #endregion
 

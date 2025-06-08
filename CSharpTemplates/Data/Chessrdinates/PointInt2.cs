@@ -86,6 +86,16 @@ namespace Cheng.DataStructure.Cherrsdinates
             return new PointInt2((int)(value & 0xFFFFFFFF), (int)((ulong)value >> 32));
         }
 
+        /// <summary>
+        /// 将64位整型值转化为2维整形结构
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>2维整形结构</returns>
+        public static PointInt2 ToPoint(ulong value)
+        {
+            return new PointInt2((int)(value & 0xFFFFFFFF), (int)(value >> 32));
+        }
+
         #endregion
 
         #region 运算符重载
@@ -167,9 +177,7 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         public override int GetHashCode()
         {
-            int s;
-            s = (int)(((uint)this.y << 16) | ((((uint)this.y) >> 16)));
-            return s ^ this.x;
+            return this.x ^ this.y;
         }
 
         public bool Equals(PointInt2 other)
@@ -213,16 +221,6 @@ namespace Cheng.DataStructure.Cherrsdinates
         public ulong ToUInt64()
         {
             return ((ulong)x ^ ((ulong)y << 32));
-        }
-
-        /// <summary>
-        /// 将64位整型值转化为2维整形结构
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns>2维整形结构</returns>
-        public static PointInt2 ToPoint(ulong value)
-        {
-            return new PointInt2((int)(value & 0xFFFFFFFF), (int)(value >> 32));
         }
 
         #endregion

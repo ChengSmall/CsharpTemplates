@@ -117,6 +117,7 @@
     <Compile Include="DEBUG\Json\TestJson.cs" />
     <Compile Include="DEBUG\Lists\DebugList.cs" />
     <Compile Include="DEBUG\Lists\ListExt.cs" />
+    <Compile Include="DEBUG\Pathfindings\TestGridObjects.cs" />
     <Compile Include="DEBUG\Stream\DEBUGFile.cs" />
     <Compile Include="DEBUG\Stream\DEBUGStream.cs" />
     <Compile Include="DEBUG\Stream\DEBUGStreamExd.cs" />

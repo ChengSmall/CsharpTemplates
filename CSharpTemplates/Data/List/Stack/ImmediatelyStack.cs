@@ -6,11 +6,11 @@ namespace Cheng.DataStructure.Collections
 {
 
     /// <summary>
-    /// 可访问任意元素的先进后出可变栈数据结构
+    /// 可访问任意元素的先进后出的栈
     /// </summary>
     /// <typeparam name="T">元素类型</typeparam>
     [Serializable]
-    public class TraverStack<T> : IReadOnlyList<T>, IList<T>
+    public sealed class ImmediatelyStack<T> : IReadOnlyList<T>, IList<T>
     {
 
         #region 结构
@@ -20,7 +20,7 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         public struct Enumerator : IEnumerator<T>
         {
-            internal Enumerator(TraverStack<T> stack)
+            internal Enumerator(ImmediatelyStack<T> stack)
             {
                 p_stack = stack;
                 p_version = p_stack.p_version;
@@ -28,7 +28,7 @@ namespace Cheng.DataStructure.Collections
                 p_current = default(T);
             }
 
-            private TraverStack<T> p_stack;
+            private ImmediatelyStack<T> p_stack;
 
             private int p_index;
 
@@ -137,7 +137,7 @@ namespace Cheng.DataStructure.Collections
         /// <summary>
         /// 初始化可遍历栈
         /// </summary>
-        public TraverStack()
+        public ImmediatelyStack()
         {
             p_arr = cp_emptyArray;
             p_size = 0;
@@ -149,7 +149,7 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         /// <param name="capacity">初始容量</param>
         /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
-        public TraverStack(int capacity)
+        public ImmediatelyStack(int capacity)
         {
             if (capacity < 0)
             {
@@ -166,7 +166,7 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         /// <param name="enumator">要压栈的集合</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public TraverStack(IEnumerable<T> enumator)
+        public ImmediatelyStack(IEnumerable<T> enumator)
         {
             if (enumator == null)
             {

@@ -8,7 +8,7 @@ namespace Cheng.Systems
     /// <summary>
     /// 系统环境参数
     /// </summary>
-    public unsafe static class SystemEnvironment
+    public unsafe static partial class SystemEnvironment
     {
 
         #region 环境判断

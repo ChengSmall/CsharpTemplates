@@ -495,11 +495,11 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                     //字符串字节长度
                     strSize = (strLen + 1) * 2;
 
-                    for (int stri = 0; i < fi.dataPath.Length; i++)
+                    for (int stri = 0; stri < fi.dataPath.Length; stri++)
                     {
                         var pathC = fi.dataPath[stri];
-                        pack.WriteByte((byte)((pathC) & 0xF));
-                        pack.WriteByte((byte)((pathC >> 8) & 0xF));
+                        pack.WriteByte((byte)((pathC) & 0xFF));
+                        pack.WriteByte((byte)((pathC >> 8) & 0xFF));
                     }
 
 
@@ -610,7 +610,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// <param name="stream">要打包到的流数据</param>
         /// <returns>
         /// <para>一个资源打包迭代器，将当前准备好的待打包文件逐步打包到指定的<paramref name="stream"/>中，每次迭代后会打包一部分数据</para>
-        /// <para>返回不同实例对应不同操作，返回<see cref="FileInfoIndex"/>则表示正在写入索引；返回<see cref="long"/>或<see cref="int"/>类型数据则表示正在写入资源，值表示此次写入的资源大小；返回<see cref="FileInfo"/>表示已将这个文件写入完毕</para>
+        /// <para>返回不同实例对应不同操作，返回<see cref="FileInfoIndex"/>则表示正在写入索引；返回<see cref="long"/>或<see cref="int"/>类型数据则表示正在写入资源，值表示此次写入的资源大小；返回<see cref="CFileInfo"/>表示已将这个文件写入完毕</para>
         /// <para>若打包时出现异常，则直接结束迭代，并将错误写入<see cref="LastThrowException"/></para>
         /// </returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
@@ -660,8 +660,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             }
             p_packing = true;
 
-            var enr = f_toPackenumator(stream, CalculatedFileIndexByteSize());
-            foreach (var _ in enr)
+            foreach (var _ in f_toPackenumator(stream, CalculatedFileIndexByteSize()))
             {
             }
         }
@@ -829,7 +828,6 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
         }
 
-
         static bool f_getDirectoryAddBaseSubFilePath(string baseDire, string filePath, out string rePath)
         {
 
@@ -857,6 +855,30 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             //relativePath = relativePath.Replace('\\', '/'); 
             return true;
 
+        }
+
+        /// <summary>
+        /// 将数据包标头写入流
+        /// </summary>
+        /// <param name="stream">要写入的流</param>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">没有写入权限</exception>
+        /// <exception cref="ObjectDisposedException">流已释放</exception>
+        /// <exception cref="ArgumentNullException">流是null</exception>
+        /// <exception cref="Exception">写入数据时可能导致的其它错误</exception>
+        public static void WriteHeader(Stream stream)
+        {
+            if (stream is null) throw new ArgumentNullException(nameof(stream));
+            //0x43, 0x68, 0x65, 0x6E, 0x67, 0x50, 0x61, 0x63, 0x6B
+            stream.WriteByte(0x43);
+            stream.WriteByte(0x68);
+            stream.WriteByte(0x65);
+            stream.WriteByte(0x6E);
+            stream.WriteByte(0x67);
+            stream.WriteByte(0x50);
+            stream.WriteByte(0x61);
+            stream.WriteByte(0x63);
+            stream.WriteByte(0x6B);
         }
 
         #endregion

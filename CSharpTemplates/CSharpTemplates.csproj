@@ -80,6 +80,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algorithm\Compression\CParserOpenStream.cs" />
     <Compile Include="Algorithm\Compression\ResourcePackage\DataIndex.cs" />
     <Compile Include="Algorithm\Compression\ResourcePackage\FileResourcePackageReader.cs" />
     <Compile Include="Algorithm\Compression\ResourcePackage\ResourcePackageReader.cs" />
@@ -106,7 +107,6 @@
     <Compile Include="Algorithm\Encryption\XOREncryption\XORStreamEncry.cs" />
     <Compile Include="Algorithm\Pathfindings\GridPathfindings\GridPathfinding.cs" />
     <Compile Include="Algorithm\Pathfindings\GridPathfindings\IGridObjects.cs" />
-    <Compile Include="Algorithm\Pathfindings\GridPathfindings\SynchronizedGridPathfinding.cs" />
     <Compile Include="Algorithm\Sort\BubbleSort.cs" />
     <Compile Include="Algorithm\Tree\TreeAction.cs" />
     <Compile Include="Algorithm\Tree\TreeDataEntry.cs" />
@@ -118,6 +118,7 @@
     <Compile Include="Data\BoundedContainer\BoundedContainerInt64.cs" />
     <Compile Include="Data\Button\CancelButton.cs" />
     <Compile Include="Data\Button\ConditionalButton.cs" />
+    <Compile Include="Data\Button\Joysticks\JoystickData.cs" />
     <Compile Include="Data\Button\Joysticks\ReversibleJoystick.cs" />
     <Compile Include="Data\Controllers\GameController.cs" />
     <Compile Include="Algorithm\HashCodes\BaseHashCodes.cs" />
@@ -144,9 +145,13 @@
     <Compile Include="Data\Button\ButtonStateMapPower.cs" />
     <Compile Include="Data\Button\PowerButtonRange.cs" />
     <Compile Include="Data\Button\ResourceButton.cs" />
+    <Compile Include="Data\EqualityComparerHash64.cs" />
+    <Compile Include="Data\IGettingStream.cs" />
+    <Compile Include="Data\List\Equals\BinaryStringEqualComparer.cs" />
     <Compile Include="Data\Hash\Hash256.cs" />
     <Compile Include="Data\List\DelegateArray.cs" />
-    <Compile Include="Data\List\Stack\TraverStack.cs" />
+    <Compile Include="Data\List\Queue\ImmediatelyQueue.cs" />
+    <Compile Include="Data\List\Stack\ImmediatelyStack.cs" />
     <Compile Include="Data\NumGenerators\DynamicNumber.cs" />
     <Compile Include="Data\NumGenerators\NumGenerator.cs" />
     <Compile Include="Data\NumGenerators\NumGeneratorMath.cs" />
@@ -202,6 +207,7 @@
     <Compile Include="Parsers\StreamParser\StreamParserStructure.cs" />
     <Compile Include="Parsers\TextParser\BaseTextParser.cs" />
     <Compile Include="Parsers\TextParser\Json\ToValue\JsonToNumber.cs" />
+    <Compile Include="Streams\ReadOnlyStream.cs" />
     <Compile Include="Text\BufferedText\BufferedTextWriter.cs" />
     <Compile Include="Text\BufferedText\BufferedTextReader.cs" />
     <Compile Include="Parsers\TextParser\Json\JsonDictionary.cs" />

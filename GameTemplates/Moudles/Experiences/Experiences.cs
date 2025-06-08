@@ -75,6 +75,7 @@ namespace Cheng.Experiences
 
         private LevelTemplateAction<long> pe_levelUp;
         private LevelTemplateAction<double> pe_maxLevelGainExp;
+        private LevelTemplateAction<long> pe_lvlUpToOnceEnd;
         #endregion
 
         #region 功能
@@ -134,7 +135,9 @@ namespace Cheng.Experiences
         /// <summary>
         /// 无法升级后再次获取经验时引发的事件
         /// </summary>
-        /// <remarks>参数表示溢出的经验值</remarks>
+        /// <remarks>
+        /// <para>调用一次<see cref="GainExp(double)"/>函数后，如果到达最大等级仍留有经验，则引发该事件，参数表示溢出的经验值</para>
+        /// </remarks>
         public event LevelTemplateAction<double> MaxLevelGainExpEvent
         {
             add
@@ -146,6 +149,26 @@ namespace Cheng.Experiences
             {
                 if (IsDispose) throw new ObjectDisposedException("", "事件系统已注销");
                 lock (this) pe_maxLevelGainExp -= value;
+            }
+        }
+
+        /// <summary>
+        /// 每次执行一次经验获取功能后，如果提升等级，则在提升到最后一级时引发事件
+        /// </summary>
+        /// <remarks>
+        /// <para>当调用<see cref="GainExp(double)"/>函数后提升等级，则在函数执行后，则引发一次该事件，参数为提升后的等级</para>
+        /// </remarks>
+        public event LevelTemplateAction<long> LevelUpToOnceEndEvent
+        {
+            add
+            {
+                ThrowObjectDisposeException();
+                lock (this) pe_lvlUpToOnceEnd += value;
+            }
+            remove
+            {
+                ThrowObjectDisposeException();
+                lock (this) pe_lvlUpToOnceEnd -= value;
             }
         }
 
@@ -200,7 +223,7 @@ namespace Cheng.Experiences
             double remGetExp;
             //当前等级
             long nowlvl;
-
+            bool isUp = false;
             ReceptacleDouble nowExp;
 
             remGetExp = experience;
@@ -223,6 +246,7 @@ namespace Cheng.Experiences
             //获取经验大于或等于剩余升级所需
 
             //升级
+            isUp = true;
             nowlvl += 1;
             pe_levelUp?.Invoke(nowlvl);
 
@@ -239,7 +263,6 @@ namespace Cheng.Experiences
 
             //重新计算下一级升级所需
             nowExp = new ReceptacleDouble(0, p_rules.LevelToExperience(nowlvl));
-            
 
             goto Loop;
 
@@ -247,7 +270,7 @@ namespace Cheng.Experiences
             
             p_experience = nowExp;
             p_level = nowlvl;
-
+            if(isUp) pe_lvlUpToOnceEnd?.Invoke(nowlvl);
         }
 
         /// <summary>
@@ -275,7 +298,7 @@ namespace Cheng.Experiences
         }
 
         /// <summary>
-        /// 将等级重置为初始等级
+        /// 将等级和经验重置为初始值
         /// </summary>
         public void ResetLevel()
         {

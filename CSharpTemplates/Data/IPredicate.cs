@@ -1,5 +1,4 @@
 
-
 namespace Cheng.DataStructure
 {
 

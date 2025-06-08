@@ -644,6 +644,25 @@ namespace Cheng.IO
                 }
             }
 
+            /// <summary>
+            /// 将一个路径字符串按格式转换为绝对路径或工作目录
+            /// </summary>
+            /// <param name="path">一个表示路径的字符串</param>
+            /// <returns>
+            /// <para>如果<paramref name="path"/>表示一个绝对路径，返回<paramref name="path"/>自身</para>
+            /// <para>如果<paramref name="path"/>表示一个相对路径，返回路径所在的绝对路径</para>
+            /// <para>如果<paramref name="path"/>表示null或空字符串，返回工作目录</para>
+            /// </returns>
+            public static string ToCompatibilityPath(string path)
+            {
+                if (string.IsNullOrEmpty(path)) return Directory.GetCurrentDirectory();
+                if(path.Length > 2)
+                {
+                    if (path[1] == ':') return path;
+                }
+                return System.IO.Path.GetFullPath(path);
+            }
+
         }
 
         /// <summary>

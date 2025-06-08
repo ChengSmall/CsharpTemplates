@@ -79,8 +79,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compressions\ResourcePackageWinForm\ResourcePackageListView.cs" />
-    <Compile Include="Compressions\ZipArchiveCompress.cs" />
+    <Compile Include="Compressions\ZipArchive\ReadOnlyZipArchiveCompress.cs" />
+    <Compile Include="Compressions\ZipArchive\ZipArchiveCompress.cs" />
+    <Compile Include="Compressions\ZipArchive\ZipArchiveInf.cs" />
     <Compile Include="IO\FileSysInfo\SysFileInfos.cs" />
+    <Compile Include="IO\FileSysInfo\ZipEntryFileInfo.cs" />
     <Compile Include="Processes\API.cs" />
     <Compile Include="Processes\ProcessAccessFlags.cs" />
     <Compile Include="Processes\ProcessOperation.cs" />
@@ -90,6 +93,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Systems\SystemEnvironment.cs" />
     <Compile Include="Threads\LoopThread\LoopFunction.cs" />
     <Compile Include="Threads\LoopThread\LoopStructure.cs" />
     <Compile Include="Threads\SingleThreadTask\SingleTask.cs" />
@@ -123,6 +127,7 @@
     <Folder Include="Algorithm\Pathfindings\" />
     <Folder Include="Device\" />
     <Folder Include="Text\" />
+    <Folder Include="Winapi\Icon\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

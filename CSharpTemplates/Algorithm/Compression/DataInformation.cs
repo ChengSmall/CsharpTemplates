@@ -1,5 +1,7 @@
 using Cheng.Algorithm.Trees;
+using Cheng.DataStructure;
 using System;
+using System.IO;
 
 namespace Cheng.Algorithm.Compressions
 {
@@ -81,5 +83,6 @@ namespace Cheng.Algorithm.Compressions
         #endregion
 
     }
+
 
 }

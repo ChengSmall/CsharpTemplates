@@ -5,159 +5,6 @@ using System;
 namespace Cheng.ButtonTemplates.Joysticks
 {
 
-    /// <summary>
-    /// 摇杆事件委托
-    /// </summary>
-    /// <param name="joystick">引发事件的摇杆</param>
-    public delegate void JoystickEvent(BaseJoystick joystick);
-
-    /// <summary>
-    /// 摇杆事件委托
-    /// </summary>
-    /// <typeparam name="Arg"></typeparam>
-    /// <param name="joystick">引发事件的摇杆</param>
-    /// <param name="arg">事件参数</param>
-    public delegate void JoystickEvent<Arg>(BaseJoystick joystick, Arg arg);
-
-    /// <summary>
-    /// 摇杆控制器权限枚举
-    /// </summary>
-    [Flags]
-    public enum JoystickAvailablePermissions : uint
-    {
-
-        /// <summary>
-        /// 空值
-        /// </summary>
-        None = 0,
-
-        #region 摇杆参数
-
-        #region 摇杆分量
-
-        /// <summary>
-        /// 允许获取摇杆水平数据分量
-        /// </summary>
-        CanGetHorizontalComponent = 0b00000001,
-
-        /// <summary>
-        /// 允许获取摇杆垂直数据分量
-        /// </summary>
-        CanGetVerticalComponent = 0b00000010,
-
-        /// <summary>
-        /// 允许设置摇杆水平数据分量
-        /// </summary>
-        CanSetHorizontalComponent = 0b00000100,
-
-        /// <summary>
-        /// 允许设置摇杆垂直数据分量
-        /// </summary>
-        CanSetVerticalComponent = 0b00001000,
-
-        #endregion
-
-        #region 偏移轴
-
-        /// <summary>
-        /// 允许获取摇杆偏移轴数据
-        /// </summary>
-        CanGetVector = 0b00010000,
-
-        /// <summary>
-        /// 允许设置摇杆偏移轴数据
-        /// </summary>
-        CanSetVector = 0b00100000,
-
-        #endregion
-
-        #region 反转参数
-
-        /// <summary>
-        /// 允许访问水平方向摇杆反转参数
-        /// </summary>
-        CanGetHorizontalReverse = 0b01000000,
-
-        /// <summary>
-        /// 允许访问垂直方向摇杆反转参数
-        /// </summary>
-        CanGetVerticalReverse = 0b10000000,
-
-        /// <summary>
-        /// 允许设置水平方向摇杆反转参数
-        /// </summary>
-        CanSetHorizontalReverse = 0b00000001_00000000,
-
-        /// <summary>
-        /// 允许设置垂直方向摇杆反转参数
-        /// </summary>
-        CanSetVerticalReverse = 0b00000010_00000000,
-
-        /// <summary>
-        /// 允许访问和设置两个方向的摇杆反转参数
-        /// </summary>
-        CanSetAndGetAllReverse = CanGetHorizontalReverse | CanGetVerticalReverse |
-            CanSetHorizontalReverse | CanSetVerticalReverse,
-
-        #endregion
-
-        #endregion
-
-        #region 其它
-
-        /// <summary>
-        /// 允许使用摇杆数据改变事件
-        /// </summary>
-        CanChangeEvent = 0b00000100_00000000,
-
-        /// <summary>
-        /// 允许将摇杆参数当作四向按钮获取参数
-        /// </summary>
-        CanGetFourwayButtons = 0b00001000_00000000,
-
-        /// <summary>
-        /// 允许将摇杆参数当作四向按钮设置参数
-        /// </summary>
-        CanSetFourwayButtons = 0b00010000_00000000,
-
-        /// <summary>
-        /// 允许获取内部封装的摇杆
-        /// </summary>
-        CanGetInternalJoystick = 0b00100000_00000000,
-
-        /// <summary>
-        /// 允许设置内部封装的摇杆
-        /// </summary>
-        CanSetInternalJoystick = 0b01000000_00000000,
-
-        /// <summary>
-        /// 允许访问和设置内部封装的摇杆
-        /// </summary>
-        CanGetSetInternalJoystick = CanGetInternalJoystick | CanSetInternalJoystick,
-
-        #endregion
-
-        #region 组合
-
-        /// <summary>
-        /// 允许获取垂直方向和竖直方向以及摇杆偏移数据
-        /// </summary>
-        CanGetAllJoystick = CanGetVector |
-            CanGetHorizontalComponent | CanGetVerticalComponent,
-
-        /// <summary>
-        /// 允许除了<see cref="CanChangeEvent"/>、<see cref="CanGetFourwayButtons"/>和<see cref="CanSetFourwayButtons"/>之外的所有权限
-        /// </summary>
-        NotEventAndButtons = ~(CanGetFourwayButtons | CanChangeEvent | CanSetFourwayButtons),
-
-        /// <summary>
-        /// 拥有所有权限
-        /// </summary>
-        AllPermissions = 0xFFFFFFFF,
-
-        #endregion
-
-    }
 
 
     /// <summary>
@@ -290,6 +137,33 @@ namespace Cheng.ButtonTemplates.Joysticks
         }
 
         /// <summary>
+        /// 访问或设置水平方向的摇杆分量
+        /// </summary>
+        /// <exception cref="NotSupportedException">没有访问权限</exception>
+        public virtual double HorizontalD
+        {
+            get => Horizontal;
+            set
+            {
+                Horizontal = (float)value;
+            }
+        }
+
+        /// <summary>
+        /// 访问或设置垂直方向的摇杆分量
+        /// </summary>
+        /// <exception cref="NotSupportedException">没有访问权限</exception>
+        public virtual double VerticalD
+        {
+            get => Vertical;
+            set
+            {
+                Vertical = (float)value;
+            }
+        }
+
+
+        /// <summary>
         /// 将摇杆左侧偏移当作按钮访问或设置参数
         /// </summary>
         /// <exception cref="NotSupportedException">没有此功能</exception>
@@ -347,6 +221,8 @@ namespace Cheng.ButtonTemplates.Joysticks
         #endregion
 
         #region 功能
+
+        #region f
 
         /// <summary>
         /// 获取摇杆数据
@@ -420,6 +296,91 @@ namespace Cheng.ButtonTemplates.Joysticks
             ThrowNotSupportedException();
             throw new NotSupportedException();
         }
+
+        #endregion
+
+        #region d
+
+        /// <summary>
+        /// 获取摇杆数据
+        /// </summary>
+        /// <param name="radian">摇杆偏移的弧度角；使用平面直角坐标系的弧度单位</param>
+        /// <param name="length">摇杆位置距离摇杆原点的长度</param>
+        /// <exception cref="NotSupportedException">没有指定权限</exception>
+        public virtual void GetVectorD(out double radian, out double length)
+        {
+            float r, l;
+            GetVector(out r, out l);
+            radian = r;
+            length = l;
+        }
+
+        /// <summary>
+        /// 设置摇杆数据
+        /// </summary>
+        /// <param name="radian">摇杆偏移的弧度角；使用平面直角坐标系的弧度单位</param>
+        /// <param name="length">摇杆位置距离摇杆原点的长度</param>
+        /// <exception cref="NotSupportedException">没有指定权限</exception>
+        /// <exception cref="ArgumentOutOfRangeException">超出范围</exception>
+        public virtual void SetVectorD(double radian, double length)
+        {
+            SetVector((float)radian, (float)length);
+        }
+
+        /// <summary>
+        /// 获取摇杆数据
+        /// </summary>
+        /// <param name="angle">摇杆偏移的角度；使用平面直角坐标系的角度单位</param>
+        /// <param name="length">摇杆位置距离摇杆原点的长度</param>
+        /// <exception cref="NotSupportedException">没有指定权限</exception>
+        public virtual void GetVectorAngleD(out double angle, out double length)
+        {
+            float a, l;
+            GetVector(out a, out l);
+            angle = (float)(a / (System.Math.PI / 180d));
+            length = l;
+        }
+
+        /// <summary>
+        /// 设置摇杆数据
+        /// </summary>
+        /// <param name="angle">摇杆偏移的角度；使用平面直角坐标系的角度单位</param>
+        /// <param name="length">摇杆位置距离摇杆原点的长度</param>
+        /// <exception cref="NotSupportedException">没有指定权限</exception>
+        /// <exception cref="ArgumentOutOfRangeException">超出范围</exception>
+        public virtual void SetVectorAngleD(double angle, double length)
+        {
+            angle = (float)(angle * (System.Math.PI / 180d));
+            SetVectorD(angle, length);
+        }
+
+        /// <summary>
+        /// 设置摇杆数据
+        /// </summary>
+        /// <param name="horizontal">设置水平方向摇杆参数</param>
+        /// <param name="vertical">设置垂直方向摇杆参数</param>
+        /// <exception cref="ArgumentOutOfRangeException">范围超出</exception>
+        /// <exception cref="NotSupportedException">没有权限</exception>
+        public virtual void SetAxisD(double horizontal, double vertical)
+        {
+            SetAxis((float)horizontal, (float)vertical);
+        }
+
+        /// <summary>
+        /// 获取摇杆数据
+        /// </summary>
+        /// <param name="horizontal">水平方向摇杆参数</param>
+        /// <param name="vertical">垂直方向摇杆参数</param>
+        /// <exception cref="NotSupportedException">没有访问权限</exception>
+        public virtual void GetAxisD(out double horizontal, out double vertical)
+        {
+            float h, v;
+            GetAxis(out h, out v);
+            horizontal = h;
+            vertical = v;
+        }
+
+        #endregion
 
         #endregion
 
@@ -497,6 +458,19 @@ namespace Cheng.ButtonTemplates.Joysticks
         }
 
         /// <summary>
+        /// 将向量分量的方向以中心点反转
+        /// </summary>
+        /// <param name="horizontal">原向量x分量</param>
+        /// <param name="vertical">原向量y分量</param>
+        /// <param name="revHorizontal">反转后的向量x分量</param>
+        /// <param name="reVertical">反转后的向量y分量</param>
+        public static void ToReverse(double horizontal, double vertical, out double revHorizontal, out double reVertical)
+        {
+            revHorizontal = -horizontal;
+            reVertical = -vertical;
+        }
+
+        /// <summary>
         /// 以圆心为点将指定角绕180度反转
         /// </summary>
         /// <param name="radian">指定弧度角</param>
@@ -506,6 +480,18 @@ namespace Cheng.ButtonTemplates.Joysticks
             var r = radian - Math.PI;
             if (r < 0) return r + Math.PI * 2;
             return r;
+        }
+
+        /// <summary>
+        /// 以圆心为点将指定角绕180度反转
+        /// </summary>
+        /// <param name="radian">指定弧度角</param>
+        /// <returns>反转后的弧度角</returns>
+        public static float ToReverseVector(float radian)
+        {
+            var r = radian - Math.PI;
+            if (r < 0) return (float)(r + Math.PI * 2);
+            return (float)r;
         }
 
         /// <summary>
@@ -561,6 +547,45 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// <param name="radian">原角弧度</param>
         /// <returns>根据x轴做轴对称运动得到的角弧度</returns>
         public static double ToReverseVertical(float radian)
+        {
+            var x = (Math.Cos(radian));
+            var y = -(Math.Sin(radian));
+
+            var d = Math.Atan2(y, x);
+
+            // 弧度在0到2π范围内
+            if (d < 0) d += (2 * Math.PI);
+
+            return d;
+        }
+
+        /// <summary>
+        /// y轴做中心将给定弧度角对折到另一边
+        /// </summary>
+        /// <param name="radian">原角弧度</param>
+        /// <returns>根据y轴做轴对称运动得到的角弧度</returns>
+        public static double ToReverseHorizontal(double radian)
+        {
+            //水平反转
+            //GetVectorComponent(radian, 1, out var x, out var y);
+            var x = -(Math.Cos(radian));
+            var y = (Math.Sin(radian));
+
+            var d = Math.Atan2(y, x);
+
+            // 弧度在0到2π范围内
+            if (d < 0) d += (2 * Math.PI);
+
+            return d;
+
+        }
+
+        /// <summary>
+        /// x轴做中心将给定弧度角对折到另一边
+        /// </summary>
+        /// <param name="radian">原角弧度</param>
+        /// <returns>根据x轴做轴对称运动得到的角弧度</returns>
+        public static double ToReverseVertical(double radian)
         {
             var x = (Math.Cos(radian));
             var y = -(Math.Sin(radian));

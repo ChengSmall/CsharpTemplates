@@ -30,5 +30,16 @@ namespace Cheng.OtherCode.Winapi
         [DllImport("kernel32.dll")]
         public static extern uint GetLastError();
 
+        /// <summary>
+        /// 表示当前可用磁盘驱动器的位掩码
+        /// </summary>
+        /// <returns>
+        /// <para>如果函数成功，则返回值为表示当前可用磁盘驱动器的位掩码</para>
+        /// <para>从第0位开始表示驱动器A，1表示驱动器B，2表示驱动器C；1表示存在，0表示不存在</para>
+        /// <para>返回0表示函数失败</para>
+        /// </returns>
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern uint GetLogicalDrives();
+
     }
 }

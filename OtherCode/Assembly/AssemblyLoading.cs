@@ -32,9 +32,12 @@ namespace Cheng.Systems
         {
             var assName = args.Name;
             assName = getSimpleAssemblyName(assName);
-            if(p_asses.TryGetValue(assName, out var asses))
+            lock (p_asses)
             {
-                return asses;
+                if (p_asses.TryGetValue(assName, out var asses))
+                {
+                    return asses;
+                }
             }
             return null;
         }
@@ -44,21 +47,25 @@ namespace Cheng.Systems
             string name;
 
             name = getSimpleAssemblyName(ass.FullName);
-            //获取name下的ass集合
-            bool b = p_asses.ContainsKey(name);
-            if (b)
+            lock (p_asses)
             {
-                //有
-                if (cover)
+                //获取name下的ass集合
+                bool b = p_asses.ContainsKey(name);
+                if (b)
                 {
-                    p_asses[name] = ass;
+                    //有
+                    if (cover)
+                    {
+                        p_asses[name] = ass;
+                    }
+                }
+                else
+                {
+                    //没有直接加
+                    p_asses.Add(name, ass);
                 }
             }
-            else
-            {
-                //没有直接加
-                p_asses.Add(name, ass);
-            }
+           
         }
 
         #endregion
@@ -70,7 +77,7 @@ namespace Cheng.Systems
         /// </summary>
         public static void InitLoading()
         {
-            if(p_asses is null) p_asses = new Dictionary<string, Assembly>();
+            if(p_asses is null) p_asses = new Dictionary<string, Assembly>(new Cheng.DataStructure.Collections.BinaryStringEqualComparer());
         }
 
         /// <summary>
@@ -85,11 +92,22 @@ namespace Cheng.Systems
         }
 
         /// <summary>
+        /// 对某个应用程序域注销程序集加载事件
+        /// </summary>
+        /// <param name="dom">要注销的应用程序域</param>
+        /// <exception cref="ArgumentNullException">参数是null或未初始化</exception>
+        public static void UnregisterEvent(AppDomain dom)
+        {
+            if (dom is null || p_asses is null) throw new ArgumentNullException();
+            dom.AssemblyResolve -= Dom_AssemblyResolve;
+        }
+
+        /// <summary>
         /// 获取内部待加载程序集
         /// </summary>
         /// <returns>
-        /// <para>使用键值对储存的程序集，Key表示程序集的<see cref="Assembly.FullName"/></para>
-        /// <para>若未调用<see cref="RegisterEvent(AppDomain)"/>进行初始化则返回null</para>
+        /// <para>使用键值对储存的程序集，Key表示程序集名称</para>
+        /// <para>若未调用<see cref="InitLoading"/>进行初始化则返回null</para>
         /// </returns>
         public static Dictionary<string, Assembly> Assemblys
         {
@@ -152,7 +170,6 @@ namespace Cheng.Systems
                     f_addAss(ass, cover);
                     return null;
                 }
-                
             }
             catch (Exception ex)
             {
@@ -208,6 +225,42 @@ namespace Cheng.Systems
         {
             return AddAssembly(assembly, true);
         }
+
+        /// <summary>
+        /// 将指定目录下的文件全部添加进待加载模块
+        /// </summary>
+        /// <param name="path">一个文件夹目录</param>
+        /// <param name="cover">若名字重复是否覆盖</param>
+        /// <param name="searchOption">指示是否搜索子目录</param>
+        /// <exception cref="Exception">错误</exception>
+        public static void AddAssemblysByPath(string path, bool cover, SearchOption searchOption)
+        {
+            if (p_asses is null) throw new ArgumentNullException();
+            DirectoryInfo info = new DirectoryInfo(path);
+
+            var files = info.GetFiles("*.dll", searchOption);
+
+            int length = files.Length;
+            for (int i = 0; i < length; i++)
+            {
+                var fileInfo = files[i];
+
+                if (fileInfo.Exists)
+                {
+
+                    try
+                    {
+                        AddAssembly(fileInfo.FullName, cover);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+
+            }
+        }
+
+        
 
         /// <summary>
         /// 将指定目录下的文件全部添加进待加载模块

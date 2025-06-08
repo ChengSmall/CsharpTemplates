@@ -928,9 +928,9 @@ namespace Cheng.Texts
         protected override bool Disposing(bool disposeing)
         {
             //p_isDisposed;
-            if (p_isDisposeWriter && disposeing && p_writer != null)
+            f_flushAll(true);
+            if (p_isDisposeWriter && disposeing)
             {
-                Flush();
                 p_writer.Close();
             }
             p_writer = null;
@@ -941,7 +941,6 @@ namespace Cheng.Texts
 
         public override void Flush()
         {
-            //f_flush_leftWriterBuf();
             if (IsDispose) return;
             f_flushAll(true);
         }

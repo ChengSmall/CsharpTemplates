@@ -93,7 +93,7 @@ namespace Cheng.Streams
         {
             if (stream is null) throw new ArgumentNullException();
 
-            if ((!stream.CanSeek) || (!stream.CanRead)) throw new ArgumentException(Cheng.Properties.Resources.StreamParserDef_NotSeekAndRead);
+            if ((!stream.CanSeek) || (!stream.CanRead)) throw new NotSupportedException(Cheng.Properties.Resources.StreamParserDef_NotSeekAndRead);
 
             if (startPosition < 0 || length <= 0) throw new ArgumentOutOfRangeException();
 
@@ -130,6 +130,7 @@ namespace Cheng.Streams
         /// 截断流的起始位置
         /// </summary>
         private long p_startPos;
+
         /// <summary>
         /// 截断流的终止位置
         /// </summary>
@@ -239,7 +240,17 @@ namespace Cheng.Streams
                 if (spos != p_nowPos)
                 {
                     //调整基础流位置
-                    p_stream.Seek(p_nowPos, SeekOrigin.Begin);
+                    p_nowPos = p_stream.Seek(p_nowPos, SeekOrigin.Begin);
+                    if (p_nowPos < p_startPos)
+                    {
+                        p_nowPos = p_startPos;
+                        return 0;
+                        //p_nowPos = p_startPos;
+                    }
+                    else if (p_nowPos > p_endPos)
+                    {
+                        return 0;
+                    }
                 }
                 //从基础流读取
                 re = p_stream.Read(buf, 0, count);
@@ -309,12 +320,12 @@ namespace Cheng.Streams
         {
             get
             {
-                ThrowIsDispose();
+                ThrowIsDispose(nameof(TruncateStream));
                 return (p_nowPos + p_bufPos) - p_startPos;
             }
             set
             {
-                ThrowIsDispose();
+                ThrowIsDispose(nameof(TruncateStream));
                 //if (value < 0 || (value >= Length))
                 //{
                 //    throw new ArgumentOutOfRangeException("value");
@@ -323,9 +334,9 @@ namespace Cheng.Streams
             }
         }
 
-        public override bool CanRead => p_stream.CanRead;
+        public override bool CanRead => true;
 
-        public override bool CanSeek => p_stream.CanSeek;
+        public override bool CanSeek => true;
 
         public override bool CanWrite => false;
 
@@ -333,7 +344,7 @@ namespace Cheng.Streams
         {
             get
             {
-                ThrowIsDispose();
+                ThrowIsDispose(nameof(TruncateStream));
                 return (p_endPos + 1) - p_startPos;
             }
         }
@@ -342,20 +353,36 @@ namespace Cheng.Streams
         {
             get
             {
+                ThrowIsDispose(nameof(TruncateStream));
                 return p_stream.WriteTimeout;
             }
             set
             {
+                ThrowIsDispose(nameof(TruncateStream));
                 p_stream.WriteTimeout = value;
             }
         }
 
-        public override bool CanTimeout => p_stream.CanTimeout;
+        public override bool CanTimeout
+        {
+            get
+            {
+                return (p_stream?.CanTimeout).GetValueOrDefault();
+            }
+        }
 
         public override int ReadTimeout
         {
-            get => p_stream.ReadTimeout;
-            set => p_stream.ReadTimeout = value;
+            get
+            {
+                ThrowIsDispose(nameof(TruncateStream));
+                return p_stream.ReadTimeout;
+            }
+            set
+            {
+                ThrowIsDispose(nameof(TruncateStream));
+                p_stream.ReadTimeout = value;
+            }
         }
 
         #endregion
@@ -371,7 +398,7 @@ namespace Cheng.Streams
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            ThrowIsDispose();
+            ThrowIsDispose(nameof(TruncateStream));
             
             long value;
 
@@ -379,15 +406,14 @@ namespace Cheng.Streams
             if (p_bufPosEnd >= 0) p_nowPos += p_bufPos;
             p_bufPos = 0;
             p_bufPosEnd = -1;
-
+            var endNext = (p_endPos + 1);
             if (origin == SeekOrigin.Begin)
             {
                 value = p_startPos + offset;
             }
             else if (origin == SeekOrigin.End)
             {
-
-                value = p_endPos + offset;
+                value = endNext + offset;
 
             }
             else if(origin == SeekOrigin.Current)
@@ -397,16 +423,16 @@ namespace Cheng.Streams
             else
             {
                 throw new ArgumentException();
-            }           
+            }
 
-            //if (value < p_startPos)
-            //{
-            //    value = p_startPos;
-            //}
-            //else if(value > p_endPos)
-            //{
-            //    value = p_endPos + 1;
-            //}
+            if (value < p_startPos)
+            {
+                value = p_startPos;
+            }
+            else if (value > endNext)
+            {
+                value = endNext;
+            }
             p_nowPos = value;
 
             return p_nowPos - p_startPos;
@@ -414,7 +440,7 @@ namespace Cheng.Streams
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            ThrowIsDispose();
+            ThrowIsDispose(nameof(TruncateStream));
             if (buffer is null) throw new ArgumentNullException();
 
             var len = buffer.Length;
@@ -437,7 +463,7 @@ namespace Cheng.Streams
 
                 if (p_nowPos < p_startPos)
                 {
-                    NotBufferTruncateStream.throwOutRange();
+                    p_nowPos = p_startPos;
                 }
                 else if(p_nowPos > p_endPos)
                 {
@@ -463,7 +489,7 @@ namespace Cheng.Streams
 
         public override int ReadByte()
         {
-            ThrowIsDispose();
+            ThrowIsDispose(nameof(TruncateStream));
 
             //缓存可用量
             //int count = f_bufferHaveReadCount(p_bufPos, p_bufPosEnd);
@@ -510,19 +536,10 @@ namespace Cheng.Streams
         /// <summary>
         /// 获取内部封装的基础流
         /// </summary>
+        /// <returns>内部封装的基础流，已释放返回null</returns>
         public Stream BaseStream
         {
             get => p_stream;
-        }
-
-        /// <summary>
-        /// 获取内部封装的基础流
-        /// </summary>
-        /// <typeparam name="ST">要获取的实例类型</typeparam>
-        /// <returns>内部封装的基础流，若指定类型错误，则返回null</returns>
-        public ST GetBaseStream<ST>() where ST : Stream
-        {
-            return p_stream as ST;
         }
 
         #endregion
@@ -592,7 +609,7 @@ namespace Cheng.Streams
         {
             if (stream is null) throw new ArgumentNullException();
 
-            if ((!stream.CanSeek) || (!stream.CanRead)) throw new ArgumentException();
+            if ((!stream.CanSeek) || (!stream.CanRead)) throw new NotSupportedException();
 
             if (startPosition < 0 || length <= 0) throw new ArgumentOutOfRangeException();
 
@@ -656,23 +673,19 @@ namespace Cheng.Streams
         {
             get
             {
-                ThrowIsDispose();
+                ThrowIsDispose(nameof(NotBufferTruncateStream));
                 return (p_nowPos) - p_startPos;
             }
             set
             {
-                ThrowIsDispose();
-                //if (value < 0)
-                //{
-                //    throw new ArgumentOutOfRangeException("value");
-                //}
+                ThrowIsDispose(nameof(NotBufferTruncateStream));
                 Seek(value, SeekOrigin.Begin);
             }
         }
 
-        public override bool CanRead => p_stream.CanRead;
+        public override bool CanRead => true;
 
-        public override bool CanSeek => p_stream.CanSeek;
+        public override bool CanSeek => true;
 
         public override bool CanWrite => false;
 
@@ -680,7 +693,7 @@ namespace Cheng.Streams
         {
             get
             {
-                ThrowIsDispose();
+                ThrowIsDispose(nameof(NotBufferTruncateStream));
                 return (p_endPos + 1) - p_startPos;
             }
         }
@@ -689,20 +702,30 @@ namespace Cheng.Streams
         {
             get
             {
+                ThrowIsDispose(nameof(NotBufferTruncateStream));
                 return p_stream.WriteTimeout;
             }
             set
             {
+                ThrowIsDispose(nameof(NotBufferTruncateStream));
                 p_stream.WriteTimeout = value;
             }
         }
 
-        public override bool CanTimeout => p_stream.CanTimeout;
+        public override bool CanTimeout => (p_stream?.CanTimeout).GetValueOrDefault();
 
         public override int ReadTimeout
         {
-            get => p_stream.ReadTimeout;
-            set => p_stream.ReadTimeout = value;
+            get
+            {
+                ThrowIsDispose(nameof(NotBufferTruncateStream));
+                return p_stream.ReadTimeout;
+            }
+            set
+            {
+                ThrowIsDispose(nameof(NotBufferTruncateStream));
+                p_stream.ReadTimeout = value;
+            }
         }
 
         #endregion
@@ -718,7 +741,7 @@ namespace Cheng.Streams
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            ThrowIsDispose();
+            ThrowIsDispose(nameof(NotBufferTruncateStream));
 
             long value;
 
@@ -731,7 +754,7 @@ namespace Cheng.Streams
             else if (origin == SeekOrigin.End)
             {
 
-                value = p_endPos + offset;
+                value = (p_endPos + 1) + offset;
 
             }
             else if (origin == SeekOrigin.Current)
@@ -743,14 +766,14 @@ namespace Cheng.Streams
                 throw new ArgumentException();
             }
 
-            //if (value < p_startPos)
-            //{
-            //    value = p_startPos;
-            //}
-            //else if (value > p_endPos)
-            //{
-            //    value = p_endPos + 1;
-            //}
+            if (value < p_startPos)
+            {
+                value = p_startPos;
+            }
+            else if (value > p_endPos)
+            {
+                value = p_endPos + 1;
+            }
             p_nowPos = value;
 
             return p_nowPos - p_startPos;
@@ -758,7 +781,7 @@ namespace Cheng.Streams
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            ThrowIsDispose();
+            ThrowIsDispose(nameof(NotBufferTruncateStream));
             if (buffer is null) throw new ArgumentNullException();
 
             var len = buffer.Length;
@@ -769,10 +792,10 @@ namespace Cheng.Streams
             {
                 return 0;
             }
-            else if(p_nowPos < p_startPos)
+            if(p_nowPos < p_startPos)
             {
-                throwOutRange();
-                return 0;
+                p_nowPos = p_startPos;
+                //return 0;
             }
 
             //截断流剩余长度
@@ -809,27 +832,25 @@ namespace Cheng.Streams
             return reCount;
         }
 
-        internal static void throwOutRange()
-        {
-            throw new IOException(Cheng.Properties.Resources.Exception_StreamReaderOutRange);
-        }
-
         public override int ReadByte()
         {
-            ThrowIsDispose();
+            ThrowIsDispose(nameof(NotBufferTruncateStream));
 
             //截断流剩余长度
             var length = (p_endPos + 1) - p_nowPos;
 
             if (length > 0)
             {
-                //判断并设置基位置
-                if (p_nowPos != p_stream.Position)
+                lock (p_stream)
                 {
-                    p_stream.Position = p_nowPos;
+                    //判断并设置基位置
+                    if (p_nowPos != p_stream.Position)
+                    {
+                        p_stream.Position = p_nowPos;
+                    }
+                    return p_stream.ReadByte();
                 }
 
-                return p_stream.ReadByte();
             }
 
             return -1;
@@ -869,24 +890,14 @@ namespace Cheng.Streams
         /// <summary>
         /// 获取内部封装的基础流
         /// </summary>
+        /// <returns>内部封装的基础流，已释放返回null</returns>
         public Stream BaseStream
         {
             get => p_stream;
         }
 
-        /// <summary>
-        /// 获取内部封装的基础流
-        /// </summary>
-        /// <typeparam name="ST">要获取的实例类型</typeparam>
-        /// <returns>内部封装的基础流，若指定类型错误，则返回null</returns>
-        public ST GetBaseStream<ST>() where ST : Stream
-        {
-            return p_stream as ST;
-        }
-
         #endregion
 
     }
-
 
 }

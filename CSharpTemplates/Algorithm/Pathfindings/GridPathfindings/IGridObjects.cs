@@ -4,7 +4,7 @@ namespace Cheng.Algorithm.Pathfindings
 {
 
     /// <summary>
-    /// 一个用于访问地图格子数据的公共实现接口
+    /// 一个用于访问地图格子数据的公共接口
     /// </summary>
     public interface IGridObjects
     {
@@ -14,26 +14,31 @@ namespace Cheng.Algorithm.Pathfindings
         /// </summary>
         /// <param name="x">x坐标，其范围表示为[0,<see cref="Width"/>)</param>
         /// <param name="y">y坐标，其范围表示为[0,<see cref="Height"/>)</param>
-        /// <returns>参数为true表示该地点允许行走；false则表示不允许行走或坐标不在地图范围内</returns>
-        bool CanMove(int x, int y);
+        /// <returns>
+        /// <para>如果返回值为0，表示该位置可以允许行进；返回值小于0，表示坐标存在障碍物无法行进</para>
+        /// <para>
+        /// 如果返回值大于0，表示位置可以行进，但是行进时有一定代价，返回值越大，行进的代价越高
+        /// </para>
+        /// <para>如果坐标<paramref name="x"/>或<paramref name="y"/>超出地图范围，返回值也理应小于0</para>
+        /// </returns>
+        int GetGridPrice(int x, int y);
 
         /// <summary>
-        /// 地图x轴索引所在的长度
+        /// 最大代价值
+        /// </summary>
+        /// <returns>函数<see cref="GetGridPrice(int, int)"/>可返回的最大值；在派生类实现该参数时，返回值不能小于0</returns>
+        int MaxPrice { get; }
+
+        /// <summary>
+        /// 地图x轴的长度
         /// </summary>
         int Width { get; }
 
         /// <summary>
-        /// 地图y轴索引所在的长度
+        /// 地图y轴的长度
         /// </summary>
         int Height { get; }
 
-        /// <summary>
-        /// 单位是否拥有斜向行走的能力
-        /// </summary>
-        /// <returns>
-        /// 该参数为true时，表示单位行走时能够以对角线的路径形式行走；false则单位只能以前后左右四个方向行走
-        /// </returns>
-        bool CanDiagonally { get; }
     }
 
 }

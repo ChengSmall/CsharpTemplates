@@ -47,22 +47,6 @@ namespace Cheng.Algorithm.Trees
             if (tree is null || action is null) throw new ArgumentNullException();
 
             f_foeachDepth(tree, action);
-            //int length;
-            //length = tree.Count;
-            //TreeNode<T> node;
-            //bool flag;
-
-            //for (int i = 0; i < length; i++)
-            //{
-            //    node = tree[i];
-            //    if(node.Count != 0)
-            //    {
-            //        ForeachDepth(node, action);
-            //    }
-
-            //    flag = action.Invoke(node);
-            //    if (!flag) break;
-            //}
         }
 
         static bool f_foeachDepth<T>(TreeNode<T> tree, Func<TreeNode<T>, bool> action)
@@ -91,6 +75,48 @@ namespace Cheng.Algorithm.Trees
             return true;
 
         }
+
+        /// <summary>
+        /// 深度优先遍历多叉树
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tree">要遍历的多叉树</param>
+        /// <param name="action">对每一个元素执行动作，返回值为true则继续遍历，false则终止遍历；参数int表示当前遍历的层级，0代表参数<paramref name="tree"/>，值越大层级越小</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void ForeachDepth<T>(this TreeNode<T> tree, Func<TreeNode<T>, int, bool> action)
+        {
+            if (tree is null || action is null) throw new ArgumentNullException();
+
+            f_foeachDepth(tree, action, 0);
+        }
+
+        static bool f_foeachDepth<T>(TreeNode<T> tree, Func<TreeNode<T>, int, bool> action, int lay)
+        {
+            int length;
+            length = tree.Count;
+            TreeNode<T> node;
+            bool flag;
+            int c = lay + 1;
+            for (int i = 0; i < length; i++)
+            {
+                node = tree[i];
+
+                flag = action.Invoke(node, c);
+                if (!flag) break;
+
+                if (node.Count != 0)
+                {
+                    if (!f_foeachDepth(node, action, c))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+
+        }
+
 
         /// <summary>
         /// 广度优先遍历多叉树

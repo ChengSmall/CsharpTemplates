@@ -37,7 +37,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// 资源所在的索引路径
         /// </summary>
         /// <remarks>
-        /// 资源所在的相对路径，格式为"file.ext","dire\dire2\file.ext"，不能有"..\"和"\path\file"此类语法
+        /// <para>资源所在的相对路径，格式为"file.ext",<![CDATA["dire\dire2\file.ext"]]>，不能有<![CDATA["..\"和"\path\file"]]>此类语法；首个字符和最后一个字符都不能出现分隔符<![CDATA[/ 或 \]]></para>
         /// </remarks>
         public readonly string path;
 
@@ -70,7 +70,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         }
 
         /// <summary>
-        /// 比较相等
+        /// 比较路径相等
         /// </summary>
         /// <param name="s1"></param>
         /// <param name="s2"></param>
@@ -81,7 +81,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         }
 
         /// <summary>
-        /// 比较不相等
+        /// 比较路径不相等
         /// </summary>
         /// <param name="s1"></param>
         /// <param name="s2"></param>
@@ -123,7 +123,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// 要存储到的资源包所在的索引路径
         /// </summary>
         /// <remarks>
-        /// 资源所在的相对路径，格式为"file.ext","dire\dire2\file.ext"，不能有"..\"和"\path\file"此类语法
+        /// <para>资源所在的相对路径，格式为"file.ext",<![CDATA["dire\dire2\file.ext"]]>，不能有<![CDATA["..\"和"\path\file"]]>此类语法；首个字符和最后一个字符都不能出现分隔符<![CDATA[/ 或 \]]></para>
         /// </remarks>
         public readonly string dataPath;
 
@@ -177,12 +177,12 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         }
 
         /// <summary>
-        /// 返回待打包文件和打包到的路径
+        /// 返回打包到的路径
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return file?.ToString() + " => " + dataPath;
+            return dataPath;
         }
 
         #endregion

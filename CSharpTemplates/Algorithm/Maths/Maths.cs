@@ -645,7 +645,7 @@ namespace Cheng.Algorithm
                     int cv = comparer.Compare(temp, current);
                     if (cv > 0)
                     {
-                        //左大
+                        //temp大，将较小值写入temp
                         temp = current;
                     }
 

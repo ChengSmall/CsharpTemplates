@@ -286,7 +286,7 @@ namespace Cheng.DataStructure.Hashs
         /// <summary>
         /// 将字节序列转化为<see cref="Hash256"/>
         /// </summary>
-        /// <param name="buffer">字节序列首地址</param>
+        /// <param name="buffer">字节序列首地址，请保证地址指向的内存拥有至少32个字节</param>
         /// <returns>转化后的实例</returns>
         public static Hash256 BytesToHash256(byte* buffer)
         {
@@ -388,7 +388,7 @@ namespace Cheng.DataStructure.Hashs
 
         public long GetHashCode64()
         {
-            return s1.GetHashCode64() ^ s2.GetHashCode64() ^ s3.GetHashCode64() ^ s4.GetHashCode64();
+            return (long)(s1 ^ s2 ^ s3 ^ s4);
         }
 
         /// <summary>

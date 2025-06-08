@@ -203,7 +203,7 @@ namespace Cheng.Texts
 
         public override void Flush()
         {
-            p_writer.Flush();
+            p_writer?.Flush();
         }
 
         #endregion
@@ -212,9 +212,10 @@ namespace Cheng.Texts
 
         protected override bool Disposing(bool disposeing)
         {
+            p_writer.Flush();
             if (p_isDisposeWriter && disposeing)
             {
-                p_writer?.Close();
+                p_writer.Close();
             }
             p_writer = null;
             return false;

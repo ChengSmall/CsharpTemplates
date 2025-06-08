@@ -30,9 +30,9 @@ namespace Cheng.GameTemplates.BlackWhiteChiess
 
         #region 参数
         protected BWPiece[,] p_board;
-        protected readonly int p_width;
-        protected readonly int p_height;
-        protected readonly int p_length;
+        protected int p_width;
+        protected int p_height;
+        protected int p_length;
         #endregion
 
         #region 功能

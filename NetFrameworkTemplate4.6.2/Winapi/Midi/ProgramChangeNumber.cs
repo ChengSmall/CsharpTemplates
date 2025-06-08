@@ -38,7 +38,7 @@ namespace Cheng.Windows.MIDI
         /// <summary>
         /// 钢琴 - 有合唱效果的电子琴
         /// </summary>
-        Paino_ChoirElectric,
+        Piano_ChoirElectric,
 
         /// <summary>
         /// 钢琴 - 羽管键琴（拨弦古钢琴）

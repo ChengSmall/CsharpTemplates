@@ -93,9 +93,30 @@ namespace Cheng.IO.Systems
 
         public override bool CanGetCreationTime => true;
 
+        public override bool CanCopyFile => true;
+
+        public override bool CanCreateStream
+        {
+            get => true;
+        }
+
+        public override bool CanMoveFile => true;
+
+        public override bool CanOpenStream => true;
+
+        public override bool CanCurrentDirectory => true;
+
         #endregion
 
         #region
+
+        public override CDirectoryInfo CurrentDirectory
+        {
+            get
+            {
+                return new SysDirectoryInfo(fileInfo.Directory);
+            }
+        }
 
         /// <summary>
         /// 获取内部封装的文件对象
@@ -173,7 +194,7 @@ namespace Cheng.IO.Systems
             if ((fileShare & CFileShare.Read) == CFileShare.Read) fs |= FileShare.Read;
             if ((fileShare & CFileShare.Write) == CFileShare.Write) fs |= FileShare.Write;
             if ((fileShare & CFileShare.Delete) == CFileShare.Delete) fs |= FileShare.Delete;
-            return fileInfo.Open(FileMode.Create, acc, fs);
+            return new FileStream(fileInfo.FullName, FileMode.Create, acc, fs);
         }
 
         public override Stream OpenStream(CFileAccess access)
@@ -187,11 +208,7 @@ namespace Cheng.IO.Systems
 
         public override Stream CreateStream(CFileAccess access)
         {
-            FileAccess acc = 0;
-            if ((access & CFileAccess.Read) == CFileAccess.Read) acc |= FileAccess.Read;
-            if ((access & CFileAccess.Write) == CFileAccess.Write) acc |= FileAccess.Write;
-
-            return fileInfo.Open(FileMode.Create, acc, FileShare.Read);
+            return CreateStream(access, CFileShare.ReadWrite);
         }
 
         public override CFileInfo MoveTo(string toPath, bool overwrite)
@@ -228,6 +245,13 @@ namespace Cheng.IO.Systems
         {
             fileInfo.CopyTo(toPath);
             return this;
+        }
+
+        public override bool CanRefresh => true;
+
+        public override void Refresh()
+        {
+            fileInfo.Refresh();
         }
 
         #endregion
@@ -310,9 +334,36 @@ namespace Cheng.IO.Systems
 
         public override bool CanCopy => false;
 
+        public override bool CanCreateFileInfo => true;
+
+        public override bool CanCreateSubdirectory => true;
+
+        public override bool CanCreateFileInfoExists => true;
         #endregion
 
         #region 功能
+
+        public override bool CanRefresh => true;
+
+        public override void Refresh()
+        {
+            directoryInfo.Refresh();
+        }
+
+        public override CFileInfo CreateFileInfo(string fileName, bool createExists)
+        {
+            var path = Path.Combine(directoryInfo.FullName, fileName);
+            if (createExists)
+            {
+                if (!File.Exists(path)) File.Create(path).Close();
+            }
+            return new SysFileInfo(path);
+        }
+
+        public override CDirectoryInfo CreateSubdirectory(string path)
+        {
+            return new SysDirectoryInfo(directoryInfo.CreateSubdirectory(path));
+        }
 
         /// <summary>
         /// 获取内部封装的系统目录对象

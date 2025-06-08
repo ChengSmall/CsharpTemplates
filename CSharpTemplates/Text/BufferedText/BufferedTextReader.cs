@@ -112,8 +112,8 @@ namespace Cheng.Texts
 
         protected override bool Disposing(bool disposeing)
         {
-
-            if(disposeing && p_isDisposeBaseReader && p_reader != null)
+            
+            if (disposeing && p_isDisposeBaseReader && p_reader != null)
             {
                 p_reader.Close();
             }

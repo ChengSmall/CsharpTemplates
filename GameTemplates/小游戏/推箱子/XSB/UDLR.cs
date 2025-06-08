@@ -115,7 +115,7 @@ namespace Cheng.GameTemplates.PushingBoxes.XSB
 
                 if (re < 0) return;
 
-                var c = ((char)re).ToLopper();
+                var c = ((char)re).ToLower();
                 switch (c)
                 {
                     case LeftChar:
