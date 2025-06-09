@@ -100,18 +100,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
-      <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
+      <Project>{338a4b93-0e1e-4fde-afe2-9ec29106ab1f}</Project>
       <Name>CSharpTemplates</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\GameTemplates\GameTemplates.csproj">
       <Project>{bf887d71-f9bf-46d3-bf92-532b27afab78}</Project>
       <Name>GameTemplates</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\UnityGames\UnityCSharpTemplates.csproj">
-      <Project>{e735a697-a3c2-451e-8ba0-bf190776af20}</Project>
-      <Name>UnityCSharpTemplates</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

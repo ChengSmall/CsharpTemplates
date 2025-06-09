@@ -1,269 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{ED14EA85-E51C-4C11-95DB-0E0DC4F69EBA}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Cheng</RootNamespace>
-    <AssemblyName>CSharpTemplates</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
+    <Authors>Cheng</Authors>
+    <Company>Cheng</Company>
+    <Copyright>© Cheng</Copyright>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\CSharpTemplates.xml</DocumentationFile>
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
+    <DebugSymbols>false</DebugSymbols>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\CSharpTemplates.xml</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityWindows|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\UnityWindows\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityAndroid|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\UnityAndroid\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityEditor|AnyCPU'">
-    <OutputPath>bin\UnityEditor\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\CSharpTemplates.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
+
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.XML" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Algorithm\Compression\CParserOpenStream.cs" />
-    <Compile Include="Algorithm\Compression\ResourcePackage\DataIndex.cs" />
-    <Compile Include="Algorithm\Compression\ResourcePackage\FileResourcePackageReader.cs" />
-    <Compile Include="Algorithm\Compression\ResourcePackage\ResourcePackageReader.cs" />
-    <Compile Include="Algorithm\Compression\ResourcePackage\ResourcePackageWriter.cs" />
-    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64DecodeStream.cs" />
-    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64EncodeReader.cs" />
-    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64EncoderException.cs" />
-    <Compile Include="Algorithm\Encryption\StringEncryption\Base64\Base64StreamWriter.cs" />
-    <Compile Include="Algorithm\ListExtend\ListExtend.Cover.cs" />
-    <Compile Include="Algorithm\Sort\Comparers\BinaryStringComparer.cs" />
-    <Compile Include="Algorithm\Tree\TreeNodeExtend\TreeNodeExtend.cs" />
-    <Compile Include="Algorithm\Random\BufferedRandom.cs" />
-    <Compile Include="Algorithm\Random\SynchronizedRandom.cs" />
-    <Compile Include="Algorithm\Sort\Comparers\ChineseCharparer.cs" />
-    <Compile Include="Algorithm\Sort\Comparers\ComparerByNotPath.cs" />
-    <Compile Include="Algorithm\Sort\Comparers\ObjectComparer.cs" />
-    <Compile Include="Algorithm\Sort\Comparers\StringByCharComparer.cs" />
-    <Compile Include="Algorithm\Sort\Comparers\FileComparer.cs" />
-    <Compile Include="Algorithm\Sort\Comparers\StrNumSeparationComparer.cs" />
-    <Compile Include="Algorithm\Compression\BaseCompressionParser.cs" />
-    <Compile Include="Algorithm\Compression\DataInformation.cs" />
-    <Compile Include="Algorithm\Encryption\StringEncryption\BaseStringEncryption.cs" />
-    <Compile Include="Algorithm\Encryption\XOREncryption\XOREncryption.cs" />
-    <Compile Include="Algorithm\Encryption\XOREncryption\XORStreamEncry.cs" />
-    <Compile Include="Algorithm\Pathfindings\GridPathfindings\GridPathfinding.cs" />
-    <Compile Include="Algorithm\Pathfindings\GridPathfindings\IGridObjects.cs" />
-    <Compile Include="Algorithm\Sort\BubbleSort.cs" />
-    <Compile Include="Algorithm\Tree\TreeAction.cs" />
-    <Compile Include="Algorithm\Tree\TreeDataEntry.cs" />
-    <Compile Include="Data\BoundedContainer\BoundedContainerDecimal.cs" />
-    <Compile Include="Data\BoundedContainer\BoundedContainerDouble.cs" />
-    <Compile Include="Data\BoundedContainer\BoundedContainerFloat.cs" />
-    <Compile Include="Data\BoundedContainer\BoundedContainerInt16.cs" />
-    <Compile Include="Data\BoundedContainer\BoundedContainerInt32.cs" />
-    <Compile Include="Data\BoundedContainer\BoundedContainerInt64.cs" />
-    <Compile Include="Data\Button\CancelButton.cs" />
-    <Compile Include="Data\Button\ConditionalButton.cs" />
-    <Compile Include="Data\Button\Joysticks\JoystickData.cs" />
-    <Compile Include="Data\Button\Joysticks\ReversibleJoystick.cs" />
-    <Compile Include="Data\Controllers\GameController.cs" />
-    <Compile Include="Algorithm\HashCodes\BaseHashCodes.cs" />
-    <Compile Include="Algorithm\HashCodes\DelegateHashCode64.cs" />
-    <Compile Include="Algorithm\HashCodes\EnumValueHashCode.cs" />
-    <Compile Include="Algorithm\HashCodes\HashCodes.cs" />
-    <Compile Include="Algorithm\HashCodes\NullableValueTypeHashCode.cs" />
-    <Compile Include="Algorithm\ListExtend\ListExtend.cs" />
-    <Compile Include="Algorithm\Maths\Maths.3D.Point.cs" />
-    <Compile Include="Algorithm\Maths\Maths.Triangle.cs" />
-    <Compile Include="Algorithm\Maths\Maths.cs" />
-    <Compile Include="Algorithm\Maths\Maths.Rect.cs" />
-    <Compile Include="Algorithm\Random\BaseRandom.cs" />
-    <Compile Include="Algorithm\Random\Extends\RandomExtends.cs" />
-    <Compile Include="Algorithm\Random\LICRandom.cs" />
-    <Compile Include="Algorithm\Random\PerlinoiseRandom.cs" />
-    <Compile Include="Algorithm\Random\PointRandom.cs" />
-    <Compile Include="Algorithm\Random\SystemRandom.cs" />
-    <Compile Include="Algorithm\Sort\Comparers\InvertComparer.cs" />
-    <Compile Include="Data\Button\ButtonPowerMapState.cs" />
-    <Compile Include="Data\Button\Joysticks\JoystickByButton4Power.cs" />
-    <Compile Include="Data\Button\Joysticks\JoystickByButton2.cs" />
-    <Compile Include="Data\Button\Joysticks\JoystickByButton4State.cs" />
-    <Compile Include="Data\Button\ButtonStateMapPower.cs" />
-    <Compile Include="Data\Button\PowerButtonRange.cs" />
-    <Compile Include="Data\Button\ResourceButton.cs" />
-    <Compile Include="Data\EqualityComparerHash64.cs" />
-    <Compile Include="Data\IGettingStream.cs" />
-    <Compile Include="Data\List\Equals\BinaryStringEqualComparer.cs" />
-    <Compile Include="Data\Hash\Hash256.cs" />
-    <Compile Include="Data\List\DelegateArray.cs" />
-    <Compile Include="Data\List\Queue\ImmediatelyQueue.cs" />
-    <Compile Include="Data\List\Stack\ImmediatelyStack.cs" />
-    <Compile Include="Data\NumGenerators\DynamicNumber.cs" />
-    <Compile Include="Data\NumGenerators\NumGenerator.cs" />
-    <Compile Include="Data\NumGenerators\NumGeneratorMath.cs" />
-    <Compile Include="Data\NumGenerators\NumGeneratorRandom.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleByte.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleDecimal.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleDouble.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleFloat.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleInt16.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleInt64.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleUInt16.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleUInt32.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleUInt64.cs" />
-    <Compile Include="Data\Controllers\BaseController.cs" />
-    <Compile Include="Data\Bits\Bit32.cs" />
-    <Compile Include="Data\Bits\Bit64.cs" />
-    <Compile Include="Data\Bits\Bit8.cs" />
-    <Compile Include="Data\Chessrdinates\Point2.cs" />
-    <Compile Include="Data\Chessrdinates\Point3.cs" />
-    <Compile Include="Data\Chessrdinates\PointInt2.cs" />
-    <Compile Include="Data\Colors\Colour.cs" />
-    <Compile Include="Data\DisplayNames.cs" />
-    <Compile Include="Data\FiniteStateMachine\FiniteStateMachine.cs" />
-    <Compile Include="Data\FiniteStateMachine\StateNode.cs" />
-    <Compile Include="Data\IPredicate.cs" />
-    <Compile Include="Data\List\BinaryTree\BinaryTreeNode.cs" />
-    <Compile Include="Data\List\MultiforkedTree\TreeNode.cs" />
-    <Compile Include="Data\List\ReadOnlyDictionary.cs" />
-    <Compile Include="Data\List\RectArray.cs" />
-    <Compile Include="Data\ObjectPools\ObjectPool.cs" />
-    <Compile Include="Data\Controllers\Structures.cs" />
-    <Compile Include="Data\Stream\StreamBlock.cs" />
-    <Compile Include="Data\Text\CMStringBuilder.cs" />
-    <Compile Include="IO\FileInfos\CFileInfo.cs" />
-    <Compile Include="IO\FileInfos\SystemFile.cs" />
-    <Compile Include="IO\IOoperations\IOoperations.cs" />
-    <Compile Include="IO\IOoperations\IOoperations.File.cs" />
-    <Compile Include="IO\IOoperations\IOoperations.Stream.cs" />
-    <Compile Include="IO\RootToFolderIndexer.cs" />
-    <Compile Include="Memorys\FixedByteBlock.cs" />
-    <Compile Include="Parsers\CommandParser\CommandParser.cs" />
-    <Compile Include="Parsers\StreamParser\SerializeStreamParser.cs" />
-    <Compile Include="Data\List\ReadOnlyList.cs" />
-    <Compile Include="Algorithm\Sort\InsertionSort.cs" />
-    <Compile Include="Algorithm\Sort\QukeSort.cs" />
-    <Compile Include="Algorithm\Sort\Sorts.cs" />
-    <Compile Include="Data\Button\BaseButton.cs" />
-    <Compile Include="Data\Button\Joysticks\BaseJoystick.cs" />
-    <Compile Include="Data\Receptacle\ReceptacleInt32.cs" />
-    <Compile Include="Parsers\StreamParser\BaseStreamParser.cs" />
-    <Compile Include="Parsers\StreamParser\StreamParserDefault.cs" />
-    <Compile Include="Parsers\StreamParser\StreamParserException.cs" />
-    <Compile Include="Parsers\StreamParser\StreamParserStructure.cs" />
-    <Compile Include="Parsers\TextParser\BaseTextParser.cs" />
-    <Compile Include="Parsers\TextParser\Json\ToValue\JsonToNumber.cs" />
-    <Compile Include="Streams\ReadOnlyStream.cs" />
-    <Compile Include="Text\BufferedText\BufferedTextWriter.cs" />
-    <Compile Include="Text\BufferedText\BufferedTextReader.cs" />
-    <Compile Include="Parsers\TextParser\Json\JsonDictionary.cs" />
-    <Compile Include="Parsers\TextParser\Json\JsonExtend.cs" />
-    <Compile Include="Parsers\TextParser\Json\Default\JsonParserDefault.cs" />
-    <Compile Include="Parsers\TextParser\Json\JsonList.cs" />
-    <Compile Include="Parsers\TextParser\Json\JsonToObject.cs" />
-    <Compile Include="Data\List\Equals\EqualityNotPathSeparator.cs" />
-    <Compile Include="Text\SafeRelease\SafeReleaseTextReader.cs" />
-    <Compile Include="Text\SafeRelease\SafeReleaseTextWriter.cs" />
-    <Compile Include="Text\StreamBytesReader.cs" />
-    <Compile Include="Text\StringText\CharBufferReader.cs" />
-    <Compile Include="Text\StringText\CMStringBuilderReader.cs" />
-    <Compile Include="Text\StringText\StringBuilderReader.cs" />
-    <Compile Include="Text\StringText\StringRangeReader.cs" />
-    <Compile Include="Text\TextEnumerator\TextCountEnumator.cs" />
-    <Compile Include="Text\TextEnumerator\TextEnumerator.cs" />
-    <Compile Include="Text\UnicodeEscapeText\UnicodeEscapeTextReader.cs" />
-    <Compile Include="Text\UnicodeEscapeText\UnicodeEscapeTextWriter.cs" />
-    <Compile Include="IO\ReadOnlyPartFileStream.cs" />
-    <Compile Include="Parsers\TextParser\Xml\XmlStandardItemText.cs" />
-    <Compile Include="Parsers\Xml\BaseXmlItemParser.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
+    <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Streams\ReadBlockStream.cs" />
-    <Compile Include="Memorys\Handles\SafeHandlePointer.cs" />
-    <Compile Include="Memorys\Handles\SafeReleaseHandlePointer.cs" />
-    <Compile Include="Memorys\MemoryOperations.cs" />
-    <Compile Include="Parsers\TextParser\Json\JsonParser.cs" />
-    <Compile Include="Parsers\TextParser\Json\JsonVariables.cs" />
-    <Compile Include="Algorithm\Path\traversalPath\ScanPath.cs" />
-    <Compile Include="Memorys\Pointer\Pointer32.cs" />
-    <Compile Include="Memorys\Pointer\Pointer64.cs" />
-    <Compile Include="Memorys\ReleaseDestructor.cs" />
-    <Compile Include="Memorys\SafreleaseUnmanagedResources.cs" />
-    <Compile Include="Text\StandardizedTexter\StandardizedTextReader.cs" />
-    <Compile Include="Text\StandardizedTexter\StandardizedTextWriter.cs" />
-    <Compile Include="Text\TextManipulation\TextManipulation.cs" />
-    <Compile Include="Memorys\UnmanagedMemoryagement.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Streams\BinaryStream.cs" />
-    <Compile Include="Streams\HEStream.cs" />
-    <Compile Include="Streams\RegulateDisposeStream.cs" />
-    <Compile Include="Memorys\SafeReleaseObject.cs" />
-    <Compile Include="Streams\TruncateStream.cs" />
-    <Compile Include="Systems\FileSystemExtends.cs" />
-    <Compile Include="Systems\SystemEnvironment.cs" />
-    <Compile Include="Data\Timer\BaseTimer.cs" />
-    <Compile Include="Data\Timer\Calculagraph.cs" />
-    <Compile Include="Text\TextManipulation\TextManipulation.Files.cs" />
-    <Compile Include="Text\TextManipulation\TextManipulation.ReadWriter.cs" />
-    <Compile Include="Text\TextManipulation\TextManipulation.StringAndValue.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Algorithm\Maths\Structures\" />
     <Folder Include="Algorithm\Pathfindings\GridPathfindings\AStar\" />
@@ -273,26 +48,5 @@
     <Folder Include="Parsers\TextParser\Json\ToText\" />
     <Folder Include="Streams\Audios\" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Algorithm\Compression\ResourcePackage\资源包数据格式.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Parsers\TextParser\Json\ToValue\值获取结构.json" />
-    <None Include="简介.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Parsers\TextParser\Xml\标准项数据文本.xml" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
-del /q "$(TargetDir)$(TargetFileName).config"
-)</PostBuildEvent>
-  </PropertyGroup>
+
 </Project>

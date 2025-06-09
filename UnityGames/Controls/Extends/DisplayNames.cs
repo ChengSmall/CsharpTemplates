@@ -26,7 +26,7 @@ namespace Cheng.Unitys
         /// </param>
         /// <returns>转化到的键值对集合，key表示对象，value为对象名称</returns>
         /// <exception cref="ArgumentException">json参数格式不正确</exception>
-        public static DisplayNames<KeyCode> JsonToKeyCodeDisplayName(this JsonVariable json)
+        public static Cheng.DataStructure.DisplayNames<KeyCode> JsonToKeyCodeDisplayName(this JsonVariable json)
         {
             if (json is null) throw new ArgumentNullException(nameof(json));
 
@@ -47,7 +47,7 @@ namespace Cheng.Unitys
         /// </param>
         /// <returns>转化到的键值对集合，key表示对象，value为对象名称</returns>
         /// <exception cref="ArgumentException">json参数格式不正确</exception>
-        public static DisplayNames<T> JsonToDisplayName<T>(this JsonVariable json) where T : struct, global::System.Enum
+        public static Cheng.DataStructure.DisplayNames<T> JsonToDisplayName<T>(this JsonVariable json) where T : struct, global::System.Enum
         {
             
             if (json is null) throw new ArgumentNullException(nameof(json));

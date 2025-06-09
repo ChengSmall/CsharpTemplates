@@ -364,7 +364,7 @@ namespace Cheng.DataStructure.Hashs
 
         public override int GetHashCode()
         {
-            return s1.GetHashCode() ^ s2.GetHashCode() ^ s3.GetHashCode() ^ s4.GetHashCode();
+            return (s1 ^ s2 ^ s3 ^ s4).GetHashCode();
         }
 
         public override bool Equals(object obj)

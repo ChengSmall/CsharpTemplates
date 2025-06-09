@@ -6,6 +6,7 @@ namespace Cheng.DataStructure.Bits
     /// <summary>
     /// 8bit位域真值结构
     /// </summary>
+    [Serializable]
     public struct Bit8 : IEquatable<Bit8>, IComparable<Bit8>
     {
 
@@ -16,7 +17,6 @@ namespace Cheng.DataStructure.Bits
         /// </summary>
         /// <param name="value">
         /// 初始值
-        /// <para>在C#7.0中，你可以使用0b开头写二进制字面常量，0b1111_1111，最右边第一位是索引0，依次向左递进</para>
         /// </param>
         public Bit8(byte value)
         {
@@ -110,7 +110,17 @@ namespace Cheng.DataStructure.Bits
             return new Bit8(value);
         }
 
-        public static explicit operator byte(Bit8 value)
+        public static explicit operator Bit8(int value)
+        {
+            return new Bit8((byte)value);
+        }
+
+        public static implicit operator byte(Bit8 value)
+        {
+            return value.p_value;
+        }
+
+        public static implicit operator int(Bit8 value)
         {
             return value.p_value;
         }

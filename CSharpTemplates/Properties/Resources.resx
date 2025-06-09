@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ArrayValue_IndexOut" xml:space="preserve">
     <value>索引超出范围</value>
@@ -123,50 +123,38 @@
   </data>
   <data name="Exception_ArgNullError" xml:space="preserve">
     <value>参数是表示为null的空引用</value>
-    <comment>异常消息：参数是表示为null的空引用</comment>
   </data>
   <data name="Exception_Base64EncoderError" xml:space="preserve">
     <value>Base64编码出现错误</value>
-    <comment>异常消息：Base64编码出现错误</comment>
   </data>
   <data name="Exception_FuncArgError" xml:space="preserve">
     <value>给定方法的参数不合规</value>
-    <comment>异常消息：给定方法的参数不合规</comment>
   </data>
   <data name="Exception_FuncArgOutOfRange" xml:space="preserve">
     <value>给定参数超出范围</value>
-    <comment>异常消息：给定参数超出范围</comment>
   </data>
   <data name="Exception_NotParserJsonText" xml:space="preserve">
     <value>无法解析json文本</value>
-    <comment>异常消息：无法解析json文本</comment>
   </data>
   <data name="Exception_NotSupportedText" xml:space="preserve">
     <value>不支持此功能</value>
-    <comment>异常消息：不支持此功能</comment>
   </data>
   <data name="Exception_PathIsEmpty" xml:space="preserve">
     <value>路径为空</value>
-    <comment>异常消息：路径为空</comment>
   </data>
   <data name="Exception_StreamDisposeText" xml:space="preserve">
     <value>流已经被释放</value>
-    <comment>异常消息：流已经被释放</comment>
   </data>
   <data name="Exception_StreamReaderOutRange" xml:space="preserve">
     <value>读取的流超出给定的范围</value>
-    <comment>异常消息：读取的流超出给定的范围</comment>
   </data>
   <data name="StreamParserDef_CunstomWriterExc" xml:space="preserve">
     <value>自定义写入异常</value>
-    <comment>异常消息：</comment>
   </data>
   <data name="StreamParserDef_NotConver" xml:space="preserve">
     <value>无法解析数据</value>
-    <comment>异常消息：无法解析数据</comment>
   </data>
   <data name="StreamParserDef_NotSeekAndRead" xml:space="preserve">
     <value>流不支持查找或读取</value>
-    <comment>异常消息：流不支持查找或读取</comment>
   </data>
 </root>

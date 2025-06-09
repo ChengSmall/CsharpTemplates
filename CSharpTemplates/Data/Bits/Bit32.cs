@@ -6,22 +6,40 @@ namespace Cheng.DataStructure.Bits
     /// <summary>
     /// 32bit位域真值结构
     /// </summary>
-    public struct Bit32 : IEquatable<Bit32>, IComparable<Bit32>
+    [Serializable] public struct Bit32 : IEquatable<Bit32>, IComparable<Bit32>
     {
 
         #region 构造
+
         /// <summary>
         /// 初始化一个32bit位域结构
         /// </summary>
         /// <param name="value">
-        /// 初始值
-        /// <para>在C#7.0中，你可以使用0b开头写二进制字面常量，0b11111111_00000000，最右边第一位是索引0，依次向左递进</para>
+        /// 值
         /// </param>
         public Bit32(uint value)
         {
             p_value = value;
         }
 
+        /// <summary>
+        /// 初始化一个32bit位域结构
+        /// </summary>
+        /// <param name="value">
+        /// 值
+        /// </param>
+        public Bit32(int value)
+        {
+            p_value = (uint)value;
+        }
+
+        /// <summary>
+        /// 初始化一个32bit位域结构
+        /// </summary>
+        /// <param name="b1">0-7位bit位</param>
+        /// <param name="b2">8-15位bit位</param>
+        /// <param name="b3">16-23位bit位</param>
+        /// <param name="b4">24-31位bit位</param>
         public Bit32(Bit8 b1, Bit8 b2, Bit8 b3, Bit8 b4)
         {
             p_value = (uint)(b1.p_value | (b2.p_value << 8) | (b3.p_value << 16) | (b4.p_value << 24));
@@ -50,7 +68,6 @@ namespace Cheng.DataStructure.Bits
         {
             get
             {
-                //if (index < 0 || index > 7) throw new IndexOutOfRangeException();
                 return ((p_value >> index) & 0b1) == 1 ? true : false;
             }
         }
@@ -89,9 +106,19 @@ namespace Cheng.DataStructure.Bits
             return new Bit32(value);
         }
 
-        public static explicit operator uint(Bit32 value)
+        public static explicit operator Bit32(int value)
+        {
+            return new Bit32(value);
+        }
+
+        public static implicit operator uint(Bit32 value)
         {
             return value.p_value;
+        }
+
+        public static explicit operator int(Bit32 value)
+        {
+            return (int)value.p_value;
         }
 
         public static bool operator ==(Bit32 b1, Bit32 b2)

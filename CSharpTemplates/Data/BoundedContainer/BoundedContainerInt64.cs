@@ -72,6 +72,16 @@ namespace Cheng.DataStructure.BoundedContainers
         #region 函数
 
         /// <summary>
+        /// 判断当前的<see cref="value"/>与另一个参数的<see cref="BC.value"/>是否相同
+        /// </summary>
+        /// <param name="other">与其比较的值</param>
+        /// <returns>判断<see cref="value"/>是否一致</returns>
+        public bool EqualsValue(BC other)
+        {
+            return value == other.value;
+        }
+
+        /// <summary>
         /// 增加值
         /// </summary>
         /// <param name="value">要增加的值</param>

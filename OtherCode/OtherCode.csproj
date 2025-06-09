@@ -91,9 +91,7 @@
     <Compile Include="DisposeFunc.cs" />
     <Compile Include="Process\ProcessExdOther.cs" />
     <Compile Include="Registrys\RegistryExtend.cs" />
-    <Compile Include="Streams\NetEasyUCToAudioStream.cs" />
     <Compile Include="Streams\ReadOnlyFileStream.cs" />
-    <Compile Include="structure\GameTimes.cs" />
     <Compile Include="Webs\Bilibili\BilibiliErrorException.cs" />
     <Compile Include="Webs\Bilibili\BilibiliLiveRoom.cs" />
     <Compile Include="Webs\Bilibili\BilibiliPendant.cs" />
@@ -125,7 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
-      <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
+      <Project>{338a4b93-0e1e-4fde-afe2-9ec29106ab1f}</Project>
       <Name>CSharpTemplates</Name>
       <Private>False</Private>
     </ProjectReference>

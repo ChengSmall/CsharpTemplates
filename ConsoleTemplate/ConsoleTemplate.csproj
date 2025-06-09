@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\temp\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,7 +28,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\temp\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -46,13 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
-      <Project>{ed14ea85-e51c-4c11-95db-0e0dc4f69eba}</Project>
-      <Name>CSharpTemplates</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="ConsoleEngine\ConsoleMenuUIList.cs" />
     <Compile Include="ConsoleEngine\ConsolePrint.cs" />
     <Compile Include="ConsoleEngine\IDrawObject.cs" />
@@ -63,11 +56,18 @@
   <ItemGroup>
     <None Include="简介.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
+      <Project>{338a4b93-0e1e-4fde-afe2-9ec29106ab1f}</Project>
+      <Name>CSharpTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
-
 del /q "$(TargetDir)$(TargetFileName).config"
+copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

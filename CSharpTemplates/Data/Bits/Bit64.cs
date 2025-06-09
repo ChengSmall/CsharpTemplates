@@ -7,20 +7,31 @@ namespace Cheng.DataStructure.Bits
     /// <summary>
     /// 64bit位域真值结构
     /// </summary>
-    public struct Bit64 : IEquatable<Bit64>, IComparable<Bit64>, IHashCode64
+    [Serializable] public struct Bit64 : IEquatable<Bit64>, IComparable<Bit64>, IHashCode64
     {
 
         #region 构造
+
         /// <summary>
         /// 初始化一个64bit位域结构
         /// </summary>
         /// <param name="value">
-        /// 初始值
-        /// <para>在C#7.0中，你可以使用0b开头写二进制字面常量，0b11111111_00000000，最右边第一位是索引0，依次向左递进</para>
+        /// 值
         /// </param>
         public Bit64(ulong value)
         {
             p_value = value;
+        }
+
+        /// <summary>
+        /// 初始化一个64bit位域结构
+        /// </summary>
+        /// <param name="value">
+        /// 值
+        /// </param>
+        public Bit64(long value)
+        {
+            p_value = (ulong)value;
         }
 
         public Bit64(Bit32 b1, Bit32 b2)
@@ -84,6 +95,31 @@ namespace Cheng.DataStructure.Bits
         #endregion
 
         #region 运算
+
+        public static implicit operator Bit64(ulong value)
+        {
+            return new Bit64(value);
+        }
+
+        public static explicit operator Bit64(long value)
+        {
+            return new Bit64(value);
+        }
+
+        public static implicit operator ulong(Bit64 value)
+        {
+            return value.p_value;
+        }
+
+        public static implicit operator Bit64(uint value)
+        {
+            return new Bit64(value);
+        }
+
+        public static explicit operator long(Bit64 value)
+        {
+            return (long)value.p_value;
+        }
 
         public static bool operator ==(Bit64 b1, Bit64 b2)
         {

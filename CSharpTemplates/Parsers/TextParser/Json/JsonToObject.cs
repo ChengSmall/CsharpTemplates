@@ -54,7 +54,7 @@ namespace Cheng.Json
     /// <summary>
     /// 将json对象转化为.net对象的公共基类
     /// </summary>
-    public abstract class JsonToObject : IJsonToObject, IReadOnlyList<Type>
+    public abstract class JsonToObject : IJsonToObject, DataStructure.Collections.IReadOnlyList<Type>
     {
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Cheng.Json
         /// </summary>
         public abstract int TypeCount { get; }
 
-        int IReadOnlyCollection<Type>.Count => TypeCount;
+        int DataStructure.Collections.IReadOnlyCollection<Type>.Count => TypeCount;
 
         /// <summary>
         /// 将对象转化为json对象
