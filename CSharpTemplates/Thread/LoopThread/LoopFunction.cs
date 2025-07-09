@@ -11,7 +11,7 @@ namespace Cheng.LoopThreads
     /// <summary>
     /// 表示一个封装的循环执行函数
     /// </summary>
-    public class LoopFunction : SafreleaseUnmanagedResources
+    public unsafe class LoopFunction : SafreleaseUnmanagedResources
     {
 
         #region 释放
@@ -368,7 +368,7 @@ namespace Cheng.LoopThreads
         {
             get
             {
-                return DateTime.UtcNow - p_startTime;
+                return new DateTime(GetNowTimeTick()) - p_startTime;
             }
         }
 
@@ -694,7 +694,7 @@ namespace Cheng.LoopThreads
 
         private void f_loopStartInit()
         {
-            p_startTime = DateTime.UtcNow;
+            p_startTime = new DateTime(GetNowTimeTick());
             p_lastTime = p_startTime;
             p_nowTime = p_startTime;
             p_lastScaleTime = p_startTime;
@@ -717,7 +717,7 @@ namespace Cheng.LoopThreads
 
         private void f_loopFirst()
         {
-            DateTime now = DateTime.UtcNow;
+            DateTime now = new DateTime(GetNowTimeTick());
             
             p_lastTime = p_nowTime;
             p_nowTime = now;
@@ -770,6 +770,11 @@ namespace Cheng.LoopThreads
 
             }
 
+        }
+
+        protected virtual long GetNowTimeTick()
+        {
+            return Stopwatch.GetTimestamp();
         }
 
         /// <summary>

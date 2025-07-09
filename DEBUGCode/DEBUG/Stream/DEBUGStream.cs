@@ -83,6 +83,7 @@ namespace Cheng.DEBUG
         {
             get
             {
+                if (IsDispose) return false;
                 var re = p_stream.CanRead;
                 p_print?.WriteLine("获取CanRead:" + re);
                 return re;
@@ -93,6 +94,7 @@ namespace Cheng.DEBUG
         {
             get
             {
+                if (IsDispose) return false;
                 var re = p_stream.CanSeek;
                 p_print?.WriteLine("获取CanSeek:" + re);
                 return re;
@@ -103,6 +105,7 @@ namespace Cheng.DEBUG
         {
             get
             {
+                if (IsDispose) return false;
                 var re = p_stream.CanWrite;
                 p_print?.WriteLine("获取CanWrite:" + re);
                 return re;
@@ -149,7 +152,16 @@ namespace Cheng.DEBUG
             set => p_stream.WriteTimeout = value;
         }
 
-        public override bool CanTimeout => p_stream.CanTimeout;
+        public override bool CanTimeout
+        {
+            get
+            {
+                if (IsDispose) return false;
+                var re = p_stream.CanTimeout;
+                p_print?.WriteLine("获取CanTimeout:" + re);
+                return re;
+            }
+        }
 
         #endregion
 
@@ -287,9 +299,25 @@ namespace Cheng.DEBUG
             if (disposing && p_disposed)
             {
                 p_stream.Close();
-                p_print?.WriteLine("释放DEBUG流");
             }
             p_stream = null;
+            if(p_print is object)
+            {
+                p_buffer.Clear();
+
+                p_buffer.Append("释放DEBUG流 =>");
+
+                if (disposing)
+                {
+                    p_buffer.Append("释放托管对象 =>");
+                }
+                if (p_disposed)
+                {
+                    p_buffer.Append("释放内部封装流");
+                }
+                p_print.WriteLine(p_buffer.ToString());
+            }
+
             return true;
         }
 
@@ -315,7 +343,9 @@ namespace Cheng.DEBUG
             sb.AppendLine(p_seekCount.ToString());
             sb.Append("内部封装流类型：");
             var t = p_stream.GetType();
-            sb.Append(t.FullName);
+            sb.AppendLine(t.FullName);
+            sb.Append("封装流所在程序集:");
+            sb.Append(t.Assembly.FullName);
 
             return sb.ToString();
         }
@@ -378,6 +408,9 @@ namespace Cheng.DEBUG
             p_writeCount = 0;
         }
 
+        /// <summary>
+        /// 内部封装的流
+        /// </summary>
         public Stream BaseStream => p_stream;
 
         /// <summary>

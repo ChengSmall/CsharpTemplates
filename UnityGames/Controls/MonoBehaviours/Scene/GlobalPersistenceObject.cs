@@ -19,7 +19,7 @@ namespace Cheng.Unitys.Scenes
     [AddComponentMenu("Cheng/场景/全局对象初始化")]
 #endif
     [DisallowMultipleComponent]
-    public class GlobalPersistenceObject : MonoBehaviour
+    public sealed class GlobalPersistenceObject : MonoBehaviour
     {
 
         #region

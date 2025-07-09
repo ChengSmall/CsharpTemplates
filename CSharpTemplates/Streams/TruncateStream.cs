@@ -299,7 +299,7 @@ namespace Cheng.Streams
                 buffer[offset] = p_buffer[p_bufPos++];
                 return 1;
             }
-
+            
             Buffer.BlockCopy(p_buffer, p_bufPos, buffer, offset, rc);
             //Array.Copy(p_buffer, p_bufPos, buffer, offset, rc);
             //fixed (byte* orcBuf = p_buffer, toBuf = buffer)

@@ -157,9 +157,14 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         /// <para>修改该集合，调整要打包的文件，准备完成后调用<see cref="ToPack(Stream)"/>或<see cref="ToPackEnumator(Stream)"/>开始打包</para>
         /// <para>这个集合内不要有重复的元素，否则可能会在打包时添加永远无法读取到的数据</para>
         /// </remarks>
+        /// <exception cref="NotImplementedException">打包器处于打包过程</exception>
         public List<FileInfoIndex> PackFiles
         {
-            get => p_list;
+            get
+            {
+                if(p_packing) throw new NotImplementedException();
+                return p_list;
+            }
         }
 
         /// <summary>
@@ -228,6 +233,20 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             p_errorException = null;
         }
 
+        /// <summary>
+        /// 取消正在打包的过程状态
+        /// </summary>
+        /// <exception cref="NotImplementedException">参数<see cref="Packing"/>是false</exception>
+        public void ResetPacking()
+        {
+            if (p_packing)
+            {
+                p_packing = false;
+                return;
+            }
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region 参数调整和判断
@@ -272,7 +291,11 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                         return false;
                     }
 
-                    if (!file.file.Exists)
+                    //if (!file.file.Exists)
+                    //{
+                    //    return false;
+                    //}
+                    if (file.file.StreamLength < 0)
                     {
                         return false;
                     }
@@ -458,6 +481,10 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
             for (i = 0, nextSize = dataHand; i < list.Count; i++)
             {
+                if (!p_packing)
+                {
+                    yield break;
+                }
                 //获取第i个文件
                 fi = list[i];
 
@@ -514,8 +541,14 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
                     //写入数据位置和长度
 
-                    fileSize = fi.file.Length;
-
+                    fileSize = fi.file.StreamLength;
+                    if(fileSize < 0)
+                    {
+                        //错误
+                        p_errorException = new NotImplementedException();
+                        p_packing = false;
+                        yield break;
+                    }
                     //位置
                     nextSize.OrderToByteArray(p_transBuffer, 0);
                     //nextSize.ToByteArray(p_transBuffer);
@@ -559,7 +592,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                 try
                 {
                     //readFile = new FileStream(fi.file.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                    readFile = fi.file.OpenStream(CFileAccess.Read);
+                    readFile = fi.file.OpenStream();
                 }
                 catch (Exception ex)
                 {
@@ -568,7 +601,10 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                     p_errorException = ex;
                     yield break;
                 }
-
+                if(readFile is null)
+                {
+                    continue;
+                }
                 var enumators = readFile.CopyToStreamEnumator(pack, p_copyBytesBuffer);
 
                 var enumator = enumators.GetEnumerator();

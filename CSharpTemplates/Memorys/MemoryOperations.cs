@@ -882,19 +882,33 @@ namespace Cheng.Memorys
         /// <returns><paramref name="value"/>中包含<paramref name="bitOf"/>内的所有位值返回true，否则返回false</returns>
         public static bool IsAndEnumBit<T>(this T value, T bitOf) where T : unmanaged, global::System.Enum
         {
+            return HasFlag(value, bitOf);
+        }
 
+        /// <summary>
+        /// 判断枚举值的位域信息是否包含<paramref name="bitOf"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">判断的值</param>
+        /// <param name="bitOf">要判断的位域信息</param>
+        /// <returns><paramref name="value"/>中包含<paramref name="bitOf"/>内的所有位值返回true，否则返回false</returns>
+        public static bool HasFlag<T>(this T value, T bitOf) where T : unmanaged, global::System.Enum
+        {
             switch (sizeof(T))
             {
                 case 8:
-                    return IsAndBit(*((ulong*)&value), *((ulong*)&bitOf));
+                    //return IsAndBit(*((ulong*)&value), *((ulong*)&bitOf));
+                    return ((*((ulong*)&value)) & (*((ulong*)&bitOf))) == (*((ulong*)&bitOf));
                 case 4:
-                    return IsAndBit(*((uint*)&value), *((uint*)&bitOf));
+                    //return IsAndBit(*((uint*)&value), *((uint*)&bitOf));
+                    return ((*((uint*)&value)) & (*((uint*)&bitOf))) == (*((uint*)&bitOf));
                 case 2:
-                    return IsAndBit(*((ushort*)&value), *((ushort*)&bitOf));
+                    //return IsAndBit(*((ushort*)&value), *((ushort*)&bitOf));
+                    return ((*((ushort*)&value)) & (*((ushort*)&bitOf))) == (*((ushort*)&bitOf));
                 default:
-                    return IsAndBit(*((byte*)&value), *((byte*)&bitOf));
+                    //return IsAndBit(*((byte*)&value), *((byte*)&bitOf));
+                    return ((*((byte*)&value)) & (*((byte*)&bitOf))) == (*((byte*)&bitOf));
             }
-           
         }
 
         #endregion

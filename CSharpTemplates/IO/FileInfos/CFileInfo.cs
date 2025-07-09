@@ -952,11 +952,28 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 实现<see cref="IGettingStream"/>接口的<see cref="IGettingStream.StreamLength"/>可重写返回值
+        /// 实现<see cref="IGettingStream"/>接口的<see cref="IGettingStream.StreamLength"/>参数
         /// </summary>
         protected virtual long IGettingStreamLength
         {
-            get => CanGetLength ? Length : -1;
+            get
+            {
+                try
+                {
+                    if (CanGetLength)
+                    {
+                        if (CanRefresh)
+                        {
+                            Refresh();
+                        }
+                        return Length;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+                return -1;
+            }
         }
 
         /// <summary>
@@ -965,7 +982,13 @@ namespace Cheng.IO
         /// <returns><see cref="IGettingStream.OpenStream"/>函数的返回值</returns>
         protected virtual Stream GettingOpenStream()
         {
-            if (CanOpenStream) return OpenStream(CFileAccess.Read);
+            try
+            {
+                if (CanOpenStream) return OpenStream(CFileAccess.Read);
+            }
+            catch (Exception)
+            {
+            }
             return null;
         }
 

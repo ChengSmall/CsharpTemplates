@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID,HAVE_TOUCH,HAVE_MOUSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -29,7 +29,7 @@
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID</DefineConstants>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID,HAVE_TOUCH,HAVE_MOUSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -51,7 +51,7 @@
     <Compile Include="codes\推箱子\EditorDrawStructure.cs" />
     <Compile Include="codes\推箱子\Editor\SpriteDrawEditorGUI.cs" />
     <Compile Include="codes\游戏静态参数类\GameParameters.cs" />
-    <Compile Include="项目代码\暂未完成功能\CameraOrbitController.cs" />
+    <Compile Include="项目代码\未完功能\CameraOrbitController\CameraOrbitController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Win32.Registry, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -108,6 +108,10 @@
       <Project>{bf887d71-f9bf-46d3-bf92-532b27afab78}</Project>
       <Name>GameTemplates</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\UnityGames\UnityCSharpTemplates.csproj">
+      <Project>{5921c56a-6327-4f94-a853-4815e9e990ac}</Project>
+      <Name>UnityCSharpTemplates</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

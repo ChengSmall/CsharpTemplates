@@ -158,6 +158,130 @@ namespace Cheng.OtherCode.Winapi
 
         }
 
+        [DllImport(apiName, SetLastError = true)]
+        public extern static ushort GetAsyncKeyState(int key);
+
+        /// <summary>
+        /// 合成键击、鼠标动作和按钮单击
+        /// </summary>
+        /// <remarks>
+        /// <para>此函数受 UIPI 约束，仅允许应用程序将输入注入到完整性级别相等或更低级别的应用程序</para>
+        /// <para>函数将 <see cref="INPUT"/> 结构中的事件串行插入键盘或鼠标输入流<br/>
+        /// 这些事件不会与用户 (键盘或鼠标) 插入的其他键盘或鼠标输入事件，或者通过调用 keybd_event、 <see cref="mouse_event(uint, int, int, uint, void*)"/> 或 对 <see cref="SendInput(uint, INPUT*, int)"/>的其他调用插入</para>
+        /// <para>
+        /// 此函数不会重置键盘的当前状态<br/>
+        /// 调用函数时已按下的任何键都可能会干扰此函数生成的事件<br/>
+        /// 若要避免此问题，请使用<see cref="GetAsyncKeyState(int)"/>函数检查键盘的状态，并根据需要进行更正
+        /// </para>
+        /// </remarks>
+        /// <param name="nInputs">数组元素数量</param>
+        /// <param name="pInputs">数组，每个元素都表示要插入键盘或鼠标输入流的事件</param>
+        /// <param name="cbSize">数组每个元素的大小</param>
+        /// <returns>
+        /// <para>返回成功插入键盘或鼠标输入流的事件数</para>
+        /// <para>如果函数返回零，则表示输入已被另一个线程阻止，使用<see cref="Marshal.GetLastWin32Error"/>获取错误代码</para>
+        /// </returns>
+        [DllImport(apiName, SetLastError = true)]
+        public static extern uint SendInput(uint nInputs, INPUT* pInputs, int cbSize);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct INPUT
+        {
+            /// <summary>
+            /// 输入事件的类型
+            /// </summary>
+            public uint type;
+
+            /// <summary>
+            /// 时间参数
+            /// </summary>
+            public INPUTUNION u;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct INPUTUNION
+        {
+            [FieldOffset(0)] public MOUSEINPUT mi;
+            [FieldOffset(0)] public KEYBDINPUT ki;
+            [FieldOffset(0)] public HARDWAREINPUT hi;
+        }
+
+        /// <summary>
+        /// 键盘事件
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KEYBDINPUT
+        {
+
+            /// <summary>
+            /// 虚拟键码
+            /// </summary>
+            public ushort wVk;
+
+            /// <summary>
+            /// 扫描码
+            /// </summary>
+            public ushort wScan;
+
+            /// <summary>
+            /// 按键击发的状态
+            /// </summary>
+            /// <remarks>
+            /// <para>
+            /// 可有以下参数：
+            /// <para>KEYEVENTF_EXTENDEDKEY: 0x0001 = 指定后<see cref="wScan"/>扫描代码由两个字节组成的序列组成，其中第一个字节的值为0xE0</para>
+            /// <para>KEYEVENTF_KEYUP: 0x0002 = 如果指定则释放；未指定则按下</para>
+            /// <para>KEYEVENTF_UNICODE: 0x0004 = 如果指定，系统会合成 VK_PACKET 击键；<see cref="wVk"/>参数必须为零，此标志只能与 KEYEVENTF_KEYUP 标志组合使用</para>
+            /// </para>
+            /// <para>KEYEVENTF_SCANCODE: 0x0008 = 如果指定，将识别<see cref="wScan"/>而不是<see cref="wVk"/></para>
+            /// </remarks>
+            public uint dwFlags;
+
+            /// <summary>
+            /// 事件的时间戳（以毫秒为单位）
+            /// </summary>
+            /// <remarks>如果此参数为零，则系统将提供自己的时间戳</remarks>
+            public uint time;
+
+            /// <summary>
+            /// 与击键关联的附加值
+            /// </summary>
+            public IntPtr dwExtraInfo;
+        }
+
+        /// <summary>
+        /// 鼠标事件
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MOUSEINPUT
+        {
+
+            public int dx;
+
+            public int dy;
+
+            public uint mouseData;
+
+            public uint dwFlags;
+
+            public uint time;
+
+            public IntPtr dwExtraInfo;
+        }
+
+        /// <summary>
+        /// 由键盘或鼠标以外的输入设备生成的模拟消息
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HARDWAREINPUT
+        {
+            public uint uMsg;
+
+            public ushort wParamL;
+
+            public ushort wParamH;
+        }
+
     }
 
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Cheng.DataStructure.Streams;
 using Cheng.IO;
+using Cheng.DataStructure;
 
 namespace Cheng.Algorithm.Compressions.ResourcePackages
 {
@@ -115,9 +116,20 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         }
 
         /// <summary>
-        /// 要存储的文件数据
+        /// 初始化文件路径索引
         /// </summary>
-        public readonly CFileInfo file;
+        /// <param name="file">待存文件</param>
+        /// <param name="dataPath">存储到的包索引，指定资源包相对位置</param>
+        public FileInfoIndex(IGettingStream file, string dataPath)
+        {
+            this.file = file;
+            this.dataPath = dataPath;
+        }
+
+        /// <summary>
+        /// 要存储的数据获取接口
+        /// </summary>
+        public readonly IGettingStream file;
 
         /// <summary>
         /// 要存储到的资源包所在的索引路径

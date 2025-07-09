@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTemplate", "ConsoleT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpTemplates", "CSharpTemplates\CSharpTemplates.csproj", "{338A4B93-0E1E-4FDE-AFE2-9EC29106AB1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityCSharpTemplates", "UnityGames\UnityCSharpTemplates.csproj", "{5921C56A-6327-4F94-A853-4815E9E990AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityCSharpTemplates", "UnityGames\UnityCSharpTemplates.csproj", "{5921C56A-6327-4F94-A853-4815E9E990AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +31,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityAndroid|Any CPU.ActiveCfg = Release|Any CPU
 		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityEditor|Any CPU.ActiveCfg = Debug|Any CPU
@@ -74,6 +75,7 @@ Global
 		{75303085-7F22-4760-B1AA-6321A936AACB}.UnityWindows|Any CPU.ActiveCfg = Release|Any CPU
 		{75303085-7F22-4760-B1AA-6321A936AACB}.UnityWindows|Any CPU.Build.0 = Release|Any CPU
 		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.Release|Any CPU.Build.0 = Release|Any CPU
 		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityAndroid|Any CPU.ActiveCfg = Debug|Any CPU
@@ -81,6 +83,7 @@ Global
 		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityEditor|Any CPU.ActiveCfg = Debug|Any CPU
 		{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}.UnityWindows|Any CPU.ActiveCfg = Debug|Any CPU
 		{338A4B93-0E1E-4FDE-AFE2-9EC29106AB1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{338A4B93-0E1E-4FDE-AFE2-9EC29106AB1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{338A4B93-0E1E-4FDE-AFE2-9EC29106AB1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{338A4B93-0E1E-4FDE-AFE2-9EC29106AB1F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{338A4B93-0E1E-4FDE-AFE2-9EC29106AB1F}.UnityAndroid|Any CPU.ActiveCfg = Debug|Any CPU

@@ -86,6 +86,7 @@
     <Compile Include="Compressions\ZipArchive\ReadOnlyZipArchiveCompress.cs" />
     <Compile Include="Compressions\ZipArchive\ZipArchiveCompress.cs" />
     <Compile Include="Compressions\ZipArchive\ZipArchiveInf.cs" />
+    <Compile Include="Data\Timer\PerformanceCounterTimer.cs" />
     <Compile Include="IO\FileSysInfo\SysFileInfos.cs" />
     <Compile Include="IO\FileSysInfo\ZipEntryFileInfo.cs" />
     <Compile Include="Processes\API.cs" />
@@ -98,8 +99,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Systems\SystemEnvironment.cs" />
-    <Compile Include="Threads\LoopThread\LoopFunction.cs" />
-    <Compile Include="Threads\LoopThread\LoopStructure.cs" />
     <Compile Include="Threads\SingleThreadTask\SingleTask.cs" />
     <Compile Include="Threads\SingleThreadTask\SingleThreadTasks.cs" />
     <Compile Include="Winapi\Hooks\Hooks.cs" />
@@ -147,7 +146,7 @@
   <PropertyGroup>
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
 del /q "$(TargetDir)$(TargetFileName).config"
-copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"
-)</PostBuildEvent>
+)
+copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

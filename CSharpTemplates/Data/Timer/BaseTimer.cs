@@ -13,6 +13,7 @@ namespace Cheng.Timers
         /// 获取当前计时器的运行时间
         /// </summary>
         TimeSpan Elapsed { get; }
+
         /// <summary>
         /// 当前计时器是否正在运行
         /// </summary>
@@ -22,22 +23,27 @@ namespace Cheng.Timers
         /// 开启计时器计时
         /// </summary>
         void Start();
+
         /// <summary>
         /// 停止计时器计时
         /// </summary>
         void Stop();
+
         /// <summary>
         /// 停止并重置计时器运行时间
         /// </summary>
         void Reset();
+
         /// <summary>
         /// 清空计时器运行时间并重新开始计时
         /// </summary>
         void Restart();
+
         /// <summary>
         /// 重置计时器的时间记录，且不影响计时器运行
         /// </summary>
         void Clear();
+
         /// <summary>
         /// 将计时器的时间写入到缓冲区参数
         /// </summary>
@@ -84,11 +90,20 @@ namespace Cheng.Timers
 
         #region 参数
 
-        private bool p_running;
+        /// <summary>
+        /// 开始运行标志
+        /// </summary>
+        protected bool p_running;
 
-        private ulong p_elapsed;
+        /// <summary>
+        /// 计时器经过的时间
+        /// </summary>
+        protected ulong p_elapsed;
 
-        private ulong p_startTime;
+        /// <summary>
+        /// 计时器开始运行时的时间刻
+        /// </summary>
+        protected ulong p_startTime;
 
         #endregion
 
@@ -217,6 +232,7 @@ namespace Cheng.Timers
         /// <param name="span">添加的时间</param>
         public void AddElapsed(ulong span)
         {
+            Flush();
             p_elapsed += span;
         }
 
@@ -235,7 +251,7 @@ namespace Cheng.Timers
         /// <param name="span">要减少的时间</param>
         public void SubElapsed(ulong span)
         {
-
+            Flush();
             if (p_elapsed > span)
             {
                 p_elapsed -= span;
@@ -288,11 +304,20 @@ namespace Cheng.Timers
 
         #region 参数
 
-        private bool p_running;
+        /// <summary>
+        /// 开始运行标志
+        /// </summary>
+        protected bool p_running;
 
-        private double p_elapsed;
+        /// <summary>
+        /// 计时器经过的时间
+        /// </summary>
+        protected double p_elapsed;
 
-        private double p_startTime;
+        /// <summary>
+        /// 计时器开始运行时的时间刻
+        /// </summary>
+        protected double p_startTime;
 
         #endregion
 
@@ -420,6 +445,7 @@ namespace Cheng.Timers
         /// <param name="span">添加的时间</param>
         public void AddElapsed(double span)
         {
+            Flush();
             p_elapsed += span;
         }
 
@@ -434,6 +460,7 @@ namespace Cheng.Timers
         /// <param name="span">要减少的时间</param>
         public void SubElapsed(double span)
         {
+            Flush();
             p_elapsed -= span;
         }
 

@@ -27,7 +27,7 @@ namespace Cheng.Texts.NumEnumator
     /// <remarks>
     /// <para>按照十进制数从指定数字开始推进计数，并将每次推进后的数字以文本返回到当前枚举参数</para>
     /// </remarks>
-    public class NumEnumatorName : ITextEnumerator
+    public sealed class NumEnumatorName : TextEnumerator
     {
 
         /// <summary>
@@ -66,22 +66,30 @@ namespace Cheng.Texts.NumEnumator
         private int p_count;
         private NumFormat p_format;
 
-        public string CurructText => p_name;
+        public override string CurructText => p_name;
 
-        public bool CanReset => true;
+        public override bool CanReset => true;
 
-        public bool MoveNext()
+        public override bool MoveNext()
         {
+            if (p_count == int.MaxValue) return false;
             p_count++;
             p_name = (p_last + p_count.ToString((p_format == NumFormat.X16) ? "X" : "D") + p_next);
             return true;
         }
 
-        public void Reset(int maxCount)
+        public override void Reset(int maxCount)
         {
             p_count = p_init;
             p_name = null;
         }
+
+        public override void Dispose()
+        {
+            p_count = int.MaxValue;
+            p_name = null;
+        }
+
     }
 
     /// <summary>
@@ -90,7 +98,7 @@ namespace Cheng.Texts.NumEnumator
     /// <remarks>
     /// <para>按照十进制数从指定数字开始推进计数，并将每次推进后的数字以文本返回到当前枚举参数，并且每次推进的数值文本都是固定的字符长度</para>
     /// </remarks>
-    public class NumFixedCountEnumatorName : ITextEnumerator
+    public sealed class NumFixedCountEnumatorName : TextEnumerator
     {
 
         /// <summary>
@@ -124,11 +132,11 @@ namespace Cheng.Texts.NumEnumator
         private int p_initMax;
         private NumFormat p_format;
 
-        public string CurructText => p_name;
+        public override string CurructText => p_name;
 
-        public bool CanReset => true;
+        public override bool CanReset => true;
 
-        public bool MoveNext()
+        public override bool MoveNext()
         {
             if (p_count > p_maxCount)
             {
@@ -151,7 +159,7 @@ namespace Cheng.Texts.NumEnumator
             return true;
         }
 
-        public void Reset(int maxCount)
+        public override void Reset(int maxCount)
         {
             if (maxCount < 0) maxCount = p_initMax;
             p_count = -1;
@@ -240,6 +248,11 @@ namespace Cheng.Texts.NumEnumator
             return 8;
         }
 
+        public override void Dispose()
+        {
+            p_count = p_maxCount + 1;
+        }
+
     }
 
     /// <summary>
@@ -248,7 +261,7 @@ namespace Cheng.Texts.NumEnumator
     /// <remarks>
     /// <para>使用字母计数方式枚举文本，每次将计数器推进后返回对应的固定长度的字母文本</para>
     /// </remarks>
-    public unsafe class LetterNumEnumatorName : ITextEnumerator
+    public sealed unsafe class LetterNumEnumatorName : TextEnumerator
     {
 
         /// <summary>
@@ -276,9 +289,9 @@ namespace Cheng.Texts.NumEnumator
         private int p_count;
         private bool p_big;
 
-        public string CurructText => p_name;
+        public override string CurructText => p_name;
 
-        public bool CanReset => true;
+        public override bool CanReset => true;
 
         /// <summary>
         /// 返回26进制位数
@@ -337,7 +350,7 @@ namespace Cheng.Texts.NumEnumator
             return new string(cs, 0, digitCount);
         }
 
-        public bool MoveNext()
+        public override bool MoveNext()
         {
             if (p_count > p_maxCount)
             {
@@ -352,12 +365,18 @@ namespace Cheng.Texts.NumEnumator
             return true;
         }
 
-        public void Reset(int maxCount)
+        public override void Reset(int maxCount)
         {
             if (maxCount < 0) maxCount = int.MaxValue;
             p_name = null;
             p_maxCount = maxCount - 1;
             p_count = -1;
+        }
+
+        public override void Dispose()
+        {
+            p_count = p_maxCount + 1;
+            p_name = null;
         }
 
     }

@@ -75,7 +75,7 @@ namespace Cheng.DataStructure.Collections
 
         [SerializeField] private int p_length;
 
-        [SerializeField] private uint p_changeCount;
+        [NonSerialized] private uint p_changeCount;
 
         #region Editor
 #if UNITY_EDITOR
@@ -90,10 +90,7 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         public const string fieldName_count = nameof(p_length);
 
-        /// <summary>
-        /// 集合字段名称——每次集合元素变动时就会递增的uint32值
-        /// </summary>
-        public const string fieldName_changeCount = nameof(p_changeCount);
+        //public const string fieldName_changeCount = nameof(p_changeCount);
 
 #endif
         #endregion
@@ -362,6 +359,119 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
+        /// 在集合中寻找指定元素，如果成功搜寻返回则索引
+        /// </summary>
+        /// <param name="item">要搜寻的元素</param>
+        /// <param name="equality">定义的集合元素比较器，如果是null则使用默认方法搜寻</param>
+        /// <returns>该元素的索引，如果无法寻找到则返回-1</returns>
+        public int IndexOf(T item, IEqualityComparer<T> equality)
+        {
+            if (equality is null)
+            {
+                return Array.IndexOf(p_arr, item, 0, p_length);
+            }
+
+            for (int i = 0; i < p_length; i++)
+            {
+                if (equality.Equals(p_arr[i], item))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// 在集合中从末尾开始寻找指定元素，如果成功搜寻返回则索引
+        /// </summary>
+        /// <param name="item">要搜寻的元素</param>
+        /// <returns>该元素的索引，如果无法寻找到则返回-1</returns>
+        public int LastIndexOf(T item)
+        {
+            return Array.LastIndexOf(p_arr, item, 0, p_length);
+        }
+
+        /// <summary>
+        /// 在集合中从末尾开始寻找指定元素，如果成功搜寻返回则索引
+        /// </summary>
+        /// <param name="item">要搜寻的元素</param>
+        /// <param name="startIndex">从指定索引开始搜寻</param>
+        /// <param name="count">要搜寻的数量</param>
+        /// <returns>该元素的索引，如果无法寻找到则返回-1</returns>
+        /// <exception cref="ArgumentOutOfRangeException">索引参数超出范围</exception>
+        public int LastIndexOf(T item, int startIndex, int count)
+        {
+            if (startIndex + count > p_length)
+            {
+                throw new ArgumentOutOfRangeException("index", "给定参数超出范围");
+            }
+
+            return Array.LastIndexOf(p_arr, item, startIndex, count);
+        }
+
+        /// <summary>
+        /// 在集合中从末尾开始寻找指定元素，如果成功搜寻返回则索引
+        /// </summary>
+        /// <param name="item">要搜寻的元素</param>
+        /// <param name="equality">定义的集合元素比较器，如果是null则使用默认方法搜寻</param>
+        /// <param name="startIndex">从指定索引开始搜寻</param>
+        /// <param name="count">要搜寻的数量</param>
+        /// <returns>该元素的索引，如果无法寻找到则返回-1</returns>
+        /// <exception cref="ArgumentOutOfRangeException">索引参数超出范围</exception>
+        public int LastIndexOf(T item, IEqualityComparer<T> equality, int startIndex, int count)
+        {
+            if (startIndex < 0 || count < 0) throw new ArgumentOutOfRangeException("index", "给定参数小于0");
+
+            int length = startIndex + count;
+
+            if (length > p_length)
+            {
+                throw new ArgumentOutOfRangeException("index", "给定参数超出范围");
+            }
+            if (count == 0) return -1;
+
+            if (equality is null)
+            {
+                return Array.LastIndexOf(p_arr, item, startIndex, count);
+            }
+
+            for (int i = length - 1; i >= startIndex; i--)
+            {
+                if (equality.Equals(p_arr[i], item))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// 在集合中寻找指定元素，如果成功搜寻返回则索引
+        /// </summary>
+        /// <param name="item">要搜寻的元素</param>
+        /// <param name="equality">定义的集合元素比较器，如果是null则使用默认方法搜寻</param>
+        /// <returns>该元素的索引，如果无法寻找到则返回-1</returns>
+        public int LastIndexOf(T item, IEqualityComparer<T> equality)
+        {
+            if (equality is null)
+            {
+                return Array.LastIndexOf(p_arr, item, 0, p_length);
+            }
+
+            for (int i = p_length - 1; i >= 0; i--)
+            {
+                if (equality.Equals(p_arr[i], item))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         /// 在集合中搜索与指定谓词匹配的元素
         /// </summary>
         /// <param name="match">谓词</param>
@@ -439,9 +549,13 @@ namespace Cheng.DataStructure.Collections
             return (T[])p_arr.Clone();
         }
 
+        /// <summary>
+        /// 将集合的所有元素复制到集合中
+        /// </summary>
+        /// <returns></returns>
         public List<T> ToList()
         {
-            return new List<T>(this);            
+            return new List<T>(this);
         }
 
         /// <summary>

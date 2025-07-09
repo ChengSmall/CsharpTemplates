@@ -48,7 +48,7 @@ namespace Cheng.Unitys.Editors
         static GUIContent sp_notRecTypeError;
 
         /// <summary>
-        /// 显示为 "ERROR 不是已知可绘制类"的错误表示标签
+        /// 内容为 "ERROR 不是已知可绘制类"的错误显示标签
         /// </summary>
         public static GUIContent NotTypeDrawingError
         {
@@ -63,7 +63,6 @@ namespace Cheng.Unitys.Editors
         }
 
 #endif
-
 
         #endregion
 
@@ -274,6 +273,41 @@ namespace Cheng.Unitys.Editors
             left = new Rect(x, y, (midX - spareB), height);
 
             right = new Rect(x + rightOri, y, width - rightOri, height);
+
+        }
+
+        /// <summary>
+        /// 将矩形沿纵轴切开
+        /// </summary>
+        /// <param name="rect">矩形</param>
+        /// <param name="mid">要切开的纵轴切线长度比，范围在[0,1]，接近0表示靠左，接近1表示靠右</param>
+        /// <param name="spareLength">从中间线向两端平均延申的长度，该长度所在的矩形会独立分割</param>
+        /// <param name="left">切割好的左侧矩形</param>
+        /// <param name="right">切割好的右侧矩形</param>
+        /// <param name="spare">中间舍弃的矩形</param>
+        public static void SectionLength(this Rect rect, float mid, float spareLength, out Rect left, out Rect right, out Rect spare)
+        {
+            float width = rect.width;
+            float height = rect.height;
+
+            float x = rect.x, y = rect.y;
+
+            float midX = mid * width;
+
+            float spareB = spareLength / 2;
+
+            //float leftWidth;
+            float rightOri;
+
+            //中间忽略分割
+            var leftWidth = midX - spareB;
+            rightOri = midX + spareB;
+
+            left = new Rect(x, y, leftWidth, height);
+
+            right = new Rect(x + rightOri, y, width - rightOri, height);
+
+            spare = new Rect(x + leftWidth, y, spareLength, height);
 
         }
 

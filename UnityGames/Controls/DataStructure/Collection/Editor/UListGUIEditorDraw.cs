@@ -140,8 +140,9 @@ namespace Cheng.DataStructure.Collections.Unitys.UnityEditors
                     //获取参数
                     var pro_arr = property.FindPropertyRelative(UList<int>.fieldName_array);
                     var pro_count = property.FindPropertyRelative(UList<int>.fieldName_count);
-                    var pro_changeCount = property.FindPropertyRelative(UList<int>.fieldName_changeCount);
-                    bool change = false;
+                    //var pro_changeCount = property.FindPropertyRelative(UList<int>.fieldName_changeCount);
+
+                    //bool change = false;
 
                     //元素数量
                     int count = pro_count.intValue;
@@ -152,10 +153,10 @@ namespace Cheng.DataStructure.Collections.Unitys.UnityEditors
 
                     int lasc = Mathf.Min(newCount, count);
 
-                    if (newCount != count)
-                    {
-                        change = true;
-                    }
+                    //if (newCount != count)
+                    //{
+                    //    change = true;
+                    //}
 
                     Rect pos_item = pos_Count.MoveHeight(EditorGUIParser.AllFieldHeight);
                     //修改数组容量
@@ -168,25 +169,25 @@ namespace Cheng.DataStructure.Collections.Unitys.UnityEditors
 
                         var itmHeight = getHeightFunc.Invoke(pro_arrItem);
                         pos_item = pos_item.SetHeightFromTop(itmHeight);
+                        itemDrawFunc.Invoke(pos_item, pro_arrItem, new GUIContent(countNamePrefix + numToString.Invoke(i)));
+                        //if ()
+                        //{
+                        //    change = true;
+                        //}
+                        //下移绘制区域
 
-                        if (itemDrawFunc.Invoke(pos_item, pro_arrItem, new GUIContent(countNamePrefix + numToString.Invoke(i))))
-                        {
-                            change = true;
-                        }
-                        //下移绘制区域                       
+                        pos_item = pos_item.MoveHeight(itmHeight + EditorGUIParser.HeightInterval);
 
-                        pos_item = pos_item.MoveHeight(itmHeight + EditorGUIParser.HeightInterval);                        
-                                                
                     }
 
                     //设置新的元素数
                     pro_count.intValue = pro_arr.arraySize;
 
-                    if (change)
-                    {
-                        //推进变化值
-                        pro_changeCount.intValue += 1;
-                    }
+                    //if (change)
+                    //{
+                    //    //推进变化值
+                    //    pro_changeCount.intValue += 1;
+                    //}
 
                 }
             }

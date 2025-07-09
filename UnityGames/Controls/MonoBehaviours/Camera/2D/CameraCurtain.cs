@@ -11,7 +11,7 @@ using Cheng.Algorithm;
 using UObj = UnityEngine.Object;
 using GObj = UnityEngine.GameObject;
 
-namespace Cheng.Unitys.Cameras
+namespace Cheng.Unitys.Cameras._2D
 {
 
     /// <summary>

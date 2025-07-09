@@ -96,6 +96,7 @@
     <Compile Include="Webs\Bilibili\BilibiliLiveRoom.cs" />
     <Compile Include="Webs\Bilibili\BilibiliPendant.cs" />
     <Compile Include="Webs\Bilibili\BilibiliSpaceInfo.cs" />
+    <Compile Include="WinApi\Window\Window.cs" />
     <Compile Include="WinApi\Kernel32_Other.cs" />
     <Compile Include="WinApi\Memory.cs" />
     <Compile Include="WinApi\Message\MSG.cs" />
@@ -141,7 +142,6 @@
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
 del /q "$(TargetDir)$(TargetName).pdb"
 del /q "$(TargetDir)$(TargetFileName).config"
-)
-RD /s /q "$(ProjectDir)obj\$(ConfigurationName)"</PostBuildEvent>
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

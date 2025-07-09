@@ -673,8 +673,7 @@ namespace Cheng.DataStructure.NumGenerators
 
         public override int GetHashCode()
         {
-            if (type == NumType.Integer) return valueInteger.GetHashCode();
-            return ~(valueInteger.GetHashCode());
+            return valueInteger.GetHashCode();
         }
 
         public long GetHashCode64()

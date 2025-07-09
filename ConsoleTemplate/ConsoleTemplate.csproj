@@ -67,7 +67,7 @@
   <PropertyGroup>
     <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
 del /q "$(TargetDir)$(TargetFileName).config"
-copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"
-)</PostBuildEvent>
+)
+copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

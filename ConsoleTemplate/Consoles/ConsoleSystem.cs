@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Security;
 using System.IO;
@@ -158,9 +157,38 @@ namespace Cheng.Consoles
             return ptr;
         }
 
+        /// <summary>
+        /// 将控制台窗口显示或隐藏
+        /// </summary>
+        /// <param name="enable">true显示控制台窗口，false隐藏控制台窗口</param>
+        /// <returns>如果调用该函数之前控制台处于显示状态，返回true；处于隐藏状态返回false</returns>
+        /// <exception cref="Win32Exception">无法获取控制台句柄或其他win32错误</exception>
+        public static bool WindowShow(bool enable)
+        {
+            const int onEnable = 5;
+            const int onDisable = 0;
+
+            var handle = GetConsoleWindow();
+            if(handle == IntPtr.Zero)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            return ShowWindow(handle, enable ? onEnable : onDisable);
+        }
+
         #endregion
 
         #region 原始
+
+        /// <summary>
+        /// 设置指定窗口的显示状态
+        /// </summary>
+        /// <param name="hWnd">窗口句柄</param>
+        /// <param name="nCmdShow"></param>
+        /// <returns>以前可见返回true，以前隐藏返回false</returns>
+        [DllImport("user32.dll", SetLastError = true)]
+        [return:MarshalAs(UnmanagedType.Bool)]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         /// <summary>
         /// 检索与调用进程相关联的控制台使用的窗口句柄

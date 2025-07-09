@@ -9,7 +9,7 @@ using Cheng.Unitys.Editors;
 using UObj = UnityEngine.Object;
 using GObj = UnityEngine.GameObject;
 
-namespace Cheng.Unitys.Cameras
+namespace Cheng.Unitys.Cameras._2D
 {
 
     /// <summary>
@@ -66,7 +66,7 @@ namespace Cheng.Unitys.Cameras
         [SerializeField] private Space moveType;
 
 #if UNITY_EDITOR
-        [Tooltip("是否启用移动\n只有在勾选该参数时脚本才会移动对象\n将该参数取消勾选时脚本会暂停移动对象，但是再次勾选后脚本会记录上次的移动状态继续以相对位置移动；如果是取消运行脚本，再次运行时，脚本不会记录上一次运行的状态，而是以启动时对象的位置作为基准重新开始移动")]
+        [Tooltip("是否启用移动\n只有在勾选该参数时脚本才会移动对象\n将该参数取消勾选时脚本会暂停移动对象，但是再次勾选后脚本会记录上次的移动状态继续以相对位置移动；\n如果是禁用脚本，再次运行时，脚本不会记录上一次运行的状态，而是以启动时对象的位置作为基准重新开始移动")]
 #endif
         [SerializeField] private bool moveing;
 

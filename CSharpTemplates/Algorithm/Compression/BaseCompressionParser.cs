@@ -142,6 +142,16 @@ namespace Cheng.Algorithm.Compressions
         /// </summary>
         public virtual bool CanGetEnumerator => false;
 
+        /// <summary>
+        /// 是否允许获取密码
+        /// </summary>
+        public virtual bool CanGetPassword => false;
+
+        /// <summary>
+        /// 是否允许设置密码
+        /// </summary>
+        public virtual bool CanSetPassword => false;
+
         #endregion
 
         #region 操作
@@ -833,6 +843,23 @@ namespace Cheng.Algorithm.Compressions
             StringWriter swr = new StringWriter();
             DeCompressionToText(index, encoding, swr);
             return swr.ToString();
+        }
+
+        #endregion
+
+        #region 加密
+
+        /// <summary>
+        /// 访问数据时需要的密码
+        /// </summary>
+        /// <value>在访问或设置数据时需要的密码，用于加密数据；仅当<see cref="CanGetPassword"/>或<see cref="CanSetPassword"/>为true时对应属性功能才会生效</value>
+        /// <exception cref="NotSupportedException">没有此功能</exception>
+        /// <exception cref="ObjectDisposedException">已释放</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public virtual string Password
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         #endregion
