@@ -41,5 +41,53 @@ namespace Cheng.OtherCode.Winapi
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern uint GetLogicalDrives();
 
+        /// <summary>
+        /// <see cref="SetThreadExecutionState(EsFlags)"/>函数的参数
+        /// </summary>
+        public enum EsFlags : uint
+        {
+
+            /// <summary>
+            /// 错误
+            /// </summary>
+            Error = 0,
+
+            /// <summary>
+            /// 通过重置系统空闲计时器强制系统处于工作状态
+            /// </summary>
+            System_Required = 0x00000001,
+
+            /// <summary>
+            /// 通过重置显示空闲计时器强制显示处于打开状态
+            /// </summary>
+            Display_Required = 0x00000002,
+
+            /// <summary>
+            /// 离开模式只能由媒体录制和媒体分发应用程序使用，这些应用程序必须在计算机似乎处于睡眠状态时在台式计算机上执行关键后台处理
+            /// </summary>
+            AwayMode_Required = 0x00000040,
+
+            /// <summary>
+            /// 通知系统正在设置的状态应保持有效，直到使用 ES_CONTINUOUS 的下一次调用和清除其他状态标志之一。
+            /// </summary>
+            CONTINUOUS = 0x80000000
+
+        }
+
+        /// <summary>
+        /// 使应用程序能够通知系统它正在使用，从而防止系统在应用程序运行时进入睡眠状态或关闭显示器
+        /// </summary>
+        /// <param name="esFlags">线程的执行要求</param>
+        /// <returns>如果函数成功，则返回值为上一个线程执行状态；如果函数失败，则返回值<see cref="EsFlags.Error"/></returns>
+        [DllImport("kernel32.dll")]
+        public static extern EsFlags SetThreadExecutionState(EsFlags esFlags);
+
+        /// <summary>
+        /// 检索自系统启动以来经过的毫秒数
+        /// </summary>
+        /// <returns>毫秒数</returns>
+        [DllImport("kernel32.dll")]
+        public static extern ulong GetTickCount64();
+
     }
 }

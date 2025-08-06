@@ -145,6 +145,10 @@
   <data name="Exception_StreamDisposeText" xml:space="preserve">
     <value>流已经被释放</value>
   </data>
+  <data name="Exception_StreamNotRead" xml:space="preserve">
+    <value>流不支持读取</value>
+    <comment>异常消息：流不支持读取</comment>
+  </data>
   <data name="Exception_StreamReaderOutRange" xml:space="preserve">
     <value>读取的流超出给定的范围</value>
   </data>

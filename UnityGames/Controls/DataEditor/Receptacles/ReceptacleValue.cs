@@ -1,10 +1,11 @@
 using System;
+using UnityEngine;
 
 namespace Cheng.DataStructure.Receptacles
 {
 
     /// <summary>
-    /// Receptacle容器的 Unity GUI 值
+    /// Receptacle容器的 Unity 转存值
     /// </summary>
     /// <typeparam name="T">值类型</typeparam>
     [Serializable]

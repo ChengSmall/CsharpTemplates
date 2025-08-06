@@ -1,5 +1,6 @@
 using Cheng.Algorithm.HashCodes;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Cheng.DataStructure.Receptacles
 {
@@ -8,7 +9,8 @@ namespace Cheng.DataStructure.Receptacles
     /// 表示一个有最大值的容器结构---16位整形
     /// </summary>
     [Serializable]
-    public struct ReceptacleInt16 : IEquatable<ReceptacleInt16>, IComparable<ReceptacleInt16>, IHashCode64
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct ReceptacleInt16 : IEquatable<ReceptacleInt16>, IComparable<ReceptacleInt16>, IHashCode64
     {
 
 

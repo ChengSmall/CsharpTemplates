@@ -1157,9 +1157,9 @@ namespace Cheng.Memorys
         {
             if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
 
-            if (buffer.Length == 0) throw new ArgumentException("给定缓冲区长度为0");
+            if (buffer.Length == 0) throw new ArgumentException();
 
-            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException("流不支持读取或写入");
+            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException();
 
             copyToStream(stream, toStream, buffer);
         }
@@ -1270,7 +1270,6 @@ namespace Cheng.Memorys
 
         }
 
-
         static void copyToStream(Stream stream, Stream toStream, byte[] buffer)
         {
             int length = buffer.Length;
@@ -1332,26 +1331,6 @@ namespace Cheng.Memorys
         }
 
         /// <summary>
-        /// 将流数据转化到字节数组
-        /// </summary>
-        /// <param name="stream">要读取的流</param>
-        /// <param name="buffer">指定读取时的缓冲区</param>
-        /// <returns>转化为字节数组的流数据</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static byte[] ToByteArray(this Stream stream, byte[] buffer)
-        {
-            if (stream is null || buffer is null) throw new ArgumentNullException();
-
-            MemoryStream ms = new MemoryStream(buffer.Length);
-
-            copyToStream(stream, ms, buffer, 0);
-            var bs = ms.GetBuffer();
-            if (bs.Length == ms.Length) return bs;
-            return ms.ToArray();
-
-        }
-
-        /// <summary>
         /// 从流数据中读取指定类型的对象
         /// </summary>
         /// <typeparam name="T">类型</typeparam>
@@ -1407,26 +1386,40 @@ namespace Cheng.Memorys
         }
 
         /// <summary>
-        /// 将托管内存流的数据返回到字节数组
+        /// 读取流数据的所有数据到字节数组
         /// </summary>
-        /// <param name="memoryStream">内存流</param>
-        /// <param name="buffer">储存原始字节数组的数据</param>
-        /// <exception cref="ArgumentNullException">流是null</exception>
-        public static bool TryGetBuffer(this MemoryStream memoryStream, out ArraySegment<byte> buffer)
+        /// <param name="stream">要读取的流对象</param>
+        /// <returns>从<paramref name="stream"/>读取的所有数据</returns>
+        public static byte[] ReadAll(this Stream stream)
         {
-            if (memoryStream == null) throw new ArgumentNullException();
-            try
+            if (stream is null) throw new ArgumentNullException();
+
+            if (stream.CanRead)
             {
-                var buf = memoryStream.GetBuffer();
-                buffer = new ArraySegment<byte>(buf, 0, (int)memoryStream.Length);
-                return true;
+                if (stream.CanSeek)
+                {
+                    var buf = new byte[stream.Length];
+                    stream.ReadBlock(buf, 0, buf.Length);
+                    return buf;
+                }
+                else
+                {
+                    MemoryStream ms = new MemoryStream(1024);
+                    stream.CopyToStream(ms, new byte[1024]);
+
+                    if(ms.TryGetBuffer(out var arr))
+                    {
+                        if(arr.Count == ms.Length && arr.Offset == 0)
+                        {
+                            return arr.Array;
+                        }
+                    }
+                    return ms.ToArray();
+                }
             }
-            catch (Exception)
-            {
-                buffer = default;
-                return false;
-            }
-            
+
+            throw new NotSupportedException(Cheng.Properties.Resources.Exception_StreamNotRead);
+
         }
 
         #endregion

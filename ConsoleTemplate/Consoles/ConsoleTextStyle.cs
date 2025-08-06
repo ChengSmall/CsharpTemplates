@@ -1,3 +1,4 @@
+using Cheng.Texts;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,6 +67,8 @@ namespace Cheng.Consoles
 
         #endregion
 
+        #region 颜色转义
+
         static void f_appendByte(this StringBuilder append, byte value)
         {
             char c;
@@ -121,7 +124,57 @@ namespace Cheng.Consoles
             append.Write(c);
         }
 
-        #region 颜色转义
+        static void f_appendByte(this CMStringBuilder append, byte value)
+        {
+            char c;
+            int r;
+            //获取左侧
+
+            if (value > 199)
+            {
+                append.Append('2');
+            }
+            else if (value > 99)
+            {
+                append.Append('1');
+            }
+
+            if (value > 9)
+            {
+                r = (value / 10) % 10;
+                c = (char)('0' + r);
+                append.Append(c);
+            }
+
+            r = value % 10;
+            c = (char)('0' + r);
+            append.Append(c);
+
+        }
+
+        /// <summary>
+        /// 转化修改文本颜色的ASNI转义序列
+        /// </summary>
+        /// <param name="r">颜色的R值</param>
+        /// <param name="g">颜色的G值</param>
+        /// <param name="b">颜色的B值</param>
+        /// <param name="isBackground">是否为背景色，背景色则为true，前景色（文本颜色）则为false</param>
+        /// <param name="append">要转化后写入的字符串缓冲区</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void ColorToText(byte r, byte g, byte b, bool isBackground, Cheng.Texts.CMStringBuilder append)
+        {
+            if (append is null) throw new ArgumentNullException();
+            append.Append(ASNIStyle_Begin);
+            append.Append('[');
+            append.Append((isBackground ? "48;" : "38;"));
+            append.Append("2;");
+            append.f_appendByte(r);
+            append.Append(';');
+            append.f_appendByte(g);
+            append.Append(';');
+            append.f_appendByte(b);
+            append.Append(ASNIStyle_End);
+        }
 
         /// <summary>
         /// 转化修改文本颜色的ASNI转义序列
@@ -308,7 +361,23 @@ namespace Cheng.Consoles
             ColorToText(r, g, b, isBackground, append);
         }
 
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="r">红色</param>
+        /// <param name="g">绿色</param>
+        /// <param name="b">蓝色</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void AppendANSIColorText(this CMStringBuilder append, byte r, byte g, byte b, bool isBackground)
+        {
+            ColorToText(r, g, b, isBackground, append);
+        }
+
         #endregion
+
+        #region 重置样式
 
         /// <summary>
         /// 添加重置文字样式的ANSI转义字符序列
@@ -331,6 +400,19 @@ namespace Cheng.Consoles
             if (append is null) throw new ArgumentNullException();
             append.Append(ResetStyleText);
         }
+
+        /// <summary>
+        /// 添加重置文字样式的ANSI转义字符序列
+        /// </summary>
+        /// <param name="append"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void AppendANSIStyleResetText(this CMStringBuilder append)
+        {
+            if (append is null) throw new ArgumentNullException();
+            append.Append(ResetStyleText);
+        }
+
+        #endregion
 
     }
 

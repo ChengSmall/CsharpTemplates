@@ -113,10 +113,9 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         /// <param name="toggleLabel"></param>
         public static void OnGUIDrawing(Rect position, SerializedProperty property, GUIContent toggleLabel)
         {
-
             //字段数据
-            var frameTimePro = property.FindPropertyRelative(FrameAnimationParser.FrameTimeName);
-            var loopPro = property.FindPropertyRelative(FrameAnimationParser.LoopName);
+            var frameTimePro = property.FindPropertyRelative(FrameAnimationParser.Field_FrameTimeName);
+            var loopPro = property.FindPropertyRelative(FrameAnimationParser.Field_LoopName);
 
             Rect pos_frameTime, pos_toggle, pos_toggleLabel;
 

@@ -33,8 +33,8 @@ namespace Cheng.DataStructure.FiniteStateMachine
 
         protected override void UnmanagedReleasources()
         {
-            this.NodeAddEvent -= NodeAddEvent;
-            this.NodeRemoveEvent -= NodeRemoveEvent;
+            this.NodeAddEvent = null;
+            this.NodeRemoveEvent = null;
         }
 
         #endregion
@@ -311,6 +311,7 @@ namespace Cheng.DataStructure.FiniteStateMachine
         /// 在新连接节点时引发的事件，参数为新添加的节点
         /// </summary>
         public event StateNodeChangeEvent<T, StateNode<T>> NodeAddEvent;
+
         /// <summary>
         /// 在断开节点时引发的事件，参数为要断开的节点
         /// </summary>

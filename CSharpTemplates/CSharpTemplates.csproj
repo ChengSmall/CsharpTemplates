@@ -44,7 +44,6 @@
     <Folder Include="Algorithm\Pathfindings\GridPathfindings\AStar\" />
     <Folder Include="Audio\Midi\" />
     <Folder Include="Data\BehaviorTrees\" />
-    <Folder Include="Data\Maths\" />
     <Folder Include="Parsers\TextParser\Json\ToText\" />
     <Folder Include="Streams\Audios\" />
   </ItemGroup>

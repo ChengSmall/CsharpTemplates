@@ -107,6 +107,33 @@ namespace Cheng.Streams
 
         #endregion
 
+        #region
+
+        /// <summary>
+        /// 从流中读取数据到指定地址并推进流对象的位置
+        /// </summary>
+        /// <param name="buffer">数据接收的内存首地址</param>
+        /// <param name="count">要读取的字节数</param>
+        /// <returns>此次读取实际的字节数</returns>
+        public virtual int ReadToAddress(byte* buffer, int count)
+        {
+            ThrowIsDispose();
+            int c = 0;
+
+            while (c < count)
+            {
+                var re = ReadByte();
+
+                if(re == -1) break;
+
+                buffer[c++] = (byte)re;
+            }
+
+            return c;
+        }
+
+        #endregion
+
     }
 
 }

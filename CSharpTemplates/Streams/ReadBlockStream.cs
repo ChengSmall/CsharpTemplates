@@ -142,6 +142,23 @@ namespace Cheng.Streams
             return p_stream.ReadByte();
         }
 
+        public override unsafe int ReadToAddress(byte* buffer, int count)
+        {
+            ThrowIsDispose();
+            int c = 0;
+
+            while (c < count)
+            {
+                var re = p_stream.ReadByte();
+
+                if (re == -1) break;
+
+                buffer[c++] = (byte)re;
+            }
+
+            return c;
+        }
+
         public override void Write(byte[] buffer, int offset, int count)
         {
             ThrowIsDispose();

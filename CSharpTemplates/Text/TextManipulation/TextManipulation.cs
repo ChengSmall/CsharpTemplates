@@ -425,6 +425,36 @@ namespace Cheng.Texts
 
         #endregion
 
+        #region 全角和半角
+
+        /// <summary>
+        /// 快速判断字符是否属于全角字符（占2个字母宽度）
+        /// </summary>
+        /// <param name="c">要判断的字符</param>
+        /// <returns>返回true表示字符是全角字符，false表示半角字符；过于生僻的符号可能不会准确，该函数不会判断字符能否正常显示</returns>
+        public static bool IsFullWidth(this char c)
+        {
+            //if (c <= 0x7E) return false;
+
+            //// 常见全角字符快速检查
+            //if (c >= 0xFF01 && c <= 0xFF60) return true;  // 全角ASCII变体
+            //if (c >= 0xFFE0 && c <= 0xFFE6) return true;  // 全角符号
+
+            //// 主要CJK字符范围检查
+            //if (c >= 0x3000 && c <= 0x303F) return true;  // CJK符号和标点
+            //if (c >= 0x3040 && c <= 0x309F) return true;  // 平假名
+            //if (c >= 0x30A0 && c <= 0x30FF) return true;  // 片假名
+            //if (c >= 0x4E00 && c <= 0x9FFF) return true;  // CJK统一表意文字
+            //if (c >= 0xAC00 && c <= 0xD7AF) return true;  // 韩文字母
+            //if (c >= 0xF900 && c <= 0xFAFF) return true;  // CJK兼容象形文字
+
+            //return false;
+
+            return (c > 0x7E) && ((c >= 0xFF01 && c <= 0xFF60) || (c >= 0xFFE0 && c <= 0xFFE6) || (c >= 0x3000 && c <= 0x303F) || (c >= 0x3040 && c <= 0x309F) || (c >= 0x30A0 && c <= 0x30FF) || (c >= 0x4E00 && c <= 0x9FFF) || (c >= 0x4E00 && c <= 0x9FFF) || (c >= 0xAC00 && c <= 0xD7AF) || (c >= 0xF900 && c <= 0xFAFF));
+        }
+
+        #endregion
+
     }
 
 }

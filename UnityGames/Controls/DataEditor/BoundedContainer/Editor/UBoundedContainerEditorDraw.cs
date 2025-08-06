@@ -271,9 +271,9 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
         /// <param name="temp">临时标签对象</param>
         public static void DrawingFloat(Rect pos_min, Rect pos_max, Rect pos_value, SerializedProperty property, GUIContent temp)
         {
-            var pro_value = property.FindPropertyRelative(UBoundedContainer<int>.cp_valueFieldName);
-            var pro_max = property.FindPropertyRelative(UBoundedContainer<int>.cp_maxFieldName);
-            var pro_min = property.FindPropertyRelative(UBoundedContainer<int>.cp_minFieldName);
+            var pro_value = property.FindPropertyRelative(UBoundedContainer<float>.cp_valueFieldName);
+            var pro_max = property.FindPropertyRelative(UBoundedContainer<float>.cp_maxFieldName);
+            var pro_min = property.FindPropertyRelative(UBoundedContainer<float>.cp_minFieldName);
 
             //分割标签区域和控件区域
             //position.SectionLength(0.5f, 0, out Rect pos_label, out Rect pos_field);
@@ -338,9 +338,9 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
         /// <param name="temp">临时标签对象</param>
         public static void DrawingDouble(Rect pos_min, Rect pos_max, Rect pos_value, SerializedProperty property, GUIContent temp)
         {
-            var pro_value = property.FindPropertyRelative(UBoundedContainer<int>.cp_valueFieldName);
-            var pro_max = property.FindPropertyRelative(UBoundedContainer<int>.cp_maxFieldName);
-            var pro_min = property.FindPropertyRelative(UBoundedContainer<int>.cp_minFieldName);
+            var pro_value = property.FindPropertyRelative(UBoundedContainer<float>.cp_valueFieldName);
+            var pro_max = property.FindPropertyRelative(UBoundedContainer<float>.cp_maxFieldName);
+            var pro_min = property.FindPropertyRelative(UBoundedContainer<float>.cp_minFieldName);
 
             //分割标签区域和控件区域
             //position.SectionLength(0.5f, 0, out Rect pos_label, out Rect pos_field);
@@ -405,9 +405,9 @@ namespace Cheng.DataStructure.BoundedContainers.UnityEditors
         /// <param name="temp">临时标签对象</param>
         public static void DrawingUDecimal(Rect pos_min, Rect pos_max, Rect pos_value, SerializedProperty property, GUIContent temp)
         {
-            var pro_value = property.FindPropertyRelative(UBoundedContainer<int>.cp_valueFieldName);
-            var pro_max = property.FindPropertyRelative(UBoundedContainer<int>.cp_maxFieldName);
-            var pro_min = property.FindPropertyRelative(UBoundedContainer<int>.cp_minFieldName);
+            var pro_value = property.FindPropertyRelative(UBoundedContainer<UDecimal>.cp_valueFieldName);
+            var pro_max = property.FindPropertyRelative(UBoundedContainer<UDecimal>.cp_maxFieldName);
+            var pro_min = property.FindPropertyRelative(UBoundedContainer<UDecimal>.cp_minFieldName);
 
             //分割标签区域和控件区域
             //position.SectionLength(0.5f, 0, out Rect pos_label, out Rect pos_field);

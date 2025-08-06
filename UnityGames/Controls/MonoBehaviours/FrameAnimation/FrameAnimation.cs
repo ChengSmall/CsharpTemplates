@@ -395,9 +395,11 @@ namespace Cheng.Unitys.Animators.FrameAnimations
 
         private void OnDestroy()
         {
-            p_timer.Reset();
+            //p_timer.Reset();
+            p_timer = null;
             p_aLoopEndEvent = null;
             p_frameRenderEvent = null;
+            p_nowPlaySprite = null;
         }
 
         private void OnEnable()

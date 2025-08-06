@@ -59,11 +59,11 @@ namespace Cheng.Unitys.Animators.FrameAnimations
         /// <summary>
         /// 帧间隔字段名
         /// </summary>
-        public const string FrameTimeName = nameof(frameTime);
+        public const string Field_FrameTimeName = nameof(frameTime);
         /// <summary>
         /// 循环布尔字段名
         /// </summary>
-        public const string LoopName = nameof(loop);
+        public const string Field_LoopName = nameof(loop);
 #endif
         #endregion
 

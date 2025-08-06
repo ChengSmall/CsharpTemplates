@@ -1,5 +1,6 @@
 using Cheng.Algorithm.HashCodes;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Cheng.DataStructure.Receptacles
 {
@@ -8,7 +9,8 @@ namespace Cheng.DataStructure.Receptacles
     /// 表示一个有最大值的容器结构---无符号16位整形
     /// </summary>
     [Serializable]
-    public struct ReceptacleUInt16 : IEquatable<ReceptacleUInt16>, IComparable<ReceptacleUInt16>, IHashCode64
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct ReceptacleUInt16 : IEquatable<ReceptacleUInt16>, IComparable<ReceptacleUInt16>, IHashCode64
     {
 
 
@@ -37,15 +39,17 @@ namespace Cheng.DataStructure.Receptacles
         #endregion
 
         #region 参数
+
         /// <summary>
         /// 值
         /// </summary>
         public readonly ushort value;
+
         /// <summary>
         /// 最大值
         /// </summary>
         public readonly ushort maxValue;
-        #endregion       
+        #endregion
 
         #region 功能
 

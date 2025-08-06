@@ -202,11 +202,11 @@ namespace Cheng.Unitys.ColorExtractors
         /// </summary>
         protected virtual void OnDestroy()
         {
-            if (hueExtraclor) hueExtraclor.ChangeHueEvent -= fe_changeHueEvent;
-            if (svExtraclor) svExtraclor.ChangeValueEvent -= fe_changeValueEvent;
+            //if (hueExtraclor is object) hueExtraclor.ChangeHueEvent -= fe_changeHueEvent;
+            //if (svExtraclor is object) svExtraclor.ChangeValueEvent -= fe_changeValueEvent;
             hueExtraclor = null;
             svExtraclor = null;
-            //changeColorEvent.RemoveAllListeners();
+            changeColorEvent.RemoveAllListeners();
             changeColorEvent = null;
         }
 

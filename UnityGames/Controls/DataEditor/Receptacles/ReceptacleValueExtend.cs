@@ -9,7 +9,7 @@ namespace Cheng.DataStructure.Receptacles
     /// <summary>
     /// Unity GUI结构<see cref="ReceptacleValue{T}"/> 和 Receptacle容器 转化方法
     /// </summary>
-    public static class ReceptacleValueExtend
+    public static unsafe class ReceptacleValueExtend
     {
 
         #region

@@ -3,6 +3,7 @@ using Cheng.Algorithm.HashCodes;
 
 using BC = Cheng.DataStructure.BoundedContainers.BoundedContainerFloat;
 using bc = System.Single;
+using System.Runtime.InteropServices;
 
 namespace Cheng.DataStructure.BoundedContainers
 {
@@ -13,7 +14,9 @@ namespace Cheng.DataStructure.BoundedContainers
     /// <remarks>
     /// 能够增加或减少，并限定在指定范围内的值
     /// </remarks>
-    public struct BoundedContainerFloat : IEquatable<BC>, IComparable<BC>, IHashCode64
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct BoundedContainerFloat : IEquatable<BC>, IComparable<BC>, IHashCode64
     {
 
         #region 初始化

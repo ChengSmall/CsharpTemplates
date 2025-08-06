@@ -164,67 +164,7 @@ namespace Cheng.DataStructure.Collections
 
         public override bool Equals(string x, string y)
         {
-            if ((object)x == (object)y)
-            {
-                return true;
-            }
-            if (x is null || y is null)
-            {
-                return false;
-            }
-
-            int xlen = x.Length;
-            int ylen = y.Length;
-            int length = xlen;
-            if (xlen != ylen)
-            {
-                if (p_ifEndSeparators)
-                {
-                    if (xlen + 1 == ylen)
-                    {
-                        //y 比 x 多 1
-                        if (y[xlen] == '\\' || y[xlen] == '/')
-                        {
-                            //省略最后一个分隔符
-                            length = xlen;
-                        }
-                        else return false; //不属于分隔符
-                    }
-                    else if (xlen == ylen + 1)
-                    {
-                        //x 比 y 多 1
-                        if (x[ylen] == '\\' || x[ylen] == '/')
-                        {
-                            //省略最后一个分隔符
-                            length = ylen;
-                        }
-                        else return false; //不属于分隔符
-                    }
-                }
-
-                //长度不等
-                return false;
-            }
-            int i;
-            fixed (char* xp = x, yp = y)
-            {
-                if (p_case_insensitive)
-                {
-                    for (i = 0; i < length; i++)
-                    {
-                        if (!EqualityNotPathSeparator.EqualCaseInsensitiveChar(xp[i], yp[i])) return false;
-                    }
-                }
-                else
-                {
-                    for (i = 0; i < length; i++)
-                    {
-                        if (!EqualityNotPathSeparator.EqualChar(xp[i], yp[i])) return false;
-                    }
-                }
-                
-            }
-            return true;
+            return EqualPath(x, y, p_ifEndSeparators, p_case_insensitive);
         }
 
         public override int GetHashCode(string str)
@@ -237,7 +177,7 @@ namespace Cheng.DataStructure.Collections
             return (long)GetHashCodeUInt64(str, p_ifEndSeparators, p_case_insensitive);
         }
 
-        static ulong GetHashCodeUInt64(string str, bool ifEndSeparators, bool caseInsensitive)
+        public static ulong GetHashCodeUInt64(string str, bool ifEndSeparators, bool caseInsensitive)
         {
             if (str is null) return 0;
             int length = str.Length;
@@ -274,6 +214,82 @@ namespace Cheng.DataStructure.Collections
             }
 
             return hash;
+        }
+
+        /// <summary>
+        /// 忽略路径分隔符的字符串比较函数
+        /// </summary>
+        /// <param name="x">要进行比较的字符串</param>
+        /// <param name="y">要进行比较的字符串</param>
+        /// <param name="ifEndSeparators">
+        /// <para>是否将字符串末尾可能存在的分隔符忽略</para>
+        /// <para>如果是true，则当检测到字符串末尾有<![CDATA[/ 或 \]]>字符时将其忽略；false则不做忽略</para>
+        /// </param>
+        /// <param name="caseInsensitive">是否开启大小写不敏感比较；true表示进行字母对比时不区分大小写，false区分大小写</param>
+        /// <returns>字符串相同返回true，字符串不同返回false；当<paramref name="x"/>和<paramref name="y"/>都属于null时，返回true，而只有一个参数为null时，返回false</returns>
+        public static bool EqualPath(string x, string y, bool ifEndSeparators, bool caseInsensitive)
+        {
+            if ((object)x == (object)y)
+            {
+                return true;
+            }
+            if (x is null || y is null)
+            {
+                return false;
+            }
+
+            int xlen = x.Length;
+            int ylen = y.Length;
+            int length = xlen;
+            if (xlen != ylen)
+            {
+                if (ifEndSeparators)
+                {
+                    if (xlen + 1 == ylen)
+                    {
+                        //y 比 x 多 1
+                        if (y[xlen] == '\\' || y[xlen] == '/')
+                        {
+                            //省略最后一个分隔符
+                            length = xlen;
+                        }
+                        else return false; //不属于分隔符
+                    }
+                    else if (xlen == ylen + 1)
+                    {
+                        //x 比 y 多 1
+                        if (x[ylen] == '\\' || x[ylen] == '/')
+                        {
+                            //省略最后一个分隔符
+                            length = ylen;
+                        }
+                        else return false; //不属于分隔符
+                    }
+                }
+
+                //长度不等
+                return false;
+            }
+            int i;
+            fixed (char* xp = x, yp = y)
+            {
+                if (caseInsensitive)
+                {
+                    for (i = 0; i < length; i++)
+                    {
+                        if (!EqualityNotPathSeparator.EqualCaseInsensitiveChar(xp[i], yp[i])) return false;
+                    }
+                }
+                else
+                {
+                    for (i = 0; i < length; i++)
+                    {
+                        if (!EqualityNotPathSeparator.EqualChar(xp[i], yp[i])) return false;
+                    }
+                }
+
+            }
+            return true;
         }
 
     }

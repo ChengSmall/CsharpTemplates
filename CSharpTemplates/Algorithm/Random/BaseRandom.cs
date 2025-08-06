@@ -96,7 +96,7 @@ namespace Cheng.Algorithm.Randoms
         /// 获取或设置当前随机数种子
         /// </summary>
         /// <exception cref="NotSupportedException">没有权限或者种子不包含此类型</exception>
-        public virtual long SeedUInt64
+        public virtual ulong SeedUInt64
         {
             get => throw new NotSupportedException();
             set => throw new NotSupportedException();
@@ -131,7 +131,7 @@ namespace Cheng.Algorithm.Randoms
         /// <returns>一个随机长整型值，范围在[0,9223372036854775807)</returns>
         public virtual long NextLong()
         {
-            return ((long)Next()) | ((long)Next() << 31) | ((long)Next(0, 4) << 62);
+            return (long)(((ulong)Next()) | ((ulong)Next() << 31) | ((ulong)Next(0, 2) << 62));
         }
 
         /// <summary>
@@ -162,8 +162,7 @@ namespace Cheng.Algorithm.Randoms
         /// <returns>范围在[0,1)的单浮点随机数</returns>
         public virtual float NextFloat()
         {
-            return (Next(0, 8388607) / 8388607f);
-            //return (float)(Next() / 2147483647d);
+            return Next(0, 8388607) / 8388607F;
         }
 
         /// <summary>
@@ -176,7 +175,7 @@ namespace Cheng.Algorithm.Randoms
         public virtual float NextFloat(float min, float max)
         {
             if (min > max) throw new ArgumentOutOfRangeException();
-            return (float)(min + ((max - min) * (Next(0, 8388607) / 8388607f)));
+            return (float)(min + ((max - min) * NextFloat()));
             //return (float)(min + (NextDouble() * (max - min)));
         }
 
@@ -228,6 +227,18 @@ namespace Cheng.Algorithm.Randoms
                 buffer[i] = (byte)Next(0, 256);
             }
 
+        }
+
+        /// <summary>
+        /// 指定一个概率参数，判断并返回此次生成器是否小于该参数
+        /// </summary>
+        /// <param name="probability">一个概率参数</param>
+        /// <returns>
+        /// 生成器生成的参数是否小于概率参数，参数越接近1返回true的概率越大；当参数大于或等于1时，返回值永远为true；参数小于0时，返回值永远为false；
+        /// </returns>
+        public virtual bool NextFloat(float probability)
+        {
+            return NextFloat() < probability;
         }
 
         /// <summary>

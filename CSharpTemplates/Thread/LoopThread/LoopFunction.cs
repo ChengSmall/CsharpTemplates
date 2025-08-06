@@ -772,6 +772,10 @@ namespace Cheng.LoopThreads
 
         }
 
+        /// <summary>
+        /// 获取用于计时的当前时间戳
+        /// </summary>
+        /// <returns></returns>
         protected virtual long GetNowTimeTick()
         {
             return Stopwatch.GetTimestamp();

@@ -15,6 +15,19 @@ namespace Cheng.Systems
 
         #region 封装
 
+        public sealed class StrEquals : EqualityComparer<string>
+        {
+            public override bool Equals(string x, string y)
+            {
+                return x == y;
+            }
+
+            public override int GetHashCode(string obj)
+            {
+                return obj is null ? 0 : obj.GetHashCode();
+            }
+        }
+
         static Dictionary<string, Assembly> p_asses;
 
         static string getSimpleAssemblyName(string fullName)
@@ -68,6 +81,36 @@ namespace Cheng.Systems
            
         }
 
+        static int ReadBlock(Stream stream, byte[] buffer, int offset, int count)
+        {
+            int rsize;
+            int re = 0;
+            while (count != 0)
+            {
+                rsize = stream.Read(buffer, offset, count);
+                if (rsize == 0) return re;
+                offset += rsize;
+                count -= rsize;
+                re += rsize;
+            }
+            return re;
+        }
+
+        static void copyToStream(Stream stream, Stream toStream, byte[] buffer)
+        {
+            int length = buffer.Length;
+            int rsize;
+            //int reas;
+            //ulong isReadSize;
+
+            BeginLoop:
+            rsize = stream.Read(buffer, 0, length);
+            if (rsize == 0) return;
+            toStream.Write(buffer, 0, rsize);
+            goto BeginLoop;
+
+        }
+
         #endregion
 
         #region 功能
@@ -77,7 +120,7 @@ namespace Cheng.Systems
         /// </summary>
         public static void InitLoading()
         {
-            if(p_asses is null) p_asses = new Dictionary<string, Assembly>(new Cheng.DataStructure.Collections.BinaryStringEqualComparer());
+            if(p_asses is null) p_asses = new Dictionary<string, Assembly>(new StrEquals());
         }
 
         /// <summary>
@@ -120,19 +163,15 @@ namespace Cheng.Systems
         /// <param name="raw">字节数组，表示包含程序集的基于 COFF 的映像</param>
         /// <param name="cover">若名字重复是否覆盖</param>
         /// <returns>出现的错误，没有错误则返回null</returns>
-        /// <exception cref="ArgumentNullException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
+        /// <exception cref="NotSupportedException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
         public static Exception AddAssembly(byte[] raw, bool cover)
         {
-            if (p_asses is null) throw new ArgumentNullException();
+            if (p_asses is null) throw new NotSupportedException("未初始化加载模块");
             try
             {
-                lock (p_asses)
-                {
-                    var ass = Assembly.Load(raw);
-                    f_addAss(ass, cover);
-                    //p_asses[ass.FullName] = ass;
-                    return null;
-                }
+                var ass = Assembly.Load(raw);
+                f_addAss(ass, cover);
+                return null;
                 
             }
             catch (Exception ex)
@@ -146,10 +185,80 @@ namespace Cheng.Systems
         /// </summary>
         /// <param name="raw">字节数组，表示包含程序集的基于 COFF 的映像</param>
         /// <returns>出现的错误，没有错误则返回null</returns>
-        /// <exception cref="ArgumentNullException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
+        /// <exception cref="NotSupportedException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
         public static Exception AddAssembly(byte[] raw)
         {
             return AddAssembly(raw, true);
+        }
+
+        /// <summary>
+        /// 向动态加载程序集添加待加载模块
+        /// </summary>
+        /// <param name="stream">表示要加载的程序集数据，包含程序集的基于 COFF 的映像</param>
+        /// <returns>出现的错误，没有错误则返回null</returns>
+        /// <exception cref="NotSupportedException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
+        public static Exception AddAssembly(Stream stream)
+        {
+            return AddAssembly(stream, false, null);
+        }
+
+        /// <summary>
+        /// 向动态加载程序集添加待加载模块
+        /// </summary>
+        /// <param name="stream">表示要加载的程序集数据，包含程序集的基于 COFF 的映像</param>
+        /// <param name="cover">若程序集类型重复是否覆盖</param>
+        /// <returns>出现的错误，没有错误则返回null</returns>
+        /// <exception cref="NotSupportedException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
+        public static Exception AddAssembly(Stream stream, bool cover)
+        {
+            return AddAssembly(stream, cover, null);
+        }
+
+        /// <summary>
+        /// 向动态加载程序集添加待加载模块
+        /// </summary>
+        /// <param name="stream">表示要加载的程序集数据，包含程序集的基于 COFF 的映像</param>
+        /// <param name="cover">若程序集类型重复是否覆盖</param>
+        /// <param name="buffer">在拷贝数据时的缓冲区，null表示采用默认大小的缓冲区（如果<paramref name="stream"/>的<see cref="Stream.CanSeek"/>为true，则该参数没有实际作用）</param>
+        /// <returns>出现的错误，没有错误则返回null</returns>
+        /// <exception cref="NotSupportedException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
+        public static Exception AddAssembly(Stream stream, bool cover, byte[] buffer)
+        {
+            if (p_asses is null) throw new NotSupportedException("未初始化加载模块");
+            if (stream is null) return new ArgumentNullException();
+            try
+            {
+                byte[] raw;
+                if (stream.CanSeek)
+                {
+                    raw = new byte[stream.Length];
+                    ReadBlock(stream, raw, 0, raw.Length);
+                }
+                else
+                {
+                    MemoryStream ms = new MemoryStream(256);
+                    if ((buffer is null) || (buffer.Length == 0)) buffer = new byte[1024 * 8];
+                    copyToStream(stream, ms, buffer);
+                    if(ms.TryGetBuffer(out var msBuf) && (msBuf.Offset == 0 && msBuf.Count == msBuf.Array.Length))
+                    {
+                        raw = msBuf.Array;
+                    }
+                    else
+                    {
+                        raw = ms.ToArray();
+                    }
+                }
+
+                var ass = Assembly.Load(raw);
+                f_addAss(ass, cover);
+                //p_asses[ass.FullName] = ass;
+                return null;
+
+            }
+            catch (Exception ex)
+            {
+                return ex;
+            }
         }
 
         /// <summary>
@@ -161,14 +270,11 @@ namespace Cheng.Systems
         /// <exception cref="ArgumentNullException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
         public static Exception AddAssembly(string filePath, bool cover)
         {
-            if (p_asses is null) throw new ArgumentNullException();
             try
             {
-                lock (p_asses)
+                using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    var ass = Assembly.LoadFrom(filePath);
-                    f_addAss(ass, cover);
-                    return null;
+                    return AddAssembly(file, cover, null);
                 }
             }
             catch (Exception ex)
@@ -201,12 +307,9 @@ namespace Cheng.Systems
             try
             {
                 if (assembly is null) return new ArgumentNullException();
-                lock (p_asses)
-                {
                     //p_asses[assembly.FullName] = assembly;
-                    f_addAss(assembly, cover);
-                    return null;
-                }
+                f_addAss(assembly, cover);
+                return null;
 
             }
             catch (Exception ex)
@@ -259,8 +362,6 @@ namespace Cheng.Systems
 
             }
         }
-
-        
 
         /// <summary>
         /// 将指定目录下的文件全部添加进待加载模块

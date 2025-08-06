@@ -1,6 +1,7 @@
 using Cheng.Algorithm.HashCodes;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Cheng.DataStructure.Receptacles
 {
@@ -9,7 +10,8 @@ namespace Cheng.DataStructure.Receptacles
     /// 表示一个有最大值的容器结构，字节值
     /// </summary>
     [Serializable]
-    public struct ReceptacleByte : IEquatable<ReceptacleByte>, IComparable<ReceptacleByte>, IHashCode64
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct ReceptacleByte : IEquatable<ReceptacleByte>, IComparable<ReceptacleByte>, IHashCode64
     {
 
 

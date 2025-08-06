@@ -10,7 +10,6 @@ namespace Cheng.Texts
     public unsafe static partial class TextManipulation
     {
 
-
         #region 字符串和值
 
         #region
@@ -657,7 +656,6 @@ namespace Cheng.Texts
         #endregion
 
         #endregion
-
 
     }
 

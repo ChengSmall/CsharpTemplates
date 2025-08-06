@@ -87,6 +87,7 @@ namespace Cheng.Algorithm.Randoms
             const long G = 32767;
 
             p_seed = (p_seed * M + G);
+            if (p_seed == long.MaxValue) return 0;
 
             if (p_seed < 0) return p_seed & 0x7FFFFFFFFFFFFFFF;
             return p_seed;
@@ -94,7 +95,7 @@ namespace Cheng.Algorithm.Randoms
 
         public sealed override float NextFloat()
         {
-            return (Next(0, 8388607) / 8388607f);
+            return (Next() / 2147483647f);
         }
 
         public sealed override double NextDouble()
@@ -213,7 +214,7 @@ namespace Cheng.Algorithm.Randoms
         /// <returns>范围在[0,1)的单精度浮点数</returns>
         public static float NextFloat(ref long seed)
         {
-            return (NextInt(ref seed, 0, 8388607) / 8388607f);
+            return (NextInt(ref seed) / 2147483647f);
         }
 
         /// <summary>

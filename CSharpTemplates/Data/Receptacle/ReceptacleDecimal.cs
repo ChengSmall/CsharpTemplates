@@ -1,5 +1,7 @@
 using System;
+using System.Runtime.InteropServices;
 using Cheng.Algorithm.HashCodes;
+using ty = System.Decimal;
 
 namespace Cheng.DataStructure.Receptacles
 {
@@ -8,7 +10,8 @@ namespace Cheng.DataStructure.Receptacles
     /// 表示一个有最大值的容器结构，十进制数
     /// </summary>
     [Serializable]
-    public struct ReceptacleDecimal : IEquatable<ReceptacleDecimal>, IComparable<ReceptacleDecimal>, IHashCode64
+    [StructLayout(LayoutKind.Sequential)]
+    public readonly struct ReceptacleDecimal : IEquatable<ReceptacleDecimal>, IComparable<ReceptacleDecimal>, IHashCode64
     {
 
         #region 构造
@@ -39,13 +42,13 @@ namespace Cheng.DataStructure.Receptacles
         /// <summary>
         /// 值
         /// </summary>
-        public readonly decimal value;
+        public readonly ty value;
 
         /// <summary>
         /// 最大值
         /// </summary>
-        public readonly decimal maxValue;
-        #endregion      
+        public readonly ty maxValue;
+        #endregion
 
         #region 功能
 
@@ -66,7 +69,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <remarks>值增加到最大值时便不会再增加</remarks>
         /// <param name="value">要增加的值</param>
         /// <returns>增加后的容器</returns>
-        public ReceptacleDecimal Add(decimal value)
+        public ReceptacleDecimal Add(ty value)
         {
             var v = this.value + value;
             if (v > maxValue) v = maxValue;
@@ -78,7 +81,7 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="value">要减少的值</param>
         /// <returns>减少后的容器结构</returns>
-        public ReceptacleDecimal Sub(decimal value)
+        public ReceptacleDecimal Sub(ty value)
         {
             var v = this.value - value;
             if (v > maxValue) v = maxValue;
@@ -91,7 +94,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <param name="value">要减少的值</param>
         /// <param name="reValue">运算结果</param>
         /// <returns>当此次运算后的值小于0，则值设为0并返回true；否则返回false</returns>
-        public bool SubMinZero(decimal value, out ReceptacleDecimal reValue)
+        public bool SubMinZero(ty value, out ReceptacleDecimal reValue)
         {
             var v = this.value - value;
             bool flag = v <= 0;
@@ -109,7 +112,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <param name="minValue">要减少最小的值</param>
         /// <param name="reValue">运算结果</param>
         /// <returns>当此次运算后的值小于<paramref name="minValue"/>，则值设为<paramref name="minValue"/>并返回true；否则返回false</returns>
-        public bool SubMin(decimal subValue, decimal minValue, out ReceptacleDecimal reValue)
+        public bool SubMin(ty subValue, ty minValue, out ReceptacleDecimal reValue)
         {
             var v = this.value - subValue;
             bool flag = v <= minValue;
@@ -125,7 +128,7 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="value">要减少的值</param>
         /// <returns>运算结果</returns>
-        public ReceptacleDecimal SubMinZero(decimal value)
+        public ReceptacleDecimal SubMinZero(ty value)
         {
             var v = this.value - value;
 
@@ -140,7 +143,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <param name="subValue">要减去的值</param>
         /// <param name="minValue">指定最小值</param>
         /// <returns>运算结果</returns>
-        public ReceptacleDecimal SubMin(decimal subValue, decimal minValue)
+        public ReceptacleDecimal SubMin(ty subValue, ty minValue)
         {
             var v = this.value - subValue;
 
@@ -156,7 +159,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <param name="r1"></param>
         /// <param name="value">要增加的值</param>
         /// <returns>增加后的容器</returns>
-        public static ReceptacleDecimal operator +(ReceptacleDecimal r1, decimal value)
+        public static ReceptacleDecimal operator +(ReceptacleDecimal r1, ty value)
         {
             return r1.Add(value);
         }
@@ -167,7 +170,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <param name="r1"></param>
         /// <param name="value">要减少的值</param>
         /// <returns>减少后的容器结构</returns>
-        public static ReceptacleDecimal operator -(ReceptacleDecimal r1, decimal value)
+        public static ReceptacleDecimal operator -(ReceptacleDecimal r1, ty value)
         {
             return r1.Sub(value);
         }

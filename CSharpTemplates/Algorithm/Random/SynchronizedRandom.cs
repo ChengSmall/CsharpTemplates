@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Cheng.Algorithm.Randoms
 {
@@ -84,7 +84,7 @@ namespace Cheng.Algorithm.Randoms
             }
         }
 
-        public override long SeedUInt64 
+        public override ulong SeedUInt64 
         { 
             get => random.SeedUInt64; 
             set 

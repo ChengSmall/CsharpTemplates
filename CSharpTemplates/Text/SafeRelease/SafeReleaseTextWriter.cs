@@ -12,6 +12,14 @@ namespace Cheng.Texts
 
         #region 封装
 
+        protected SafeReleaseTextWriter()
+        {
+        }
+
+        protected SafeReleaseTextWriter(IFormatProvider formatProvider) : base(formatProvider)
+        {
+        }
+
         private bool p_isDispose = false;
 
         /// <summary>

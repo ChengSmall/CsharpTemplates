@@ -13,7 +13,7 @@ namespace Cheng.DataStructure.Collections
     /// <remarks>
     /// 实现一个使用字符值比较的字符串比较器
     /// </remarks>
-    public sealed unsafe class BinaryStringEqualComparer : EqualityComparer<string>
+    public sealed class BinaryStringEqualComparer : EqualityComparer<string>
     {
 
         /// <summary>

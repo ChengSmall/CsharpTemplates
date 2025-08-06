@@ -88,7 +88,9 @@ namespace Cheng.Unitys.Animators.FrameAnimations.FiniteStateMachine
         #endregion
 
         #region 内部参数
+
         private StateMachine<AnimationNodePar> p_aniStateMachine;
+
         #endregion
 
         #endregion

@@ -142,6 +142,15 @@ namespace Cheng.Properties {
         }
         
         /// <summary>
+        ///   查找类似 流不支持读取 的本地化字符串。
+        /// </summary>
+        internal static string Exception_StreamNotRead {
+            get {
+                return ResourceManager.GetString("Exception_StreamNotRead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 读取的流超出给定的范围 的本地化字符串。
         /// </summary>
         internal static string Exception_StreamReaderOutRange {

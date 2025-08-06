@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assembly\AssemblyLoading.cs" />
+    <Compile Include="CSharpCode\ChangyongFunc.cs" />
     <Compile Include="CSharpCode\ProcessStart.cs" />
     <Compile Include="DisposeFunc.cs" />
     <Compile Include="Process\ProcessExdOther.cs" />
@@ -114,7 +115,7 @@
     <Compile Include="WinApi\WindowForms.cs" />
     <Compile Include="WinApi\winmm\WinapiJoysticks.cs" />
     <Compile Include="Alg\FastSquare.cs" />
-    <Compile Include="YCode\InitArgs.cs" />
+    <Compile Include="CSharpCode\InitArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Compressions\" />

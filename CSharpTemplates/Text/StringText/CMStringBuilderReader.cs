@@ -186,6 +186,6 @@ namespace Cheng.Texts
 
         #endregion
 
-
     }
+
 }

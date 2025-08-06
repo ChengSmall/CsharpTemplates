@@ -119,39 +119,6 @@ namespace Cheng.DEBUG
             return ForeachStream(stream, " ", 16, null);
         }
 
-        /// <summary>
-        /// 将流的所有数据读取
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <returns>包含流的所有数据</returns>
-        public static byte[] ReadAll(this Stream stream)
-        {
-            byte[] buffer;
-            if (stream.CanSeek && stream.Length < int.MaxValue)
-            {
-                buffer = new byte[stream.Length];
-
-                var re = stream.ReadBlock(buffer, 0, buffer.Length);
-                if (re == buffer.Length) return buffer;
-                byte[] res = new byte[re];
-                Array.Copy(buffer, 0, res, 0, re);
-                return res;
-            }
-
-            MemoryStream ms = new MemoryStream(1024);
-
-            buffer = new byte[1024 * 4];
-
-            stream.CopyToStream(ms, buffer);
-
-            if(ms.TryGetBuffer(out var arrBuf))
-            {
-                if (arrBuf.Offset == 0 && arrBuf.Count == arrBuf.Array.Length) return arrBuf.Array;
-            }
-
-            return ms.ToArray();
-        }
-
         #endregion
 
         #region Hash256

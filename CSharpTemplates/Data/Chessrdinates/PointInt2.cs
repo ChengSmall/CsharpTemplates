@@ -9,7 +9,7 @@ namespace Cheng.DataStructure.Cherrsdinates
     /// 整数二维坐标结构
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct PointInt2 : IEquatable<PointInt2>, IHashCode64, IFormattable
+    public readonly struct PointInt2 : IEquatable<PointInt2>, IHashCode64, IFormattable
     {
 
         #region 构造

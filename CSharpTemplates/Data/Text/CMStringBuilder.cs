@@ -98,12 +98,15 @@ namespace Cheng.Texts
 
         #region 参数
 
-        private static char[] cp_emptyChar = new char[0];
+        private static char[] cp_emptyChar = Array.Empty<char>();
 
         private string p_newLine;
 
         private char[] p_charBuffer;
-
+        
+        /// <summary>
+        /// 当前长度
+        /// </summary>
         private int p_length;
 
         #endregion
@@ -365,6 +368,16 @@ namespace Cheng.Texts
                 MemoryOperation.MemoryCopy(charBuffer, bufPtr + p_length, count * sizeof(char));
             }
             p_length += count;
+        }
+
+        /// <summary>
+        /// 追加一个字符
+        /// </summary>
+        /// <param name="value">要追加的一个字符</param>
+        public void Append(char value)
+        {
+            f_ifAddCapacity(p_length + 1);
+            p_charBuffer[p_length++] = value;
         }
 
         /// <summary>

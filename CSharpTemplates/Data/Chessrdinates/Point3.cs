@@ -10,7 +10,7 @@ namespace Cheng.DataStructure.Cherrsdinates
     /// 可表示空间坐标或向量的结构
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct Point3 : IEquatable<Point3>, IHashCode64
+    public readonly struct Point3 : IEquatable<Point3>, IHashCode64
     {
 
         #region 构造

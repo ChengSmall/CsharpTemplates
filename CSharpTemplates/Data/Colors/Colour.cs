@@ -9,6 +9,7 @@ namespace Cheng.DataStructure.Colors
     /// <summary>
     /// 一个通用的RGB颜色结构
     /// </summary>
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct Colour : IEquatable<Colour>
     {

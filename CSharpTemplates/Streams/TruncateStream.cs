@@ -312,6 +312,34 @@ namespace Cheng.Streams
             return rc;
         }
 
+        private int f_readPtr(byte* buffer, int count)
+        {
+            int bufCount = p_bufPosEnd - p_bufPos + 1;
+
+            //最多只能读取的字节数
+            int rc = (bufCount > count) ? count : bufCount;
+
+            if (rc == 0)
+            {
+                return 0;
+            }
+
+            if (rc == 1)
+            {
+                buffer[0] = p_buffer[p_bufPos++];
+                return 1;
+            }
+
+            fixed (byte* orcBuf = p_buffer)
+            {
+                Memorys.MemoryOperation.MemoryCopy(orcBuf + p_bufPos, buffer, rc);
+            }
+
+            p_bufPos += rc;
+
+            return rc;
+        }
+
         #endregion
 
         #region 参数
@@ -388,6 +416,50 @@ namespace Cheng.Streams
         #endregion
 
         #region 功能
+
+        public override unsafe int ReadToAddress(byte* buffer, int count)
+        {
+            ThrowIsDispose(nameof(TruncateStream));
+            if (buffer == null) throw new ArgumentNullException();
+
+            int bufCount;
+            int re;
+
+            //获取缓存可用量
+            bufCount = p_bufPosEnd - p_bufPos + 1;
+            //bufCount = f_bufferHaveReadCount(p_bufPos, p_bufPosEnd);
+
+            //判断缓存为空
+            if (bufCount == 0)
+            {
+                //没有缓存
+                //重置缓存指针（清空缓存）
+                f_bufferClear();
+
+                if (p_nowPos < p_startPos)
+                {
+                    p_nowPos = p_startPos;
+                }
+                else if (p_nowPos > p_endPos)
+                {
+                    return 0;
+                }
+
+                //从基础流读取到缓存
+                re = f_bufferReadbase(out _);
+                if (re == 0)
+                {
+                    //没有基础数据
+                    return 0;
+                }
+            }
+
+            //到这里一定有缓存数据
+            //读取缓存到buffer
+            re = f_readPtr(buffer, count);
+
+            return re;
+        }
 
         /// <summary>
         /// 在该类型中表示为无效操作
@@ -854,6 +926,19 @@ namespace Cheng.Streams
             }
 
             return -1;
+        }
+
+        public override unsafe int ReadToAddress(byte* buffer, int count)
+        {
+            ThrowIsDispose(nameof(NotBufferTruncateStream));
+            if (buffer == null) throw new ArgumentNullException();
+
+            if(p_stream is HEStream hes)
+            {
+                return hes.ReadToAddress(buffer, count);
+            }
+
+            return base.ReadToAddress(buffer, count);
         }
 
         #region 无实现

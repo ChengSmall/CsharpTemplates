@@ -112,6 +112,7 @@ namespace Cheng.DataStructure.Collections
             get => p_leftNode;
             set
             {
+                if (value == p_leftNode) return;
                 if (value is null)
                 {
                     if ((object)p_leftNode != null)
@@ -122,6 +123,10 @@ namespace Cheng.DataStructure.Collections
                     return;
                 }
 
+                if ((object)p_leftNode != null)
+                {
+                    p_leftNode.p_parent = null;
+                }
                 p_leftNode = value;
                 value.p_parent = this;
             }
@@ -135,6 +140,7 @@ namespace Cheng.DataStructure.Collections
             get => p_rightNode;
             set
             {
+                if (value == p_rightNode) return;
                 if (value is null)
                 {
                     if((object)p_rightNode != null)
@@ -144,7 +150,10 @@ namespace Cheng.DataStructure.Collections
                     }
                     return;
                 }
-
+                if ((object)p_rightNode != null)
+                {
+                    p_rightNode.p_parent = null;
+                }
                 p_rightNode = value;
                 value.p_parent = this;
             }
@@ -229,7 +238,7 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 返回一个访问左右两侧子节点的迭代器
+        /// 返回一个访问左右两个子节点的迭代器
         /// </summary>
         /// <returns></returns>
         public Enumator GetEnumerator()
