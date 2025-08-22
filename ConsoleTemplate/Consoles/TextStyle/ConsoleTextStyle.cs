@@ -1,3 +1,4 @@
+using Cheng.DataStructure.Colors;
 using Cheng.Texts;
 using System;
 using System.Collections.Generic;
@@ -374,6 +375,43 @@ namespace Cheng.Consoles
         {
             ColorToText(r, g, b, isBackground, append);
         }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="color">要添加的颜色；忽略透明通道</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void WriteANSIColorText(this TextWriter append, Colour color, bool isBackground)
+        {
+            ColorToText(color.r, color.g, color.b, isBackground, append);
+        }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="color">要添加的颜色；忽略透明通道</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void AppendANSIColorText(this StringBuilder append, Colour color, bool isBackground)
+        {
+            ColorToText(color.r, color.g, color.b, isBackground, append);
+        }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="color">要添加的颜色；忽略透明通道</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void AppendANSIColorText(this CMStringBuilder append, Colour color, bool isBackground)
+        {
+            ColorToText(color.r, color.g, color.b, isBackground, append);
+        }
+
 
         #endregion
 

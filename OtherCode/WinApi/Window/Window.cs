@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using HWND = System.IntPtr;
+
 namespace Cheng.OtherCode.Winapi
 {
 
@@ -121,6 +123,18 @@ namespace Cheng.OtherCode.Winapi
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr GetConsoleWindow();
 
+        /// <summary>
+        /// 检索前台窗口的句柄， (用户当前正在使用) 窗口
+        /// </summary>
+        /// <remarks>
+        /// <para>系统为创建前台窗口的线程分配的优先级略高于其他线程的优先级</para>
+        /// </remarks>
+        /// <returns>返回值是前台窗口的句柄；在某些情况下（例如，当窗口丢失激活时），前台窗口可能为null</returns>
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern HWND GetForegroundWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetFocus();
 
     }
 

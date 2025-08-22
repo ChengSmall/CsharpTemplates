@@ -120,46 +120,24 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #region 权限判断
 
-        public override JoystickAvailablePermissions AvailablePermissions
+        public override bool CanGetVector
         {
-            get
-            {
-                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetFourwayButtons |
-                     JoystickAvailablePermissions.CanSetFourwayButtons |
-                    JoystickAvailablePermissions.CanSetAndGetAllReverse;
-
-                var leftA = p_left.AvailablePermissions;
-                var rightA = p_right.AvailablePermissions;
-                var upA = p_up.AvailablePermissions;
-                var downA = p_down.AvailablePermissions;
-
-                JoystickAvailablePermissions jp = or;
-
-                bool LR_Power;
-                bool UD_Power;
-
-                LR_Power = (((leftA & (ButtonAvailablePermissions.CanGetPower)) == ButtonAvailablePermissions.CanGetPower) && ((rightA & (ButtonAvailablePermissions.CanGetPower)) == ButtonAvailablePermissions.CanGetPower));
-
-                if (LR_Power)
-                {
-                    jp |= JoystickAvailablePermissions.CanGetHorizontalComponent;
-                }
-
-                UD_Power = (((upA & (ButtonAvailablePermissions.CanGetPower)) == ButtonAvailablePermissions.CanGetPower) && ((downA & (ButtonAvailablePermissions.CanGetPower)) == ButtonAvailablePermissions.CanGetPower));
-
-                if (UD_Power)
-                {
-                    jp = JoystickAvailablePermissions.CanGetVerticalComponent;
-                }
-
-                if(LR_Power && UD_Power)
-                {
-                    jp |= JoystickAvailablePermissions.CanGetVector;
-                }
-
-                return jp;
-            }
+            get => p_left.CanGetPower && p_right.CanGetPower && p_down.CanGetPower && p_up.CanGetPower;
         }
+
+        public override bool CanGetHorizontalComponent
+        {
+            get => p_left.CanGetPower && p_right.CanGetPower;
+        }
+
+        public override bool CanGetVerticalComponent
+        {
+            get => p_down.CanGetPower && p_up.CanGetPower;
+        }
+
+        public override bool CanSetHorizontalReverse => true;
+
+        public override bool CanGetVerticalReverse => true;
 
         #endregion
 

@@ -2,6 +2,7 @@ using Cheng.Algorithm.HashCodes;
 using System;
 using System.Runtime.InteropServices;
 using ty = System.Single;
+using Rec = Cheng.DataStructure.Receptacles.ReceptacleFloat;
 
 namespace Cheng.DataStructure.Receptacles
 {
@@ -9,12 +10,12 @@ namespace Cheng.DataStructure.Receptacles
     /// <summary>
     /// 表示一个有最大值的容器结构，浮点型数据
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct ReceptacleFloat : IEquatable<ReceptacleFloat>, IComparable<ReceptacleFloat>, IHashCode64
     {
 
         #region 构造
+
         /// <summary>
         /// 初始化容器，指定值和最大值
         /// </summary>
@@ -24,6 +25,7 @@ namespace Cheng.DataStructure.Receptacles
             this.value = value;
             maxValue = value;
         }
+
         /// <summary>
         /// 初始化容器，指定值和最大值
         /// </summary>
@@ -38,10 +40,12 @@ namespace Cheng.DataStructure.Receptacles
         #endregion
 
         #region 参数
+
         /// <summary>
-        /// 值
+        /// 容器值
         /// </summary>
         public readonly ty value;
+
         /// <summary>
         /// 最大值
         /// </summary>
@@ -58,7 +62,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <returns>值重置为最大值的新实例</returns>
         public ReceptacleFloat ResetMax()
         {
-            return new ReceptacleFloat(maxValue, maxValue);
+            return new Rec(maxValue);
         }
 
         /// <summary>
@@ -124,7 +128,7 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="value">要减少的值</param>
         /// <returns>运算结果</returns>
-        public ReceptacleFloat SubMinZero(ty value)
+        public Rec SubMinZero(ty value)
         {
             var v = this.value - value;
 
@@ -139,7 +143,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <param name="subValue">要减去的值</param>
         /// <param name="minValue">指定最小值</param>
         /// <returns>运算结果</returns>
-        public ReceptacleFloat SubMin(ty subValue, ty minValue)
+        public Rec SubMin(ty subValue, ty minValue)
         {
             var v = this.value - subValue;
 
@@ -159,6 +163,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             return r1.Add(value);
         }
+
         /// <summary>
         /// 减少值
         /// </summary>
@@ -168,6 +173,44 @@ namespace Cheng.DataStructure.Receptacles
         public static ReceptacleFloat operator -(ReceptacleFloat r1, ty value)
         {
             return r1.Sub(value);
+        }
+
+        /// <summary>
+        /// 通过最大值收束容器值并返回
+        /// </summary>
+        /// <returns>
+        /// <para>容器对象，如果当前<see cref="value"/>大于<see cref="maxValue"/>，则返回一个值为<see cref="maxValue"/>的容器；否则直接返回对象副本</para>
+        /// </returns>
+        public Rec Clamp()
+        {
+            if (value > maxValue) return new Rec(maxValue);
+            return this;
+        }
+
+        /// <summary>
+        /// 设置最大值并保证容器值不超过最大值
+        /// </summary>
+        /// <param name="maxValue">要设置的最大值</param>
+        /// <returns>
+        /// <para>容器对象，如果当前容器的<see cref="value"/>大于<paramref name="maxValue"/>，则返回容器值为<paramref name="maxValue"/>的新对象；否则返回容器值是当前对象的<see cref="value"/>值，最大值为<paramref name="maxValue"/>的容器对象</para>
+        /// </returns>
+        public Rec SetMaxValue(ty maxValue)
+        {
+            if (this.value > maxValue) return new Rec(maxValue);
+            return new Rec(this.value, maxValue);
+        }
+
+        /// <summary>
+        /// 设置新值并使用最大值约束防止溢出
+        /// </summary>
+        /// <param name="value">要设置的新值</param>
+        /// <returns>
+        /// <para>如果<paramref name="value"/>大于当前容器的最大值，则返回以当前容器的最大值为参数的新对象；否则返回容器值为<paramref name="value"/>最大值不变的新对象</para>
+        /// </returns>
+        public Rec SetValue(ty value)
+        {
+            if (value > this.maxValue) return new Rec(this.maxValue);
+            return new Rec(value, this.maxValue);
         }
 
         #endregion

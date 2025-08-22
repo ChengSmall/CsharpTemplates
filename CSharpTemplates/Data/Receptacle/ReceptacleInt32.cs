@@ -2,6 +2,7 @@ using Cheng.Algorithm.HashCodes;
 using System;
 using System.Runtime.InteropServices;
 using ty = System.Int32;
+using Rec = Cheng.DataStructure.Receptacles.ReceptacleInt32;
 
 namespace Cheng.DataStructure.Receptacles
 {
@@ -9,7 +10,6 @@ namespace Cheng.DataStructure.Receptacles
     /// <summary>
     /// 表示一个有最大值的容器结构，整形数据
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct ReceptacleInt32 : IEquatable<ReceptacleInt32>, IComparable<ReceptacleInt32>, IHashCode64
     {
@@ -71,6 +71,7 @@ namespace Cheng.DataStructure.Receptacles
             if (v > maxValue) v = maxValue;
             return new ReceptacleInt32(v, maxValue);
         }
+
         /// <summary>
         /// 减少值
         /// </summary>
@@ -82,6 +83,7 @@ namespace Cheng.DataStructure.Receptacles
             if (v > maxValue) v = maxValue;
             return new ReceptacleInt32(v, maxValue);
         }
+
         /// <summary>
         /// 减少值，最小值指定为0
         /// </summary>
@@ -91,12 +93,13 @@ namespace Cheng.DataStructure.Receptacles
         public bool SubMinZero(int value, out ReceptacleInt32 reValue)
         {
             var v = this.value - value;
-            bool flag = v <= 0;            
+            bool flag = v <= 0;
             if (flag) v = 0;
             if (v > maxValue) v = maxValue;
             reValue = new ReceptacleInt32(v, maxValue);
             return flag;
         }
+
         /// <summary>
         /// 减少值，指定减少到的最小值
         /// </summary>
@@ -114,6 +117,7 @@ namespace Cheng.DataStructure.Receptacles
             reValue = new ReceptacleInt32(v, maxValue);
             return flag;
         }
+
         /// <summary>
         /// 减少值，最小值指定为0
         /// </summary>
@@ -127,6 +131,7 @@ namespace Cheng.DataStructure.Receptacles
             if (v > maxValue) v = maxValue;
             return new ReceptacleInt32(v, maxValue);
         }
+
         /// <summary>
         /// 减少值，指定最小值
         /// </summary>
@@ -141,6 +146,7 @@ namespace Cheng.DataStructure.Receptacles
             if (v > maxValue) v = maxValue;
             return new ReceptacleInt32(v, maxValue);
         }
+
         /// <summary>
         /// 增加值
         /// </summary>
@@ -152,6 +158,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             return r1.Add(value);
         }
+
         /// <summary>
         /// 减少值
         /// </summary>
@@ -162,6 +169,45 @@ namespace Cheng.DataStructure.Receptacles
         {
             return r1.Sub(value);
         }
+
+        /// <summary>
+        /// 通过最大值收束容器值并返回
+        /// </summary>
+        /// <returns>
+        /// <para>容器对象，如果当前<see cref="value"/>大于<see cref="maxValue"/>，则返回一个值为<see cref="maxValue"/>的容器；否则直接返回对象副本</para>
+        /// </returns>
+        public Rec Clamp()
+        {
+            if (value > maxValue) return new Rec(maxValue);
+            return this;
+        }
+
+        /// <summary>
+        /// 设置最大值并保证容器值不超过最大值
+        /// </summary>
+        /// <param name="maxValue">要设置的最大值</param>
+        /// <returns>
+        /// <para>容器对象，如果当前容器的<see cref="value"/>大于<paramref name="maxValue"/>，则返回容器值为<paramref name="maxValue"/>的新对象；否则返回容器值是当前对象的<see cref="value"/>值，最大值为<paramref name="maxValue"/>的容器对象</para>
+        /// </returns>
+        public Rec SetMaxValue(ty maxValue)
+        {
+            if (this.value > maxValue) return new Rec(maxValue);
+            return new Rec(this.value, maxValue);
+        }
+
+        /// <summary>
+        /// 设置新值并使用最大值约束防止溢出
+        /// </summary>
+        /// <param name="value">要设置的新值</param>
+        /// <returns>
+        /// <para>如果<paramref name="value"/>大于当前容器的最大值，则返回以当前容器的最大值为参数的新对象；否则返回容器值为<paramref name="value"/>最大值不变的新对象</para>
+        /// </returns>
+        public Rec SetValue(ty value)
+        {
+            if (value > this.maxValue) return new Rec(this.maxValue);
+            return new Rec(value, this.maxValue);
+        }
+
         #endregion
 
         #region 参数判断

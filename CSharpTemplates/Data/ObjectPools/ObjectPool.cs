@@ -1,3 +1,4 @@
+using Cheng.DataStructure.Collections;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +22,7 @@ namespace Cheng.DataStructure.ObjectPools
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化一个对象池
         /// </summary>
@@ -37,6 +39,7 @@ namespace Cheng.DataStructure.ObjectPools
             if (maxBufferObjectCount < 0) throw new ArgumentOutOfRangeException();
             f_init(objGenerator);
         }
+
         /// <summary>
         /// 实例化一个对象池
         /// </summary>
@@ -50,6 +53,7 @@ namespace Cheng.DataStructure.ObjectPools
         {
             f_init(objGenerator);
         }
+
         /// <summary>
         /// 实例化一个对象池
         /// </summary>
@@ -61,19 +65,22 @@ namespace Cheng.DataStructure.ObjectPools
         private void f_init(ObjectGenerator<T> objGenerator)
         {
             SetObjectGenerator(objGenerator);
-            p_stack = new Stack<T>();
+            p_stack = new ImmediatelyStack<T>();
         }
+
         #endregion
 
         #region 参数
+
         /// <summary>
         /// 对象创建器
         /// </summary>
         protected ObjectGenerator<T> p_createObj;
+
         /// <summary>
         /// 对象缓冲栈
         /// </summary>
-        protected Stack<T> p_stack;
+        protected ImmediatelyStack<T> p_stack;
 
         #endregion
 
@@ -118,6 +125,7 @@ namespace Cheng.DataStructure.ObjectPools
         {
             get => p_stack.Count;
         }
+
         #endregion
 
         #region 创建对象
@@ -150,6 +158,7 @@ namespace Cheng.DataStructure.ObjectPools
             p_stack.Push(value);
             return true;
         }
+
         /// <summary>
         /// 生成一个对象
         /// </summary>

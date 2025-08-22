@@ -65,17 +65,6 @@ namespace Cheng.DEBUG
             remove => p_but.ButtonClickEvent -= value;
         }
 
-        public override ButtonAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                var re = ButtonAvailablePermissions.CanSetAndGetInternalButton |
-                 p_but.AvailablePermissions;
-                p_print?.WriteLine("权限:" + re.ToString());
-                return re;
-            }
-        }
-
         public override bool ButtonState
         {
             get
@@ -132,8 +121,54 @@ namespace Cheng.DEBUG
             }
             set
             {                
-                p_but.MaxPower = value;
-                p_print?.WriteLine("设置参数" + nameof(MaxPower) + ":" + value.ToString());
+                p_but.MinPower = value;
+                p_print?.WriteLine("设置参数" + nameof(MinPower) + ":" + value.ToString());
+            }
+        }
+
+        public override double PowerDouble
+        {
+            get
+            {
+                var re = p_but.PowerDouble;
+                p_print?.WriteLine("获取参数" + nameof(PowerDouble) + ":" + re.ToString());
+                return re;
+            }
+            set
+            {
+                p_print?.WriteLine("设置参数" + nameof(PowerDouble) + ":" + value.ToString());
+                p_but.PowerDouble = value;
+            }
+        }
+
+        public override double MaxPowerDouble
+        {
+            get
+            {
+                var re = p_but.MaxPowerDouble;
+                p_print?.WriteLine("获取参数" + nameof(MaxPowerDouble) + ":" + re.ToString());
+                return re;
+            }
+            set
+            {
+                p_but.MaxPowerDouble = value;
+                p_print?.WriteLine("设置参数" + nameof(MaxPowerDouble) + ":" + value.ToString());
+
+            }
+        }
+
+        public override double MinPowerDouble
+        {
+            get
+            {
+                var re = p_but.MinPowerDouble;
+                p_print?.WriteLine("获取参数" + nameof(MinPowerDouble) + ":" + re.ToString());
+                return re;
+            }
+            set
+            {
+                p_but.MinPowerDouble = value;
+                p_print?.WriteLine("设置参数" + nameof(MinPowerDouble) + ":" + value.ToString());
             }
         }
 
@@ -171,6 +206,54 @@ namespace Cheng.DEBUG
         {
             get => p_but;
             set => p_but = value;
+        }
+
+        public override bool CanGetState => p_but.CanGetState;
+
+        public override bool CanSetState => p_but.CanSetState;
+
+        public override bool CanGetPower => p_but.CanGetPower;
+
+        public override bool CanSetPower => p_but.CanSetPower;
+
+        public override bool CanGetMaxPower => p_but.CanGetMaxPower;
+
+        public override bool CanGetMinPower => p_but.CanGetMinPower;
+
+        public override bool CanSetMaxPower => p_but.CanSetMaxPower;
+
+        public override bool CanSetMinPower => p_but.CanSetMinPower;
+
+        public override bool CanButtonDownEvent => p_but.CanButtonDownEvent;
+
+        public override bool CanButtonUpEvent => p_but.CanButtonUpEvent;
+
+        public override bool CanButtonClick => p_but.CanButtonClick;
+
+        public override bool CanGetChangeFrameButtonDown => p_but.CanGetChangeFrameButtonDown;
+
+        public override bool CanGetChangeFrameButtonUp => p_but.CanGetChangeFrameButtonUp;
+
+        public override bool CanSetChangeFrameButtonDown => p_but.CanSetChangeFrameButtonDown;
+
+        public override bool CanSetChangeFrameButtonUp => p_but.CanSetChangeFrameButtonUp;
+
+        public override bool CanGetFrameValue => p_but.CanGetFrameValue;
+
+        public override bool CanGetInternalButton => p_but.CanGetInternalButton;
+
+        public override bool CanSetInternalButton => p_but.CanSetInternalButton;
+
+        public override bool CanDoubleValueIsPower => p_but.CanDoubleValueIsPower;
+
+        public override bool IsThreadSafe
+        {
+            get
+            {
+                var re = p_but.IsThreadSafe;
+                p_print?.WriteLine("获取参数" + nameof(IsThreadSafe) + ":" + re.ToString());
+                return re;
+            }
         }
 
     }

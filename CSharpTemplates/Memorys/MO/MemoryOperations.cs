@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Cheng.Streams;
 
 namespace Cheng.Memorys
 {
@@ -1026,11 +1027,6 @@ namespace Cheng.Memorys
 
         #region 流数据
 
-        static string getArgOutOfRangeReadBlock()
-        {
-            return Cheng.Properties.Resources.Exception_FuncArgOutOfRange;
-        }
-
         /// <summary>
         /// 完整读取流数据的字节序列
         /// </summary>
@@ -1048,22 +1044,10 @@ namespace Cheng.Memorys
         /// <exception cref="IOException">IO错误</exception>
         /// <exception cref="NotSupportedException">不支持方法</exception>
         /// <exception cref="ObjectDisposedException">资源已释放</exception>
-        public static int ReadBlock(this Stream stream, byte[] buffer, int offset, int count)
+        [Obsolete("", true)]
+        public static int ReadBlock(Stream stream, byte[] buffer, int offset, int count)
         {
-            if(stream is null || buffer is null) throw new ArgumentNullException();
-            //if (offset < 0 || count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(getArgOutOfRangeReadBlock());
-            //int index = offset;
-            int rsize;
-            int re = 0;
-            while (count != 0)
-            {
-                rsize = stream.Read(buffer, offset, count);
-                if (rsize == 0) return re;
-                offset += rsize;
-                count -= rsize;
-                re += rsize;
-            }
-            return re;
+            return StreamExtend.ReadBlock(stream, buffer, offset, count);
         }
 
         /// <summary>
@@ -1081,24 +1065,10 @@ namespace Cheng.Memorys
         /// <exception cref="IOException">IO错误</exception>
         /// <exception cref="NotSupportedException">不支持方法</exception>
         /// <exception cref="ObjectDisposedException">资源已释放</exception>
-        public static int ReadBlock(this Stream stream, byte* buffer, int count)
+        [Obsolete("", true)]
+        public static int ReadBlock(Stream stream, byte* buffer, int count)
         {
-            if (stream is null) throw new ArgumentNullException();
-            if (count < 0) throw new ArgumentOutOfRangeException(getArgOutOfRangeReadBlock());
-            //int index = offset;
-            //int rsize;
-            int re = 0;
-            int index = 0;
-            while (count != 0)
-            {
-                int reb = stream.ReadByte();
-                if (reb < 0) break;
-                buffer[index] = (byte)reb;
-                re++;
-                count--;
-                index++;
-            }
-            return re;
+            return StreamExtend.ReadBlock(stream, buffer, count);
         }
 
         /// <summary>
@@ -1118,30 +1088,10 @@ namespace Cheng.Memorys
         /// <exception cref="IOException">IO错误</exception>
         /// <exception cref="NotSupportedException">不支持方法</exception>
         /// <exception cref="ObjectDisposedException">资源已释放</exception>
-        public static IEnumerable<int> ReadBlockEnumator(this Stream stream, byte[] buffer, int offset, int count)
+        [Obsolete("", true)]
+        public static IEnumerable<int> ReadBlockEnumator(Stream stream, byte[] buffer, int offset, int count)
         {
-            if (stream is null) throw new ArgumentNullException(nameof(stream));
-            if (buffer is null) throw new ArgumentNullException(nameof(buffer));
-
-            if (offset < 0 || count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(getArgOutOfRangeReadBlock());
-
-            return f_ReadBlockEnumator(stream, buffer, offset, count);
-        }
-
-        internal static IEnumerable<int> f_ReadBlockEnumator(Stream stream, byte[] buffer, int offset, int count)
-        {
-            //int index = offset;
-            int rsize;
-            int re = 0;
-            while (count != 0)
-            {
-                rsize = stream.Read(buffer, offset, count);
-                if (rsize == 0) yield break;
-                offset += rsize;
-                count -= rsize;
-                re += rsize;
-                yield return rsize;
-            }
+            return StreamExtend.ReadBlockEnumator(stream, buffer, offset, count);
         }
 
         /// <summary>
@@ -1153,15 +1103,10 @@ namespace Cheng.Memorys
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentException">缓冲区长度为0</exception>
         /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
-        public static void CopyToStream(this Stream stream, Stream toStream, byte[] buffer)
+        [Obsolete("", true)]
+        public static void CopyToStream(Stream stream, Stream toStream, byte[] buffer)
         {
-            if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
-
-            if (buffer.Length == 0) throw new ArgumentException();
-
-            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException();
-
-            copyToStream(stream, toStream, buffer);
+            StreamExtend.CopyToStream(stream, toStream, buffer);
         }
 
         /// <summary>
@@ -1174,15 +1119,10 @@ namespace Cheng.Memorys
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentException">缓冲区长度为0</exception>
         /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
-        public static IEnumerable<int> CopyToStreamEnumator(this Stream stream, Stream toStream, byte[] buffer)
+        [Obsolete("", true)]
+        public static IEnumerable<int> CopyToStreamEnumator(Stream stream, Stream toStream, byte[] buffer)
         {
-            if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
-
-            if (buffer.Length == 0) throw new ArgumentException("给定缓冲区长度为0");
-
-            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException("流不支持读取或写入");
-
-            return copyToStreamEnr(stream, toStream, buffer, 0);
+            return StreamExtend.CopyToStreamEnumator(stream, toStream, buffer);
         }
 
         /// <summary>
@@ -1195,15 +1135,10 @@ namespace Cheng.Memorys
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentException">缓冲区长度为0</exception>
         /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
-        public static void CopyToStream(this Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
+        [Obsolete("", true)]
+        public static void CopyToStream(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
         {
-            if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
-
-            if (buffer.Length == 0) throw new ArgumentException("给定缓冲区长度为0");
-
-            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException("流不支持读取或写入");
-
-            copyToStream(stream, toStream, buffer, maxBytes);
+            StreamExtend.CopyToStream(stream, toStream, buffer, maxBytes);
         }
 
         /// <summary>
@@ -1217,117 +1152,10 @@ namespace Cheng.Memorys
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentException">缓冲区长度为0</exception>
         /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
-        public static IEnumerable<int> CopyToStreamEnumator(this Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
+        [Obsolete("", true)]
+        public static IEnumerable<int> CopyToStreamEnumator(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
         {
-            if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
-
-            if (buffer.Length == 0) throw new ArgumentException("给定缓冲区长度为0");
-
-            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException("流不支持读取或写入");
-
-            return copyToStreamEnr(stream, toStream, buffer, maxBytes);
-        }
-
-        static void copyToStream(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
-        {
-            int length = buffer.Length;
-            int rsize;
-            int reas;
-            ulong isReadSize;
-
-            if(maxBytes == 0)
-            {
-                BeginLoop:
-                rsize = stream.Read(buffer, 0, length);
-
-                if (rsize == 0) return;
-
-                toStream.Write(buffer, 0, rsize);
-
-                goto BeginLoop;
-            }
-
-            isReadSize = 0;
-
-            nBeginLoop:
-
-            if (isReadSize == maxBytes) return;
-
-            if ((isReadSize + (ulong)length) > maxBytes)
-            {
-                reas = (int)(maxBytes - isReadSize);
-            }
-            else reas = length;
-
-            rsize = stream.Read(buffer, 0, reas);
-
-            if (rsize == 0) return;
-
-            isReadSize += (ulong)rsize;
-            toStream.Write(buffer, 0, rsize);
-
-            goto nBeginLoop;
-
-        }
-
-        static void copyToStream(Stream stream, Stream toStream, byte[] buffer)
-        {
-            int length = buffer.Length;
-            int rsize;
-            //int reas;
-            //ulong isReadSize;
-            
-            BeginLoop:
-            rsize = stream.Read(buffer, 0, length);
-
-            if (rsize == 0) return;
-
-            toStream.Write(buffer, 0, rsize);
-
-            goto BeginLoop;
-            
-        }
-
-        static IEnumerable<int> copyToStreamEnr(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
-        {
-            int length = buffer.Length;
-            int rsize;
-            int reas;
-            ulong isReadSize;
-
-            if (maxBytes == 0)
-            {
-                BeginLoop:
-                rsize = stream.Read(buffer, 0, length);
-
-                if (rsize == 0) yield break;
-
-                toStream.Write(buffer, 0, rsize);
-                yield return rsize;
-                goto BeginLoop;
-            }
-
-            isReadSize = 0;
-
-            nBeginLoop:
-
-            if (isReadSize == maxBytes) yield break;
-
-            if ((isReadSize + (ulong)length) > maxBytes)
-            {
-                reas = (int)(maxBytes - isReadSize);
-            }
-            else reas = length;
-
-            rsize = stream.Read(buffer, 0, reas);
-
-            if (rsize == 0) yield break;
-
-            isReadSize += (ulong)rsize;
-            toStream.Write(buffer, 0, rsize);
-            yield return rsize;
-            goto nBeginLoop;
-
+            return StreamExtend.CopyToStreamEnumator(stream, toStream, buffer, maxBytes);
         }
 
         /// <summary>
@@ -1339,32 +1167,10 @@ namespace Cheng.Memorys
         /// <param name="value">读取到的变量</param>
         /// <returns>是否成功读取到或读取完整</returns>
         /// <exception cref="ArgumentException">参数错误</exception>
-        public static bool ReadValue<T>(this Stream stream, byte[] buffer, out T value) where T : unmanaged
+        [Obsolete("", true)]
+        public static bool ReadValue<T>(Stream stream, byte[] buffer, out T value) where T : unmanaged
         {
-            if (stream is null || buffer is null || buffer.Length < sizeof(T)) throw new ArgumentException();
-            int ri;
-
-            if (sizeof(T) == 1)
-            {
-                ri = stream.ReadByte();
-                if (ri == -1)
-                {
-                    value = default;
-                    return false;
-                }
-                value = *(T*)&ri;
-            }
-
-            ri = stream.ReadBlock(buffer, 0, sizeof(T));
-
-            if(ri < sizeof(T))
-            {
-                value = default;
-                return false;
-            }
-
-            value = buffer.ToStructure<T>();
-            return true;
+            return StreamExtend.ReadValue<T>(stream, buffer, out value);
         }
 
         /// <summary>
@@ -1374,15 +1180,10 @@ namespace Cheng.Memorys
         /// <param name="stream">流</param>
         /// <param name="buffer">写入流时的缓冲区，该缓冲区长度不得小于类型<typeparamref name="T"/>，后果自负</param>
         /// <param name="value">要存储的对象</param>
-        public static void WriteValue<T>(this Stream stream, byte[] buffer, T value) where T : unmanaged
+        [Obsolete("", true)]
+        public static void WriteValue<T>(Stream stream, byte[] buffer, T value) where T : unmanaged
         {
-
-            fixed (byte* bp = buffer)
-            {
-                *((T*)bp) = value;
-
-                stream.Write(buffer, 0, sizeof(T));
-            }
+            StreamExtend.WriteValue<T>(stream, buffer, value);
         }
 
         /// <summary>
@@ -1390,36 +1191,10 @@ namespace Cheng.Memorys
         /// </summary>
         /// <param name="stream">要读取的流对象</param>
         /// <returns>从<paramref name="stream"/>读取的所有数据</returns>
-        public static byte[] ReadAll(this Stream stream)
+        [Obsolete("", true)]
+        public static byte[] ReadAll(Stream stream)
         {
-            if (stream is null) throw new ArgumentNullException();
-
-            if (stream.CanRead)
-            {
-                if (stream.CanSeek)
-                {
-                    var buf = new byte[stream.Length];
-                    stream.ReadBlock(buf, 0, buf.Length);
-                    return buf;
-                }
-                else
-                {
-                    MemoryStream ms = new MemoryStream(1024);
-                    stream.CopyToStream(ms, new byte[1024]);
-
-                    if(ms.TryGetBuffer(out var arr))
-                    {
-                        if(arr.Count == ms.Length && arr.Offset == 0)
-                        {
-                            return arr.Array;
-                        }
-                    }
-                    return ms.ToArray();
-                }
-            }
-
-            throw new NotSupportedException(Cheng.Properties.Resources.Exception_StreamNotRead);
-
+            return StreamExtend.ReadAll(stream);
         }
 
         #endregion

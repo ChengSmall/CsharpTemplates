@@ -69,7 +69,7 @@ namespace Cheng.Timers
         /// <summary>
         /// 实例化计时器
         /// </summary>
-        /// <exception cref="Win32Exception">当前环境无法使用高分辨率计时器api</exception>
+        /// <exception cref="Win32Exception">系统无法使用高分辨率计时器api</exception>
         public PerformanceCounterTimer()
         {
             GetPerformanceCounterTick();
@@ -79,7 +79,7 @@ namespace Cheng.Timers
         /// 实例化计时器
         /// </summary>
         /// <param name="span">计时器当前已计时的时间</param>
-        /// <exception cref="Win32Exception">当前环境无法使用高分辨率计时器api</exception>
+        /// <exception cref="Win32Exception">系统无法使用高分辨率计时器api</exception>
         public PerformanceCounterTimer(TimeSpan span)
         {
             GetPerformanceCounterTick();

@@ -69,40 +69,107 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 权限重写
 
-        public override ButtonAvailablePermissions AvailablePermissions
+        public override bool CanGetState
         {
             get
             {
-                const ButtonAvailablePermissions or = UnityButtonAvailablePromissions |
-                    ButtonAvailablePermissions.CanGetMaxPower | ButtonAvailablePermissions.CanGetMinPower;
-
-                ButtonAvailablePermissions ap = or | ButtonAvailablePermissions.CanGetState |
-                    ButtonAvailablePermissions.CanGetChangeFrameButtonDown |
-                    ButtonAvailablePermissions.CanGetChangeFrameButtonUp |
-                    ButtonAvailablePermissions.CanGetPower;
-
-                int length = p_buttons.Length;
-                for (int i = 0; i < length; i++)
+                int i;
+                if (p_and)
                 {
-                    var but = p_buttons[i];
-                    var bap = but.AvailablePermissions;
-
-                    if ((bap & ButtonAvailablePermissions.CanGetState) != ButtonAvailablePermissions.CanGetState)
+                    for (i = 0; i < p_buttons.Length; i++)
                     {
-                        ap &= ~(ButtonAvailablePermissions.AllGetStateAndPower);
+                        var but = p_buttons[i];
+                        if (!but.CanGetState) return false;
                     }
-                    if ((bap & ButtonAvailablePermissions.CanGetChangeFrameButtonDown) != ButtonAvailablePermissions.CanGetChangeFrameButtonDown)
-                    {
-                        ap &= ~(ButtonAvailablePermissions.CanGetChangeFrameButtonDown);
-                    }
-                    if ((bap & ButtonAvailablePermissions.CanGetChangeFrameButtonUp) != ButtonAvailablePermissions.CanGetChangeFrameButtonUp)
-                    {
-                        ap &= ~(ButtonAvailablePermissions.CanGetChangeFrameButtonUp);
-                    }
+                    return true;
                 }
+                else
+                {
+                    for (i = 0; i < p_buttons.Length; i++)
+                    {
+                        var but = p_buttons[i];
+                        if (but.CanGetState) return true;
+                    }
+                    return false;
+                }
+            }
+        }
 
+        public override bool CanGetPower
+        {
+            get
+            {
+                int i;
+                if (p_and)
+                {
+                    for (i = 0; i < p_buttons.Length; i++)
+                    {
+                        var but = p_buttons[i];
+                        if (!but.CanGetPower) return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    for (i = 0; i < p_buttons.Length; i++)
+                    {
+                        var but = p_buttons[i];
+                        if (but.CanGetPower) return true;
+                    }
+                    return false;
+                }
+            }
+        }
 
-                return ap;
+        public override bool CanGetChangeFrameButtonDown
+        {
+            get
+            {
+                int i;
+                if (p_and)
+                {
+                    for (i = 0; i < p_buttons.Length; i++)
+                    {
+                        var but = p_buttons[i];
+                        if (!but.CanGetChangeFrameButtonDown) return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    for (i = 0; i < p_buttons.Length; i++)
+                    {
+                        var but = p_buttons[i];
+                        if (but.CanGetChangeFrameButtonDown) return true;
+                    }
+                    return false;
+                }
+            }
+        }
+
+        public override bool CanGetChangeFrameButtonUp
+        {
+            get
+            {
+                int i;
+                if (p_and)
+                {
+                    for (i = 0; i < p_buttons.Length; i++)
+                    {
+                        var but = p_buttons[i];
+                        if (!but.CanGetChangeFrameButtonUp) return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    for (i = 0; i < p_buttons.Length; i++)
+                    {
+                        var but = p_buttons[i];
+                        if (but.CanGetChangeFrameButtonUp) return true;
+                    }
+                    return false;
+                }
             }
         }
 

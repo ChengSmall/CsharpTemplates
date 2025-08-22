@@ -69,16 +69,13 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 派生
 
-        public override ButtonAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                return UnityButtonAvailablePromissions |
-                 ButtonAvailablePermissions.AllGetStateAndPower |
-                 ButtonAvailablePermissions.CanGetChangeFrameButtonDown |
-                 ButtonAvailablePermissions.CanGetChangeFrameButtonUp;
-            }
-        }
+        public override bool CanGetState => true;
+
+        public override bool CanGetPower => true;
+
+        public override bool CanGetChangeFrameButtonDown => true;
+
+        public override bool CanGetChangeFrameButtonUp => true;
 
         /// <summary>
         /// 使用<see cref="Input.GetButtonDown(string)"/>获取参数
@@ -93,16 +90,13 @@ namespace Cheng.ButtonTemplates.UnityButtons
         /// <summary>
         /// 访问虚拟按钮状态
         /// </summary>
-        /// <returns>使用参数<see cref="ButtonName"/>提供的虚拟标识，调用<see cref="Input.GetButton(string)"/>返回按钮状态</returns>
-        /// <value>没有属性设置功能</value>
-        /// <exception cref="NotSupportedException">没有属性设置功能</exception>
+        /// <returns>使用<see cref="ButtonName"/>提供的参数，调用<see cref="Input.GetButton(string)"/>返回按钮状态</returns>
         public override bool ButtonState
         {
             get
             {
                 return Input.GetButton(p_buttonName);
             }
-            set { ThrowSupportedException(); }
         }
 
         /// <summary>
@@ -116,8 +110,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
             {
                 return p_axisSmooth ? Input.GetAxis(p_buttonName) : Input.GetAxisRaw(p_buttonName);
             }
-            set { ThrowSupportedException(); }
-        }   
+        }
 
         /// <summary>
         /// 返回虚拟按钮标识
@@ -133,7 +126,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
         #region 功能
 
         /// <summary>
-        /// 访问或设置Unity虚拟按钮标识
+        /// 访问或设置Unity虚拟按钮标识名
         /// </summary>
         public string ButtonName
         {

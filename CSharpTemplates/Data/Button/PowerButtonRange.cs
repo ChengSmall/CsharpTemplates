@@ -10,6 +10,7 @@ namespace Cheng.ButtonTemplates
     /// <summary>
     /// 将按钮封装为一个拥有力度范围的按钮
     /// </summary>
+    /// <remarks>可调整按钮力度</remarks>
     public sealed class PowerButtonRange : BaseButton
     {
 
@@ -36,6 +37,7 @@ namespace Cheng.ButtonTemplates
         public PowerButtonRange(BaseButton button) : this(button, 0f, 1f)
         {
         }
+
         #endregion
 
         #region 参数
@@ -48,25 +50,17 @@ namespace Cheng.ButtonTemplates
 
         #region 派生
 
-        public override ButtonAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                const ButtonAvailablePermissions or =
-                    ButtonAvailablePermissions.CanGetInternalButton |
-                    ButtonAvailablePermissions.CanSetInternalButton |
-                    ButtonAvailablePermissions.CanGetMaxPower |
-                    ButtonAvailablePermissions.CanGetMinPower | ButtonAvailablePermissions.CanSetMaxPower |
-                    ButtonAvailablePermissions.CanSetMinPower;
+        public override bool CanGetInternalButton => true;
 
-                //const ButtonAvailablePermissions and =
-                //    ~(ButtonAvailablePermissions.CanButtonDownEvent |
-                //    ButtonAvailablePermissions.CanButtonUpEvent |
-                //    ButtonAvailablePermissions.CanButtonClick);
+        public override bool CanSetInternalButton => true;
 
-                return (p_button.AvailablePermissions | or);
-            }
-        }
+        public override bool CanGetMaxPower => true;
+
+        public override bool CanGetMinPower => true;
+
+        public override bool CanSetMaxPower => true;
+
+        public override bool CanSetMinPower => true;
 
         public override bool ButtonState 
         {
@@ -80,7 +74,7 @@ namespace Cheng.ButtonTemplates
         /// <value>
         /// 值大于<see cref="MaxPower"/>时将其设置为<see cref="MaxPower"/>；小于<see cref="MinPower"/>设置为<see cref="MinPower"/>
         /// </value>
-        public override float Power 
+        public override float Power
         {
             get => Maths.Clamp(p_button.Power, p_min, p_max);
             set => p_button.Power = Maths.Clamp(value, p_min, p_max); 
@@ -90,6 +84,24 @@ namespace Cheng.ButtonTemplates
         {
             get => p_max;
             set => p_max = value;
+        }
+
+        public override double MaxPowerDouble 
+        {
+            get => p_button.MaxPowerDouble;
+            set => p_button.MaxPowerDouble = value; 
+        }
+
+        public override double MinPowerDouble
+        {
+            get => p_button.MinPowerDouble; 
+            set => p_button.MinPowerDouble = value;
+        }
+
+        public override double PowerDouble 
+        {
+            get => p_button.PowerDouble;
+            set => p_button.PowerDouble = value;
         }
 
         public override bool ButtonDown => p_button.ButtonDown;
@@ -103,6 +115,32 @@ namespace Cheng.ButtonTemplates
             get => p_button;
             set => p_button = value;
         }
+
+        public override bool CanGetState => p_button.CanGetState;
+
+        public override bool CanSetState => p_button.CanSetState;
+
+        public override bool CanGetPower => p_button.CanGetPower;
+
+        public override bool CanSetPower => p_button.CanSetPower;
+
+        public override bool CanButtonDownEvent => p_button.CanButtonDownEvent;
+
+        public override bool CanButtonUpEvent => p_button.CanButtonUpEvent;
+
+        public override bool CanButtonClick => p_button.CanButtonClick;
+
+        public override bool CanGetChangeFrameButtonDown => p_button.CanGetChangeFrameButtonDown;
+
+        public override bool CanGetChangeFrameButtonUp => p_button.CanGetChangeFrameButtonUp;
+
+        public override bool CanSetChangeFrameButtonDown => p_button.CanSetChangeFrameButtonDown;
+
+        public override bool CanSetChangeFrameButtonUp => p_button.CanSetChangeFrameButtonUp;
+
+        public override bool CanGetFrameValue => p_button.CanGetFrameValue;
+
+        public override bool CanDoubleValueIsPower => p_button.CanDoubleValueIsPower;
 
         public override event ButtonEvent<BaseButton> ButtonDownEvent
         {
@@ -137,10 +175,14 @@ namespace Cheng.ButtonTemplates
                 p_button.ButtonClickEvent -= value;
             }
         }
+
+
         #endregion
 
         #region 参数
-      
+
+
+
         #endregion
 
         #endregion

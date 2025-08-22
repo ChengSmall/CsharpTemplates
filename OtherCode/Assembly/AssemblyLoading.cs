@@ -10,10 +10,24 @@ namespace Cheng.Systems
     /// <summary>
     /// 一个动态加载程序集的加载方法
     /// </summary>
+    /// <remarks>
+    /// <para>允许程序集兼容性更新</para>
+    /// </remarks>
     public static class AssemblyLoading
     {
 
         #region 封装
+
+        private sealed class S_Obj
+        {
+
+            public S_Obj()
+            {
+                p_dict = new Dictionary<string, Assembly>(new StrEquals());
+            }
+
+            public Dictionary<string, Assembly> p_dict;
+        }
 
         public sealed class StrEquals : EqualityComparer<string>
         {
@@ -28,14 +42,14 @@ namespace Cheng.Systems
             }
         }
 
-        static Dictionary<string, Assembly> p_asses;
+        static S_Obj p_lock;
 
         static string getSimpleAssemblyName(string fullName)
         {
             int i;
             for (i = 0; i < fullName.Length; i++)
             {
-                if (fullName[i] == ',') return fullName.Substring(0, i + 1);
+                if (fullName[i] == ',') return fullName.Substring(0, i);
             }
             return fullName;
             //return fullName.Substring(0, i + 1);
@@ -45,9 +59,9 @@ namespace Cheng.Systems
         {
             var assName = args.Name;
             assName = getSimpleAssemblyName(assName);
-            lock (p_asses)
+            lock (p_lock)
             {
-                if (p_asses.TryGetValue(assName, out var asses))
+                if (p_lock.p_dict.TryGetValue(assName, out var asses))
                 {
                     return asses;
                 }
@@ -59,24 +73,24 @@ namespace Cheng.Systems
         {
             string name;
 
-            name = getSimpleAssemblyName(ass.FullName);
-            lock (p_asses)
+            //name = getSimpleAssemblyName(ass.FullName);
+            name = ass.GetName().Name;
+            lock (p_lock)
             {
                 //获取name下的ass集合
-                bool b = p_asses.ContainsKey(name);
-                if (b)
+                if (cover)
                 {
-                    //有
-                    if (cover)
-                    {
-                        p_asses[name] = ass;
-                    }
+                    p_lock.p_dict[name] = ass;
                 }
                 else
                 {
-                    //没有直接加
-                    p_asses.Add(name, ass);
+                    if (!p_lock.p_dict.ContainsKey(name))
+                    {
+                        //没有直接加
+                        p_lock.p_dict.Add(name, ass);
+                    }
                 }
+                
             }
            
         }
@@ -100,15 +114,12 @@ namespace Cheng.Systems
         {
             int length = buffer.Length;
             int rsize;
-            //int reas;
-            //ulong isReadSize;
 
             BeginLoop:
             rsize = stream.Read(buffer, 0, length);
             if (rsize == 0) return;
             toStream.Write(buffer, 0, rsize);
             goto BeginLoop;
-
         }
 
         #endregion
@@ -120,7 +131,7 @@ namespace Cheng.Systems
         /// </summary>
         public static void InitLoading()
         {
-            if(p_asses is null) p_asses = new Dictionary<string, Assembly>(new StrEquals());
+            if(p_lock is null) p_lock = new S_Obj();
         }
 
         /// <summary>
@@ -130,7 +141,7 @@ namespace Cheng.Systems
         /// <exception cref="ArgumentNullException">参数是null或未初始化</exception>
         public static void RegisterEvent(AppDomain dom)
         {
-            if (dom is null || p_asses is null) throw new ArgumentNullException();
+            if (dom is null || p_lock is null) throw new ArgumentNullException();
             dom.AssemblyResolve += Dom_AssemblyResolve;
         }
 
@@ -141,7 +152,7 @@ namespace Cheng.Systems
         /// <exception cref="ArgumentNullException">参数是null或未初始化</exception>
         public static void UnregisterEvent(AppDomain dom)
         {
-            if (dom is null || p_asses is null) throw new ArgumentNullException();
+            if (dom is null || p_lock is null) throw new ArgumentNullException();
             dom.AssemblyResolve -= Dom_AssemblyResolve;
         }
 
@@ -154,7 +165,7 @@ namespace Cheng.Systems
         /// </returns>
         public static Dictionary<string, Assembly> Assemblys
         {
-            get => p_asses;
+            get => p_lock.p_dict;
         }
 
         /// <summary>
@@ -166,7 +177,7 @@ namespace Cheng.Systems
         /// <exception cref="NotSupportedException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
         public static Exception AddAssembly(byte[] raw, bool cover)
         {
-            if (p_asses is null) throw new NotSupportedException("未初始化加载模块");
+            if (p_lock is null) throw new NotSupportedException("未初始化加载模块");
             try
             {
                 var ass = Assembly.Load(raw);
@@ -199,7 +210,7 @@ namespace Cheng.Systems
         /// <exception cref="NotSupportedException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
         public static Exception AddAssembly(Stream stream)
         {
-            return AddAssembly(stream, false, null);
+            return AddAssembly(stream, true, null);
         }
 
         /// <summary>
@@ -224,7 +235,7 @@ namespace Cheng.Systems
         /// <exception cref="NotSupportedException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
         public static Exception AddAssembly(Stream stream, bool cover, byte[] buffer)
         {
-            if (p_asses is null) throw new NotSupportedException("未初始化加载模块");
+            if (p_lock is null) throw new NotSupportedException("未初始化加载模块");
             if (stream is null) return new ArgumentNullException();
             try
             {
@@ -236,7 +247,7 @@ namespace Cheng.Systems
                 }
                 else
                 {
-                    MemoryStream ms = new MemoryStream(256);
+                    MemoryStream ms = new MemoryStream(1024);
                     if ((buffer is null) || (buffer.Length == 0)) buffer = new byte[1024 * 8];
                     copyToStream(stream, ms, buffer);
                     if(ms.TryGetBuffer(out var msBuf) && (msBuf.Offset == 0 && msBuf.Count == msBuf.Array.Length))
@@ -251,7 +262,6 @@ namespace Cheng.Systems
 
                 var ass = Assembly.Load(raw);
                 f_addAss(ass, cover);
-                //p_asses[ass.FullName] = ass;
                 return null;
 
             }
@@ -303,7 +313,7 @@ namespace Cheng.Systems
         /// <exception cref="ArgumentNullException">未调用<see cref="RegisterEvent"/>进行初始化</exception>
         public static Exception AddAssembly(Assembly assembly, bool cover)
         {
-            if (p_asses is null) throw new ArgumentNullException();
+            if (p_lock is null) throw new ArgumentNullException();
             try
             {
                 if (assembly is null) return new ArgumentNullException();
@@ -338,7 +348,7 @@ namespace Cheng.Systems
         /// <exception cref="Exception">错误</exception>
         public static void AddAssemblysByPath(string path, bool cover, SearchOption searchOption)
         {
-            if (p_asses is null) throw new ArgumentNullException();
+            if (p_lock is null) throw new ArgumentNullException();
             DirectoryInfo info = new DirectoryInfo(path);
 
             var files = info.GetFiles("*.dll", searchOption);
@@ -371,29 +381,7 @@ namespace Cheng.Systems
         /// <exception cref="Exception">错误</exception>
         public static void AddAssemblysByPath(string path, bool cover)
         {
-            if (p_asses is null) throw new ArgumentNullException();
-            DirectoryInfo info = new DirectoryInfo(path);
-
-            var files = info.GetFiles("*.dll");
-
-            int length = files.Length;
-            for (int i = 0; i < length; i++)
-            {
-                var fileInfo = files[i];
-
-                if (fileInfo.Exists)
-                {
-                    
-                    try
-                    {
-                        AddAssembly(fileInfo.FullName, cover);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-
-            }
+            AddAssemblysByPath(path, cover, SearchOption.TopDirectoryOnly);
         }
 
         /// <summary>
@@ -403,7 +391,7 @@ namespace Cheng.Systems
         /// <exception cref="Exception">错误</exception>
         public static void AddAssemblysByPath(string path)
         {
-            AddAssemblysByPath(path, false);
+            AddAssemblysByPath(path, true, SearchOption.TopDirectoryOnly);
         }
 
         #endregion

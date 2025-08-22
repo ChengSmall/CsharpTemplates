@@ -76,20 +76,19 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
         #region 权限重写
 
-        public override JoystickAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanSetAndGetAllReverse;
+        public override bool CanGetVector => Input.touchSupported;
 
-                if (Input.touchSupported)
-                {
-                    return JoystickAvailablePermissions.CanGetAllJoystick | or;
-                }
-                return or;
-            }
-        }
+        public override bool CanGetHorizontalComponent => Input.touchSupported;
 
+        public override bool CanGetVerticalComponent => Input.touchSupported;
+
+        public override bool CanGetHorizontalReverse => true;
+
+        public override bool CanSetHorizontalReverse => true;
+
+        public override bool CanGetVerticalReverse => true;
+
+        public override bool CanSetVerticalReverse => true;
         #endregion
 
         #region 派生
@@ -158,7 +157,7 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
         public sealed override bool IsHorizontalReverse 
         {
-            get => p_speed.x >= 0;
+            get => p_speed.x < 0;
             set
             {
                 float v = p_speed.x;
@@ -186,7 +185,7 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
         public sealed override bool IsVerticalReverse 
         {
-            get => p_speed.y >= 0;
+            get => p_speed.y < 0;
             set
             {
                 float v = p_speed.y;

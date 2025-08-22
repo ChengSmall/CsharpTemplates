@@ -79,7 +79,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
 #if UNITY_EDITOR
 
         /// <summary>
-        /// 名称字符串变量名
+        /// 名称变量名字符串
         /// </summary>
         public const string cp_EditorProperityFieldButtonName = nameof(p_buttonName);
 
@@ -99,11 +99,9 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 派生
 
-        public override ButtonAvailablePermissions AvailablePermissions
-        {
-            get => ButtonAvailablePermissions.AllGetStateAndPower |
-                 UnityButtonAvailablePromissions;
-        }
+        public override bool CanGetPower => true;
+
+        public override bool CanGetState => true;
 
         /// <summary>
         /// 表示按钮状态
@@ -118,7 +116,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
             {
                 return Power > p_mid;
             }
-            set { ThrowSupportedException(); }
         }
 
         /// <summary>
@@ -132,7 +129,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
             {
                 return p_axisSmooth ? Input.GetAxis(p_buttonName) : Input.GetAxisRaw(p_buttonName);
             }
-            set { ThrowSupportedException(); }
         }
 
         /// <summary>
@@ -184,6 +180,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #endregion
 
-
     }
+
 }

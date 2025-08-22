@@ -10,6 +10,8 @@ using Cheng.Memorys;
 using Cheng.Streams;
 using Cheng.IO;
 using Cheng.IO.Systems;
+using Cheng.DataStructure;
+using Cheng.DataStructure.Collections;
 
 namespace Cheng.Algorithm.Compressions.ResourcePackages
 {
@@ -20,7 +22,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
     /// <remarks>
     /// 配合<see cref="ResourcePackageReader"/>使用的资源打包器，被该对象打包的数据能够被<see cref="ResourcePackageReader"/>读取
     /// </remarks>
-    public unsafe class ResourcePackageWriter
+    public unsafe class ResourcePackageWriter : IPackagingOperation
     {
 
         #region 结构
@@ -915,6 +917,63 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             stream.WriteByte(0x61);
             stream.WriteByte(0x63);
             stream.WriteByte(0x6B);
+        }
+
+        #endregion
+
+        #region 派生
+
+        private class FindIndexLamda
+        {
+            public FindIndexLamda(string path)
+            {
+                this.path = path;
+            }
+
+            public string path;
+
+            public bool Find(FileInfoIndex index)
+            {
+                return EqualityStrNotPathSeparator.EqualPath(path, index.dataPath, false, true);
+            }
+        }
+
+        int IPackagingOperation.Count => this.PackFiles.Count;
+
+        bool IPackagingOperation.CanRemoveData => true;
+
+        bool IPackagingOperation.CanContainsData => true;
+
+        void IPackagingOperation.SetData(IGettingStream data, string path)
+        {
+            FindIndexLamda fl = new FindIndexLamda(path);
+            var index = PackFiles.FindIndex(fl.Find);
+            if(index == -1)
+            {
+                PackFiles.Add(new FileInfoIndex(data, path));
+            }
+            else
+            {
+                PackFiles[index] = new FileInfoIndex(data, path);
+            }
+        }
+
+        void IPackagingOperation.RemoveData(string path)
+        {
+            FindIndexLamda fl = new FindIndexLamda(path ?? throw new ArgumentNullException());
+            var index = PackFiles.FindIndex(fl.Find);
+            if (index == -1) throw new ArgumentException();
+        }
+
+        bool IPackagingOperation.ContainsData(string path)
+        {
+            FindIndexLamda fl = new FindIndexLamda(path ?? throw new ArgumentNullException());
+            return PackFiles.FindIndex(fl.Find) >= 0;
+        }
+
+        void IPackagingOperation.PackTo(Stream stream)
+        {
+            ToPack(stream);
         }
 
         #endregion

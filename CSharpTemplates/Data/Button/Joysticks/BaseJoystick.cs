@@ -19,72 +19,74 @@ namespace Cheng.ButtonTemplates.Joysticks
         #region 权限判断
 
         /// <summary>
-        /// 此摇杆的所有权限
-        /// </summary>
-        public virtual JoystickAvailablePermissions AvailablePermissions
-        {
-            get => JoystickAvailablePermissions.None;
-        }
-
-        /// <summary>
         /// 此摇杆是否允许获取摇杆水平数据分量
         /// </summary>
-        public bool CanGetHorizontalComponent => (AvailablePermissions & JoystickAvailablePermissions.CanGetHorizontalComponent) == JoystickAvailablePermissions.CanGetHorizontalComponent;
+        public virtual bool CanGetHorizontalComponent => false;
 
         /// <summary>
         /// 此摇杆是否允许获取摇杆垂直数据分量
         /// </summary>
-        public bool CanGetVerticalComponent => (AvailablePermissions & JoystickAvailablePermissions.CanGetVerticalComponent) == JoystickAvailablePermissions.CanGetVerticalComponent;
+        public virtual bool CanGetVerticalComponent => false;
 
         /// <summary>
         /// 此摇杆是否允许设置摇杆水平数据分量
         /// </summary>
-        public bool CanSetHorizontalComponent => (AvailablePermissions & JoystickAvailablePermissions.CanSetHorizontalComponent) == JoystickAvailablePermissions.CanSetHorizontalComponent;
+        public virtual bool CanSetHorizontalComponent => false;
 
         /// <summary>
         /// 此摇杆是否允许设置摇杆垂直数据分量
         /// </summary>
-        public bool CanSetVerticalComponent => (AvailablePermissions & JoystickAvailablePermissions.CanSetVerticalComponent) == JoystickAvailablePermissions.CanSetVerticalComponent;
+        public virtual bool CanSetVerticalComponent => false;
 
         /// <summary>
         /// 此摇杆是否允许获取摇杆偏移轴数据
         /// </summary>
-        public bool CanGetVector => (AvailablePermissions & JoystickAvailablePermissions.CanGetVector) == JoystickAvailablePermissions.CanGetVector;
+        public virtual bool CanGetVector => false;
 
         /// <summary>
         /// 此摇杆是否允许设置摇杆偏移轴数据
         /// </summary>
-        public bool CanSetVector => (AvailablePermissions & JoystickAvailablePermissions.CanSetVector) == JoystickAvailablePermissions.CanSetVector;
+        public virtual bool CanSetVector => false;
 
         /// <summary>
         /// 此摇杆是否使用摇杆数据改变事件
         /// </summary>
-        public bool CanChangeEvent => (AvailablePermissions & JoystickAvailablePermissions.CanChangeEvent) == JoystickAvailablePermissions.CanChangeEvent;
+        public virtual bool CanChangeEvent => false;
 
         /// <summary>
         /// 是否允许将摇杆参数当作四向按钮获取参数
         /// </summary>
-        public bool CanGetFourwayButtons => (AvailablePermissions & JoystickAvailablePermissions.CanGetFourwayButtons) == JoystickAvailablePermissions.CanGetFourwayButtons;
+        public virtual bool CanGetFourwayButtons => false;
 
         /// <summary>
         /// 是否支持访问水平摇杆轴反转参数
         /// </summary>
-        public bool CanGetHorizontalReverse => (AvailablePermissions & JoystickAvailablePermissions.CanGetHorizontalReverse) == JoystickAvailablePermissions.CanGetHorizontalReverse;
+        public virtual bool CanGetHorizontalReverse => false;
 
         /// <summary>
         /// 是否支持设置水平摇杆轴反转参数
         /// </summary>
-        public bool CanSetHorizontalReverse => (AvailablePermissions & JoystickAvailablePermissions.CanSetHorizontalReverse) == JoystickAvailablePermissions.CanSetHorizontalReverse;
+        public virtual bool CanSetHorizontalReverse => false;
 
         /// <summary>
         /// 是否支持访问垂直摇杆轴反转参数
         /// </summary>
-        public bool CanGetVerticalReverse => (AvailablePermissions & JoystickAvailablePermissions.CanGetVerticalReverse) == JoystickAvailablePermissions.CanGetVerticalReverse;
+        public virtual bool CanGetVerticalReverse => false;
 
         /// <summary>
         /// 是否支持设置垂直摇杆轴反转参数
         /// </summary>
-        public bool CanSetVerticalReverse => (AvailablePermissions & JoystickAvailablePermissions.CanSetVerticalReverse) == JoystickAvailablePermissions.CanSetVerticalReverse;
+        public virtual bool CanSetVerticalReverse => false;
+
+        /// <summary>
+        /// 允许访问内部封装的摇杆参数
+        /// </summary>
+        public virtual bool CanGetInternalJoystick => false;
+
+        /// <summary>
+        /// 允许设置内部封装的摇杆参数
+        /// </summary>
+        public virtual bool CanSetInternalJoystick => false;
 
         #endregion
 

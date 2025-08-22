@@ -19,187 +19,189 @@ namespace Cheng.ButtonTemplates
     /// <param name="arg">事件的参数</param>
     public delegate void ButtonEvent<in B, Arg>(B button, Arg arg) where B : BaseButton;
 
-    /// <summary>
-    /// 按钮可用权限枚举
-    /// </summary>
-    [Flags]
-    public enum ButtonAvailablePermissions : uint
-    {
+    #region
+    ///// <summary>
+    ///// 按钮可用权限枚举
+    ///// </summary>
+    //[Flags]
+    //public enum ButtonAvailablePermissions : uint
+    //{
 
-        /// <summary>
-        /// 没有权限
-        /// </summary>
-        None = 0,
+    //    /// <summary>
+    //    /// 没有权限
+    //    /// </summary>
+    //    None = 0,
 
-        #region state
+    //    #region state
 
-        /// <summary>
-        /// 允许获取按钮状态
-        /// </summary>
-        CanGetState = 0b00000001,
+    //    /// <summary>
+    //    /// 允许获取按钮状态
+    //    /// </summary>
+    //    CanGetState = 0b00000001,
 
-        /// <summary>
-        /// 允许设置按钮状态
-        /// </summary>
-        CanSetState = 0b00000010,
+    //    /// <summary>
+    //    /// 允许设置按钮状态
+    //    /// </summary>
+    //    CanSetState = 0b00000010,
 
-        /// <summary>
-        /// 允许访问或设置按钮状态
-        /// </summary>
-        AllStatePermissions = CanGetState | CanSetState,
+    //    /// <summary>
+    //    /// 允许访问或设置按钮状态
+    //    /// </summary>
+    //    AllStatePermissions = CanGetState | CanSetState,
 
-        #endregion
+    //    #endregion
 
-        #region power
+    //    #region power
 
-        /// <summary>
-        /// 允许获取按钮力度值
-        /// </summary>
-        CanGetPower = 0b00000100,
+    //    /// <summary>
+    //    /// 允许获取按钮力度值
+    //    /// </summary>
+    //    CanGetPower = 0b00000100,
 
-        /// <summary>
-        /// 允许设置按钮力度值
-        /// </summary>
-        CanSetPower = 0b00001000,
+    //    /// <summary>
+    //    /// 允许设置按钮力度值
+    //    /// </summary>
+    //    CanSetPower = 0b00001000,
 
-        /// <summary>
-        /// 允许获取最大力度值
-        /// </summary>
-        CanGetMaxPower = 0b00010000,
+    //    /// <summary>
+    //    /// 允许获取最大力度值
+    //    /// </summary>
+    //    CanGetMaxPower = 0b00010000,
 
-        /// <summary>
-        /// 允许获取最小力度值
-        /// </summary>
-        CanGetMinPower = 0b00100000,
+    //    /// <summary>
+    //    /// 允许获取最小力度值
+    //    /// </summary>
+    //    CanGetMinPower = 0b00100000,
 
-        /// <summary>
-        /// 允许设置最大力度值
-        /// </summary>
-        CanSetMaxPower = 0b01000000,
+    //    /// <summary>
+    //    /// 允许设置最大力度值
+    //    /// </summary>
+    //    CanSetMaxPower = 0b01000000,
 
-        /// <summary>
-        /// 允许设置最小力度值
-        /// </summary>
-        CanSetMinPower = 0b10000000,
+    //    /// <summary>
+    //    /// 允许设置最小力度值
+    //    /// </summary>
+    //    CanSetMinPower = 0b10000000,
 
-        /// <summary>
-        /// 允许访问或设置力度值
-        /// </summary>
-        CanSetGetPower = CanGetPower | CanSetPower,
+    //    /// <summary>
+    //    /// 允许访问或设置力度值
+    //    /// </summary>
+    //    CanSetGetPower = CanGetPower | CanSetPower,
 
-        /// <summary>
-        /// 允许Power相关的所有访问权限
-        /// </summary>
-        AllGetPowerPermissions = CanGetPower | CanGetMaxPower | CanGetMinPower,
+    //    /// <summary>
+    //    /// 允许Power相关的所有访问权限
+    //    /// </summary>
+    //    AllGetPowerPermissions = CanGetPower | CanGetMaxPower | CanGetMinPower,
 
-        /// <summary>
-        /// 允许Power相关的全部权限
-        /// </summary>
-        AllPowerPermissions = CanGetPower | CanSetPower | 
-            CanGetMaxPower | CanGetMinPower | CanSetMaxPower | CanSetMinPower,
+    //    /// <summary>
+    //    /// 允许Power相关的全部权限
+    //    /// </summary>
+    //    AllPowerPermissions = CanGetPower | CanSetPower | 
+    //        CanGetMaxPower | CanGetMinPower | CanSetMaxPower | CanSetMinPower,
 
-        #endregion
+    //    #endregion
 
-        #region event
+    //    #region event
 
-        /// <summary>
-        /// 允许按钮注册按钮按下事件
-        /// </summary>
-        CanButtonDownEvent = 0b00000001_00000000,
+    //    /// <summary>
+    //    /// 允许按钮注册按钮按下事件
+    //    /// </summary>
+    //    CanButtonDownEvent = 0b00000001_00000000,
 
-        /// <summary>
-        /// 允许按钮注册按钮抬起事件
-        /// </summary>
-        CanButtonUpEvent = 0b00000010_00000000,
+    //    /// <summary>
+    //    /// 允许按钮注册按钮抬起事件
+    //    /// </summary>
+    //    CanButtonUpEvent = 0b00000010_00000000,
 
-        /// <summary>
-        /// 允许按钮注册点击事件
-        /// </summary>
-        CanButtonClick = 0b00000100_00000000,
+    //    /// <summary>
+    //    /// 允许按钮注册点击事件
+    //    /// </summary>
+    //    CanButtonClick = 0b00000100_00000000,
 
-        #endregion
+    //    #endregion
 
-        #region frame
+    //    #region frame
 
-        /// <summary>
-        /// 允许按钮访问当前帧是否按下
-        /// </summary>
-        CanGetChangeFrameButtonDown = 0b00001000_00000000,
+    //    /// <summary>
+    //    /// 允许按钮访问当前帧是否按下
+    //    /// </summary>
+    //    CanGetChangeFrameButtonDown = 0b00001000_00000000,
 
-        /// <summary>
-        /// 允许按钮访问当前帧是否抬起
-        /// </summary>
-        CanGetChangeFrameButtonUp = 0b00010000_00000000,
+    //    /// <summary>
+    //    /// 允许按钮访问当前帧是否抬起
+    //    /// </summary>
+    //    CanGetChangeFrameButtonUp = 0b00010000_00000000,
 
-        /// <summary>
-        /// 允许按钮设置当前帧是否按下
-        /// </summary>
-        CanSetChangeFrameButtonDown = 0b00100000_00000000,
+    //    /// <summary>
+    //    /// 允许按钮设置当前帧是否按下
+    //    /// </summary>
+    //    CanSetChangeFrameButtonDown = 0b00100000_00000000,
 
-        /// <summary>
-        /// 允许按钮设置当前帧抬起
-        /// </summary>
-        CanSetChangeFrameButtonUp = 0b01000000_00000000,
+    //    /// <summary>
+    //    /// 允许按钮设置当前帧抬起
+    //    /// </summary>
+    //    CanSetChangeFrameButtonUp = 0b01000000_00000000,
 
-        /// <summary>
-        /// 允许按钮访问当前帧数
-        /// </summary>
-        CanGetFrameValue = 0b10000000_00000000,
+    //    /// <summary>
+    //    /// 允许按钮访问当前帧数
+    //    /// </summary>
+    //    CanGetFrameValue = 0b10000000_00000000,
 
-        /// <summary>
-        /// 允许所有帧访问相关的权限
-        /// </summary>
-        AllFrameGetPermissions = CanGetFrameValue | CanGetFrameValue |
-            CanGetChangeFrameButtonUp | CanGetChangeFrameButtonDown,
+    //    /// <summary>
+    //    /// 允许所有帧访问相关的权限
+    //    /// </summary>
+    //    AllFrameGetPermissions = CanGetFrameValue | CanGetFrameValue |
+    //        CanGetChangeFrameButtonUp | CanGetChangeFrameButtonDown,
 
-        /// <summary>
-        /// 允许所有帧相关权限
-        /// </summary>
-        AllFramePermissions = CanGetFrameValue | CanGetFrameValue |
-            CanSetChangeFrameButtonUp | CanSetChangeFrameButtonDown |
-            CanGetChangeFrameButtonUp | CanGetChangeFrameButtonDown,
+    //    /// <summary>
+    //    /// 允许所有帧相关权限
+    //    /// </summary>
+    //    AllFramePermissions = CanGetFrameValue | CanGetFrameValue |
+    //        CanSetChangeFrameButtonUp | CanSetChangeFrameButtonDown |
+    //        CanGetChangeFrameButtonUp | CanGetChangeFrameButtonDown,
 
-        #endregion
+    //    #endregion
 
-        #region 封装button
+    //    #region 封装button
 
-        /// <summary>
-        /// 允许按钮获取内部封装的按钮
-        /// </summary>
-        CanGetInternalButton = 0b01_00000000_00000000,
+    //    /// <summary>
+    //    /// 允许按钮获取内部封装的按钮
+    //    /// </summary>
+    //    CanGetInternalButton = 0b01_00000000_00000000,
 
-        /// <summary>
-        /// 允许按钮设置内部封装的按钮
-        /// </summary>
-        CanSetInternalButton = 0b10_00000000_00000000,
+    //    /// <summary>
+    //    /// 允许按钮设置内部封装的按钮
+    //    /// </summary>
+    //    CanSetInternalButton = 0b10_00000000_00000000,
 
-        /// <summary>
-        /// 允许按钮访问或设置内部封装的按钮
-        /// </summary>
-        CanSetAndGetInternalButton = CanGetInternalButton | CanSetInternalButton,
+    //    /// <summary>
+    //    /// 允许按钮访问或设置内部封装的按钮
+    //    /// </summary>
+    //    CanSetAndGetInternalButton = CanGetInternalButton | CanSetInternalButton,
 
-        #endregion
+    //    #endregion
 
-        #region 组合
+    //    #region 组合
 
-        /// <summary>
-        /// 允许状态和力度的访问权限
-        /// </summary>
-        AllGetStateAndPower = CanGetState | CanGetPower,
+    //    /// <summary>
+    //    /// 允许状态和力度的访问权限
+    //    /// </summary>
+    //    AllGetStateAndPower = CanGetState | CanGetPower,
 
-        /// <summary>
-        /// 允许获取按钮状态和按钮力度以及按钮大小最值
-        /// </summary>
-        CanGetAllStatePower = CanGetState | AllGetPowerPermissions,
+    //    /// <summary>
+    //    /// 允许获取按钮状态和按钮力度以及按钮大小最值
+    //    /// </summary>
+    //    CanGetAllStatePower = CanGetState | AllGetPowerPermissions,
 
-        /// <summary>
-        /// 允许所有权限
-        /// </summary>
-        AllPermissions = 0xFFFFFFFF
+    //    /// <summary>
+    //    /// 允许所有权限
+    //    /// </summary>
+    //    AllPermissions = 0xFFFFFFFF
 
-        #endregion
+    //    #endregion
 
-    }
+    //}
+    #endregion
 
     /// <summary>
     /// 表示一个按钮基类
@@ -215,116 +217,120 @@ namespace Cheng.ButtonTemplates
         #region 控制权限
 
         /// <summary>
-        /// 访问该按钮可用权限枚举
-        /// </summary>
-        public virtual ButtonAvailablePermissions AvailablePermissions
-        {
-            get => ButtonAvailablePermissions.None;
-        }
-
-        /// <summary>
         /// 该按钮是否允许访问按钮状态
         /// </summary>
-        public bool CanGetState => (AvailablePermissions & ButtonAvailablePermissions.CanGetState) == ButtonAvailablePermissions.CanGetState;
+        public virtual bool CanGetState => false;
 
         /// <summary>
         /// 该按钮是否允许设置按钮状态
         /// </summary>
-        public bool CanSetState => (AvailablePermissions & ButtonAvailablePermissions.CanSetState) == ButtonAvailablePermissions.CanSetState;
+        public virtual bool CanSetState => false;
 
         /// <summary>
         /// 该按钮是否允许访问按钮力度
         /// </summary>
         /// 
-        public bool CanGetPower => (AvailablePermissions & ButtonAvailablePermissions.CanGetPower) == ButtonAvailablePermissions.CanGetPower;
+        public virtual bool CanGetPower => false;
 
         /// <summary>
         /// 该按钮是否允许设置按钮力度
         /// </summary>
-        public bool CanSetPower => (AvailablePermissions & ButtonAvailablePermissions.CanSetPower) == ButtonAvailablePermissions.CanSetPower;
+        public virtual bool CanSetPower => false;
 
         /// <summary>
         /// 是否允许获取力度按钮最大值参数
         /// </summary>
-        public bool CanGetMaxPower => (AvailablePermissions & ButtonAvailablePermissions.CanGetMaxPower) == ButtonAvailablePermissions.CanGetMaxPower;
+        public virtual bool CanGetMaxPower => false;
 
         /// <summary>
         /// 是否允许获取力度按钮最小值参数
         /// </summary>
-        public bool CanGetMinPower => (AvailablePermissions & ButtonAvailablePermissions.CanGetMinPower) == ButtonAvailablePermissions.CanGetMinPower;
+        public virtual bool CanGetMinPower => false;
 
         /// <summary>
         /// 是否允许设置力度按钮最大值参数
         /// </summary>
-        public bool CanSetMaxPower => (AvailablePermissions & ButtonAvailablePermissions.CanSetMaxPower) == ButtonAvailablePermissions.CanSetMaxPower;
+        public virtual bool CanSetMaxPower => false;
 
         /// <summary>
         /// 是否允许设置力度按钮最小值参数
         /// </summary>
-        public bool CanSetMinPower => (AvailablePermissions & ButtonAvailablePermissions.CanSetMinPower) == ButtonAvailablePermissions.CanSetMinPower;
+        public virtual bool CanSetMinPower => false;
 
         /// <summary>
         /// 该按钮的按下事件是否可用
         /// </summary>
-        public bool CanButtonDownEvent => (AvailablePermissions & ButtonAvailablePermissions.CanButtonDownEvent) == ButtonAvailablePermissions.CanButtonDownEvent;
+        public virtual bool CanButtonDownEvent => false;
 
         /// <summary>
         /// 该按钮的松开事件是否可用
         /// </summary>
-        public bool CanButtonUpEvent => (AvailablePermissions & ButtonAvailablePermissions.CanButtonUpEvent) == ButtonAvailablePermissions.CanButtonUpEvent;
+        public virtual bool CanButtonUpEvent => false;
 
         /// <summary>
         /// 按钮被点击事件是否可用
         /// </summary>
-        public bool CanButtonClick => (AvailablePermissions & ButtonAvailablePermissions.CanButtonClick) == ButtonAvailablePermissions.CanButtonClick;
+        public virtual bool CanButtonClick => false;
 
         /// <summary>
         /// 是否允许访问按钮按下的帧变化状态
         /// </summary>
         /// <returns>该属性返回为true时，表示可以使用帧变化是否按下状态参数，可以使用<see cref="NowFrame"/>属性获取当前帧数，该参数通常用于游戏引擎</returns>
-        public bool CanGetChangeFrameButtonDown => (AvailablePermissions & ButtonAvailablePermissions.CanGetChangeFrameButtonDown) == ButtonAvailablePermissions.CanGetChangeFrameButtonDown;
+        public virtual bool CanGetChangeFrameButtonDown => false;
 
         /// <summary>
         /// 是否允许访问按钮抬起的帧变化状态
         /// </summary>
         /// <returns>该属性返回为true时，表示可以使用帧变化是否抬起状态参数，可以使用<see cref="NowFrame"/>属性获取当前帧数，该参数通常用于游戏引擎</returns>
-        public bool CanGetChangeFrameButtonUp => (AvailablePermissions & ButtonAvailablePermissions.CanGetChangeFrameButtonUp) == ButtonAvailablePermissions.CanGetChangeFrameButtonUp;
+        public virtual bool CanGetChangeFrameButtonUp => false;
 
         /// <summary>
         /// 是否允许设置按钮按下的帧变化状态
         /// </summary>
         /// <returns>该属性返回为true时，表示可以使用帧变化是否按下状态参数，可以使用<see cref="NowFrame"/>属性获取当前帧数，该参数通常用于游戏引擎</returns>
-        public bool CanSetChangeFrameButtonDown => (AvailablePermissions & ButtonAvailablePermissions.CanSetChangeFrameButtonDown) == ButtonAvailablePermissions.CanSetChangeFrameButtonDown;
+        public virtual bool CanSetChangeFrameButtonDown => false;
 
         /// <summary>
         /// 是否允许设置按钮抬起的帧变化状态
         /// </summary>
         /// <returns>该属性返回为true时，表示可以使用帧变化是否抬起状态参数，可以使用<see cref="NowFrame"/>属性获取当前帧数，该参数通常用于游戏引擎</returns>
-        public bool CanSetChangeFrameButtonUp => (AvailablePermissions & ButtonAvailablePermissions.CanSetChangeFrameButtonUp) == ButtonAvailablePermissions.CanSetChangeFrameButtonUp;
+        public virtual bool CanSetChangeFrameButtonUp => false;
 
         /// <summary>
         /// 是否允许获取当前帧数
         /// </summary>
-        public bool CanGetFrameValue => (AvailablePermissions & ButtonAvailablePermissions.CanGetFrameValue) == ButtonAvailablePermissions.CanGetFrameValue;
+        public virtual bool CanGetFrameValue => false;
 
         /// <summary>
         /// 该按钮是否拥有内部封装的按钮并允许获取
         /// </summary>
-        public bool CanGetInternalButton => (AvailablePermissions & ButtonAvailablePermissions.CanGetInternalButton) == ButtonAvailablePermissions.CanGetInternalButton;
+        public virtual bool CanGetInternalButton => false;
 
         /// <summary>
         /// 该按钮是否拥有内部封装的按钮并允许设置
         /// </summary>
-        public bool CanSetInternalButton => (AvailablePermissions & ButtonAvailablePermissions.CanSetInternalButton) == ButtonAvailablePermissions.CanSetInternalButton;
+        public virtual bool CanSetInternalButton => false;
+
+        /// <summary>
+        /// 该按钮的Power参数是否有独立的双精度浮点值
+        /// </summary>
+        /// <returns>true表示<see cref="PowerDouble"/>参数和其它双精度版本参数访问于修改是主要的独立数据，false表示Power参数没有主要的双精度独立参数，主要参数集中在<see cref="Power"/>单精度浮点值</returns>
+        public virtual bool CanDoubleValueIsPower => false;
 
         #endregion
 
         #region 参数
 
         /// <summary>
+        /// 该对象是否是一个线程安全对象
+        /// </summary>
+        public virtual bool IsThreadSafe => false;
+
+        /// <summary>
         /// 获取或设置内部封装的按钮
         /// </summary>
         /// <exception cref="NotSupportedException">参数<see cref="CanGetInternalButton"/>或<see cref="CanSetInternalButton"/>为false</exception>
+        /// <exception cref="ArgumentNullException">设置的参数是null</exception>
         public virtual BaseButton InternalButton
         {
             get => ThrowSupportedException<BaseButton>();
@@ -360,6 +366,13 @@ namespace Cheng.ButtonTemplates
             }
         }
 
+
+        public virtual double PowerDouble
+        {
+            get => Power;
+            set => Power = (float)value;
+        }
+
         /// <summary>
         /// 访问或设置表示按钮力度值的最大值
         /// </summary>
@@ -379,6 +392,27 @@ namespace Cheng.ButtonTemplates
             get => ThrowSupportedException<float>();
             set => ThrowSupportedException();
         }
+
+        /// <summary>
+        /// 访问或设置表示按钮力度值的最大值
+        /// </summary>
+        /// <exception cref="NotSupportedException">力度最值参数不允许访问或设置</exception>
+        public virtual double MaxPowerDouble
+        {
+            get => MaxPower;
+            set => MaxPower = (float)value;
+        }
+
+        /// <summary>
+        /// 访问或设置表示按钮力度值的最小值
+        /// </summary>
+        /// <exception cref="NotSupportedException">力度最值参数不允许访问或设置</exception>
+        public virtual double MinPowerDouble
+        {
+            get => MinPower;
+            set => MinPower = (float)value;
+        }
+
 
         /// <summary>
         /// 是否在当前帧按下

@@ -16,6 +16,7 @@ using Cheng.Memorys;
 using Cheng.Algorithm.Compressions;
 using Cheng.Algorithm.Trees;
 using Cheng.Algorithm.Collections;
+using Cheng.Streams;
 
 namespace Cheng.IO
 {

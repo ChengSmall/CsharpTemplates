@@ -117,11 +117,19 @@ namespace Cheng.Memorys
         #region 访问
 
         /// <summary>
-        /// 字节块首地址，如果已释放返回null；如果长度为0也返回null
+        /// 字节块首地址；如果已释放则为null，长度为0也为null
         /// </summary>
         public byte* Pointer
         {
             get => p_ptr;
+        }
+
+        /// <summary>
+        /// 字节块首地址；如果已释放则为<see cref="IntPtr.Zero"/>，长度为0也为<see cref="IntPtr.Zero"/>
+        /// </summary>
+        public IntPtr IntPointer
+        {
+            get => new IntPtr(p_ptr);
         }
 
         /// <summary>
@@ -135,6 +143,7 @@ namespace Cheng.Memorys
         /// <summary>
         /// 访问内部固定的字节块对象
         /// </summary>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
         public byte[] Block
         {
             get

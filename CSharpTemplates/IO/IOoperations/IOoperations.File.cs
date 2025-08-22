@@ -8,6 +8,7 @@ using System.Runtime;
 using System.Security;
 using Cheng.DataStructure.Hashs;
 using Cheng.Memorys;
+using Cheng.Streams;
 
 namespace Cheng.IO
 {

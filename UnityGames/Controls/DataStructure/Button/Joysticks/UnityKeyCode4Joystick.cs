@@ -173,11 +173,32 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
         #region 权限重写
 
-        public override JoystickAvailablePermissions AvailablePermissions
+        public override bool CanGetVector => true;
+
+        public override bool CanGetHorizontalComponent => true;
+
+        public override bool CanGetVerticalComponent => true;
+
+        public override bool CanGetHorizontalReverse => true;
+
+        public override bool CanGetVerticalReverse => true;
+
+        public override bool CanSetHorizontalReverse => true;
+
+        public override bool CanSetVerticalReverse => true;
+
+        #endregion
+
+        #region 封装
+
+        private static bool f_isDown(KeyCode key)
         {
-            get => JoystickAvailablePermissions.CanSetAndGetAllReverse |
-                   JoystickAvailablePermissions.CanGetAllJoystick;
+            return Input.GetKey(key);
         }
+
+        #endregion
+
+        #region 功能实现
 
         /// <summary>
         /// 是否反转横轴
@@ -196,19 +217,6 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
             get => p_verRev;
             set => p_verRev = value;
         }
-
-        #endregion
-
-        #region 封装
-
-        private static bool f_isDown(KeyCode key)
-        {
-            return Input.GetKey(key);
-        }
-
-        #endregion
-
-        #region 功能实现
 
         public sealed override float Horizontal
         {
@@ -304,7 +312,8 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                 down = f_isDown(p_down);
             }
 
-            const float cp_sqrt0_5 = Maths.FSqrt0p5;
+            const float cp_s = Maths.FSqrt0p5;
+            const float cp_ns = -cp_s;
             #endregion
 
             #region 判断条件并赋值
@@ -364,8 +373,8 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                         else
                         {
                             //左上
-                            horizontal = -cp_sqrt0_5;
-                            vertical = cp_sqrt0_5;
+                            horizontal = cp_ns;
+                            vertical = cp_s;
                         }
                     }
                     else
@@ -373,8 +382,8 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                         if (down)
                         {
                             //左下
-                            horizontal = -cp_sqrt0_5;
-                            vertical = horizontal;
+                            horizontal = cp_ns;
+                            vertical = cp_ns;
                         }
                         else
                         {
@@ -406,8 +415,8 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                         else
                         {
                             //右上
-                            horizontal = cp_sqrt0_5;
-                            vertical = cp_sqrt0_5;
+                            horizontal = cp_s;
+                            vertical = cp_s;
                         }
                     }
                     else
@@ -415,8 +424,8 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                         if (down)
                         {
                             //右下
-                            horizontal = cp_sqrt0_5;
-                            vertical = -cp_sqrt0_5;
+                            horizontal = cp_s;
+                            vertical = cp_ns;
                         }
                         else
                         {
@@ -664,7 +673,7 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
             #endregion
         }
-        
+
         public sealed override void GetVectorAngle(out float angle, out float length)
         {
 

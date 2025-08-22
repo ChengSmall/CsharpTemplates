@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Cheng.Streams;
 
 namespace Cheng.DEBUG
 {
@@ -107,6 +108,18 @@ namespace Cheng.DEBUG
                 }
             }
 
+        }
+
+        /// <summary>
+        /// 读取流数据并遍历打印到字符串中
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="fen">分隔符</param>
+        /// <param name="lineCount">多少字节后换行</param>
+        /// <returns>遍历后的字符串</returns>
+        public static string ForeachStream(this Stream stream, string fen, int lineCount)
+        {
+            return ForeachStream(stream, fen, lineCount, null);
         }
 
         /// <summary>

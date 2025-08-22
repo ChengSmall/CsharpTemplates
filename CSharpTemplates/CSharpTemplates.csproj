@@ -45,7 +45,6 @@
     <Folder Include="Audio\Midi\" />
     <Folder Include="Data\BehaviorTrees\" />
     <Folder Include="Parsers\TextParser\Json\ToText\" />
-    <Folder Include="Streams\Audios\" />
   </ItemGroup>
 
 </Project>

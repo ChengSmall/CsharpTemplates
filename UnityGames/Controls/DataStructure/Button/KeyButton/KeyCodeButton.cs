@@ -50,6 +50,18 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 参数访问
 
+        public override bool CanGetState => true;
+
+        public override bool CanGetChangeFrameButtonUp => true;
+
+        public override bool CanGetChangeFrameButtonDown => true;
+
+        public override bool CanGetPower => true;
+
+        public override bool CanGetMinPower => true;
+
+        public override bool CanGetMaxPower => true;
+
         /// <summary>
         /// 访问或设置要映射的Unity虚拟键码
         /// </summary>
@@ -57,20 +69,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
         {
             get => p_buttonKey;
             set => p_buttonKey = value;
-        }
-
-        public override ButtonAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                return UnityButtonAvailablePromissions |
-                    ButtonAvailablePermissions.CanGetState |
-                    ButtonAvailablePermissions.CanGetChangeFrameButtonDown |
-                    ButtonAvailablePermissions.CanGetChangeFrameButtonUp |
-                    ButtonAvailablePermissions.CanGetPower |
-                    ButtonAvailablePermissions.CanGetMaxPower |
-                    ButtonAvailablePermissions.CanGetMinPower;
-            }
         }
 
         /// <summary>
@@ -82,10 +80,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
         public sealed override bool ButtonState
         {
             get => Input.GetKey(p_buttonKey);
-            set
-            {
-                ThrowSupportedException();
-            }
         }
 
         public sealed override bool ButtonDown
@@ -102,17 +96,17 @@ namespace Cheng.ButtonTemplates.UnityButtons
         /// 使用按钮状态映射的按钮力度
         /// </summary>
         /// <returns>该按钮状态为true时返回1，false返回0</returns>
-        public override float Power
+        public sealed override float Power
         {
             get
             {
                 return Input.GetKey(p_buttonKey) ? 1 : 0;
             }
-            set => ThrowSupportedException();
         }
 
-        public override float MinPower => 0;
-        public override float MaxPower => 1;
+        public sealed override float MinPower => 0;
+
+        public sealed override float MaxPower => 1;
 
         #endregion
 

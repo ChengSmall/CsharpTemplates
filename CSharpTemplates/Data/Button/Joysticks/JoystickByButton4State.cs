@@ -83,6 +83,37 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #region 功能
 
+        #region 派生
+
+        #region 权限
+
+        public override bool CanGetHorizontalComponent
+        {
+            get => p_left.CanGetState && p_right.CanGetState;
+        }
+
+        public override bool CanGetVerticalComponent
+        {
+            get => p_down.CanGetState && p_up.CanGetState;
+        }
+
+        public override bool CanGetVector
+        {
+            get => p_left.CanGetState && p_right.CanGetState && p_down.CanGetState && p_up.CanGetState;
+        }
+
+        public override bool CanGetFourwayButtons => true;
+
+        public override bool CanGetHorizontalReverse => true;
+
+        public override bool CanSetHorizontalReverse => true;
+
+        public override bool CanGetVerticalReverse => true;
+
+        public override bool CanSetVerticalReverse => true;
+
+        #endregion
+
         #region 获取
 
         /// <summary>
@@ -106,51 +137,6 @@ namespace Cheng.ButtonTemplates.Joysticks
         public override BaseButton DownButton => p_down;
 
         #endregion
-
-        #region 派生
-
-        public override JoystickAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetFourwayButtons |
-                 JoystickAvailablePermissions.CanSetFourwayButtons |
-                 JoystickAvailablePermissions.CanSetAndGetAllReverse;
-
-
-                var leftA = p_left.AvailablePermissions;
-                var rightA = p_right.AvailablePermissions;
-                var upA = p_up.AvailablePermissions;
-                var downA = p_down.AvailablePermissions;
-
-                JoystickAvailablePermissions jp = or;
-
-                bool LR_Power;
-                bool UD_Power;
-
-                LR_Power = (((leftA & (ButtonAvailablePermissions.CanGetState)) == ButtonAvailablePermissions.CanGetState) && ((rightA & (ButtonAvailablePermissions.CanGetState)) == ButtonAvailablePermissions.CanGetState));
-
-                if (LR_Power)
-                {
-                    jp |= JoystickAvailablePermissions.CanGetHorizontalComponent;
-                }
-
-                UD_Power = (((upA & (ButtonAvailablePermissions.CanGetState)) == ButtonAvailablePermissions.CanGetState) && ((downA & (ButtonAvailablePermissions.CanGetState)) == ButtonAvailablePermissions.CanGetState));
-
-                if (UD_Power)
-                {
-                    jp = JoystickAvailablePermissions.CanGetVerticalComponent;
-                }
-
-                if (LR_Power && UD_Power)
-                {
-                    jp |= JoystickAvailablePermissions.CanGetVector;
-                }
-
-                return jp;
-
-            }
-        }
 
         public override void GetAxis(out float horizontal, out float vertical)
         {
@@ -726,6 +712,204 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         }
 
+        public override void GetAxisD(out double horizontal, out double vertical)
+        {
+            bool left, right, up, down;
+
+            if (p_hRev)
+            {
+                right = p_left.ButtonState;
+                left = p_right.ButtonState;
+            }
+            else
+            {
+                left = p_left.ButtonState;
+                right = p_right.ButtonState;
+            }
+
+            if (p_vRev)
+            {
+                down = p_up.ButtonState;
+                up = p_down.ButtonState;
+            }
+            else
+            {
+                up = p_up.ButtonState;
+                down = p_down.ButtonState;
+            }
+
+            //const double onceRadian = System.Math.PI / 180;
+
+            horizontal = 0;
+            vertical = 0;
+
+            if ((left && right && up && down) || ((!left) && (!right) && (!up) && (!down))) return;
+
+
+            if (left)
+            {
+
+                if (right)
+                {
+
+                    if (up)
+                    {
+
+                        if (down)
+                        {
+                            //全按
+                        }
+                        else
+                        {
+
+                            //左右上
+                            vertical = 1;
+                        }
+
+
+                    }
+                    else
+                    {
+                        if (down)
+                        {
+                            //左右下
+                            vertical = -1;
+                        }
+                        else
+                        {
+
+                            //左右
+                        }
+                    }
+
+                }
+                else
+                {
+
+                    if (up)
+                    {
+
+                        if (down)
+                        {
+
+                            //左上下
+                            horizontal = -1;
+                        }
+                        else
+                        {
+
+                            //左上
+                            horizontal = -Maths.Sqrt0p5;
+                            vertical = Maths.Sqrt0p5;
+                        }
+
+
+                    }
+                    else
+                    {
+                        if (down)
+                        {
+
+                            //左下
+                            horizontal = -Maths.Sqrt0p5;
+                            vertical = horizontal;
+                        }
+                        else
+                        {
+
+                            //左
+                            horizontal = -1;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (right)
+                {
+
+                    if (up)
+                    {
+
+                        if (down)
+                        {
+
+                            //右上下
+                            horizontal = 1;
+                        }
+                        else
+                        {
+
+                            //右上
+                            horizontal = Maths.Sqrt0p5;
+                            vertical = Maths.Sqrt0p5;
+                        }
+
+                    }
+                    else
+                    {
+                        if (down)
+                        {
+
+                            //右下
+                            horizontal = Maths.Sqrt0p5;
+                            vertical = -Maths.Sqrt0p5;
+                        }
+                        else
+                        {
+
+                            //右
+                            horizontal = 1;
+                        }
+                    }
+
+                }
+                else
+                {
+
+                    if (up)
+                    {
+
+                        if (down)
+                        {
+
+                            //上下
+                        }
+                        else
+                        {
+
+                            //上
+                            vertical = 1;
+                        }
+
+
+                    }
+                    else
+                    {
+                        if (down)
+                        {
+                            //下
+                            vertical = -1;
+                        }
+                        else
+                        {
+                            //无
+                        }
+                    }
+                }
+            }
+
+            //GetVector(out float r, out float l);
+            //BaseJoystick.GetVectorComponent(r, l, out horizontal, out vertical);
+        }
+
+        public override void GetVectorD(out double radian, out double length)
+        {
+            GetVector(out float r, out float l);
+            radian = r;
+            length = l;
+        }
+
         public override float Horizontal
         {
             get
@@ -741,6 +925,26 @@ namespace Cheng.ButtonTemplates.Joysticks
             get
             {
                 GetAxis(out _, out var v);
+                return v;
+            }
+            set { ThrowNotSupportedException(); }
+        }
+
+        public override double HorizontalD
+        {
+            get
+            {
+                GetAxisD(out var h, out _);
+                return h;
+            }
+            set { ThrowNotSupportedException(); }
+        }
+
+        public override double VerticalD
+        {
+            get
+            {
+                GetAxisD(out _, out var v);
                 return v;
             }
             set { ThrowNotSupportedException(); }

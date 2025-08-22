@@ -55,17 +55,33 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #region 派生
 
-        public override JoystickAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                const JoystickAvailablePermissions or = JoystickAvailablePermissions.CanGetSetInternalJoystick |
-                  JoystickAvailablePermissions.CanSetAndGetAllReverse;
+        public override bool CanGetHorizontalComponent => p_joy.CanGetHorizontalComponent;
 
+        public override bool CanGetVerticalComponent => p_joy.CanGetVerticalComponent;
 
-                return (p_joy.AvailablePermissions | or);
-            }
-        }
+        public override bool CanSetHorizontalComponent => p_joy.CanSetHorizontalComponent;
+
+        public override bool CanSetVerticalComponent => p_joy.CanSetVerticalComponent;
+
+        public override bool CanGetVector => p_joy.CanGetVector;
+
+        public override bool CanSetVector => p_joy.CanSetVector;
+
+        public override bool CanChangeEvent => false;
+
+        public override bool CanGetFourwayButtons => false;
+
+        public override bool CanGetHorizontalReverse => true;
+
+        public override bool CanSetHorizontalReverse => true;
+
+        public override bool CanGetVerticalReverse => true;
+
+        public override bool CanSetVerticalReverse => true;
+
+        public override bool CanGetInternalJoystick => true;
+
+        public override bool CanSetInternalJoystick => true;
 
         /// <summary>
         /// 是否应用水平轴反转
@@ -101,14 +117,16 @@ namespace Cheng.ButtonTemplates.Joysticks
         public override float Horizontal 
         {
             get => p_isRevHor ? -p_joy.Horizontal: p_joy.Horizontal;
-            set => ThrowNotSupportedException();
         }
 
         public override float Vertical 
         {
             get => p_isRevVer ? -p_joy.Vertical : p_joy.Vertical;
-            set => ThrowNotSupportedException();
         }
+
+        public override double HorizontalD { get => p_isRevHor ? -p_joy.HorizontalD : p_joy.HorizontalD; }
+
+        public override double VerticalD { get => p_isRevVer ? -p_joy.VerticalD : p_joy.VerticalD; }
 
         public override void GetVector(out float radian, out float length)
         {

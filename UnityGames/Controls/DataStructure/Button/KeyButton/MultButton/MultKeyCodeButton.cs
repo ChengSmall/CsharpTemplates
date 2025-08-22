@@ -92,18 +92,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 派生
 
-        public override ButtonAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                return UnityButtonAvailablePromissions |
-                 ButtonAvailablePermissions.CanGetState |
-                 ButtonAvailablePermissions.CanGetChangeFrameButtonUp |
-                 ButtonAvailablePermissions.CanGetChangeFrameButtonDown |
-                 ButtonAvailablePermissions.AllGetPowerPermissions;
-            }
-        }
-
         /// <summary>
         /// 使用<see cref="Input.GetKey(KeyCode)"/>映射多个键码
         /// </summary>
@@ -135,7 +123,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
                 //全无则false
                 return false;
             }
-            set => ThrowSupportedException();
         }
 
         /// <summary>
@@ -213,7 +200,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
             {
                 return ButtonState ? 1f : 0;
             }
-            set => ThrowSupportedException();
         }
 
         /// <summary>
@@ -222,7 +208,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
         public override float MaxPower 
         {
             get => 1; 
-            set => ThrowSupportedException();
         }
 
         /// <summary>
@@ -231,7 +216,6 @@ namespace Cheng.ButtonTemplates.UnityButtons
         public override float MinPower
         {
             get => 0;
-            set => ThrowSupportedException();
         }
 
         #endregion

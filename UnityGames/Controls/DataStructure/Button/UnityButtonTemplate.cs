@@ -17,20 +17,9 @@ namespace Cheng.ButtonTemplates.UnityButtons
 
         #region 参数访问
 
-        /// <summary>
-        /// UnityButton默认拥有的权限
-        /// </summary>
-        public const ButtonAvailablePermissions UnityButtonAvailablePromissions = ButtonAvailablePermissions.CanGetFrameValue;
-
         public override long NowFrame => Time.frameCount;
 
-        public override ButtonAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                return UnityButtonAvailablePromissions;
-            }
-        }
+        public override bool CanGetFrameValue => true;
 
         #endregion
 

@@ -7,6 +7,7 @@ using Cheng.Memorys;
 using System.Collections;
 using Cheng.Algorithm.Collections;
 using Cheng.Algorithm.Trees;
+using Cheng.Streams;
 
 namespace Cheng.Algorithm.Compressions.Systems
 {

@@ -17,7 +17,8 @@ namespace Cheng.Algorithm.Compressions
     /// 一个数据读写器基类
     /// </summary>
     /// <remarks>
-    /// 派生该类以实现各种数据包或压缩算法的实现
+    /// <para>派生该类以实现各种数据包或压缩算法的实现</para>
+    /// <para>注重于读取和访问操作实现</para>
     /// </remarks>
     public abstract class BaseCompressionParser : SafreleaseUnmanagedResources, IDataList, DataStructure.Collections.IReadOnlyList<DataInformation>, System.Collections.Generic.IReadOnlyList<DataInformation>
     {

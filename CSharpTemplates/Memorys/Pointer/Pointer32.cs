@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 
+using Ptr = Cheng.Memorys.Pointer32;
+
 namespace Cheng.Memorys
 {
 
@@ -12,21 +14,37 @@ namespace Cheng.Memorys
 
         #region 构造
 
+        /// <summary>
+        /// 初始化指针值
+        /// </summary>
+        /// <param name="ptr">要初始化的值</param>
         public Pointer32(void* ptr)
         {
             p_ptr = (uint)ptr;
         }
 
+        /// <summary>
+        /// 初始化指针值
+        /// </summary>
+        /// <param name="ptr">要初始化的值</param>
         public Pointer32(uint ptr)
         {
             p_ptr = ptr;
         }
 
+        /// <summary>
+        /// 初始化指针值
+        /// </summary>
+        /// <param name="ptr">要初始化的值</param>
         public Pointer32(int ptr)
         {
             p_ptr = (uint)ptr;
         }
 
+        /// <summary>
+        /// 初始化指针值
+        /// </summary>
+        /// <param name="ptr">要初始化的值</param>
         public Pointer32(IntPtr ptr)
         {
             p_ptr = (uint)ptr;
@@ -39,7 +57,7 @@ namespace Cheng.Memorys
         /// <summary>
         /// 表示空值的指针
         /// </summary>
-        public static Pointer32 Null => new Pointer32(0);
+        public static Pointer32 Null => default;
 
         private readonly uint p_ptr;
 
@@ -170,6 +188,7 @@ namespace Cheng.Memorys
         #endregion
 
         #region 操作
+
         /// <summary>
         /// 将指针解引用并设置为新值
         /// </summary>
@@ -179,6 +198,7 @@ namespace Cheng.Memorys
         {
             *((T*)p_ptr) = value;
         }
+
         /// <summary>
         /// 将指针解引用并返回
         /// </summary>
@@ -188,6 +208,7 @@ namespace Cheng.Memorys
         {
             return *((T*)p_ptr);
         }
+
         /// <summary>
         /// 将指针解引用并返回引用对象
         /// </summary>
@@ -197,19 +218,21 @@ namespace Cheng.Memorys
         {
             return ref *((T*)p_ptr);
         }
+
         /// <summary>
         /// 将指针以指针为操作内存解引用
         /// </summary>
         /// <returns>指针指向的地址值</returns>
-        public Pointer32 DefPtr()
+        public Ptr DefPtr()
         {
             return *((Pointer32*)p_ptr);
         }
+
         /// <summary>
         /// 将指针以指针为操作内存解引用
         /// </summary>
         /// <param name="ptr">要在指针指向的地址设置的新值</param>
-        public void DefPtr(Pointer32 ptr)
+        public void DefPtr(Ptr ptr)
         {
             *((Pointer32*)p_ptr) = ptr;
         }
@@ -221,28 +244,23 @@ namespace Cheng.Memorys
         {
             get => p_ptr == 0;
         }
+
         /// <summary>
         /// 返回当前指针的4字节值
         /// </summary>
         /// <returns></returns>
         public uint ToValue
         {
-            get
-            {
-                return p_ptr;
-            }
-
+            get => p_ptr;
         }
+
         /// <summary>
         /// 返回当前指针的值
         /// </summary>
         /// <returns></returns>
         public void* ToPtr
         {
-            get
-            {
-                return (void*)p_ptr;
-            }
+            get => (void*)p_ptr;
         }
 
         /// <summary>
@@ -259,17 +277,18 @@ namespace Cheng.Memorys
         /// <typeparam name="T">偏移类型</typeparam>
         /// <param name="value">偏移量，每单位偏移字节按类型大小计算</param>
         /// <returns>新的指针</returns>
-        public Pointer32 AddOffset<T>(int value) where T : unmanaged
+        public Ptr AddOffset<T>(int value) where T : unmanaged
         {
-            return new Pointer32(p_ptr + (uint)(sizeof(T) * value));
+            return new Ptr(p_ptr + (uint)(sizeof(T) * value));
         }
+
         #endregion
 
         #endregion
 
         #region 派生
 
-        public bool Equals(Pointer32 other)
+        public bool Equals(Ptr other)
         {
             return p_ptr == other.p_ptr;
         }
@@ -294,35 +313,35 @@ namespace Cheng.Memorys
         /// <returns></returns>
         public override string ToString()
         {
+            char* crp = stackalloc char[8]; //0xFFFFFFFF
+            Cheng.Texts.TextManipulation.ValueToFixedX16Text(p_ptr, true, crp);
+            return new string(crp, 0, 8);
+            //uint value = this.p_ptr;
+            //uint b;
+            //StringBuilder sb = new StringBuilder(8);
 
-            uint value = this.p_ptr;
-            uint b;
-            StringBuilder sb = new StringBuilder(8);
+            //Loop:
+            //b = (value % 16);
+            //char c;
+            //if (b < 10)
+            //{
+            //    c = (char)('0' + b);
+            //}
+            //else
+            //{
+            //    b -= 10;
+            //    c = (char)('A' + b);
+            //}
 
-            Loop:
-            b = (value % 16);
-            char c;
-            if (b < 10)
-            {
-                c = (char)('0' + b);
-            }
-            else
-            {
-                b -= 10;
-                c = (char)('A' + b);
-            }
+            //sb.Insert(0, c);
 
-            sb.Insert(0, c);
+            //if (value < 16)
+            //{
+            //    return sb.ToString();
+            //}
 
-            if (value < 16)
-            {
-                return sb.ToString();
-            }
-
-            value /= 16;
-
-            goto Loop;
-
+            //value /= 16;
+            //goto Loop;
         }
 
         /// <summary>
@@ -336,7 +355,7 @@ namespace Cheng.Memorys
             return p_ptr.ToString(format);
         }
 
-        public int CompareTo(Pointer32 other)
+        public int CompareTo(Ptr other)
         {
             return p_ptr < other.p_ptr ? -1 : (p_ptr == other.p_ptr ? 0 : 1);
         }

@@ -107,7 +107,7 @@ namespace Cheng.Streams
 
         #endregion
 
-        #region
+        #region 扩展
 
         /// <summary>
         /// 从流中读取数据到指定地址并推进流对象的位置
@@ -115,6 +115,11 @@ namespace Cheng.Streams
         /// <param name="buffer">数据接收的内存首地址</param>
         /// <param name="count">要读取的字节数</param>
         /// <returns>此次读取实际的字节数</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">无读取权限</exception>
+        /// <exception cref="ObjectDisposedException">流已释放</exception>
+        /// <exception cref="Exception">其它错误</exception>
         public virtual int ReadToAddress(byte* buffer, int count)
         {
             ThrowIsDispose();
@@ -130,6 +135,26 @@ namespace Cheng.Streams
             }
 
             return c;
+        }
+
+        /// <summary>
+        /// 写入指定地址中的数据
+        /// </summary>
+        /// <param name="buffer">要写入的数据首地址</param>
+        /// <param name="count">要写入的字节数</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">无写入权限</exception>
+        /// <exception cref="ObjectDisposedException">流已释放</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public virtual void WriteToAddress(byte* buffer, int count)
+        {
+            ThrowIsDispose();
+
+            for (int i = 0; i < count; i++)
+            {
+                this.WriteByte(buffer[i]);
+            }
         }
 
         #endregion

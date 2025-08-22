@@ -54,27 +54,48 @@ namespace Cheng.ButtonTemplates
 
         #region 派生
 
-        public override ButtonAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                const ButtonAvailablePermissions or =
-                    ButtonAvailablePermissions.CanGetInternalButton |
-                    ButtonAvailablePermissions.CanSetInternalButton;
+        public override bool CanGetState => p_button.CanGetState;
 
-                const ButtonAvailablePermissions and =
-                    ~(ButtonAvailablePermissions.CanButtonDownEvent |
-                    ButtonAvailablePermissions.CanButtonUpEvent |
-                    ButtonAvailablePermissions.CanButtonClick);
+        public override bool CanSetState => p_button.CanSetState;
 
-                return (p_button.AvailablePermissions | or) & and;
-            }
-        }
+        public override bool CanGetPower => p_button.CanGetPower;
+
+        public override bool CanSetPower => p_button.CanSetPower;
+
+        public override bool CanGetMaxPower => p_button.CanGetMaxPower;
+
+        public override bool CanGetMinPower => p_button.CanGetMinPower;
+
+        public override bool CanSetMaxPower => p_button.CanSetMaxPower;
+
+        public override bool CanSetMinPower => p_button.CanSetMinPower;
+
+        public override bool CanButtonDownEvent => false;
+
+        public override bool CanButtonUpEvent => false;
+
+        public override bool CanButtonClick => false;
+
+        public override bool CanGetChangeFrameButtonDown => p_button.CanGetChangeFrameButtonDown;
+
+        public override bool CanGetChangeFrameButtonUp => p_button.CanGetChangeFrameButtonUp;
+
+        public override bool CanSetChangeFrameButtonDown => p_button.CanSetChangeFrameButtonDown;
+
+        public override bool CanSetChangeFrameButtonUp => p_button.CanSetChangeFrameButtonUp;
+
+        public override bool CanGetFrameValue => p_button.CanGetFrameValue;
+
+        public override bool CanGetInternalButton => true;
+
+        public override bool CanSetInternalButton => true;
+
+        public override bool IsThreadSafe => p_button.IsThreadSafe;
 
         public override BaseButton InternalButton
         {
             get => p_button;
-            set => p_button = value;
+            set => p_button = value ?? throw new ArgumentNullException();
         }
 
         /// <summary>
@@ -111,6 +132,18 @@ namespace Cheng.ButtonTemplates
             }
         }
 
+        public override bool CanDoubleValueIsPower => p_button.CanDoubleValueIsPower;
+
+        public override double PowerDouble 
+        { 
+            get
+            {
+                return p_cancel ? (p_button.CanGetMinPower ? p_button.MinPowerDouble : 0) : p_button.PowerDouble;
+            }
+            set => p_button.PowerDouble = value;
+        }
+
+
         /// <summary>
         /// 访问按钮当前帧是否按下
         /// </summary>
@@ -137,11 +170,15 @@ namespace Cheng.ButtonTemplates
             }
         }
 
-        public override float MaxPower => p_button.MaxPower;
-
-        public override float MinPower => p_button.MinPower;
-
         public override long NowFrame => p_button.NowFrame;
+
+        public override float MaxPower { get => p_button.MaxPower; set => p_button.MaxPower = value; }
+
+        public override float MinPower { get => p_button.MinPower; set => p_button.MinPower = value; }
+
+        public override double MaxPowerDouble { get => p_button.MaxPowerDouble; set => p_button.MaxPowerDouble = value; }
+
+        public override double MinPowerDouble { get => p_button.MinPowerDouble; set => p_button.MinPowerDouble = value; }
 
         #endregion
 

@@ -204,17 +204,19 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
         #region 派生
 
-        public override JoystickAvailablePermissions AvailablePermissions
-        {
-            get
-            {
-                const JoystickAvailablePermissions or =
-                    JoystickAvailablePermissions.CanGetAllJoystick |
-                   JoystickAvailablePermissions.CanSetAndGetAllReverse;
+        public override bool CanGetVector => true;
 
-                return or;
-            }
-        }
+        public override bool CanGetHorizontalComponent => true;
+
+        public override bool CanGetVerticalComponent => true;
+
+        public override bool CanGetHorizontalReverse => true;
+
+        public override bool CanGetVerticalReverse => true;
+
+        public override bool CanSetHorizontalReverse => true;
+
+        public override bool CanSetVerticalReverse => true;
 
         /// <summary>
         /// 访问垂直摇杆的值

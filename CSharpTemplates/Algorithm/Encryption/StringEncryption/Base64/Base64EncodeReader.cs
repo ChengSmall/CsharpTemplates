@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using Cheng.Texts;
 using Cheng.Memorys;
+using Cheng.Streams;
 
 namespace Cheng.Algorithm.Encryptions.Base64Encryption
 {

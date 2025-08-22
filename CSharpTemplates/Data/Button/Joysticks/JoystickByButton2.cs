@@ -43,55 +43,25 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #region 派生
 
-        public override JoystickAvailablePermissions AvailablePermissions
+        public override bool CanGetHorizontalComponent => p_lr.CanGetState;
+
+        public override bool CanGetVerticalComponent => p_ud.CanGetState;
+
+        public override bool CanSetHorizontalComponent => p_lr.CanSetState;
+
+        public override bool CanSetVerticalComponent => p_lr.CanSetState;
+
+        public override bool CanGetVector
         {
             get
             {
-                var pLR = p_lr.AvailablePermissions;
-                var pUD = p_ud.AvailablePermissions;
-
-                JoystickAvailablePermissions jp = JoystickAvailablePermissions.None;
-
-                const ButtonAvailablePermissions buttonGet = (ButtonAvailablePermissions.CanGetPower | ButtonAvailablePermissions.CanGetState);
-
-                const ButtonAvailablePermissions buttonSet = (ButtonAvailablePermissions.CanGetPower | ButtonAvailablePermissions.CanGetState);
-
-                bool lr, ud;
-                lr = (pLR & buttonGet) != 0;
-                ud = (pUD & buttonGet) != 0;
-
-                if (lr)
-                {
-                    jp |= JoystickAvailablePermissions.CanGetHorizontalComponent;
-                }
-                if (ud)
-                {
-                    jp |= JoystickAvailablePermissions.CanGetVerticalComponent;
-                }
-
-                if(lr && ud)
-                {
-                    jp |= JoystickAvailablePermissions.CanGetVector;
-                }
-
-                lr = (pLR & buttonSet) != 0;
-                ud = (pUD & buttonSet) != 0;
-
-                if (lr)
-                {
-                    jp |= JoystickAvailablePermissions.CanSetHorizontalComponent;
-                }
-                if (ud)
-                {
-                    jp |= JoystickAvailablePermissions.CanSetVerticalComponent;
-                }
-                if (lr && ud)
-                {
-                    jp |= JoystickAvailablePermissions.CanSetVector;
-                }
-
-                return jp;
+                return p_lr.CanGetState && p_ud.CanGetState;
             }
+        }
+
+        public override bool CanSetVector
+        {
+            get => p_lr.CanSetState && p_ud.CanSetState;
         }
 
         public override float Horizontal
@@ -141,7 +111,6 @@ namespace Cheng.ButtonTemplates.Joysticks
         #endregion
 
         #region 功能
-
 
         public override void GetAxis(out float horizontal, out float vertical)
         {

@@ -34,7 +34,7 @@ namespace Cheng.DataStructure
         /// <summary>
         /// 实例化委托实现封装数据获取接口
         /// </summary>
-        /// <param name="openStream">提供一个获取<see cref="Stream"/>对象的函数，参数是null则永远返回null</param>
+        /// <param name="openStream">提供一个获取<see cref="Stream"/>对象的函数，参数是null表示<see cref="OpenStream"/>函数永远返回null</param>
         /// <param name="getLength">提供一个获取流长度的函数，参数是null表示无法获取长度</param>
         public GettingStreamFunction(Func<Stream> openStream, Func<long> getLength)
         {
