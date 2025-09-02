@@ -21,16 +21,34 @@ namespace Cheng
         #region
 
         /// <summary>
+        /// 参数
+        /// </summary>
+        public static InitArgs Args
+        {
+            get => p_arg;
+        }
+
+        static InitArgs p_arg;
+
+        public static void Init()
+        {
+            p_arg = new InitArgs(Array.Empty<string>());
+        }
+
+        public static void Init(string[] args)
+        {
+            p_arg = new InitArgs(args);
+        }
+
+        /// <summary>
         /// 初始化参数
         /// </summary>
         /// <param name="args">命令行参数</param>
-        public InitArgs(string[] args)
+        private InitArgs(string[] args)
         {
             commandArgs = args;
 
             currentDomain = AppDomain.CurrentDomain;
-            
-            streamParser = new StreamParserDefault();
 
             applicationName = currentDomain.FriendlyName;
 
@@ -43,6 +61,8 @@ namespace Cheng
             debugLogPrint = null;
 
             setUpFilePath = Path.Combine(rootDirectory, "state.sav");
+
+            commandline = f_getLine();
 
             f_init();
         }
@@ -59,19 +79,52 @@ namespace Cheng
                 }
             }
             catch (Exception)
-            {                
+            {
             }
 
+        }
+
+        private static string f_getLine()
+        {
+            var line = System.Environment.CommandLine;
+            var index = f_FindChar(line, 0, char.IsWhiteSpace);
+            if (index == -1) return string.Empty; //没有空格表示无额外命令参数
+
+            index = f_FindChar(line, index, isNotWhite);
+            //获取空白后第一个非空白索引
+            if (index == -1) return string.Empty;
+
+            return line.Substring(index);
+
+            bool isNotWhite(char tc)
+            {
+                return !char.IsWhiteSpace(tc);
+            }
+        }
+
+        static int f_FindChar(string value, int index, Predicate<char> predicate)
+        {
+            int length = value.Length;
+            for (int i = index; i < length; i++)
+            {
+                if (predicate.Invoke(value[i]))
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         #endregion
 
         #region 参数
 
-        /// <summary>
-        /// 命令行参数
-        /// </summary>
         public readonly string[] commandArgs;
+
+        /// <summary>
+        /// 原始命令行参数
+        /// </summary>
+        public readonly string commandline;
 
         /// <summary>
         /// 当前应用程序域
@@ -99,11 +152,6 @@ namespace Cheng
         public XmlDocument appConfigXml;
 
         /// <summary>
-        /// 流存储器
-        /// </summary>
-        public StreamParserDefault streamParser;
-
-        /// <summary>
         /// DEBUG日志打印时调用对象
         /// </summary>
         public TextWriter debugLogPrint;
@@ -123,53 +171,6 @@ namespace Cheng
         #region 功能
 
         #region
-
-        /// <summary>
-        /// 将对象保存到流
-        /// </summary>
-        /// <param name="obj">对象</param>
-        /// <param name="stream">保存到的流</param>
-        /// <param name="exception">异常错误</param>
-        /// <returns>是否成功</returns>
-        public bool SaveToStream(object obj, Stream stream, out Exception exception)
-        {
-            try
-            {
-                streamParser.ConverToStream(obj, stream);
-                exception = null;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-                return false;
-            }
-          
-        }
-
-        /// <summary>
-        /// 读取流数据到对象
-        /// </summary>
-        /// <param name="stream">读取的流</param>
-        /// <param name="obj">从中读取的对象</param>
-        /// <param name="exception">错误异常</param>
-        /// <returns>是否成功</returns>
-        public bool LoadToStream(Stream stream, out object obj, out Exception exception)
-        {
-            try
-            {
-                obj = streamParser.ConverToObject(stream);
-                exception = null;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-                obj = null;
-                return false;
-            }        
-
-        }
 
         #endregion
 

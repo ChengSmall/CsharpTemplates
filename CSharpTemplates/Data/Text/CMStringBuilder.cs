@@ -8,7 +8,7 @@ namespace Cheng.Texts
 {
 
     /// <summary>
-    /// 可进行内存操控的可变字符串
+    /// 暴露内部缓冲区参数的可变字符串
     /// </summary>
     public unsafe sealed class CMStringBuilder : IEquatable<CMStringBuilder>
     {
@@ -98,7 +98,7 @@ namespace Cheng.Texts
 
         #region 参数
 
-        private static char[] cp_emptyChar = Array.Empty<char>();
+        private static char[] cp_emptyChar = new char[0];
 
         private string p_newLine;
 
@@ -191,7 +191,10 @@ namespace Cheng.Texts
         /// <summary>
         /// 访问或设置字符串长度
         /// </summary>
-        /// <value>要设置的字符串长度</value>
+        /// <value>
+        /// <para>要设置的字符串长度</para>
+        /// <para>设置的新长度如果小于旧长度，则截断多余长度；如果大于旧长度，则直接扩充到新长度；如果扩充时缓冲区不足则会申请新缓冲区，如果缓冲区充足则仅调整长度参数</para>
+        /// </value>
         /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
         public int Length
         {
@@ -227,12 +230,15 @@ namespace Cheng.Texts
 
         #endregion
 
-        #region 细节掌握
+        #region 内部参数
 
         /// <summary>
         /// 返回当前可变字符串内部的字符数组缓冲区
         /// </summary>
-        /// <returns>内部的字符数组缓冲区</returns>
+        /// <returns>
+        /// <para>实例内部用于存储字符数组的缓冲区</para>
+        /// <para>返回的值是实例当前用于存储字符文本的字符数组，当调用函数获取数组后，在实例修改<see cref="Capacity"/>参数或因其它情况扩容之前，返回的字符数组会一直属于该实例的字符缓冲区参数；可配合<see cref="OnlySetLength(int)"/>函数手动修改对象所存的文本和长度</para>
+        /// </returns>
         public ArraySegment<char> GetCharBuffer()
         {
             return new ArraySegment<char>(p_charBuffer, 0, p_length);
@@ -241,9 +247,11 @@ namespace Cheng.Texts
         /// <summary>
         /// 访问或设置可变字符内部缓冲区的容量
         /// </summary>
+        /// <returns>可变字符内部缓冲区的实际容量，本质上获取的是内部缓冲区对象的<see cref="Array.Length"/>参数</returns>
         /// <value>
         /// <para>新的缓冲区容量</para>
-        /// <para>当容量小于当前字符串长度时，会截断多余的长度</para>
+        /// <para>实例会根据新的缓冲区容量重新申请指定长度的字符数组，并将旧的数据拷贝到新缓冲区内</para>
+        /// <para>当值小于当前实例内存储的字符数量时，会截断多余的长度</para>
         /// </value>
         /// <exception cref="ArgumentOutOfRangeException">值小于0</exception>
         public int Capacity
@@ -261,6 +269,19 @@ namespace Cheng.Texts
                     p_length = value;
                 }
             }
+        }
+
+        /// <summary>
+        /// 仅设置长度参数
+        /// </summary>
+        /// <remarks>
+        /// <para>实例内部使用一个长度参数区分当前文本的长度和实际缓冲区长度，使用该函数可仅修改长度参数，除此之外不做其它任何动作</para>
+        /// <para>调用该函数需要明确需求和理解该对象的内部结构，一般用于配合<see cref="GetCharBuffer"/>函数和非托管库做交互读写内存</para>
+        /// </remarks>
+        /// <param name="length">要设置到长度参数的值</param>
+        public void OnlySetLength(int length)
+        {
+            p_length = length;
         }
 
         #endregion
@@ -291,14 +312,15 @@ namespace Cheng.Texts
         /// 追加一段字符串
         /// </summary>
         /// <param name="value">待添加字符串</param>
-        public void Append(string value)
+        public CMStringBuilder Append(string value)
         {
-            if (value is null) return;
+            if (string.IsNullOrEmpty(value)) return this;
             
             fixed (char* bufPtr = value)
             {
                 Append(bufPtr, value.Length);
             }
+            return this;
         }
 
         /// <summary>
@@ -309,14 +331,14 @@ namespace Cheng.Texts
         /// <param name="count">添加的字符数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定参数超出范围</exception>
-        public void Append(string value, int startIndex, int count)
+        public CMStringBuilder Append(string value, int startIndex, int count)
         {
             if (value is null) throw new ArgumentNullException();
             if (startIndex < 0 || count < 0 || (startIndex + count) > value.Length) throw new ArgumentException();
 
             fixed (char* bufPtr = value)
             {
-                Append(bufPtr + startIndex, count);
+                return Append(bufPtr + startIndex, count);
             }
         }
 
@@ -324,13 +346,13 @@ namespace Cheng.Texts
         /// 追加一段字符串
         /// </summary>
         /// <param name="buffer">待添加缓冲区</param>
-        public void Append(char[] buffer)
+        public CMStringBuilder Append(char[] buffer)
         {
-            if (buffer is null) return;
+            if (buffer is null || buffer.Length == 0) return this;
 
             fixed (char* bufPtr = buffer)
             {
-                Append(bufPtr, buffer.Length);
+                return Append(bufPtr, buffer.Length);
             }
         }
 
@@ -342,14 +364,14 @@ namespace Cheng.Texts
         /// <param name="count">添加的字符数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定参数超出范围</exception>
-        public void Append(char[] buffer, int index, int count)
+        public CMStringBuilder Append(char[] buffer, int index, int count)
         {
             if (buffer is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (index + count) > buffer.Length) throw new ArgumentException();
 
             fixed (char* bufPtr = buffer)
             {
-                Append(bufPtr + index, count);
+                return Append(bufPtr + index, count);
             }
         }
 
@@ -358,9 +380,9 @@ namespace Cheng.Texts
         /// </summary>
         /// <param name="charBuffer">待添加的字符串首地址</param>
         /// <param name="count">要添加的字符数量</param>
-        public void Append(char* charBuffer, int count)
+        public CMStringBuilder Append(char* charBuffer, int count)
         {
-            if (count == 0) return;
+            if (count == 0) return this;
             f_ifAddCapacity(count);
 
             fixed (char* bufPtr = p_charBuffer)
@@ -368,16 +390,18 @@ namespace Cheng.Texts
                 MemoryOperation.MemoryCopy(charBuffer, bufPtr + p_length, count * sizeof(char));
             }
             p_length += count;
+            return this;
         }
 
         /// <summary>
         /// 追加一个字符
         /// </summary>
         /// <param name="value">要追加的一个字符</param>
-        public void Append(char value)
+        public CMStringBuilder Append(char value)
         {
             f_ifAddCapacity(p_length + 1);
             p_charBuffer[p_length++] = value;
+            return this;
         }
 
         /// <summary>
@@ -388,18 +412,18 @@ namespace Cheng.Texts
         /// <param name="count">添加的字符数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定参数超出范围</exception>
-        public void Append(StringBuilder stringBuilder, int index, int count)
+        public CMStringBuilder Append(StringBuilder stringBuilder, int index, int count)
         {
             if (stringBuilder is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (index + count) > stringBuilder.Length) throw new ArgumentException();
 
-            if (count == 0) return;
+            if (count == 0) return this;
             f_ifAddCapacity(count);
 
             stringBuilder.CopyTo(index, p_charBuffer, 0, count);
 
             p_length += count;
-
+            return this;
         }
 
         /// <summary>
@@ -415,9 +439,9 @@ namespace Cheng.Texts
         /// <para>要用于对值设置格式的提供程序</para>
         /// <para>传入null，表示从操作系统的当前区域设置获取数字格式信息</para>
         /// </param>
-        public void Append<T>(T value, string format, IFormatProvider formatProvider) where T : IFormattable
+        public CMStringBuilder Append<T>(T value, string format, IFormatProvider formatProvider) where T : IFormattable
         {
-            Append(value?.ToString(format, formatProvider));
+            return Append(value?.ToString(format, formatProvider));
         }
 
         /// <summary>
@@ -425,9 +449,9 @@ namespace Cheng.Texts
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value">要添加的对象</param>
-        public void Append<T>(T value)
+        public CMStringBuilder Append<T>(T value)
         {
-            Append(value?.ToString());
+            return Append(value?.ToString());
         }
 
         /// <summary>
@@ -435,21 +459,22 @@ namespace Cheng.Texts
         /// </summary>
         /// <param name="cmStringBuilder">待添加的内容</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public void Append(CMStringBuilder cmStringBuilder)
+        public CMStringBuilder Append(CMStringBuilder cmStringBuilder)
         {
             if (cmStringBuilder is null) throw new ArgumentNullException();
             Append(cmStringBuilder.p_charBuffer, 0, cmStringBuilder.p_length);
+            return this;
         }
 
         /// <summary>
         /// 追加一个换行符
         /// </summary>
-        public void AppendLine()
+        public CMStringBuilder AppendLine()
         {
             f_ifAddCapacity(p_newLine.Length);
             fixed (char* bufPtr = p_newLine)
             {
-                Append(bufPtr, p_newLine.Length);
+                return Append(bufPtr, p_newLine.Length);
             }
         }
 
@@ -457,17 +482,16 @@ namespace Cheng.Texts
         /// 追加一段字符串并在结尾追加换行符
         /// </summary>
         /// <param name="value">待添加字符串</param>
-        public void AppendLine(string value)
+        public CMStringBuilder AppendLine(string value)
         {
-            if (value is null)
+            if (string.IsNullOrEmpty(value))
             {
-                AppendLine();
-                return;
+                return AppendLine();
             }
 
             fixed (char* bufPtr = value)
             {
-                AppendLine(bufPtr, value.Length);
+                return AppendLine(bufPtr, value.Length);
             }
         }
 
@@ -479,14 +503,14 @@ namespace Cheng.Texts
         /// <param name="count">添加的字符数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定参数超出范围</exception>
-        public void AppendLine(string value, int startIndex, int count)
+        public CMStringBuilder AppendLine(string value, int startIndex, int count)
         {
             if (value is null) throw new ArgumentNullException();
             if (startIndex < 0 || count < 0 || (startIndex + count) > value.Length) throw new ArgumentException();
 
             fixed (char* bufPtr = value)
             {
-                AppendLine(bufPtr + startIndex, count);
+                return AppendLine(bufPtr + startIndex, count);
             }
         }
 
@@ -494,17 +518,16 @@ namespace Cheng.Texts
         /// 追加一段字符串并在结尾追加换行符
         /// </summary>
         /// <param name="buffer">待添加缓冲区</param>
-        public void AppendLine(char[] buffer)
+        public CMStringBuilder AppendLine(char[] buffer)
         {
             if (buffer is null)
             {
-                AppendLine();
-                return;
+                return AppendLine();
             }
 
             fixed (char* bufPtr = buffer)
             {
-                AppendLine(bufPtr, buffer.Length);
+                return AppendLine(bufPtr, buffer.Length);
             }
         }
 
@@ -516,16 +539,15 @@ namespace Cheng.Texts
         /// <param name="count">添加的字符数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定参数超出范围</exception>
-        public void AppendLine(char[] buffer, int index, int count)
+        public CMStringBuilder AppendLine(char[] buffer, int index, int count)
         {
             if (buffer is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (index + count) > buffer.Length) throw new ArgumentException();
 
             fixed (char* bufPtr = buffer)
             {
-                AppendLine(bufPtr + index, count);
+                return AppendLine(bufPtr + index, count);
             }
-
         }
 
         /// <summary>
@@ -533,7 +555,7 @@ namespace Cheng.Texts
         /// </summary>
         /// <param name="charBuffer">待添加的字符串首地址</param>
         /// <param name="count">要添加的字符数量</param>
-        public void AppendLine(char* charBuffer, int count)
+        public CMStringBuilder AppendLine(char* charBuffer, int count)
         {
             int addCount = count + p_newLine.Length;
             f_ifAddCapacity(addCount);
@@ -545,7 +567,7 @@ namespace Cheng.Texts
                 MemoryOperation.MemoryCopy(newLinePtr, bufPtr + p_length, p_newLine.Length * sizeof(char));
                 p_length += p_newLine.Length;
             }
-
+            return this;
         }
 
         /// <summary>
@@ -556,9 +578,8 @@ namespace Cheng.Texts
         /// <param name="count">添加的字符数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定参数超出范围</exception>
-        public void AppendLine(StringBuilder stringBuilder, int index, int count)
+        public CMStringBuilder AppendLine(StringBuilder stringBuilder, int index, int count)
         {
-
             if (stringBuilder is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (index + count) > stringBuilder.Length) throw new ArgumentException();
 
@@ -569,6 +590,7 @@ namespace Cheng.Texts
             stringBuilder.CopyTo(index, p_charBuffer, 0, count);
             p_length += count;
             f_addnewLine();
+            return this;
         }
 
         /// <summary>
@@ -576,10 +598,10 @@ namespace Cheng.Texts
         /// </summary>
         /// <param name="cmStringBuilder">待添加的内容</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public void AppendLine(CMStringBuilder cmStringBuilder)
+        public CMStringBuilder AppendLine(CMStringBuilder cmStringBuilder)
         {
             if (cmStringBuilder is null) throw new ArgumentNullException();
-            AppendLine(cmStringBuilder.p_charBuffer, 0, cmStringBuilder.p_length);
+            return AppendLine(cmStringBuilder.p_charBuffer, 0, cmStringBuilder.p_length);
         }
 
         /// <summary>
@@ -595,9 +617,9 @@ namespace Cheng.Texts
         /// <para>要用于对值设置格式的提供程序</para>
         /// <para>传入null，表示从操作系统的当前区域设置获取数字格式信息</para>
         /// </param>
-        public void AppendLine<T>(T value, string format, IFormatProvider formatProvider) where T : IFormattable
+        public CMStringBuilder AppendLine<T>(T value, string format, IFormatProvider formatProvider) where T : IFormattable
         {
-            AppendLine(value?.ToString(format, formatProvider));
+            return AppendLine(value?.ToString(format, formatProvider));
         }
 
         /// <summary>
@@ -605,9 +627,9 @@ namespace Cheng.Texts
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value">要添加的对象</param>
-        public void AppendLine<T>(T value)
+        public CMStringBuilder AppendLine<T>(T value)
         {
-            AppendLine(value?.ToString());
+            return AppendLine(value?.ToString());
         }
 
         #endregion
@@ -617,9 +639,10 @@ namespace Cheng.Texts
         /// <summary>
         /// 清空内容
         /// </summary>
-        public void Clear()
+        public CMStringBuilder Clear()
         {
             p_length = 0;
+            return this;
         }
 
         /// <summary>
@@ -627,16 +650,17 @@ namespace Cheng.Texts
         /// </summary>
         /// <param name="startIndex">要删除的起始字符串</param>
         /// <param name="count">要删除的字符串数量</param>
-        public void Remove(int startIndex, int count)
+        public CMStringBuilder Remove(int startIndex, int count)
         {
             int leftIndex = startIndex + count;
 
             if (startIndex < 0 || count < 0 || (leftIndex) > p_length) throw new ArgumentOutOfRangeException();
-            if (count == 0) return;
+            if (count == 0) return this;
 
             if(leftIndex < p_length) Array.Copy(p_charBuffer, leftIndex, p_charBuffer, startIndex, count);
 
             p_length -= count;
+            return this;
         }
 
         /// <summary>
@@ -644,10 +668,11 @@ namespace Cheng.Texts
         /// </summary>
         /// <param name="index">要插入的索引位置</param>
         /// <param name="value">待插入的字符串，null表示不插入</param>
-        public void Insert(int index, string value)
+        public CMStringBuilder Insert(int index, string value)
         {
-            if (string.IsNullOrEmpty(value)) return;
+            if (string.IsNullOrEmpty(value)) return this;
             Insert(index, value, 0, value.Length);
+            return this;
         }
 
         /// <summary>
@@ -659,20 +684,20 @@ namespace Cheng.Texts
         /// <param name="count">要插入的字符串数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
-        public void Insert(int index, string value, int startIndex, int count)
+        public CMStringBuilder Insert(int index, string value, int startIndex, int count)
         {
             if (value is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (startIndex < 0) || count < 0 || (startIndex + count > value.Length) || index > p_length)
             {
                 throw new ArgumentOutOfRangeException();
             }
-            if (count == 0) return;
+            if (count == 0) return this;
 
             f_ifAddCapacity(count);
 
             if (index == p_length)
             {
-                Append(value, startIndex, count);
+                return Append(value, startIndex, count);
             }
             else
             {
@@ -685,8 +710,7 @@ namespace Cheng.Texts
                 //Array.Copy(buffer, startIndex, p_charBuffer, index, count);
 
                 p_length += count;
-
-
+                return this;
             }
         }
 
@@ -696,10 +720,10 @@ namespace Cheng.Texts
         /// <param name="index">要插入的索引位置</param>
         /// <param name="buffer">待插入的字符缓冲区</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
-        public void Insert(int index, char[] buffer)
+        public CMStringBuilder Insert(int index, char[] buffer)
         {
             if (buffer is null) throw new ArgumentNullException();
-            Insert(index, buffer, 0, buffer.Length);
+            return Insert(index, buffer, 0, buffer.Length);
         }
 
         /// <summary>
@@ -711,35 +735,33 @@ namespace Cheng.Texts
         /// <param name="count">要插入的字符串数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
-        public void Insert(int index, char[] buffer, int startIndex, int count)
+        public CMStringBuilder Insert(int index, char[] buffer, int startIndex, int count)
         {
             if (buffer is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (startIndex < 0) || count < 0 || (startIndex + count > buffer.Length) || index > p_length)
             {
                 throw new ArgumentOutOfRangeException();
             }
-            if (count == 0) return;
+            if (count == 0) return this;
 
             f_ifAddCapacity(count);
 
             if (index == p_length)
             {
-                Append(buffer, startIndex, count);
+                return Append(buffer, startIndex, count);
             }
             else
             {
                 
                 int endi = index + count;
-                //var size = count + sizeof(char);
 
                 Array.Copy(p_charBuffer, index, p_charBuffer, endi, count);
 
                 Array.Copy(buffer, startIndex, p_charBuffer, index, count);
 
                 p_length += count;
-
+                return this;
             }
-
         }
 
         /// <summary>
@@ -751,35 +773,32 @@ namespace Cheng.Texts
         /// <param name="count">要插入的字符串数量</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
-        public void Insert(int index, StringBuilder stringBuilder, int startIndex, int count)
+        public CMStringBuilder Insert(int index, StringBuilder stringBuilder, int startIndex, int count)
         {
             if (stringBuilder is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (startIndex < 0) || count < 0 || (startIndex + count > stringBuilder.Length) || index > p_length)
             {
                 throw new ArgumentOutOfRangeException();
             }
-            if (count == 0) return;
+            if (count == 0) return this;
 
             f_ifAddCapacity(count);
 
             if (index == p_length)
             {
-                Append(stringBuilder, startIndex, count);
+                return Append(stringBuilder, startIndex, count);
             }
             else
             {
-
                 int endi = index + count;
-                //var size = count + sizeof(char);
 
                 Array.Copy(p_charBuffer, index, p_charBuffer, endi, count);
-                
                 //Array.Copy(buffer, startIndex, p_charBuffer, index, count);
                 stringBuilder.CopyTo(startIndex, p_charBuffer, index, count);
 
                 p_length += count;
 
-
+                return this;
             }
         }
 
@@ -812,15 +831,16 @@ namespace Cheng.Texts
         /// <param name="charBuffer">待插入字符串的首地址</param>
         /// <param name="count">要插入的字符串数量</param>
         /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
-        public void Insert(int index, char* charBuffer, int count)
+        public CMStringBuilder Insert(int index, char* charBuffer, int count)
         {
             if (index < 0 || count < 0 || index > p_length)
             {
                 throw new ArgumentOutOfRangeException();
             }
 
-            if (count == 0) return;
+            if (count == 0) return this;
             f_insert(index, charBuffer, count);
+            return this;
         }
 
         #endregion

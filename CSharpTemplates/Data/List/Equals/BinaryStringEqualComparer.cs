@@ -11,7 +11,7 @@ namespace Cheng.DataStructure.Collections
     /// 字符串值比较器
     /// </summary>
     /// <remarks>
-    /// 实现一个使用字符值比较的字符串比较器
+    /// 实现一个使用字符值比较的字符串比较器，内部实现使用字符串的 == 运算符重载
     /// </remarks>
     public sealed class BinaryStringEqualComparer : EqualityComparer<string>
     {
@@ -30,10 +30,11 @@ namespace Cheng.DataStructure.Collections
 
         public override int GetHashCode(string obj)
         {
-            return (obj?.GetHashCode()).GetValueOrDefault();
+            if (obj is null) return 0;
+            return obj.GetHashCode();
         }
 
-        static BinaryStringEqualComparer binEqual = new BinaryStringEqualComparer();
+        static readonly BinaryStringEqualComparer binEqual = new BinaryStringEqualComparer();
 
         /// <summary>
         /// 获取一个全局唯一实例的字符串值比较器

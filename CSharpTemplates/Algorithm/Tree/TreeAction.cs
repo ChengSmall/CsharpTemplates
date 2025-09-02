@@ -11,82 +11,12 @@ namespace Cheng.Algorithm.Trees
     /// 树状图转换器
     /// </summary>
     /// <remarks>
-    /// 用于将文件数据列表转换为
+    /// 用于将文件数据列表转换为多叉树结构
     /// </remarks>
-    public class TreeAction
+    public sealed class TreeAction
     {
 
         #region
-
-        #region
-
-        ///// <summary>
-        ///// 创建树状图
-        ///// </summary>
-        ///// <param name="list">集合</param>
-        ///// <param name="nodeLookupBuffer">字典缓冲区</param>
-        ///// <param name="splitFullNameChars"><分割路径用的可用路径分隔符/param>
-        ///// <param name="pathSeparator">组装路径时用的路径分隔符</param>
-        ///// <returns>根节点</returns>
-        //private static TreeNode<TreeNodeData> f_sDataListToTreeNodes(IDataList list, Dictionary<string, TreeNode<TreeNodeData>> nodeLookupBuffer, char[] splitFullNameChars, string pathSeparator)
-        //{
-
-        //    //字典来存储所有节点，以便按其完整路径快速查找
-        //    Dictionary<string, TreeNode<TreeNodeData>> nodeLookup = nodeLookupBuffer;
-        //    //nodeLookup.Clear();
-
-        //    //创建根节点
-        //    TreeNode<TreeNodeData> root = new TreeNode<TreeNodeData>(default);
-
-        //    TreeNode<TreeNodeData> currentNode = root;
-
-        //    //使用空字符串作为根节点的键
-        //    nodeLookup[""] = root;
-
-        //    //填充字典并构建树结构
-        //    for (int t_entryIndex = 0; t_entryIndex < list.Count; t_entryIndex++)
-        //    {
-        //        var entry = list[t_entryIndex];
-
-        //        if (entry.FullName is null) throw new ArgumentNullException();
-
-        //        var parts = entry.FullName.Split(splitFullNameChars, StringSplitOptions.RemoveEmptyEntries);
-        //        TreeNode<TreeNodeData> parentNode = currentNode;
-
-        //        //遍历路径部分以查找或创建正确的父节点
-        //        for (int i = 0; i < parts.Length - 1; i++)
-        //        {
-        //            //string key = string.Join("/", parts, 0, i + 1);
-        //            string key = string.Join(pathSeparator, parts, 0, i + 1);
-        //            if (!nodeLookup.ContainsKey(key))
-        //            {
-        //                //为路径的这一部分创建一个新节点
-        //                //var newData = new TreeNodeData(string.Join("/", parts, 0, i + 1), parts[i], false);
-        //                var newData = new TreeNodeData(string.Join(pathSeparator, parts, 0, i + 1), parts[i], false);
-        //                TreeNode<TreeNodeData> newNode = new TreeNode<TreeNodeData>(newData);
-        //                parentNode.Add(newNode);
-        //                nodeLookup[key] = newNode;
-        //            }
-
-        //            //移动到路径下一部分的父节点
-        //            parentNode = nodeLookup[key];
-        //        }
-
-        //        //创建叶子节点并将其添加到其父节点
-        //        //假设它是一个文件，因为它在列表中
-        //        var leafData = new TreeNodeData(entry.FullName, entry.Name, true);
-
-        //        //TreeNode<TreeNodeData> leafNode = new TreeNode<TreeNodeData> { Value = leafData };
-        //        TreeNode<TreeNodeData> leafNode = new TreeNode<TreeNodeData>(leafData);
-        //        parentNode.Add(leafNode);
-        //        //将叶子节点存储在查找中以确保完整性，尽管这不是严格必要的
-        //        nodeLookup[entry.FullName] = leafNode;
-
-        //    }
-        //    return root;
-        //}
-
-        #endregion
 
         /// <summary>
         /// 将一系列节点集合转化为树状结构
@@ -115,12 +45,12 @@ namespace Cheng.Algorithm.Trees
                 if (parts.Length == 0)
                     continue; // 忽略空路径（例如FullName为空）
 
-                // 检查路径是否合法
+                // 检查路径是否合规
                 foreach (string part in parts)
                 {
                     //节点路径的分隔符'\\'之间存在空节点名
                     if (string.IsNullOrEmpty(part))
-                        throw new NotImplementedException();
+                        throw new ArgumentException(Cheng.Properties.Resources.Exception_PathSepIsLink);
                 }
 
                 TreeNode<TreeNodeData> currentParent = root;

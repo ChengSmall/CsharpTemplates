@@ -273,6 +273,122 @@ namespace Cheng.Texts
             return sb.ToString();
         }
 
+        /// <summary>
+        /// 查找字符串内匹配的字符并返回索引
+        /// </summary>
+        /// <param name="value">要查找的字符串</param>
+        /// <param name="predicate">进行匹配的谓词</param>
+        /// <returns>第一个匹配的索引；如果没有匹配字符则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static int FindIndex(this string value, Predicate<char> predicate)
+        {
+            if (value is null || predicate is null) throw new ArgumentNullException();
+            int length = value.Length;
+            for (int i = 0; i < length; i++)
+            {
+                if (predicate.Invoke(value[i])) return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 查找字符串指定范围内匹配的字符并返回索引
+        /// </summary>
+        /// <param name="value">要查找的字符串</param>
+        /// <param name="index">要查找的起始索引位置</param>
+        /// <param name="count">要查找的字符数量</param>
+        /// <param name="predicate">进行匹配的谓词</param>
+        /// <returns>第一个匹配的索引；如果没有匹配字符则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="IndexOutOfRangeException">索引超出范围</exception>
+        public static int FindIndex(this string value, int index, int count, Predicate<char> predicate)
+        {
+            if (value is null || predicate is null) throw new ArgumentNullException();
+            int length = index + count;
+            for (int i = index; i < length; i++)
+            {
+                if (predicate.Invoke(value[i])) return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 查找字符串从指定索引开始到最后之间匹配的字符并返回索引
+        /// </summary>
+        /// <param name="value">要查找的字符串</param>
+        /// <param name="index">要查找的起始索引位置</param>
+        /// <param name="predicate">进行匹配的谓词</param>
+        /// <returns>第一个匹配的索引；如果没有匹配字符则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="IndexOutOfRangeException">索引超出范围</exception>
+        public static int FindIndex(this string value, int index, Predicate<char> predicate)
+        {
+            if (value is null || predicate is null) throw new ArgumentNullException();
+            int length = value.Length;
+            for (int i = index; i < length; i++)
+            {
+                if (predicate.Invoke(value[i])) return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 反向查找字符串内匹配的字符并返回索引
+        /// </summary>
+        /// <param name="value">要查找的字符串</param>
+        /// <param name="predicate">进行匹配的谓词</param>
+        /// <returns>最后一个匹配的索引；如果没有匹配字符则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static int LastFindIndex(this string value, Predicate<char> predicate)
+        {
+            if (value is null || predicate is null) throw new ArgumentNullException();
+            int length = value.Length;
+            for (int i = length - 1; i >= 0; i--)
+            {
+                if (predicate.Invoke(value[i])) return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 反向查找字符串指定范围内匹配的字符并返回索引
+        /// </summary>
+        /// <param name="value">要查找的字符串</param>
+        /// <param name="index">要查找的起始索引位置</param>
+        /// <param name="count">要查找的字符数量</param>
+        /// <param name="predicate">进行匹配的谓词</param>
+        /// <returns>最后一个匹配的索引；如果没有匹配字符则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="IndexOutOfRangeException">索引超出范围</exception>
+        public static int LastFindIndex(this string value, int index, int count, Predicate<char> predicate)
+        {
+            if (value is null || predicate is null) throw new ArgumentNullException();
+            for (int i = index + count - 1; i >= index; i--)
+            {
+                if (predicate.Invoke(value[i])) return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 反向查找字符串从指定索引开始到最后之间匹配的字符并返回索引
+        /// </summary>
+        /// <param name="value">要查找的字符串</param>
+        /// <param name="index">要查找的起始索引位置</param>
+        /// <param name="predicate">进行匹配的谓词</param>
+        /// <returns>最后一个匹配的索引；如果没有匹配字符则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="IndexOutOfRangeException">索引超出范围</exception>
+        public static int LastFindIndex(this string value, int index, Predicate<char> predicate)
+        {
+            if (value is null || predicate is null) throw new ArgumentNullException();
+            for (int i = value.Length - 1; i >= index; i--)
+            {
+                if (predicate.Invoke(value[i])) return i;
+            }
+            return -1;
+        }
+
         #endregion
 
         #region 字符大小写转化
@@ -454,6 +570,7 @@ namespace Cheng.Texts
         }
 
         #endregion
+
 
     }
 

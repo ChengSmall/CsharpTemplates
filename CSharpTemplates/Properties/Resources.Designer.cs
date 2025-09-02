@@ -124,11 +124,29 @@ namespace Cheng.Properties {
         }
         
         /// <summary>
+        ///   查找类似 上级目录节点超出参数范围 的本地化字符串。
+        /// </summary>
+        internal static string Exception_ParentDireOutIndex {
+            get {
+                return ResourceManager.GetString("Exception_ParentDireOutIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 路径为空 的本地化字符串。
         /// </summary>
         internal static string Exception_PathIsEmpty {
             get {
                 return ResourceManager.GetString("Exception_PathIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 两个路径分隔符相连 的本地化字符串。
+        /// </summary>
+        internal static string Exception_PathSepIsLink {
+            get {
+                return ResourceManager.GetString("Exception_PathSepIsLink", resourceCulture);
             }
         }
         

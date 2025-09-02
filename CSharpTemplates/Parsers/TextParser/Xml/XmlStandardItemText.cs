@@ -27,6 +27,7 @@ namespace Cheng.Xmls.StandardItemText
         public XmlStandardItemText()
         {
             p_buffer = new StringBuilder();
+            //p_newLine = Environment.NewLine;
         }
 
         #endregion
@@ -114,7 +115,13 @@ namespace Cheng.Xmls.StandardItemText
 
                 var ch = nodeE.ChildNodes;
                 int chCount = ch.Count;
-                if(nodeName == "color")
+                if (nohavCh && (nodeName == "p" || nodeName == "P"))
+                {
+                    //属于换行符号
+                    append.Append(NewLine);
+                    return;
+                }
+                else if(nodeName == "color")
                 {
                     if (nohavCh)
                     {
@@ -597,6 +604,14 @@ namespace Cheng.Xmls.StandardItemText
 
         #region 参数访问
 
+        /// <summary>
+        /// 换行时的换行符
+        /// </summary>
+        public virtual string NewLine
+        {
+            get => Environment.NewLine;
+        }
+
         #endregion
 
         #region 派生
@@ -608,7 +623,7 @@ namespace Cheng.Xmls.StandardItemText
         /// <param name="append">待输出缓冲区</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         public void XmlToStandardItemText(XmlNode node, StringBuilder append)
-        {            
+        {
             if (node is null || append is null) throw new ArgumentNullException();
 
             ToSTDText(node, append);

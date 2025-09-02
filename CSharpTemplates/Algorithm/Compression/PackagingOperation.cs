@@ -140,7 +140,7 @@ namespace Cheng.Algorithm.Compressions
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ObjectDisposedException">已释放</exception>
         /// <exception cref="IOException">IO错误</exception>
-        /// <exception cref="System.IO.FileNotFoundException">文件不存在</exception>
+        /// <exception cref="DirectoryNotFoundException">指定的路径无效，例如位于未映射的驱动器上</exception>
         /// <exception cref="Exception">其它错误</exception>
         public virtual void PackToFile(string filePath)
         {

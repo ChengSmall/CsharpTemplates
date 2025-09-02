@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Cheng.Memorys;
+using Cheng.DataStructure.Collections;
 
 namespace Cheng.Texts
 {
@@ -11,6 +12,16 @@ namespace Cheng.Texts
     {
 
         #region Paths
+
+        /// <summary>
+        /// 判断字符是否属于路径分隔符
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns>如果字符属于 '/' 或 '\' 返回true，否则返回false</returns>
+        public static bool IsPathSeparatorChar(this char c)
+        {
+            return c == '/' || c == '\\';
+        }
 
         /// <summary>
         /// 路径和目录相关字符串扩展
@@ -183,6 +194,175 @@ namespace Cheng.Texts
                 return path.Substring(i + 1);
             }
 
+            /// <summary>
+            /// 将多个字符串按照路径节点依次拼接
+            /// </summary>
+            /// <param name="paths">要拼接的路径节点数组</param>
+            /// <returns>
+            /// <para>拼接完毕的路径字符串</para>
+            /// </returns>
+            /// <exception cref="ArgumentException">路径节点数组内存在不合规路径参数，例如两个分隔符并列，使用上级目录访问符号".."访问的节点超出了参数范围</exception>
+            public static string PathCombine(params string[] paths)
+            {
+                if (paths is null) return string.Empty;
+                StringWriter swr = new StringWriter();
+                PathCombine(paths, new ImmediatelyStack<string>(paths.Length * 2), '\\', swr);
+                return swr.ToString();
+            }
+
+            /// <summary>
+            /// 将多个字符串按照路径节点依次拼接
+            /// </summary>
+            /// <param name="paths">要拼接的路径节点集合</param>
+            /// <param name="separator">进行拼接时的路径分隔符</param>
+            /// <returns>拼接完毕路径字符串</returns>
+            /// <exception cref="ArgumentNullException">参数为null</exception>
+            /// <exception cref="ArgumentException">路径节点数组内存在不合规路径参数，例如两个分隔符并列，".."符号访问到了提供的路径节点之外</exception>
+            public static string PathCombine(IEnumerable<string> paths, char separator)
+            {
+                if (paths is null) return string.Empty;
+                StringWriter swr = new StringWriter();
+                PathCombine(paths, new ImmediatelyStack<string>((paths is ICollection<string> ico) ? ico.Count : 4), separator, swr);
+                return swr.ToString();
+            }
+
+            /// <summary>
+            /// 将多个字符串按照路径节点依次拼接并写入文本写入器
+            /// </summary>
+            /// <remarks>
+            /// <para>
+            /// 从集合<paramref name="paths"/>中依次访问字符串参数，以'/'和'\'作为路径分隔符，按照标准的相对路径语法拼接路径节点；<br/>
+            /// 例如参数<paramref name="paths"/>是 <code>{ "root\\path\\path2", "..\\dire", "file.txt" }</code> 则拼接后的字符串为 <code>"root\\path\\dire\\file.txt"</code>
+            /// </para>
+            /// </remarks>
+            /// <param name="paths">要拼接的路径节点集合</param>
+            /// <param name="buffer">需要准备的栈结构缓冲区对象</param>
+            /// <param name="separator">进行拼接时的路径分隔符</param>
+            /// <param name="append">要将结果输出到的写入器</param>
+            /// <exception cref="ArgumentNullException">参数为null</exception>
+            /// <exception cref="ArgumentException">路径节点数组内存在不合规路径参数，例如两个分隔符并列，".."符号访问到了提供的路径节点之外</exception>
+            public static void PathCombine(IEnumerable<string> paths, ImmediatelyStack<string> buffer, char separator, TextWriter append)
+            {
+                //throw new NotImplementedException();
+
+                if (buffer is null || paths is null || append is null) throw new ArgumentNullException();
+                buffer.Clear();
+
+                Predicate<char> isPathSep = IsPathSeparatorChar;
+                int L, N;
+                string pop;
+                string fpath;
+
+                foreach (var path in paths)
+                {
+                    if (string.IsNullOrEmpty(path)) continue;
+
+                    int plenso = path.Length - 1;
+
+                    bool pfirstSep = IsPathSeparatorChar(path[0]);
+                    bool pendSep = IsPathSeparatorChar(path[plenso]);
+                   
+
+                    //删除前后分隔符
+                    if (pfirstSep)
+                    {
+                        if (pendSep)
+                        {
+                            //前后
+                            fpath = path.Substring(1, plenso - 1);
+                        }
+                        else
+                        {
+                            //前
+                            fpath = path.Substring(1);
+                        }
+                    }
+                    else
+                    {
+                        if (pendSep)
+                        {
+                            //后
+                            fpath = path.Substring(0, plenso);
+                        }
+                        else
+                        {
+                            //无
+                            fpath = path;
+                        }
+                    }
+
+                    N = 0;
+                    L = 0;
+
+                    Loop:
+                    //获取路径索引位置
+                    
+                    N = fpath.FindIndex(N, IsPathSeparatorChar);
+
+                    //if (N == -1)
+                    //{
+                    //    //到达末尾
+                    //    continue;
+                    //}
+
+                    //从last到next分隔符之间的字符串
+                    string sepPath;
+                    if(N == -1)
+                    {
+                        sepPath = fpath.Substring(L); //最后一位节点
+                    }
+                    else
+                    {
+                        sepPath = fpath.Substring(L, N - L);
+                    }
+
+                    //推入栈
+                    if (sepPath == "..")
+                    {
+                        //撤回标识符弹出路径
+                        if (!buffer.Pop(out pop))
+                        {
+                            throw new ArgumentException(Cheng.Properties.Resources.Exception_ParentDireOutIndex);
+                        }
+                    }
+                    else
+                    {
+                        //推入路径
+                        buffer.Push(sepPath);
+                    }
+
+                    if (N == -1)
+                    {
+                        //到达末尾
+                        continue;
+                    }
+
+                    //分隔符下一位索引
+                    N++;
+                    //缓存上一个索引
+                    L = N;
+
+                    if (IsPathSeparatorChar(fpath[N]))
+                    {
+                        //两个分隔符相连
+                        throw new ArgumentException(Cheng.Properties.Resources.Exception_PathSepIsLink);
+                    }
+
+                    goto Loop;
+                }
+
+                N = buffer.Count - 1;
+                //buffer.Clear();
+                //string pop;
+                //sb.Clear();
+                for (L = 0; L <= N; L++)
+                {
+                    fpath = buffer.GetStackLast(L);
+
+                    append.Write(fpath);
+                    if (L != N) append.Write(separator);
+                }
+            }
 
         }
 

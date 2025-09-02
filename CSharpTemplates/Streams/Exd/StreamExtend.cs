@@ -40,8 +40,7 @@ namespace Cheng.Streams
         public static int ReadBlock(this Stream stream, byte[] buffer, int offset, int count)
         {
             if (stream is null || buffer is null) throw new ArgumentNullException();
-            //if (offset < 0 || count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException(getArgOutOfRangeReadBlock());
-            //int index = offset;
+
             int rsize;
             int re = 0;
             while (count != 0)
@@ -453,7 +452,7 @@ namespace Cheng.Streams
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="stream">流</param>
-        /// <param name="buffer">写入流时的缓冲区，该缓冲区长度不得小于类型<typeparamref name="T"/>，后果自负</param>
+        /// <param name="buffer">写入流时的缓冲区，该缓冲区长度不得小于<typeparamref name="T"/>类型的大小</param>
         /// <param name="value">要存储的对象</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentException">参数错误</exception>

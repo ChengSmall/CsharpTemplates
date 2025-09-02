@@ -9,7 +9,6 @@ namespace Cheng.DataStructure.Collections
     /// 可访问任意元素的先进后出的栈
     /// </summary>
     /// <typeparam name="T">元素类型</typeparam>
-    [Serializable]
     public sealed class ImmediatelyStack<T> : IReadOnlyList<T>, IList<T>
     {
 
@@ -212,7 +211,7 @@ namespace Cheng.DataStructure.Collections
 
         private int p_size;
 
-        [NonSerialized] private int p_version;
+        private int p_version;
 
         #endregion
 
@@ -465,7 +464,7 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 将元素压入栈顶
+        /// 将元素从栈顶推入
         /// </summary>
         /// <param name="item">要压入的元素</param>
         public void Push(T item)
@@ -501,9 +500,9 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 压入指定数量个空元素
+        /// 推入指定数量个空元素
         /// </summary>
-        /// <param name="count">要押入的数量</param>
+        /// <param name="count">要推入的数量</param>
         public void PushCount(int count)
         {
             int length = p_arr.Length;

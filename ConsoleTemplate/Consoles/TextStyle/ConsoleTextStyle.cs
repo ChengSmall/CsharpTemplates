@@ -356,10 +356,12 @@ namespace Cheng.Consoles
         /// <param name="g">绿色</param>
         /// <param name="b">蓝色</param>
         /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <returns>实例本身</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void AppendANSIColorText(this StringBuilder append, byte r, byte g, byte b, bool isBackground)
+        public static StringBuilder AppendANSIColorText(this StringBuilder append, byte r, byte g, byte b, bool isBackground)
         {
             ColorToText(r, g, b, isBackground, append);
+            return append;
         }
 
         /// <summary>
@@ -371,9 +373,10 @@ namespace Cheng.Consoles
         /// <param name="b">蓝色</param>
         /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void AppendANSIColorText(this CMStringBuilder append, byte r, byte g, byte b, bool isBackground)
+        public static CMStringBuilder AppendANSIColorText(this CMStringBuilder append, byte r, byte g, byte b, bool isBackground)
         {
             ColorToText(r, g, b, isBackground, append);
+            return append;
         }
 
         /// <summary>
@@ -433,10 +436,10 @@ namespace Cheng.Consoles
         /// </summary>
         /// <param name="append"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public static void AppendANSIStyleResetText(this StringBuilder append)
+        public static StringBuilder AppendANSIStyleResetText(this StringBuilder append)
         {
             if (append is null) throw new ArgumentNullException();
-            append.Append(ResetStyleText);
+            return append.Append(ResetStyleText);
         }
 
         /// <summary>
@@ -444,10 +447,10 @@ namespace Cheng.Consoles
         /// </summary>
         /// <param name="append"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public static void AppendANSIStyleResetText(this CMStringBuilder append)
+        public static CMStringBuilder AppendANSIStyleResetText(this CMStringBuilder append)
         {
             if (append is null) throw new ArgumentNullException();
-            append.Append(ResetStyleText);
+            return append.Append(ResetStyleText);
         }
 
         #endregion

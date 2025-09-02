@@ -139,8 +139,16 @@
   <data name="Exception_NotSupportedText" xml:space="preserve">
     <value>不支持此功能</value>
   </data>
+  <data name="Exception_ParentDireOutIndex" xml:space="preserve">
+    <value>上级目录节点超出参数范围</value>
+    <comment>异常消息：上级目录节点超出路径参数范围</comment>
+  </data>
   <data name="Exception_PathIsEmpty" xml:space="preserve">
     <value>路径为空</value>
+  </data>
+  <data name="Exception_PathSepIsLink" xml:space="preserve">
+    <value>两个路径分隔符相连</value>
+    <comment>异常消息：两个路径分隔符相连</comment>
   </data>
   <data name="Exception_StreamDisposeText" xml:space="preserve">
     <value>流已经被释放</value>

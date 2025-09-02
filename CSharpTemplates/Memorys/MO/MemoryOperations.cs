@@ -1026,177 +1026,65 @@ namespace Cheng.Memorys
         #endregion
 
         #region 流数据
+        //[Obsolete("", true)]
+        //public static int ReadBlock(Stream stream, byte[] buffer, int offset, int count)
+        //{
+        //    return StreamExtend.ReadBlock(stream, buffer, offset, count);
+        //}
 
-        /// <summary>
-        /// 完整读取流数据的字节序列
-        /// </summary>
-        /// <remarks>
-        /// <para>此函数会不断读取数据，直至读取的字节数等于参数<paramref name="count"/>或流内无法读取</para>
-        /// </remarks>
-        /// <param name="stream">读取的流</param>
-        /// <param name="buffer">读取到的缓冲区</param>
-        /// <param name="offset">缓冲区存放的起始索引</param>
-        /// <param name="count">要读取的字节数量</param>
-        /// <returns>实际读取的字节数量；若返回的值小于<paramref name="count"/>表示剩余字节数小于要读取的字节数，返回0表示流已到达结尾</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentException">给定参数超出范围</exception>
-        /// <exception cref="ArgumentOutOfRangeException">给定参数超出范围</exception>
-        /// <exception cref="IOException">IO错误</exception>
-        /// <exception cref="NotSupportedException">不支持方法</exception>
-        /// <exception cref="ObjectDisposedException">资源已释放</exception>
-        [Obsolete("", true)]
-        public static int ReadBlock(Stream stream, byte[] buffer, int offset, int count)
-        {
-            return StreamExtend.ReadBlock(stream, buffer, offset, count);
-        }
+        //[Obsolete("", true)]
+        //public static int ReadBlock(Stream stream, byte* buffer, int count)
+        //{
+        //    return StreamExtend.ReadBlock(stream, buffer, count);
+        //}
 
-        /// <summary>
-        /// 完整读取流数据的字节序列
-        /// </summary>
-        /// <remarks>
-        /// <para>此函数会不断读取数据，直至读取的字节数等于参数<paramref name="count"/>或流内无法读取</para>
-        /// </remarks>
-        /// <param name="stream">读取的流</param>
-        /// <param name="buffer">读取到的缓冲区首地址</param>
-        /// <param name="count">要读取的字节数量</param>
-        /// <returns>实际读取的字节数量；若返回的值小于<paramref name="count"/>表示剩余字节数小于要读取的字节数，返回0表示流已到达结尾</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentOutOfRangeException">参数不正确</exception>
-        /// <exception cref="IOException">IO错误</exception>
-        /// <exception cref="NotSupportedException">不支持方法</exception>
-        /// <exception cref="ObjectDisposedException">资源已释放</exception>
-        [Obsolete("", true)]
-        public static int ReadBlock(Stream stream, byte* buffer, int count)
-        {
-            return StreamExtend.ReadBlock(stream, buffer, count);
-        }
+        //[Obsolete("", true)]
+        //public static IEnumerable<int> ReadBlockEnumator(Stream stream, byte[] buffer, int offset, int count)
+        //{
+        //    return StreamExtend.ReadBlockEnumator(stream, buffer, offset, count);
+        //}
 
-        /// <summary>
-        /// 使用函数枚举器完整读取流数据的字节序列
-        /// </summary>
-        /// <remarks>
-        /// <para>此函数每次推进会调用一次<see cref="Stream.Read(byte[], int, int)"/>读取数据，直至读取的字节数等于参数<paramref name="count"/>或流内无法读取</para>
-        /// </remarks>
-        /// <param name="stream">读取的流</param>
-        /// <param name="buffer">读取到的缓冲区</param>
-        /// <param name="offset">缓冲区存放的起始索引</param>
-        /// <param name="count">要读取的字节数量</param>
-        /// <returns>返回一个函数枚举器，每次推进后返回此次读取的字节数量</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentException">给定参数超出范围</exception>
-        /// <exception cref="ArgumentOutOfRangeException">给定参数超出范围</exception>
-        /// <exception cref="IOException">IO错误</exception>
-        /// <exception cref="NotSupportedException">不支持方法</exception>
-        /// <exception cref="ObjectDisposedException">资源已释放</exception>
-        [Obsolete("", true)]
-        public static IEnumerable<int> ReadBlockEnumator(Stream stream, byte[] buffer, int offset, int count)
-        {
-            return StreamExtend.ReadBlockEnumator(stream, buffer, offset, count);
-        }
+        //[Obsolete("", true)]
+        //public static void CopyToStream(Stream stream, Stream toStream, byte[] buffer)
+        //{
+        //    StreamExtend.CopyToStream(stream, toStream, buffer);
+        //}
 
-        /// <summary>
-        /// 将流数据读取并拷贝到另一个流当中
-        /// </summary>
-        /// <param name="stream">要读取的流</param>
-        /// <param name="toStream">写入的流</param>
-        /// <param name="buffer">流数据一次读写的缓冲区</param>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentException">缓冲区长度为0</exception>
-        /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
-        [Obsolete("", true)]
-        public static void CopyToStream(Stream stream, Stream toStream, byte[] buffer)
-        {
-            StreamExtend.CopyToStream(stream, toStream, buffer);
-        }
+        //[Obsolete("", true)]
+        //public static IEnumerable<int> CopyToStreamEnumator(Stream stream, Stream toStream, byte[] buffer)
+        //{
+        //    return StreamExtend.CopyToStreamEnumator(stream, toStream, buffer);
+        //}
 
-        /// <summary>
-        /// 将流数据读取并拷贝到另一个流当中
-        /// </summary>
-        /// <param name="stream">要读取的流</param>
-        /// <param name="toStream">写入的流</param>
-        /// <param name="buffer">流数据一次读写的缓冲区</param>
-        /// <returns>一个枚举器，每次推进都会读写指定字节的数据，并把此次拷贝的字节量返回到枚举值当中</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentException">缓冲区长度为0</exception>
-        /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
-        [Obsolete("", true)]
-        public static IEnumerable<int> CopyToStreamEnumator(Stream stream, Stream toStream, byte[] buffer)
-        {
-            return StreamExtend.CopyToStreamEnumator(stream, toStream, buffer);
-        }
+        //[Obsolete("", true)]
+        //public static void CopyToStream(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
+        //{
+        //    StreamExtend.CopyToStream(stream, toStream, buffer, maxBytes);
+        //}
 
-        /// <summary>
-        /// 将流数据读取并拷贝到另一个流当中
-        /// </summary>
-        /// <param name="stream">要读取的流</param>
-        /// <param name="toStream">写入的流</param>
-        /// <param name="buffer">流数据一次读写的缓冲区</param>
-        /// <param name="maxBytes">指定最大拷贝字节量，0表示不指定最大字节量</param>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentException">缓冲区长度为0</exception>
-        /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
-        [Obsolete("", true)]
-        public static void CopyToStream(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
-        {
-            StreamExtend.CopyToStream(stream, toStream, buffer, maxBytes);
-        }
+        //[Obsolete("", true)]
+        //public static IEnumerable<int> CopyToStreamEnumator(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
+        //{
+        //    return StreamExtend.CopyToStreamEnumator(stream, toStream, buffer, maxBytes);
+        //}
 
-        /// <summary>
-        /// 将流数据读取并拷贝到另一个流当中
-        /// </summary>
-        /// <param name="stream">要读取的流</param>
-        /// <param name="toStream">写入的流</param>
-        /// <param name="buffer">流数据一次读写的缓冲区</param>
-        /// <param name="maxBytes">指定最大拷贝字节量，0表示不指定最大字节量</param>
-        /// <returns>一个枚举器，每次推进都会读写指定字节的数据，并把此次拷贝的字节量返回到枚举值当中</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentException">缓冲区长度为0</exception>
-        /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
-        [Obsolete("", true)]
-        public static IEnumerable<int> CopyToStreamEnumator(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
-        {
-            return StreamExtend.CopyToStreamEnumator(stream, toStream, buffer, maxBytes);
-        }
+        //[Obsolete("", true)]
+        //public static bool ReadValue<T>(Stream stream, byte[] buffer, out T value) where T : unmanaged
+        //{
+        //    return StreamExtend.ReadValue<T>(stream, buffer, out value);
+        //}
 
-        /// <summary>
-        /// 从流数据中读取指定类型的对象
-        /// </summary>
-        /// <typeparam name="T">类型</typeparam>
-        /// <param name="stream">流</param>
-        /// <param name="buffer">读取时需要的缓冲区，长度必须大于类型<typeparamref name="T"/></param>
-        /// <param name="value">读取到的变量</param>
-        /// <returns>是否成功读取到或读取完整</returns>
-        /// <exception cref="ArgumentException">参数错误</exception>
-        [Obsolete("", true)]
-        public static bool ReadValue<T>(Stream stream, byte[] buffer, out T value) where T : unmanaged
-        {
-            return StreamExtend.ReadValue<T>(stream, buffer, out value);
-        }
+        //[Obsolete("", true)]
+        //public static void WriteValue<T>(Stream stream, byte[] buffer, T value) where T : unmanaged
+        //{
+        //    StreamExtend.WriteValue<T>(stream, buffer, value);
+        //}
 
-        /// <summary>
-        /// 将指定对象存储到流数据
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="stream">流</param>
-        /// <param name="buffer">写入流时的缓冲区，该缓冲区长度不得小于类型<typeparamref name="T"/>，后果自负</param>
-        /// <param name="value">要存储的对象</param>
-        [Obsolete("", true)]
-        public static void WriteValue<T>(Stream stream, byte[] buffer, T value) where T : unmanaged
-        {
-            StreamExtend.WriteValue<T>(stream, buffer, value);
-        }
-
-        /// <summary>
-        /// 读取流数据的所有数据到字节数组
-        /// </summary>
-        /// <param name="stream">要读取的流对象</param>
-        /// <returns>从<paramref name="stream"/>读取的所有数据</returns>
-        [Obsolete("", true)]
-        public static byte[] ReadAll(Stream stream)
-        {
-            return StreamExtend.ReadAll(stream);
-        }
-
+        //[Obsolete("", true)]
+        //public static byte[] ReadAll(Stream stream)
+        //{
+        //    return StreamExtend.ReadAll(stream);
+        //}
         #endregion
 
         #region 比较
