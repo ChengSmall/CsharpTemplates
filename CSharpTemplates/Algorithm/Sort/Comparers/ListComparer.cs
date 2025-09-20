@@ -18,22 +18,38 @@ namespace Cheng.Algorithm.Sorts.Comparers
         /// 实例化列表比较器
         /// </summary>
         /// <param name="collection">要使用的比较器列表，比较时会按顺序依次使用比较器</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
         public ListComparer(IEnumerable<IComparer<T>> collection)
         {
-            p_arr = collection.Where(f_toNotNull).ToArray();
-            if (p_arr.Length == 0) throw new ArgumentException();
-        }
-
-        static bool f_toNotNull(IComparer<T> comparer)
-        {
-            return comparer != null;
+            if (collection is System.Collections.Generic.IReadOnlyList<IComparer<T>>)
+            {
+                p_arr = (IReadOnlyList<IComparer<T>>)collection;
+            }
+            else
+            {
+                p_arr = collection.ToArray();
+            }
+            if (p_arr.Count == 0) throw new ArgumentException();
         }
 
         #endregion
 
         #region 参数
 
-        private readonly IComparer<T>[] p_arr;
+        private System.Collections.Generic.IReadOnlyList<IComparer<T>> p_arr;
+
+        /// <summary>
+        /// 访问或设置比较器列表
+        /// </summary>
+        /// <exception cref="ArgumentNullException">设置的比较器列表为null</exception>
+        public System.Collections.Generic.IReadOnlyList<IComparer<T>> Comparers
+        {
+            get => p_arr;
+            set
+            {
+                p_arr = value ?? throw new ArgumentNullException();
+            }
+        }
 
         #endregion
 
@@ -49,8 +65,11 @@ namespace Cheng.Algorithm.Sorts.Comparers
         /// </returns>
         public override int Compare(T x, T y)
         {
-            foreach (var comp in p_arr)
+            int length = p_arr.Count;
+            for (int i = 0; i < length; i++)
             {
+                var comp = p_arr[i];
+                if (comp is null) continue;
                 var c = comp.Compare(x, y);
                 if (c != 0) return c;
             }

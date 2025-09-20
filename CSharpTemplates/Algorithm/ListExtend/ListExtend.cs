@@ -1003,7 +1003,6 @@ namespace Cheng.Algorithm.Collections
             }
             else
             {
-                
                 f_qukeAndInsertSort(list, index, index + count - 1, comparer, 0);
             }
 

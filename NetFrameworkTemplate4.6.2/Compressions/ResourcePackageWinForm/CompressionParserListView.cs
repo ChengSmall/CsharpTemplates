@@ -3,22 +3,15 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
-
 using System.Windows.Forms;
 using System.Drawing;
 using Cheng.DataStructure.Collections;
-
 using System.IO.Compression;
 using System.IO;
-
 using Cheng.Algorithm.Collections;
 using Cheng.Algorithm.Trees;
 
-using RePack = Cheng.Algorithm.Compressions.ResourcePackages.ResourcePackageReader;
-
 using BasePack = Cheng.Algorithm.Compressions.BaseCompressionParser;
-
-using RBInf = Cheng.Algorithm.Compressions.ResourcePackages.ResourcePackageReader.BlockInformation;
 
 using BaseInf = Cheng.Algorithm.Compressions.DataInformation;
 
@@ -30,19 +23,19 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
 {
 
     /// <summary>
-    /// 刷新页面时对添加的每一项的额外操作
+    /// 刷新页面时对添加的每一项执行的操作
     /// </summary>
     /// <param name="node">当前项的节点信息</param>
-    /// <param name="item">当前要添加的项</param>
+    /// <param name="item">当前要添加的项的新实例</param>
     public delegate void RefreshViewCreateSubItems(TreeNodeData node, ListViewItem item);
 
     /// <summary>
     /// 封装<see cref="BasePack"/>作为<see cref="ListView"/>的的资源管理器
     /// </summary>
     /// <remarks>
-    /// <para>将<see cref="BasePack"/>和 Windows 列表视图<see cref="ListView"/>控件关联以进行查询和读写操作，使用树状结构来访问列表</para>
+    /// <para>将<see cref="BasePack"/>和 Windows 列表视图<see cref="ListView"/>控件关联以进行操作，使用树状结构来访问列表</para>
     /// </remarks>
-    public class ResourcePackageListView
+    public class CompressionParserListView
     {
 
         #region 结构
@@ -125,7 +118,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="NotSupportedException">数据读取器没有基本的查询权限</exception>
         /// <exception cref="Exception">其它错误</exception>
-        public ResourcePackageListView(BasePack pack, ListView listView)
+        public CompressionParserListView(BasePack pack, ListView listView)
         {
             if (pack is null || listView is null) throw new ArgumentNullException();
             if (!(pack.CanProbePath && pack.CanIndexOf))
@@ -225,7 +218,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
         }
 
         /// <summary>
-        /// 在<see cref="ListView"/>刷新页面时调用的额外方法
+        /// 在<see cref="ListView"/>刷新页面时调用的方法，null表示不使用刷新事件
         /// </summary>
         public RefreshViewCreateSubItems ViewCreateSubItems
         {
@@ -277,11 +270,11 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
             {
                 var node = childs[i];
 
-                if (node is null) continue;
+                //if (node is null) continue;
 
                 //DataType nt = node.DataNodeType;
 
-                ListViewItem viewItem = new ListViewItem(node.Value.name);
+                ListViewItem viewItem = new ListViewItem();
                 p_createSubItems?.Invoke(node.Value, viewItem);
                 //if(lst != null) viewItem.SubItems.AddRange(lst);
 
@@ -295,11 +288,11 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
         /// <summary>
         /// 切页到指定节点下
         /// </summary>
-        /// <remarks>该函数仅更改<see cref="NowNodePage"/>参数，如果调用该函数后需要接着调用<see cref="RefreshView"/>函数刷新页面</remarks>
+        /// <remarks>该函数仅更改<see cref="NowNodePage"/>参数，调用该函数后需要接着调用<see cref="RefreshView"/>函数刷新页面</remarks>
         /// <param name="rootTree">要切换到的节点</param>
         /// <exception cref="ArgumentException">节点不是文件夹</exception>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public void OnlySwitchPage(TreeNode<TreeNodeData> rootTree)
+        public void OnlySwitchPage(TNode rootTree)
         {
             if (rootTree is null) throw new ArgumentNullException();
             if (rootTree.Value.isFile) throw new ArgumentException();
@@ -312,7 +305,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
         /// <param name="node">要切换到的节点</param>
         /// <exception cref="ArgumentException">节点不是文件夹</exception>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public void SwitchPage(TreeNode<TreeNodeData> node)
+        public void SwitchPage(TNode node)
         {
             OnlySwitchPage(node);
             RefreshView();
@@ -328,7 +321,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
         public bool SwitchPage(string folderName)
         {
 
-            TreeNode<TreeNodeData> chs = (p_nowPage) as TreeNode<TreeNodeData>;
+            TNode chs = (p_nowPage) as TNode;
 
             if (chs is null || folderName is null) throw new ArgumentNullException();
 
@@ -353,10 +346,9 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
         /// 当前页面下的文件信息，若文件名不存在则返回null
         /// </returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public RBInf OpenFile(string fileName)
+        public BaseInf OpenFile(string fileName)
         {
-
-            TreeNode<TreeNodeData> chs = (p_nowPage);
+            TNode chs = (p_nowPage);
 
             if (chs is null) throw new ArgumentNullException();
 
@@ -371,7 +363,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
 
             if (inf.Value.dataPath is null) return null;
 
-            bool b = p_pack.TryGetInformation<RBInf>(inf.Value.dataPath, out RBInf binf);
+            bool b = p_pack.TryGetInformation<BaseInf>(inf.Value.dataPath, out BaseInf binf);
 
             if (b) return binf;
             return null;
@@ -380,6 +372,27 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
             {
                 if(node.Value.isFile) return node.Value.name == fileName;
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// 打开当前页面下的某个索引的文件信息
+        /// </summary>
+        /// <param name="index">当前页面的顺序索引（节点索引会同步页面索引）</param>
+        /// <returns>当前页面下的文件信息，若索引不存在则返回null</returns>
+        public BaseInf OpenFileByIndex(int index)
+        {
+            TNode chs = (p_nowPage);
+            if (chs is null) return null;
+            try
+            {
+                var inf = chs[index];
+                if (inf.Value.dataPath is null) return null;
+                return p_pack[inf.Value.dataPath];
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 
@@ -423,6 +436,64 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages.Windows.Forms
         {
             OnlySwitchPage(p_tree);
             RefreshView();
+        }
+
+        /// <summary>
+        /// 检测<see cref="ListView"/>内用户选中项，并切换到选中的第一个文件夹内
+        /// </summary>
+        /// <returns>
+        /// <para>是否成功切换</para>
+        /// <para>如果成功切换返回true；如果选中的第一个项是文件，或者没有选中项，或出现其它错误则返回false</para>
+        /// </returns>
+        public bool SwitchPageBySelectedItem()
+        {
+            var listView = p_listView;
+
+            if (listView.SelectedIndices.Count > 0)
+            {
+                var index = listView.SelectedIndices[0];
+                try
+                {
+                    var node = p_nowPage[index];
+                    if (node.Value.isFile) return false; //是文件
+
+                    SwitchPage(node);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        #endregion
+
+        #region 事件
+
+        /// <summary>
+        /// 可注册到<see cref="ListView"/>点击事件的页面切换事件函数
+        /// </summary>
+        /// <remarks>
+        /// <para>一个事件委托，可以将其注册到<see cref="WindowsListView"/>控件的点击事件里，使其拥有点击文件夹切换页面的效果</para>
+        /// <para>
+        /// 例:
+        /// <code>
+        /// WindowsListView.MouseDoubleClick += EventSwitchToSelectedItemFolder;
+        /// </code>
+        /// </para>
+        /// </remarks>
+        /// <param name="sender">事件源（由于函数使用封装对象，因此该参数属于无效参数）</param>
+        /// <param name="e">时间数据（无效参数）</param>
+        public void EventSwitchToSelectedItemFolder(object sender, EventArgs e)
+        {
+            if (p_nowPage == null)
+            {
+                return;
+            }
+
+            SwitchPageBySelectedItem();
         }
 
         #endregion

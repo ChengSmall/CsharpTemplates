@@ -138,7 +138,8 @@ namespace Cheng.DEBUG
         /// <returns>解析后的对象</returns>
         public static JsonVariable FileParserToJsonObj(this string filePath)
         {
-            using (StreamReader sr = new StreamReader(filePath))
+            using(FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            using (StreamReader sr = new StreamReader(file, Encoding.UTF8, false, 1024 * 2, true))
             {
                 return ParserToJsonObj(sr);
             }

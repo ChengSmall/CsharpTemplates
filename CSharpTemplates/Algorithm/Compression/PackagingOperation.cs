@@ -21,13 +21,25 @@ namespace Cheng.Algorithm.Compressions
         int Count { get; }
 
         /// <summary>
+        /// 允许在打包时设置加密密码
+        /// </summary>
+        bool CanPassword { get; }
+
+        /// <summary>
+        /// 允许在设置打包项时分配独立的加密密码
+        /// </summary>
+        /// <returns>如果该参数是true，则<see cref="CanPassword"/>参数无效</returns>
+        bool CanAlonePassword { get; }
+
+        /// <summary>
         /// 添加或覆盖一个待打包数据
         /// </summary>
         /// <param name="data">用于获取数据的对象</param>
         /// <param name="path">要添加或覆盖到的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
+        /// <param name="password">此路径的加密密码，null或空元素表示不设置密码；（如果参数<see cref="CanAlonePassword"/>是false，该参数无效）</param>
         /// <exception cref="ArgumentNullException">对象或路径是null</exception>
         /// <exception cref="ArgumentException">设置的路径拥有不可打印字符或其它路径错误</exception>
-        void SetData(IGettingStream data, string path);
+        void SetData(IGettingStream data, string path, byte[] password);
 
         /// <summary>
         /// 是否允许对象从数据队列中删除已添加的路径
@@ -61,12 +73,13 @@ namespace Cheng.Algorithm.Compressions
         /// 将当前队列的数据打包并写入指定流
         /// </summary>
         /// <param name="stream">接收包体数据的可写流</param>
+        /// <param name="password">包体数据的加密密码，，null或空元素表示不设置密码；（如果参数<see cref="CanPassword"/>是false，该参数无效）</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ObjectDisposedException"><paramref name="stream"/>已释放</exception>
         /// <exception cref="IOException">IO错误</exception>
         /// <exception cref="NotSupportedException"><paramref name="stream"/>提供的操作权限不足以给该方法用于打包数据</exception>
         /// <exception cref="Exception">其它错误</exception>
-        void PackTo(Stream stream);
+        void PackTo(Stream stream, byte[] password);
 
         #endregion
 
@@ -96,13 +109,27 @@ namespace Cheng.Algorithm.Compressions
         public abstract bool CanContainsData { get; }
 
         /// <summary>
+        /// 允许在打包时设置加密密码
+        /// </summary>
+        public virtual bool CanPassword => false;
+
+        /// <summary>
+        /// 允许在设置打包项时分配独立的加密密码
+        /// </summary>
+        /// <returns>如果该参数是true，则优先采用独立密码项；没有设置密码的项在打包时采用<see cref="PackTo(Stream, byte[])"/>的参数作为加密密码</returns>
+        public virtual bool CanAlonePassword => false;
+
+        /// <summary>
         /// 添加或覆盖一个待打包数据
         /// </summary>
         /// <param name="data">用于获取数据的对象</param>
         /// <param name="path">要添加或覆盖到的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
         /// <exception cref="ArgumentNullException">对象或路径是null</exception>
         /// <exception cref="ArgumentException">设置的路径拥有不可打印字符或其它路径错误</exception>
-        public abstract void SetData(IGettingStream data, string path);
+        public virtual void SetData(IGettingStream data, string path)
+        {
+            SetData(data, path, null);
+        }
 
         /// <summary>
         /// 删除某个路径上的待打包数据
@@ -131,7 +158,10 @@ namespace Cheng.Algorithm.Compressions
         /// <exception cref="IOException">IO错误</exception>
         /// <exception cref="NotSupportedException"><paramref name="stream"/>提供的操作权限不足以给该方法用于打包数据</exception>
         /// <exception cref="Exception">其它错误</exception>
-        public abstract void PackTo(Stream stream);
+        public virtual void PackTo(Stream stream)
+        {
+            PackTo(stream, null);
+        }
 
         /// <summary>
         /// 将当前队列的数据打包并写入指定文件
@@ -148,6 +178,58 @@ namespace Cheng.Algorithm.Compressions
             {
                 PackTo(file);
             }
+        }
+
+        /// <summary>
+        /// 添加或覆盖一个待打包数据
+        /// </summary>
+        /// <param name="data">用于获取数据的对象</param>
+        /// <param name="path">要添加或覆盖到的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
+        /// <param name="password">此路径的加密密码，null或空元素表示不设置密码；（如果参数<see cref="CanAlonePassword"/>是false，该参数无效）</param>
+        /// <exception cref="ArgumentNullException">对象或路径是null</exception>
+        /// <exception cref="ArgumentException">设置的路径拥有不可打印字符或其它路径错误</exception>
+        public abstract void SetData(IGettingStream data, string path, byte[] password);
+
+        /// <summary>
+        /// 将当前队列的数据打包并写入指定流
+        /// </summary>
+        /// <param name="stream">接收包体数据的可写流</param>
+        /// <param name="password">包体数据的加密密码，null或空元素表示不设置密码；（如果参数<see cref="CanPassword"/>是false，该参数无效）</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ObjectDisposedException"><paramref name="stream"/>已释放</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException"><paramref name="stream"/>提供的操作权限不足以给该方法用于打包数据</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public abstract void PackTo(Stream stream, byte[] password);
+
+        /// <summary>
+        /// 添加或覆盖一个待打包数据
+        /// </summary>
+        /// <param name="data">用于获取数据的对象</param>
+        /// <param name="path">要添加或覆盖到的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
+        /// <param name="password">加密此路径数据的密码文本，null或空字符串表示不设置密码；（如果参数<see cref="CanAlonePassword"/>是false，该参数无效）</param>
+        /// <param name="encoding">匹配加密密码文本的字符编码，null表示不使用密码加密</param>
+        /// <exception cref="ArgumentNullException">对象或路径是null</exception>
+        /// <exception cref="ArgumentException">设置的路径拥有不可打印字符或其它路径错误</exception>
+        public virtual void SetData(IGettingStream data, string path, string password, Encoding encoding)
+        {
+            SetData(data, path, string.IsNullOrEmpty(password) ? null : encoding?.GetBytes(password));
+        }
+
+        /// <summary>
+        /// 将当前队列的数据打包并写入指定流
+        /// </summary>
+        /// <param name="stream">接收包体数据的可写流</param>
+        /// <param name="password">加密包体数据的密码文本，null或空字符串表示不设置密码；（如果参数<see cref="CanPassword"/>是false，该参数无效）</param>
+        /// <param name="encoding">匹配加密密码文本的字符编码，null表示不使用密码加密</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ObjectDisposedException"><paramref name="stream"/>已释放</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException"><paramref name="stream"/>提供的操作权限不足以给该方法用于打包数据</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public virtual void PackTo(Stream stream, string password, Encoding encoding)
+        {
+            PackTo(stream, string.IsNullOrEmpty(password) ? null : encoding?.GetBytes(password));
         }
 
         #endregion

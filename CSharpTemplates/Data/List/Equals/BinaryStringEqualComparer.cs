@@ -30,7 +30,7 @@ namespace Cheng.DataStructure.Collections
 
         public override int GetHashCode(string obj)
         {
-            if (obj is null) return 0;
+            if (obj is null) throw new ArgumentNullException();
             return obj.GetHashCode();
         }
 
@@ -39,7 +39,15 @@ namespace Cheng.DataStructure.Collections
         /// <summary>
         /// 获取一个全局唯一实例的字符串值比较器
         /// </summary>
-        public static BinaryStringEqualComparer DefaultEqualComparer
+        //[Obsolete("", true)] public static BinaryStringEqualComparer DefaultEqualComparer
+        //{
+        //    get => Default;
+        //}
+
+        /// <summary>
+        /// 获取一个全局唯一实例的字符串值比较器
+        /// </summary>
+        public static new BinaryStringEqualComparer Default
         {
             get => binEqual;
         }

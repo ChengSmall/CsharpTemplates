@@ -52,6 +52,7 @@
     <Compile Include="codes\推箱子\Editor\SpriteDrawEditorGUI.cs" />
     <Compile Include="codes\游戏静态参数类\GameParameters.cs" />
     <Compile Include="项目代码\未完功能\CameraOrbitController\CameraOrbitController.cs" />
+    <Compile Include="项目代码\未完功能\CameraOrbitController\DynamicObjectFollower.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Win32.Registry, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -301,7 +302,6 @@
     <ProjectReference Include="..\GameTemplates\GameTemplates.csproj">
       <Project>{bf887d71-f9bf-46d3-bf92-532b27afab78}</Project>
       <Name>GameTemplates</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\UnityGames\UnityCSharpTemplates.csproj">
       <Project>{5921c56a-6327-4f94-a853-4815e9e990ac}</Project>

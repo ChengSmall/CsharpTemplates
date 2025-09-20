@@ -82,13 +82,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compressions\ResourcePackageWinForm\ResourcePackageListView.cs" />
+    <Compile Include="Compressions\ResourcePackageWinForm\CompressionParserListView.cs" />
     <Compile Include="Compressions\ZipArchive\ReadOnlyZipArchiveCompress.cs" />
     <Compile Include="Compressions\ZipArchive\ZipArchiveCompress.cs" />
     <Compile Include="Compressions\ZipArchive\ZipArchiveInf.cs" />
     <Compile Include="Data\Colour\ColourExtend.cs" />
     <Compile Include="Data\Timer\PerformanceCounterTimer.cs" />
-    <Compile Include="IO\FileSysInfo\SysFileInfos.cs" />
     <Compile Include="IO\FileSysInfo\ZipEntryFileInfo.cs" />
     <Compile Include="Processes\API.cs" />
     <Compile Include="Processes\ProcessAccessFlags.cs" />

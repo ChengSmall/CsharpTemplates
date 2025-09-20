@@ -851,9 +851,9 @@ namespace Cheng.Algorithm.Compressions
         #region 加密
 
         /// <summary>
-        /// 访问数据时需要的密码
+        /// 访问数据时需要的密码字符串
         /// </summary>
-        /// <value>在访问或设置数据时需要的密码，用于加密数据；仅当<see cref="CanGetPassword"/>或<see cref="CanSetPassword"/>为true时对应属性功能才会生效</value>
+        /// <value>在访问或设置数据时需要的密码，用于加密数据；仅当<see cref="CanGetPassword"/>或<see cref="CanSetPassword"/>为true时，对应属性功能才会生效</value>
         /// <exception cref="NotSupportedException">没有此功能</exception>
         /// <exception cref="ObjectDisposedException">已释放</exception>
         /// <exception cref="Exception">其它错误</exception>

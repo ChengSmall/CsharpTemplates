@@ -19,7 +19,7 @@ namespace Cheng.Json
         /// </summary>
         public JsonDictionary()
         {
-            p_dict = new Dictionary<string, JsonVariable>(Cheng.DataStructure.Collections.BinaryStringEqualComparer.DefaultEqualComparer);
+            p_dict = new Dictionary<string, JsonVariable>(Cheng.DataStructure.Collections.BinaryStringEqualComparer.Default);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Cheng.Json
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/>小于0</exception>
         public JsonDictionary(int capacity)
         {
-            p_dict = new Dictionary<string, JsonVariable>(capacity, Cheng.DataStructure.Collections.BinaryStringEqualComparer.DefaultEqualComparer);
+            p_dict = new Dictionary<string, JsonVariable>(capacity, Cheng.DataStructure.Collections.BinaryStringEqualComparer.Default);
         }
 
         /// <summary>

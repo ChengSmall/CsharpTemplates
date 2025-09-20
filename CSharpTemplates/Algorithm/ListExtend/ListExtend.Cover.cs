@@ -90,7 +90,7 @@ namespace Cheng.Algorithm.Collections
                 p_enumator.Reset();
             }
 
-            void IDisposable.Dispose()
+            public void Dispose()
             {
                 p_enumator.Dispose();
             }
@@ -145,7 +145,7 @@ namespace Cheng.Algorithm.Collections
                 p_enumator.Reset();
             }
 
-            void IDisposable.Dispose()
+            public void Dispose()
             {
                 p_enumator.Dispose();
             }

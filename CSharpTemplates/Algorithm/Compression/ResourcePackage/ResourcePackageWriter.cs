@@ -930,7 +930,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
                 this.path = path;
             }
 
-            public string path;
+            public readonly string path;
 
             public bool Find(FileInfoIndex index)
             {
@@ -940,11 +940,15 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
 
         int IPackagingOperation.Count => this.PackFiles.Count;
 
+        bool IPackagingOperation.CanPassword => false;
+
         bool IPackagingOperation.CanRemoveData => true;
 
         bool IPackagingOperation.CanContainsData => true;
 
-        void IPackagingOperation.SetData(IGettingStream data, string path)
+        bool IPackagingOperation.CanAlonePassword => false;
+
+        void IPackagingOperation.SetData(IGettingStream data, string path, byte[] password)
         {
             FindIndexLamda fl = new FindIndexLamda(path);
             var index = PackFiles.FindIndex(fl.Find);
@@ -971,7 +975,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
             return PackFiles.FindIndex(fl.Find) >= 0;
         }
 
-        void IPackagingOperation.PackTo(Stream stream)
+        void IPackagingOperation.PackTo(Stream stream, byte[] password)
         {
             ToPack(stream);
         }

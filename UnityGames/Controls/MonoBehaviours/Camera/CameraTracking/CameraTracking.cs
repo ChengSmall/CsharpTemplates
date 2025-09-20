@@ -279,7 +279,7 @@ namespace Cheng.Unitys.Cameras
                 }
                 else
                 {
-                    cameraPos = objPos + offset;
+                    cameraPos = new Vector3(objPos.x + offset.x, objPos.y + offset.y, objPos.z + offset.z);
                 }
             }
 

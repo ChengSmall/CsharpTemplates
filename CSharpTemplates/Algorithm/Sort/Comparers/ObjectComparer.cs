@@ -67,14 +67,13 @@ namespace Cheng.Algorithm.Sorts.Comparers
         /// </summary>
         public IComparer<T> Comparer => p_comparer;
 
-
         public int Compare(object x, object y)
         {
             if(x is T a && y is T b)
             {
                 return p_comparer.Compare(a, b);
             }
-            throw new NotImplementedException();
+            throw new ArgumentException();
         }
     }
 

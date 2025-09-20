@@ -1,3 +1,4 @@
+using Cheng.Algorithm.HashCodes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace Cheng.DataStructure.Collections
     /// 一个可循环遍历的多叉树节点
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class TreeNode<T> : IList<TreeNode<T>>, IEquatable<TreeNode<T>>
+    public class TreeNode<T> : IList<TreeNode<T>>, IEquatable<TreeNode<T>>, IComparable<TreeNode<T>>, IHashCode64
     {
 
         #region 构造
@@ -259,6 +260,46 @@ namespace Cheng.DataStructure.Collections
             bool flag = p_nodes.Remove(node);
             if (flag) node.p_parent = null;
             return flag;
+        }
+
+        public int CompareTo(TreeNode<T> other)
+        {
+            if (other is null) return 1;
+            return Comparer<T>.Default.Compare(p_value, other.p_value);
+        }
+
+        /// <summary>
+        /// 排序当前节点下的子节点
+        /// </summary>
+        /// <param name="comparer">排序器，null表示使用默认排序器</param>
+        /// <param name="index">要排序子节点的起始索引</param>
+        /// <param name="count">要排序的子节点数量</param>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出可用范围</exception>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="comparer"/>是null，且默认比较器没有类型实现</exception>
+        public void Sort(IComparer<TreeNode<T>> comparer, int index, int count)
+        {
+            p_nodes.Sort(index, count, comparer ?? Comparer<TreeNode<T>>.Default);
+        }
+
+        /// <summary>
+        /// 排序当前节点下的子节点
+        /// </summary>
+        /// <param name="comparer">排序器，null表示使用默认排序器</param>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="comparer"/>是null，且默认比较器没有类型实现</exception>
+        public void Sort(IComparer<TreeNode<T>> comparer)
+        {
+            p_nodes.Sort(comparer ?? Comparer<TreeNode<T>>.Default);
+        }
+
+        /// <summary>
+        /// 排序当前节点下的子节点
+        /// </summary>
+        /// <exception cref="InvalidOperationException">默认比较器没有类型实现</exception>
+        public void Sort()
+        {
+            p_nodes.Sort();
         }
 
         #region 查询
@@ -519,6 +560,11 @@ namespace Cheng.DataStructure.Collections
         void ICollection<TreeNode<T>>.CopyTo(TreeNode<T>[] array, int arrayIndex)
         {
             p_nodes.CopyTo(array, arrayIndex);
+        }
+
+        public long GetHashCode64()
+        {
+            return BaseHashCode64<T>.Default.GetHashCode64(p_value);
         }
 
         #endregion

@@ -17,13 +17,16 @@ namespace Cheng.DataStructure.Collections
     /// Unity集合
     /// </summary>
     /// <remarks>
-    /// <para>在检查器实现了GUI绘制，使用<see cref="UListGUIEditorDraw.OnGUIDraw(Rect, SerializedProperty, GUIContent, bool, string, Func{int, string}, Func{Rect, SerializedProperty, GUIContent, bool}, Func{UnityEditor.SerializedProperty, float})"/>方法可自行定义GUI绘制</para>
+    /// <para>在检查器实现了GUI绘制，使用<see cref="UListGUIEditorDraw.OnGUIDraw(Rect, SerializedProperty, GUIContent, bool, string, Func{int, string}, Func{Rect, SerializedProperty, GUIContent, bool}, Func{SerializedProperty, float})"/>方法可自行定义GUI绘制</para>
     /// </remarks>
     /// <typeparam name="T">元素类型</typeparam>
 #else
     /// <summary>
     /// Unity集合
     /// </summary>
+    /// <remarks>
+    /// <para>在Unity项目中代替<see cref="List{T}"/>的集合类</para>
+    /// </remarks>
     /// <typeparam name="T">元素类型</typeparam>
 #endif
     [Serializable]

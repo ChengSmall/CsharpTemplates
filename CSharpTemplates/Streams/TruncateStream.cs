@@ -124,6 +124,16 @@ namespace Cheng.Streams
         #endregion
 
         #region 参数
+ 
+        /// <summary>
+        /// 缓冲区当前可用位置
+        /// </summary>
+        private int p_bufPos;
+
+        /// <summary>
+        /// 缓冲区剩余可用的数据末端位置
+        /// </summary>
+        private int p_bufPosEnd;
 
         /// <summary>
         /// 截断流的起始位置
@@ -146,16 +156,6 @@ namespace Cheng.Streams
         protected Stream p_stream;
 
         private byte[] p_buffer;
-
-        /// <summary>
-        /// 缓冲区当前可用位置
-        /// </summary>
-        private int p_bufPos;
-
-        /// <summary>
-        /// 缓冲区剩余可用的数据末端位置
-        /// </summary>
-        private int p_bufPosEnd;
 
         private bool p_isFree;
 
@@ -339,6 +339,87 @@ namespace Cheng.Streams
             return rc;
         }
 
+        private int f_readOnce(byte* buffer, int count)
+        {
+            int bufCount;
+            int re;
+
+            //获取缓存可用量
+            bufCount = p_bufPosEnd - p_bufPos + 1;
+            //bufCount = f_bufferHaveReadCount(p_bufPos, p_bufPosEnd);
+
+            //判断缓存为空
+            if (bufCount == 0)
+            {
+                //没有缓存
+                //重置缓存指针（清空缓存）
+                f_bufferClear();
+
+                if (p_nowPos < p_startPos)
+                {
+                    p_nowPos = p_startPos;
+                }
+                else if (p_nowPos > p_endPos)
+                {
+                    return 0;
+                }
+
+                //从基础流读取到缓存
+                re = f_bufferReadbase(out _);
+                if (re == 0)
+                {
+                    //没有基础数据
+                    return 0;
+                }
+            }
+
+            //到这里一定有缓存数据
+            //读取缓存到buffer
+            re = f_readPtr(buffer, count);
+
+            return re;
+        }
+
+        private int f_readOnce(byte[] buffer, int offset, int count)
+        {
+            int bufCount;
+            int re;
+
+            //获取缓存可用量
+            bufCount = p_bufPosEnd - p_bufPos + 1;
+
+            //判断缓存为空并读取基础流
+            if (bufCount == 0)
+            {
+                //没有缓存
+                //重置缓存指针（清空缓存）
+                f_bufferClear();
+
+                //判断范围
+                if (p_nowPos < p_startPos)
+                {
+                    p_nowPos = p_startPos;
+                }
+                else if (p_nowPos > p_endPos)
+                {
+                    return 0;
+                }
+
+                //从基础流读取到缓存
+                re = f_bufferReadbase(out _);
+                if (re == 0)
+                {
+                    //没有基础数据
+                    return 0;
+                }
+            }
+
+            //读取缓存到buffer
+            re = f_readBuffer(buffer, offset, count);
+
+            return re;
+        }
+
         #endregion
 
         #region 参数
@@ -421,43 +502,19 @@ namespace Cheng.Streams
             ThrowIsDispose(nameof(TruncateStream));
             if (buffer == null) throw new ArgumentNullException();
 
-            int bufCount;
-            int re;
-
-            //获取缓存可用量
-            bufCount = p_bufPosEnd - p_bufPos + 1;
-            //bufCount = f_bufferHaveReadCount(p_bufPos, p_bufPosEnd);
-
-            //判断缓存为空
-            if (bufCount == 0)
+            int rsize;
+            int re = 0;
+            int offset = 0;
+            while (count != 0)
             {
-                //没有缓存
-                //重置缓存指针（清空缓存）
-                f_bufferClear();
-
-                if (p_nowPos < p_startPos)
-                {
-                    p_nowPos = p_startPos;
-                }
-                else if (p_nowPos > p_endPos)
-                {
-                    return 0;
-                }
-
-                //从基础流读取到缓存
-                re = f_bufferReadbase(out _);
-                if (re == 0)
-                {
-                    //没有基础数据
-                    return 0;
-                }
+                rsize = f_readOnce(buffer + offset, count);
+                if (rsize == 0) return re;
+                offset += rsize;
+                count -= rsize;
+                re += rsize;
             }
-
-            //到这里一定有缓存数据
-            //读取缓存到buffer
-            re = f_readPtr(buffer, count);
-
             return re;
+
         }
 
         /// <summary>
@@ -518,44 +575,17 @@ namespace Cheng.Streams
             var len = buffer.Length;
 
             if (count < 0 || offset < 0 || offset + count > len) throw new ArgumentOutOfRangeException();
-            
-            int bufCount;
-            int re;
 
-            //获取缓存可用量
-            bufCount = p_bufPosEnd - p_bufPos + 1;
-            //bufCount = f_bufferHaveReadCount(p_bufPos, p_bufPosEnd);
-
-            //判断缓存为空
-            if (bufCount == 0)
+            int rsize;
+            int re = 0;
+            while (count != 0)
             {
-                //没有缓存
-                //重置缓存指针（清空缓存）
-                f_bufferClear();
-
-                if (p_nowPos < p_startPos)
-                {
-                    p_nowPos = p_startPos;
-                }
-                else if(p_nowPos > p_endPos)
-                {
-                    return 0;
-                }
-
-                //从基础流读取到缓存
-                re = f_bufferReadbase(out _);
-                if (re == 0)
-                {
-                    //没有基础数据
-                    return 0;
-                }
+                rsize = f_readOnce(buffer, offset, count);
+                if (rsize == 0) return re;
+                offset += rsize;
+                count -= rsize;
+                re += rsize;
             }
-
-            //到这里一定有缓存数据
-
-            //读取缓存到buffer
-            re = f_readBuffer(buffer, offset, count);
-
             return re;
         }
 

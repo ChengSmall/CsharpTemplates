@@ -432,57 +432,55 @@ namespace Cheng.IO.Systems
 
         public override IEnumerable<CDirectoryInfo> EnumerateDirectories(string searchPattern, SearchOption searchOption)
         {
-            return directoryInfo.GetDirectories(searchPattern, searchOption).ToOtherItems(sf_StoC);
+            return directoryInfo.EnumerateDirectories(searchPattern, searchOption).ToOtherItems(sf_StoC);
         }
 
         public override IEnumerable<CFileInfo> EnumerateFiles(string searchPattern, SearchOption searchOption)
         {
-            return directoryInfo.GetFiles(searchPattern, searchOption).ToOtherItems(sf_StoC);
+            return directoryInfo.EnumerateFiles(searchPattern, searchOption).ToOtherItems(sf_StoC);
         }
 
         public override IEnumerable<CFileSystemInfo> EnumerateFileSystemInfos(string searchPattern, SearchOption searchOption)
         {
-            if (searchOption == SearchOption.TopDirectoryOnly)
-            {
-                return directoryInfo.GetFileSystemInfos(searchPattern).ToOtherItems(sf_StoCF);
-            }
-            else if (searchOption == SearchOption.AllDirectories)
-            {
-                var dires = directoryInfo.GetDirectories(searchPattern, SearchOption.AllDirectories).ToOtherItems(sf_StoCF);
-                var files = directoryInfo.GetFiles(searchPattern, SearchOption.AllDirectories).ToOtherItems(sf_StoCF);
+            return directoryInfo.EnumerateFileSystemInfos(searchPattern, searchOption).ToOtherItems(sf_StoCF);
+            //if (searchOption == SearchOption.TopDirectoryOnly)
+            //{
+            //    return directoryInfo.GetFileSystemInfos(searchPattern).ToOtherItems(sf_StoCF);
+            //}
+            //else if (searchOption == SearchOption.AllDirectories)
+            //{
+            //    var dires = directoryInfo.GetDirectories(searchPattern, SearchOption.AllDirectories).ToOtherItems(sf_StoCF);
+            //    var files = directoryInfo.GetFiles(searchPattern, SearchOption.AllDirectories).ToOtherItems(sf_StoCF);
 
-                return System.Linq.Enumerable.Concat(dires, files);
-            }
-            throw new ArgumentOutOfRangeException();
+            //    return System.Linq.Enumerable.Concat(dires, files);
+            //}
         }
 
         public override CDirectoryInfo[] GetDirectories(string searchPattern, SearchOption searchOption)
         {
-            return directoryInfo.GetDirectories(searchPattern, searchOption).ToOtherItems(sf_StoC).ToArray();
+            return directoryInfo.EnumerateDirectories(searchPattern, searchOption).ToOtherItems(sf_StoC).ToArray();
         }
 
         public override CFileInfo[] GetFiles(string searchPattern, SearchOption searchOption)
         {
-            return directoryInfo.GetFiles(searchPattern, searchOption).ToOtherItems(sf_StoC).ToArray();
+            return directoryInfo.EnumerateFiles(searchPattern, searchOption).ToOtherItems(sf_StoC).ToArray();
         }
 
         public override CFileSystemInfo[] GetFileSystemInfos(string searchPattern, SearchOption searchOption)
         {
-            if(searchOption == SearchOption.TopDirectoryOnly)
-            {
-                return directoryInfo.GetFileSystemInfos(searchPattern).ToOtherItems(sf_StoCF).ToArray();
-            }
-            else if(searchOption == SearchOption.AllDirectories)
-            {
-                var dires = directoryInfo.GetDirectories(searchPattern, SearchOption.AllDirectories).ToOtherItems(sf_StoCF);
-                var files = directoryInfo.GetFiles(searchPattern, SearchOption.AllDirectories).ToOtherItems(sf_StoCF);
+            return directoryInfo.EnumerateFileSystemInfos(searchPattern, searchOption).ToOtherItems(sf_StoCF).ToArray();
+            //if (searchOption == SearchOption.TopDirectoryOnly)
+            //{
+            //    return directoryInfo.GetFileSystemInfos(searchPattern).ToOtherItems(sf_StoCF).ToArray();
+            //}
+            //else if(searchOption == SearchOption.AllDirectories)
+            //{
+            //    var dires = directoryInfo.GetDirectories(searchPattern, SearchOption.AllDirectories).ToOtherItems(sf_StoCF);
+            //    var files = directoryInfo.GetFiles(searchPattern, SearchOption.AllDirectories).ToOtherItems(sf_StoCF);
 
-                return System.Linq.Enumerable.Concat(dires, files).ToArray();
-            }
-            throw new ArgumentOutOfRangeException();
+            //    return System.Linq.Enumerable.Concat(dires, files).ToArray();
+            //}
         }
-
-
 
         #endregion
 

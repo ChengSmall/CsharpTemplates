@@ -28,6 +28,7 @@ namespace Cheng.Algorithm.HashCodes
         /// </summary>
         /// <param name="value">要获取的对象</param>
         /// <returns>对象的64位哈希值</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
         long GetHashCode64(T value);
     }
 
@@ -44,8 +45,9 @@ namespace Cheng.Algorithm.HashCodes
         /// <summary>
         /// 获取指定对象的64位哈希值
         /// </summary>
-        /// <param name="value">要获取值的对象</param>
+        /// <param name="value">要获取的对象</param>
         /// <returns>对象的64位哈希值</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
         public abstract long GetHashCode64(T value);
 
         private static BaseHashCode64<T> sp_default = f_createDefault();
@@ -93,9 +95,7 @@ namespace Cheng.Algorithm.HashCodes
 
         private static BaseHashCode64<T> f_createDefType(Type type)
         {
-            var b = type.IsValueType;
-
-            if (b) return new DefaultHashCodeValue();
+            if (type.IsValueType) return new DefaultHashCodeValue();
             return new DefaultHashCode();
         }
 
@@ -224,18 +224,18 @@ namespace Cheng.Algorithm.HashCodes
             return null;
         }
 
-        private class DefaultHashCode : BaseHashCode64<T>
+        private sealed class DefaultHashCode : BaseHashCode64<T>
         {
             public DefaultHashCode()
             {
             }
             public sealed override long GetHashCode64(T value)
             {
-                return (value == null) ? 0 : value.GetHashCode();
+                return (value == null) ? throw new ArgumentNullException(nameof(value)) : value.GetHashCode();
             }
         }
 
-        private class DefaultHashCodeValue : BaseHashCode64<T>
+        private sealed class DefaultHashCodeValue : BaseHashCode64<T>
         {
             public DefaultHashCodeValue()
             {
