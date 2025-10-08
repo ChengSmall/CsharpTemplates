@@ -332,6 +332,29 @@ namespace Cheng.Json
             return new JsonDictionary(this);
         }
 
+        public override string ToString()
+        {
+            StringBuilder sb;
+            int len = Count;
+            if (len == 0) return "{}";
+            sb = new StringBuilder(len * 4);
+            int cd = 0;
+            sb.Append('{');
+            foreach (var item in p_dict)
+            {
+                sb.Append('"')
+                    .Append(item.Key)
+                    .Append('"')
+                    .Append(':')
+                    .Append(item.Value.ToString())
+                    ;
+                cd++;
+                if (cd != len) sb.Append(',');
+            }
+            sb.Append('}');
+            return sb.ToString();
+        }
+
         #endregion
 
     }

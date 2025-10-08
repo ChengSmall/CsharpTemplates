@@ -86,11 +86,13 @@ namespace Cheng.Json
         /// <returns></returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(Count);
+            int len = Count;
+            if (len == 0) return "[]";
+            StringBuilder sb = new StringBuilder(len * 2);
 
             sb.Append('[');
 
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < len; i++)
             {
                 sb.Append(p_list[i].ToString());
                 if (i != Count - 1) sb.Append(',');

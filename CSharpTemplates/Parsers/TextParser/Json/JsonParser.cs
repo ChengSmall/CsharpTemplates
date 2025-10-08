@@ -98,8 +98,10 @@ namespace Cheng.Json
         /// <exception cref="ArgumentNullException">参数为null</exception>
         public virtual JsonVariable ToJsonData(string jsonText)
         {
-            StringReader sr = new StringReader(jsonText);
-            return ToJsonData(sr);
+            using (StringReader sr = new StringReader(jsonText))
+            {
+                return ToJsonData(sr);
+            }
         }
 
         /// <summary>

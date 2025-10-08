@@ -1,4 +1,5 @@
 using Cheng.Algorithm.HashCodes;
+using Cheng.Memorys;
 using System;
 
 namespace Cheng.Json
@@ -203,7 +204,7 @@ namespace Cheng.Json
         /// <returns></returns>
         public override string ToString()
         {
-            return this.Data.ToString();
+            return this.GetType().Name;
         }
 
         /// <summary>
@@ -1110,7 +1111,7 @@ namespace Cheng.Json
 
         public override string ToString(IFormatProvider formatProvider)
         {
-            return value ? TrueJsonText.ToString(formatProvider) : FalseJsonText.ToString(formatProvider);
+            return value ? TrueJsonText : FalseJsonText;
         }
 
         public static implicit operator bool?(JsonBoolean jobj)
@@ -1235,6 +1236,28 @@ namespace Cheng.Json
         public static implicit operator string(JsonString json)
         {
             return json?.value;
+        }
+
+        public override unsafe string ToString()
+        {
+            var len = value.Length;
+            int leng = len + 2;
+            if (len < 128)
+            {
+                char* cp = stackalloc char[leng];
+                cp[0] = '"';
+                cp[leng - 1] = '"';
+                fixed (char* np = value)
+                {
+                    MemoryOperation.MemoryCopy(np, cp + 1, sizeof(char) * len);
+                }
+                return new string(cp, 0, leng);
+            }
+            char[] carr = new char[leng];
+            carr[0] = '"';
+            carr[leng - 1] = '"';
+            value.CopyTo(0, carr, 1, len);
+            return new string(carr);
         }
 
         #endregion

@@ -10,7 +10,7 @@ namespace Cheng.DEBUG
 {
 
     /// <summary>
-    /// DEBUG测试Json方法
+    /// DEBUG测试Json解析器
     /// </summary>
     public static class TestJson
     {
@@ -28,6 +28,7 @@ namespace Cheng.DEBUG
         /// </summary>
         public static JsonParser Parser
         {
+            //[Thr]
             get
             {
                 if(p_jp is null)

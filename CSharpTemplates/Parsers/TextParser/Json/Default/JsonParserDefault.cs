@@ -162,7 +162,7 @@ namespace Cheng.Json
         /// 推进一个字符位置
         /// </summary>
         /// <param name="reader"></param>
-        /// <returns>是否到达结尾</returns>
+        /// <returns>是否到达结尾；true没有，false到结尾</returns>
 #endif
         private bool next(TextReader reader)
         {
@@ -744,11 +744,11 @@ namespace Cheng.Json
 
             if (nf is null)
             {
-                if (c >= 48 && c <= 57)
+                if (c >= '0' && c <= '9')
                 {
                     return 0;
                 }
-                if ((c >= 65 && c <= 70) || (c >= 97 && c <= 102))
+                if ((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'))
                 {
                     return 1;
                 }
@@ -756,7 +756,7 @@ namespace Cheng.Json
                 if (c == '.') return 2;
                 if (c == '-') return 3;
 
-                if (c == '+' || c == 'e') return 4;
+                if (c == '+' || c == 'e' || c == 'E') return 4;
 
                 return -1;
             }
@@ -764,9 +764,11 @@ namespace Cheng.Json
 
             if (char.IsDigit(c))
             {
-                if (c < 48 || c > 57) return 1;
+                if ((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f')) return 1;
                 return 0;
             }
+
+            if (c == '+' || c == 'e' || c == 'E') return 4;
 
             if (nf.NumberDecimalSeparator.IndexOf(c) != -1)
             {
@@ -795,17 +797,16 @@ namespace Cheng.Json
 
 #if DEBUG
         /// <summary>
-        /// 读取可能的表值字符串
+        /// 读取可能是数值的字符串
         /// </summary>
         /// <param name="reader"></param>
-        /// <param name="nextChar">如果读取后向后超出一位，则该值表示后一位字符，推进器表示第二位</param>
         /// <returns></returns>
 #endif
-        private string f_readNumberText(TextReader reader, out int nextChar)
+        private string f_readNumberText(TextReader reader)
         {
-            nextChar = -1;
+            //nextChar = -1;
             char charBuffer;
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(6);
 
             //上一循环有读取到小数点
             //bool lateReadSep = false;
@@ -824,44 +825,39 @@ namespace Cheng.Json
                     break;
                 }
 
-                if (ir == 2)
-                {
-                    //是小数点
-                    //lateReadSep = true;
-
-                    if (!read(reader, out char crr))
-                    {
-                        nextChar = crr;
-                        break;
-                    }
-
-                    nextChar = crr;
-
-                    if (!peek(reader, out crr))
-                    {
-                        //nextChar = crr;
-                        //小数点后没有了
-                        break;
-                    }
-
-                    ir = f_checkNumberChar(crr);
-                    if (ir == -1)
-                    {
-                        //小数点后不是数字
-                        break;
-                    }
-                    //小数点后是数字符号
-
-                    if (ir == 0 || ir == 1 || ir == 4)
-                    {                       
-                        sb.Append(charBuffer);
-                    }                    
-                    continue;
-                }
-                else
-                {
-                    //lateReadSep = false;
-                }
+                //if (ir == 2)
+                //{
+                //    //是小数点
+                //    //lateReadSep = true;
+                //    if (!read(reader, out char crr))
+                //    {
+                //        nextChar = crr;
+                //        break;
+                //    }
+                //    nextChar = crr;
+                //    if (!peek(reader, out crr))
+                //    {
+                //        //nextChar = crr;
+                //        //小数点后没有了
+                //        break;
+                //    }
+                //    ir = f_checkNumberChar(crr);
+                //    if (ir == -1)
+                //    {
+                //        //小数点后不是数字
+                //        break;
+                //    }
+                //    //小数点后是数字符号
+                //    if (ir == 0 || ir == 1 || ir == 4)
+                //    {
+                //        sb.Append(charBuffer);
+                //    }
+                //    continue;
+                //}
+                //else
+                //{
+                //    //lateReadSep = false;
+                //}
 
                 //是数
                 sb.Append(charBuffer);
@@ -879,13 +875,13 @@ namespace Cheng.Json
         /// <param name="json">转化到的引用</param>
         /// <returns>是否成功</returns>
 #endif
-        private bool f_converNum(TextReader reader, out JsonVariable json, out int nextChar)
+        private bool f_converNum(TextReader reader, out JsonVariable json)
         {
             long i64;
             double d;
             bool flag;
 
-            string str = f_readNumberText(reader, out nextChar);
+            string str = f_readNumberText(reader);
 
             var nf = p_cultureInfo?.NumberFormat;
 
@@ -982,71 +978,87 @@ namespace Cheng.Json
 
             JsonVariable item;
 
-            int nextChar;
+            //int nextChar;
 
             while (true)
             {
                 //读取值
-                flag = ConverJsonText(reader, out item, out nextChar);
+                flag = ConverJsonText(reader, out item);
                 if (!flag) return false;
 
                 //存值
                 json.Add(item);
 
-                if (nextChar == fen)
+                //值后跳过忽略文本
+                flag = f_jumpIngoringText(reader);
+                if (!flag) return false;
+
+                //推进到下一位
+                //next(reader);
+                flag = peek(reader, out c);
+                if (!flag) return false;
+
+                if (c == fen)
                 {
                     //等于分隔符
+
+                    //推进到下一位
+                    if (!next(reader)) return false;
 
                     //跳过忽略文本
                     flag = f_jumpIngoringText(reader);
                     if (!flag) return false;
 
-                    //peek字符
+                    //read字符
                     flag = peek(reader, out c);
                     if (!flag) return false;
 
                     if (c == end)
                     {
+                        next(reader);
                         return true; //空分隔符
                     }
 
                     //不是终止符
+
                     //跳过忽略文本
                     flag = f_jumpIngoringText(reader);
                     if (!flag) return false;
                     continue;
                 }
 
-                if(nextChar == end)
+                if(c == end)
                 {
+                    next(reader);
                     return true;
                 }
+                return false;
 
-                //跳过忽略文本
-                flag = f_jumpIngoringText(reader);
-                if (!flag) return false;
+                ////跳过忽略文本
+                //flag = f_jumpIngoringText(reader);
+                //if (!flag) return false;
 
-                flag = read(reader, out c);
-                if (!flag) return false;
+                //flag = read(reader, out c);
+                //if (!flag) return false;
 
-                //终结符
-                if (c == end)
-                {
-                    return true;
-                }
-                //不是分隔符
-                if(c != fen) return false;
+                ////终结符
+                //if (c == end)
+                //{
+                //    return true;
+                //}
+                ////不是分隔符
+                //if(c != fen) return false;
 
-                //跳过忽略文本
-                flag = f_jumpIngoringText(reader);
-                if (!flag) return false;
+                ////跳过忽略文本
+                //flag = f_jumpIngoringText(reader);
+                //if (!flag) return false;
 
-                flag = peek(reader, out c);
-                if(flag && c == end)
-                {
-                    //是空分隔符
-                    return true;
-                }
+                //flag = peek(reader, out c);
+                //if(flag && c == end)
+                //{
+                //    //是空分隔符
+                //    return true;
+                //}
 
             }
 
@@ -1147,7 +1159,7 @@ namespace Cheng.Json
                 return true;
             }
 
-            int nextChar;
+            //int nextChar;
 
             string key;
             while (true)
@@ -1171,7 +1183,7 @@ namespace Cheng.Json
                 if (!flag) return false;
 
                 //读取对象
-                flag = ConverJsonText(reader, out item, out nextChar);
+                flag = ConverJsonText(reader, out item);
                 if (!flag) return false;
 
                 //添加
@@ -1285,12 +1297,11 @@ namespace Cheng.Json
         /// </summary>
         /// <param name="reader">读取的对象文本，首字符紧挨</param>
         /// <param name="json">实例引用，若没有实际的对象则为一个null引用</param>
-        /// <param name="nextChar">区域性兼容参数</param>
         /// <returns>是否成功读取</returns>
 #endif
-        private bool ConverJsonText(TextReader reader, out JsonVariable json, out int nextChar)
+        private bool ConverJsonText(TextReader reader, out JsonVariable json)
         {
-            nextChar = -1;
+            //nextChar = -1;
             int ic;
             char c;
             bool flag;
@@ -1322,7 +1333,7 @@ namespace Cheng.Json
             if (flag2)
             {
                 //数值
-                flag = f_converNum(reader, out json, out nextChar);
+                flag = f_converNum(reader, out json);
                 if (!flag) return false;
 
                 return true;
@@ -1579,7 +1590,7 @@ namespace Cheng.Json
             var nf = p_cultureInfo?.NumberFormat;
             if (nf is null)
             {
-                wr.Write(value);
+                wr.Write(value.ToString());
             }
             else
             {
@@ -1592,7 +1603,7 @@ namespace Cheng.Json
             var nf = p_cultureInfo?.NumberFormat;
             if (nf is null)
             {
-                wr.Write(value);
+                wr.Write(value.ToString("R"));
             }
             else
             {
@@ -1607,7 +1618,7 @@ namespace Cheng.Json
 
         private void f_writeNull(TextWriter wr)
         {
-            wr.Write("null");
+            wr.Write(JsonNull.JsonText);
         }
 
         #endregion
@@ -1831,15 +1842,7 @@ namespace Cheng.Json
             p_numStyles = TextParserNumStylesDefault;
             p_jsonEscapeCharacterSingleQuotation = true;
             p_jsonWriterCharacterSingleQuotation = false;
-            try
-            {
-                p_cultureInfo = CultureInfo.InvariantCulture;
-            }
-            catch (Exception)
-            {
-                p_cultureInfo = null;
-            }
-
+            p_cultureInfo = null;
         }
         #endregion
 
@@ -2012,9 +2015,9 @@ namespace Cheng.Json
         /// <value>
         /// <para>该对象用于本地化处理值和文本的相互转化</para>
         /// <para>
-        /// 若该值设置为null，则不使用区域信息；将对象转化为文本时，跟随文本写入器的<see cref="TextWriter.FormatProvider"/>
+        /// 若该值设置为null，则不使用区域信息；将对象转化为文本时，采用解析器默认的转化方案
         /// </para>
-        /// <para>初始化时默认为<see cref="CultureInfo.InvariantCulture"/></para>
+        /// <para>初始化时默认为null</para>
         /// </value>
         public CultureInfo ParserCultureInfo
         {
@@ -2057,7 +2060,7 @@ namespace Cheng.Json
         {
             if (reader is null) throw new ArgumentNullException();
             JsonVariable json;
-            if (ConverJsonText(reader, out json, out _))
+            if (ConverJsonText(reader, out json))
             {
                 return json;
             }
@@ -2067,7 +2070,7 @@ namespace Cheng.Json
         public override bool ToJsonData(TextReader reader, out JsonVariable json)
         {
             if (reader is null) throw new ArgumentNullException();
-            return ConverJsonText(reader, out json, out _);
+            return ConverJsonText(reader, out json);
         }
 
         #endregion
