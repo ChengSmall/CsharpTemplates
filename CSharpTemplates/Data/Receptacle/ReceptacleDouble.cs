@@ -11,6 +11,7 @@ namespace Cheng.DataStructure.Receptacles
     /// 表示一个有最大值的容器结构，双精度浮点型数据
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
+    [Serializable]
     public readonly struct ReceptacleDouble : IEquatable<ReceptacleDouble>, IComparable<ReceptacleDouble>, IHashCode64
     {
 

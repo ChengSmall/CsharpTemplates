@@ -10,6 +10,7 @@ namespace Cheng.DataStructure.Streams
     /// <summary>
     /// 表示流数据块位置
     /// </summary>
+    [Serializable]
     public struct StreamBlock : IEquatable<StreamBlock>, IHashCode64, IComparable<StreamBlock>
     {
 
@@ -68,7 +69,7 @@ namespace Cheng.DataStructure.Streams
 
         public override bool Equals(object obj)
         {
-            if (obj is StreamBlock s) return this == s;
+            if (obj is StreamBlock s) return this.position == s.position && this.length == s.length;
             return false;
         }
 

@@ -78,6 +78,14 @@ namespace Cheng.Unitys.Debugs
 
         #endregion
 
+#if DEBUG
+
+        static void test()
+        {
+            
+        }
+#endif
+
     }
 
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace Cheng.Json
 {
@@ -15,6 +16,7 @@ namespace Cheng.Json
     {
 
         #region 构造
+
         /// <summary>
         /// 实例化一个集合json对象
         /// </summary>
@@ -22,6 +24,7 @@ namespace Cheng.Json
         {
             p_list = new List<JsonVariable>();
         }
+
         /// <summary>
         /// 实例化一个集合json对象
         /// </summary>
@@ -30,18 +33,26 @@ namespace Cheng.Json
         {
             p_list = new List<JsonVariable>(capacity);
         }
+
         /// <summary>
         /// 实例化一个集合json对象
         /// </summary>
         /// <param name="list">指定的拷贝对象</param>
         public JsonList(JsonList list)
         {
-            p_list = new List<JsonVariable>(list);
+            if (list is null) throw new ArgumentNullException();
+            int length = list.Count;
+            p_list = new List<JsonVariable>(length);
+            for (int i = 0; i < length; i++)
+            {
+                p_list.Add(list[i].Clone());
+            }
         }
+
         #endregion
 
         #region 参数
-        private List<JsonVariable> p_list;
+        internal List<JsonVariable> p_list;
         #endregion
 
         #region 派生
@@ -107,13 +118,20 @@ namespace Cheng.Json
             return sb.ToString();
         }
 
+        public override JsonVariable Clone()
+        {
+            return new JsonList(this);
+        }
+
         #endregion
 
         #region 集合功能
+
         /// <summary>
         /// 获取元素数量
         /// </summary>
         public int Count => p_list.Count;
+
         /// <summary>
         /// 获取或设置集合的实际容量
         /// </summary>
@@ -150,14 +168,14 @@ namespace Cheng.Json
 
         private void add(JsonVariable json)
         {
-            if (json is null) p_list.Add(JsonNull.Nullable);
-            else p_list.Add(json);
+            p_list.Add(json ?? JsonNull.Nullable);
         }
 
         private void insert(int index, JsonVariable json)
         {
-            if (json is null) p_list.Insert(index, JsonNull.Nullable);
-            else p_list.Insert(index, json);
+            p_list.Insert(index, json ?? JsonNull.Nullable);
+            //if (json is null) p_list.Insert(index, JsonNull.Nullable);
+            //else p_list.Insert(index, json ?? JsonNull.Nullable);
         }
 
         /// <summary>
@@ -168,6 +186,7 @@ namespace Cheng.Json
         {
             add(json);
         }
+
         /// <summary>
         /// 添加一个整形元素
         /// </summary>
@@ -176,6 +195,7 @@ namespace Cheng.Json
         {
             p_list.Add(new JsonInteger(value));
         }
+
         /// <summary>
         /// 添加一个浮点型元素
         /// </summary>
@@ -184,6 +204,7 @@ namespace Cheng.Json
         {
             p_list.Add(new JsonRealNumber(value));
         }
+
         /// <summary>
         /// 添加一个布尔类型元素
         /// </summary>
@@ -192,14 +213,17 @@ namespace Cheng.Json
         {
             p_list.Add(new JsonBoolean(value));
         }
+
         /// <summary>
         /// 添加一个字符串
         /// </summary>
         /// <param name="value"></param>
         public void Add(string value)
         {
-            p_list.Add(new JsonString(value));
+            if (value is null) AddNull();
+            else p_list.Add(new JsonString(value));
         }
+
         /// <summary>
         /// 添加一个空元素
         /// </summary>
@@ -207,6 +231,7 @@ namespace Cheng.Json
         {
             p_list.Add(JsonNull.Nullable);
         }
+
         /// <summary>
         /// 在指定位置插入元素
         /// </summary>
@@ -217,6 +242,7 @@ namespace Cheng.Json
         {
             insert(index, json);
         }
+
         /// <summary>
         /// 清空所有元素
         /// </summary>
@@ -224,6 +250,7 @@ namespace Cheng.Json
         {
             p_list.Clear();
         }
+
         /// <summary>
         /// 删除指定索引的元素
         /// </summary>
@@ -233,6 +260,7 @@ namespace Cheng.Json
         {
             p_list.RemoveAt(index);
         }
+
         /// <summary>
         /// 删除指定索引的元素序列
         /// </summary>

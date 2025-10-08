@@ -206,8 +206,10 @@ namespace Cheng.Windows.Hooks
         #endregion
 
         #region 参数
+
         private HookAction<KeyHookArgs> p_keyEvent;
         private object p_eventThreadSafe;
+
         #endregion
 
         #region 功能

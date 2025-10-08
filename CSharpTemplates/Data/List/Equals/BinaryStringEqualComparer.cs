@@ -39,14 +39,6 @@ namespace Cheng.DataStructure.Collections
         /// <summary>
         /// 获取一个全局唯一实例的字符串值比较器
         /// </summary>
-        //[Obsolete("", true)] public static BinaryStringEqualComparer DefaultEqualComparer
-        //{
-        //    get => Default;
-        //}
-
-        /// <summary>
-        /// 获取一个全局唯一实例的字符串值比较器
-        /// </summary>
         public static new BinaryStringEqualComparer Default
         {
             get => binEqual;

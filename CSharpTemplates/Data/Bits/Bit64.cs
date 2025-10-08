@@ -7,7 +7,8 @@ namespace Cheng.DataStructure.Bits
     /// <summary>
     /// 64bit位域真值结构
     /// </summary>
-    [Serializable] public struct Bit64 : IEquatable<Bit64>, IComparable<Bit64>, IHashCode64
+    [Serializable]
+    public readonly struct Bit64 : IEquatable<Bit64>, IComparable<Bit64>, IHashCode64
     {
 
         #region 构造
@@ -38,11 +39,12 @@ namespace Cheng.DataStructure.Bits
         {
             p_value = (((ulong)b1.p_value) | ((ulong)b2.p_value << 32));
         }
+
         #endregion
 
         #region 参数
 
-        internal ulong p_value;
+        internal readonly ulong p_value;
 
         #endregion
 

@@ -27,13 +27,17 @@ namespace Cheng.DataStructure
 
         public abstract bool Equals(T x, T y);
 
-        public abstract int GetHashCode(T obj);
+        public virtual int GetHashCode(T obj)
+        {
+            return GetHashCode64(obj).GetHashCode();
+        }
 
         /// <summary>
         /// 获取指定对象的64位哈希值
         /// </summary>
         /// <param name="value">要获取的对象</param>
         /// <returns>对象的64位哈希值</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
         public abstract long GetHashCode64(T value);
 
         static defEq p_def = new defEq();

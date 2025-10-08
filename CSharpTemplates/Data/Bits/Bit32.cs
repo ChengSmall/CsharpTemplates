@@ -6,7 +6,8 @@ namespace Cheng.DataStructure.Bits
     /// <summary>
     /// 32bit位域真值结构
     /// </summary>
-    [Serializable] public struct Bit32 : IEquatable<Bit32>, IComparable<Bit32>
+    [Serializable]
+    public readonly struct Bit32 : IEquatable<Bit32>, IComparable<Bit32>
     {
 
         #region 构造
@@ -48,7 +49,7 @@ namespace Cheng.DataStructure.Bits
 
         #region 参数
 
-        internal uint p_value;
+        internal readonly uint p_value;
 
         #endregion
 

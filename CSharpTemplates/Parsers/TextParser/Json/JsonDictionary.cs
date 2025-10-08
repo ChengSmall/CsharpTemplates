@@ -60,7 +60,12 @@ namespace Cheng.Json
         public JsonDictionary(JsonDictionary json)
         {
             if (json is null) throw new ArgumentNullException();
-            p_dict = new Dictionary<string, JsonVariable>(json.p_dict, json.p_dict.Comparer);
+            p_dict = new Dictionary<string, JsonVariable>(json, json.p_dict.Comparer);
+
+            foreach (var pair in json.p_dict)
+            {
+                add(pair.Key, pair.Value.Clone());
+            }
         }
 
         #endregion
@@ -320,6 +325,11 @@ namespace Cheng.Json
         public Dictionary<string, JsonVariable> ToDictionary()
         {
             return new Dictionary<string, JsonVariable>(p_dict);
+        }
+
+        public override JsonVariable Clone()
+        {
+            return new JsonDictionary(this);
         }
 
         #endregion

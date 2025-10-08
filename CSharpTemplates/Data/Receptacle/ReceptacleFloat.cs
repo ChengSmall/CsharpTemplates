@@ -10,6 +10,7 @@ namespace Cheng.DataStructure.Receptacles
     /// <summary>
     /// 表示一个有最大值的容器结构，浮点型数据
     /// </summary>
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct ReceptacleFloat : IEquatable<ReceptacleFloat>, IComparable<ReceptacleFloat>, IHashCode64
     {

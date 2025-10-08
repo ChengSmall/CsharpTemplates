@@ -100,6 +100,7 @@ namespace Cheng.Json
 
         #region 读取
 
+#if DEBUG
         /// <summary>
         /// 读取字符到缓冲区charArrayBuffer
         /// </summary>
@@ -107,6 +108,7 @@ namespace Cheng.Json
         /// <param name="count">读取的字符数</param>
         /// <param name="charArrayBuffer">读取到的缓冲区</param>
         /// <returns>是否读取到了指定的字符数</returns>
+#endif
         private bool read(TextReader reader, int count, ref char[] charArrayBuffer)
         {
             if (count > charArrayBuffer.Length)
@@ -121,12 +123,14 @@ namespace Cheng.Json
             return rsize == count;
         }
 
+#if DEBUG
         /// <summary>
         /// 读取一个字符到charBuffer
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="charBuffer">读取到的引用</param>
         /// <returns>是否能够读取</returns>
+#endif
         private bool read(TextReader reader, out char charBuffer)
         {
             charBuffer = default;
@@ -136,12 +140,14 @@ namespace Cheng.Json
             return true;
         }
 
+#if DEBUG
         /// <summary>
         /// Peek一个字符到charBuffer
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="charBuffer">读取到的引用</param>
         /// <returns></returns>
+#endif
         private bool peek(TextReader reader, out char charBuffer)
         {
             charBuffer = default;
@@ -151,25 +157,30 @@ namespace Cheng.Json
             return true;
         }
 
+#if DEBUG
         /// <summary>
         /// 推进一个字符位置
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>是否到达结尾</returns>
+#endif
         private bool next(TextReader reader)
         {
             return reader.Read() != -1;
         }
+
         #endregion
 
         #region 判断
 
+#if DEBUG
         /// <summary>
         /// 判断<paramref name="ch"/>是否属于<paramref name="cs"/>集合内的元素
         /// </summary>
         /// <param name="ch"></param>
         /// <param name="cs"></param>
         /// <returns></returns>
+#endif
         private static bool IsContainChar(char ch, char[] cs)
         {
             for (int i = 0; i < cs.Length; i++)
@@ -179,6 +190,7 @@ namespace Cheng.Json
             return false;
         }
 
+#if DEBUG
         /// <summary>
         /// 判断类型
         /// </summary>
@@ -186,6 +198,7 @@ namespace Cheng.Json
         /// <param name="type">类型</param>
         /// <param name="isNum">是数值</param>
         /// <returns>是否合法</returns>
+#endif
         private static bool IsJsonType(char c, out JsonType type, out bool isNum)
         {
             isNum = false;
@@ -223,38 +236,47 @@ namespace Cheng.Json
 
             return true;
         }
+
+#if DEBUG
         /// <summary>
         /// 将int字符转化为字符
         /// </summary>
         /// <param name="i"></param>
         /// <param name="c"></param>
         /// <returns>是否有效</returns>
+#endif
         private static bool f_intToChar(int i, out char c)
         {
             c = (char)i;
             return i != -1;
         }
+
+#if DEBUG
         /// <summary>
         /// peek读取器字符并判断是否到头
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="c"></param>
         /// <returns></returns>
+#endif
         private static bool f_peekToChar(TextReader reader, out char c)
         {
             int i = reader.Peek();
             c = (char)i;
             return i != -1;
         }
+
         #endregion
 
         #region 排异
 
+#if DEBUG
         /// <summary>
         /// 检查忽略文本
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
+#endif
         private bool IsIngoringChar(char c)
         {
             //CharUnicodeInfo.GetUnicodeCategory('s');
@@ -263,12 +285,14 @@ namespace Cheng.Json
             //return c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '\b' || c == '\v';
         }
 
+#if DEBUG
         /// <summary>
         /// 判断字符串内是否包含指定字符
         /// </summary>
         /// <param name="str"></param>
         /// <param name="c"></param>
         /// <returns></returns>
+#endif
         static bool isCharinStr(string str, char c)
         {
             int length = str.Length;
@@ -279,11 +303,13 @@ namespace Cheng.Json
             return false;
         }
 
+#if DEBUG
         /// <summary>
         /// 跳过注释
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>是否合法</returns>
+#endif
         private bool f_jumpExplanatory(TextReader reader)
         {
             if (!read(reader, 2, ref p_charArrayBuffer)) return false;
@@ -353,11 +379,13 @@ namespace Cheng.Json
             return false;
         }
 
+#if DEBUG
         /// <summary>
         /// 跳过可忽略文本
         /// </summary>
         /// <param name="read"></param>
         /// <returns>是否成功跳过</returns>
+#endif
         private bool f_jumpIngoringText(TextReader read)
         {
             int ic;
@@ -396,11 +424,13 @@ namespace Cheng.Json
 
         #region null
 
+#if DEBUG
         /// <summary>
         /// 完全判断null
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
+#endif
         private bool ConverNull(TextReader reader)
         {
             if (!read(reader, 4, ref p_charArrayBuffer)) return false;
@@ -414,6 +444,7 @@ namespace Cheng.Json
 
         #region boolean
 
+#if DEBUG
         /// <summary>
         /// 判断并转化为布尔值
         /// </summary>
@@ -421,6 +452,7 @@ namespace Cheng.Json
         /// <param name="b">首字符</param>
         /// <param name="value">转化后的值</param>
         /// <returns>是否合规</returns>
+#endif
         private bool ConverBoolean(TextReader reader, char b, out bool value)
         {
             value = true;
@@ -450,6 +482,7 @@ namespace Cheng.Json
 
         #region string
 
+#if DEBUG
         /// <summary>
         /// 将4个代表16位的16进制字符转化为一个16位值
         /// </summary>
@@ -459,6 +492,7 @@ namespace Cheng.Json
         /// <param name="c1">第1位16进制数</param>
         /// <param name="reValue">转化后的值</param>
         /// <returns>是否符合格式</returns>
+#endif
         static bool f_charToX16(char c4, char c3, char c2, char c1, out ushort reValue)
         {
             //const ushort ToLopper = 0b00000000_00000000;
@@ -549,12 +583,14 @@ namespace Cheng.Json
             return true;
         }
 
+#if DEBUG
         /// <summary>
         /// 转义字符推进
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="sb"></param>
         /// <returns></returns>
+#endif
         private bool f_EscapeCharacter(TextReader reader, StringBuilder sb)
         {
 
@@ -637,11 +673,13 @@ namespace Cheng.Json
             return false;
         }
 
+#if DEBUG
         /// <summary>
         /// 判断并转化为字符串到strBuffer缓冲区
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>是否成功</returns>
+#endif
         private bool ConverString(TextReader reader, StringBuilder sb)
         {
             int next;
@@ -693,11 +731,13 @@ namespace Cheng.Json
 
         #region number
 
+#if DEBUG
         /// <summary>
         /// 检查所有可能是数值的字符
         /// </summary>
         /// <param name="c"></param>
         /// <returns>-1表示不是数字符号，0表示数字，1表示十进制数的10-15位数，2表示小数点，3表示负数前缀，4表示其它数字符号</returns>
+#endif
         private int f_checkNumberChar(char c)
         {
             NumberFormatInfo nf = p_cultureInfo?.NumberFormat;
@@ -753,12 +793,14 @@ namespace Cheng.Json
 
         }
 
+#if DEBUG
         /// <summary>
         /// 读取可能的表值字符串
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="nextChar">如果读取后向后超出一位，则该值表示后一位字符，推进器表示第二位</param>
         /// <returns></returns>
+#endif
         private string f_readNumberText(TextReader reader, out int nextChar)
         {
             nextChar = -1;
@@ -829,12 +871,14 @@ namespace Cheng.Json
             return sb.ToString();
         }
 
+#if DEBUG
         /// <summary>
         /// 判断整数或浮点数并转化
         /// </summary>
         /// <param name="reader">读取json文本</param>
         /// <param name="json">转化到的引用</param>
         /// <returns>是否成功</returns>
+#endif
         private bool f_converNum(TextReader reader, out JsonVariable json, out int nextChar)
         {
             long i64;
@@ -895,12 +939,14 @@ namespace Cheng.Json
 
         #region 集合
 
+#if DEBUG
         /// <summary>
         /// 判断并转化集合
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="json">实例化的空集合</param>
         /// <returns></returns>
+#endif
         private bool ConverList(TextReader reader, JsonList json)
         {
             // [, , ,]
@@ -1067,12 +1113,14 @@ namespace Cheng.Json
             return true;
         }
 
+#if DEBUG
         /// <summary>
         /// 判断并转化键值对
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="json">实例化的空键值对</param>
         /// <returns></returns>
+#endif
         private bool ConverDict(TextReader reader, JsonDictionary json)
         {
             const char fen = ',';
@@ -1231,6 +1279,7 @@ namespace Cheng.Json
 
         #endregion
 
+#if DEBUG
         /// <summary>
         /// 读取一个json对象文本写入并转化为实例
         /// </summary>
@@ -1238,6 +1287,7 @@ namespace Cheng.Json
         /// <param name="json">实例引用，若没有实际的对象则为一个null引用</param>
         /// <param name="nextChar">区域性兼容参数</param>
         /// <returns>是否成功读取</returns>
+#endif
         private bool ConverJsonText(TextReader reader, out JsonVariable json, out int nextChar)
         {
             nextChar = -1;
@@ -1367,12 +1417,14 @@ namespace Cheng.Json
             }
         }
 
+#if DEBUG
         /// <summary>
         /// c#转义判断和转化
         /// </summary>
         /// <param name="c">判断的字符</param>
         /// <param name="esc">转化到json不带\的字符</param>
         /// <returns>是否为正确转义</returns>
+#endif
         private bool f_EscapeCharToJson(char c, out char esc)
         {
             esc = c;
@@ -1437,12 +1489,14 @@ namespace Cheng.Json
 
         }
 
+#if DEBUG
         /// <summary>
         /// 根据字符值返回指定16进制位值中的字符
         /// </summary>
         /// <param name="value">字符值</param>
         /// <param name="x10Index">访问位数 范围[0,3]</param>
         /// <returns>指定位数的字符表达值</returns>
+#endif
         private char f_Bit4CharToByte(char value, int x10Index)
         {
             //const ushort ToLopper = 0b00000000_00000000;
@@ -2021,3 +2075,6 @@ namespace Cheng.Json
     }
 
 }
+#if DEBUG
+
+#endif

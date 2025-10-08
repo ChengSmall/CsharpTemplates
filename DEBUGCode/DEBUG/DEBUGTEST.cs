@@ -266,11 +266,11 @@ namespace Cheng.DEBUG
         /// <param name="fen">每个元素分隔符</param>
         /// <param name="toStr">字符串转化方法</param>
         /// <returns></returns>
-        public static string Foreach(this IEnumerable arr, int lineCount = 10, string fen = " ", Func<object, string> toStr = null)
+        public static string Foreach(this IEnumerable arr, int lineCount = 10, string fen = " ", Func<object, string> toStr = null, Predicate<object> isPrint = null)
         {
             if (arr is null) throw new ArgumentNullException();
             if (toStr is null) toStr = defToStr;
-            return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr);
+            return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr, isPrint);
         }
 
         /// <summary>
@@ -281,18 +281,20 @@ namespace Cheng.DEBUG
         /// <param name="fen">每个元素分隔符</param>
         /// <param name="toStr">字符串转化方法</param>
         /// <returns></returns>
-        public static string Foreach<T>(this IEnumerable<T> arr, int lineCount = 10, string fen = " ", Func<T, string> toStr = null)
+        public static string Foreach<T>(this IEnumerable<T> arr, int lineCount = 10, string fen = " ", Func<T, string> toStr = null, Predicate<T> isPrint = null)
         {
             if (arr is null) throw new ArgumentNullException();
             if (toStr is null) toStr = defToStr;
 
-            return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr);
+            using (var e = arr.GetEnumerator())
+            {
+                return foreachEnumator(e, lineCount, fen, toStr, isPrint);
+            }
         }
 
-        static string foreachEnumator<T>(IEnumerator<T> enumator, int lineCount, string fen, Func<T, string> toStr)
+        static string foreachEnumator<T>(IEnumerator<T> enumator, int lineCount, string fen, Func<T, string> toStr, Predicate<T> isPrint = null)
         {
             StringBuilder sb = new StringBuilder();
-
             int count = 0;
             T temp;
 
@@ -300,13 +302,19 @@ namespace Cheng.DEBUG
             {
                 temp = enumator.Current;
 
+                var print = isPrint?.Invoke(temp);
 
-                if ((count % lineCount == 0) && count != 0)
+                if (print.GetValueOrDefault(false))
                 {
-                    sb.AppendLine();
-                }
 
-                sb.Append(toStr.Invoke(temp) + fen);
+                    if ((count % lineCount == 0) && count != 0)
+                    {
+                        sb.AppendLine();
+                    }
+
+                    sb.Append(toStr.Invoke(temp) + fen);
+
+                }
 
                 count++;
             }
@@ -421,7 +429,7 @@ namespace Cheng.DEBUG
             return ForeachList(list, 0, list.Count);
         }
 
-        static string foreachEnumator(IEnumerator enumator, int lineCount, string fen, Func<object, string> toStr)
+        static string foreachEnumator(IEnumerator enumator, int lineCount, string fen, Func<object, string> toStr, Predicate<object> isPrint = null)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -432,13 +440,17 @@ namespace Cheng.DEBUG
             {
                 temp = enumator.Current;
 
+                var print = isPrint?.Invoke(temp);
 
-                if ((count % lineCount == 0) && count != 0)
+                if (print.GetValueOrDefault(false))
                 {
-                    sb.AppendLine();
-                }
+                    if ((count % lineCount == 0) && count != 0)
+                    {
+                        sb.AppendLine();
+                    }
 
-                sb.Append(toStr.Invoke(temp) + fen);
+                    sb.Append(toStr.Invoke(temp) + fen);
+                }
 
                 count++;
             }
@@ -785,3 +797,6 @@ namespace Cheng.DEBUG
     }
 
 }
+#if XMLDOC
+
+#endif

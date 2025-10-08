@@ -91,11 +91,13 @@ namespace Cheng.Xmls.StandardItemText
             return true;
         }
 
+#if DEBUG
         /// <summary>
         /// 添加一个子项
         /// </summary>
         /// <param name="append"></param>
         /// <param name="node">向后解析并添加的子项</param>
+#endif
         private void f_parItem(StringBuilder append, XmlNode node)
         {
             string value;
@@ -236,6 +238,7 @@ namespace Cheng.Xmls.StandardItemText
                 AppendStringBulider(append, node.InnerText);
             }
         }
+
 
         /// <summary>
         /// 数学运算解析功能
@@ -443,6 +446,7 @@ namespace Cheng.Xmls.StandardItemText
             }
         }
 
+
         /// <summary>
         /// 二进制标准文本转化并添加到缓冲区
         /// </summary>
@@ -506,6 +510,7 @@ namespace Cheng.Xmls.StandardItemText
             }
            
         }
+
 
         /// <summary>
         /// 即将添加字符串到缓冲区时调用的方法

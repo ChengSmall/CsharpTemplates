@@ -10,6 +10,7 @@ namespace Cheng.DataStructure.Receptacles
     /// <summary>
     /// 表示一个有最大值的容器结构，64位整形
     /// </summary>
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct ReceptacleInt64 : IEquatable<ReceptacleInt64>, IComparable<ReceptacleInt64>, IHashCode64
     {

@@ -73,6 +73,12 @@ namespace Cheng.Streams
         {
             if (stream is null) throw new ArgumentNullException();
             if (count < 0) throw new ArgumentOutOfRangeException(getArgOutOfRangeReadBlock());
+
+            if(stream is HEStream hs)
+            {
+                return f_readB(hs, buffer, count);
+            }
+
             //int index = offset;
             //int rsize;
             int re = 0;
@@ -355,6 +361,25 @@ namespace Cheng.Streams
 
             throw new NotSupportedException(Cheng.Properties.Resources.Exception_StreamNotRead);
 
+        }
+
+        public static int ReadToAddress(this Stream stream, byte* buffer, int count)
+        {
+            if(stream is HEStream hs)
+            {
+                return hs.ReadToAddress(buffer, count);
+            }
+
+            int c = 0;
+
+            while (c < count)
+            {
+                var re = stream.ReadByte();
+                if (re == -1) break;
+                buffer[c++] = (byte)re;
+            }
+
+            return c;
         }
 
         #endregion

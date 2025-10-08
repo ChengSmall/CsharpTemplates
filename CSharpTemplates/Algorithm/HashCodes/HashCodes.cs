@@ -503,21 +503,35 @@ namespace Cheng.Algorithm.HashCodes
         /// 获取字符串的默认64位哈希值
         /// </summary>
         /// <param name="str">要获取的字符串</param>
-        /// <returns>字符串的默认64位哈希值</returns>
+        /// <returns>字符串的64位哈希值</returns>
         public static long GetHashCode64(this string str)
         {
             if (str is null) return 0;
             int length = str.Length;
-            if (length == 0) return 1;
+
+            fixed (char* p = str)
+            {
+                return GetHashCode64ByPointer(p, length);
+            }
+        }
+
+        /// <summary>
+        /// （不安全代码）获取字符串的默认64位哈希值
+        /// </summary>
+        /// <param name="charPointer">指向字符串的起始地址</param>
+        /// <param name="count">字符串的字符数量</param>
+        /// <returns>字符串的64位哈希值</returns>
+        public static long GetHashCode64ByPointer(char* charPointer, int count)
+        {
+            if (count == 0) return 1;
 
             const ulong FNV_OFFSET_BASIS = 14695981039346656037UL;
             const ulong FNV_PRIME = 1099511628211UL;
 
             ulong hash = FNV_OFFSET_BASIS;
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < count; i++)
             {
-                var c = str[i];
-                hash = (hash ^ c) * FNV_PRIME;
+                hash = (hash ^ charPointer[i]) * FNV_PRIME;
             }
             return (long)hash;
         }

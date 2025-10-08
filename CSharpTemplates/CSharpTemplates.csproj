@@ -22,6 +22,7 @@
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants />
   </PropertyGroup>
 
   <ItemGroup>

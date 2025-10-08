@@ -397,10 +397,12 @@ namespace Cheng.Consoles
         /// <param name="append"></param>
         /// <param name="color">要添加的颜色；忽略透明通道</param>
         /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <returns>自身</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void AppendANSIColorText(this StringBuilder append, Colour color, bool isBackground)
+        public static StringBuilder AppendANSIColorText(this StringBuilder append, Colour color, bool isBackground)
         {
             ColorToText(color.r, color.g, color.b, isBackground, append);
+            return append;
         }
 
         /// <summary>
@@ -409,12 +411,13 @@ namespace Cheng.Consoles
         /// <param name="append"></param>
         /// <param name="color">要添加的颜色；忽略透明通道</param>
         /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <returns>自身</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void AppendANSIColorText(this CMStringBuilder append, Colour color, bool isBackground)
+        public static CMStringBuilder AppendANSIColorText(this CMStringBuilder append, Colour color, bool isBackground)
         {
             ColorToText(color.r, color.g, color.b, isBackground, append);
+            return append;
         }
-
 
         #endregion
 

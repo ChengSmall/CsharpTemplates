@@ -11,6 +11,7 @@ namespace Cheng.DataStructure.Receptacles
     /// <summary>
     /// 表示一个有最大值的容器结构，字节值
     /// </summary>
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct ReceptacleByte : IEquatable<ReceptacleByte>, IComparable<ReceptacleByte>, IHashCode64
     {

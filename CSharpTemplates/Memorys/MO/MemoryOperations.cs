@@ -1025,68 +1025,6 @@ namespace Cheng.Memorys
 
         #endregion
 
-        #region 流数据
-        //[Obsolete("", true)]
-        //public static int ReadBlock(Stream stream, byte[] buffer, int offset, int count)
-        //{
-        //    return StreamExtend.ReadBlock(stream, buffer, offset, count);
-        //}
-
-        //[Obsolete("", true)]
-        //public static int ReadBlock(Stream stream, byte* buffer, int count)
-        //{
-        //    return StreamExtend.ReadBlock(stream, buffer, count);
-        //}
-
-        //[Obsolete("", true)]
-        //public static IEnumerable<int> ReadBlockEnumator(Stream stream, byte[] buffer, int offset, int count)
-        //{
-        //    return StreamExtend.ReadBlockEnumator(stream, buffer, offset, count);
-        //}
-
-        //[Obsolete("", true)]
-        //public static void CopyToStream(Stream stream, Stream toStream, byte[] buffer)
-        //{
-        //    StreamExtend.CopyToStream(stream, toStream, buffer);
-        //}
-
-        //[Obsolete("", true)]
-        //public static IEnumerable<int> CopyToStreamEnumator(Stream stream, Stream toStream, byte[] buffer)
-        //{
-        //    return StreamExtend.CopyToStreamEnumator(stream, toStream, buffer);
-        //}
-
-        //[Obsolete("", true)]
-        //public static void CopyToStream(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
-        //{
-        //    StreamExtend.CopyToStream(stream, toStream, buffer, maxBytes);
-        //}
-
-        //[Obsolete("", true)]
-        //public static IEnumerable<int> CopyToStreamEnumator(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
-        //{
-        //    return StreamExtend.CopyToStreamEnumator(stream, toStream, buffer, maxBytes);
-        //}
-
-        //[Obsolete("", true)]
-        //public static bool ReadValue<T>(Stream stream, byte[] buffer, out T value) where T : unmanaged
-        //{
-        //    return StreamExtend.ReadValue<T>(stream, buffer, out value);
-        //}
-
-        //[Obsolete("", true)]
-        //public static void WriteValue<T>(Stream stream, byte[] buffer, T value) where T : unmanaged
-        //{
-        //    StreamExtend.WriteValue<T>(stream, buffer, value);
-        //}
-
-        //[Obsolete("", true)]
-        //public static byte[] ReadAll(Stream stream)
-        //{
-        //    return StreamExtend.ReadAll(stream);
-        //}
-        #endregion
-
         #region 比较
 
         /// <summary>
@@ -1429,7 +1367,6 @@ namespace Cheng.Memorys
             }
             return value;
         }
-
 
         #endregion
 

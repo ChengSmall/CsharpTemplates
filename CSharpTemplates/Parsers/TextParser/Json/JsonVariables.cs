@@ -49,10 +49,11 @@ namespace Cheng.Json
     /// <summary>
     /// json数据对象的基类
     /// </summary>
-    public abstract class JsonVariable : IEquatable<JsonVariable>, IHashCode64
+    public abstract class JsonVariable : IEquatable<JsonVariable>, IHashCode64, ICloneable
     {
 
         #region 参数
+
         /// <summary>
         /// 获取Json对象的数据类型
         /// </summary>
@@ -202,12 +203,7 @@ namespace Cheng.Json
         /// <returns></returns>
         public override string ToString()
         {
-            JsonParserDefault jpd = new JsonParserDefault();
-            using (var swr = new System.IO.StringWriter())
-            {
-                jpd.ParsingJson(this, swr);
-                return swr.ToString();
-            }
+            return this.Data.ToString();
         }
 
         /// <summary>
@@ -230,30 +226,7 @@ namespace Cheng.Json
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public virtual bool Equals(JsonVariable other)
-        {
-            if (other is null) return DataType == JsonType.Null;
-            JsonType type = other.DataType;
-            if (type != DataType) return false;
-
-            switch (type)
-            {
-                case JsonType.Integer:
-                    return Integer == other.Integer;
-                case JsonType.RealNum:
-                    return RealNum == other.RealNum;
-                case JsonType.Boolean:
-                    return Boolean == other.Boolean;
-                case JsonType.String:
-                    return String == other.String;
-                case JsonType.Null:
-                    return true;
-                default:
-                    return (object)this == (object)other;
-            }
-
-            throw new ArgumentException();
-        }
+        public abstract bool Equals(JsonVariable other);
 
         /// <summary>
         /// 原始默认哈希代码
@@ -282,6 +255,14 @@ namespace Cheng.Json
                     return base.GetHashCode();
             }
         }
+
+        /// <summary>
+        /// 创建一个与当前对象内容相同的新对象
+        /// </summary>
+        /// <returns>与当前对象内容相同的新对象</returns>
+        public abstract JsonVariable Clone();
+
+        #region 运算符重载
 
         /// <summary>
         /// 比较相等
@@ -333,6 +314,7 @@ namespace Cheng.Json
         /// 强转为整数
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator long(JsonVariable jobj)
         {
             var t = jobj?.DataType;
@@ -351,6 +333,7 @@ namespace Cheng.Json
         /// 强转为浮点数
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator double(JsonVariable jobj)
         {
             var t = jobj?.DataType;
@@ -365,6 +348,7 @@ namespace Cheng.Json
         /// 强转为整数
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator int(JsonVariable jobj)
         {
             var t = jobj?.DataType;
@@ -383,6 +367,7 @@ namespace Cheng.Json
         /// 强转为浮点数
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator float(JsonVariable jobj)
         {
             var t = jobj?.DataType;
@@ -397,6 +382,7 @@ namespace Cheng.Json
         /// 强转为字符串
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator string(JsonVariable jobj)
         {
             if (jobj is null) return null;
@@ -412,6 +398,7 @@ namespace Cheng.Json
         /// 强转为布尔值
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator bool(JsonVariable jobj)
         {
             var t = jobj?.DataType;
@@ -607,6 +594,17 @@ namespace Cheng.Json
 
         #endregion
 
+        #region 显式实现
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        #endregion
+
+        #endregion
+
         #endregion
 
     }
@@ -670,8 +668,14 @@ namespace Cheng.Json
 
         public override string ToString(IFormatProvider formatProvider)
         {
-            return JsonText.ToString(formatProvider);
+            return JsonText;
         }
+
+        public override JsonVariable Clone()
+        {
+            return Nullable;
+        }
+
     }
 
 
@@ -749,6 +753,11 @@ namespace Cheng.Json
         }
 
         public override bool IsNull => false;
+
+        public override JsonVariable Clone()
+        {
+            return new JsonInteger(value);
+        }
 
         public override string ToString()
         {
@@ -927,6 +936,11 @@ namespace Cheng.Json
             return value.GetHashCode64();
         }
 
+        public override JsonVariable Clone()
+        {
+            return new JsonRealNumber(value);
+        }
+
         public override bool Equals(JsonVariable other)
         {
             if (other is null) return false;
@@ -1084,6 +1098,11 @@ namespace Cheng.Json
             return value.GetHashCode64();
         }
 
+        public override JsonVariable Clone()
+        {
+            return new JsonBoolean(value);
+        }
+
         public override string ToString()
         {
             return value ? TrueJsonText : FalseJsonText;
@@ -1139,7 +1158,7 @@ namespace Cheng.Json
         /// <summary>
         /// 实例化字符串类型的json对象
         /// </summary>
-        /// <param name="value">指定的字符串</param>
+        /// <param name="value">指定的字符串，如果是null则表示为空字符串</param>
         public JsonString(string value)
         {
             this.value = (value is null) ? string.Empty : value;
@@ -1154,6 +1173,7 @@ namespace Cheng.Json
         /// <summary>
         /// 访问或设置字符串数据
         /// </summary>
+        /// <value>设置为null则表示空字符串</value>
         public string Value
         {
             get => value;
@@ -1201,8 +1221,14 @@ namespace Cheng.Json
             return value.GetHashCode64();
         }
 
+        public override JsonVariable Clone()
+        {
+            return new JsonString(value);
+        }
+
         public static implicit operator JsonString(string value)
         {
+            if (value is null) return null;
             return new JsonString(value);
         }
 

@@ -972,7 +972,61 @@ namespace Cheng.Texts
 
             fixed (char* cthis = p_charBuffer, cother = other.p_charBuffer)
             {
-                return MemoryOperation.EqualsMemory(new IntPtr(cthis), new IntPtr(cother), p_length * sizeof(char));
+                return MemoryOperation.EqualsMemory(cthis, cother, p_length * sizeof(char));
+            }
+        }
+
+        /// <summary>
+        /// 比较内容是否相等
+        /// </summary>
+        /// <param name="s1"></param>
+        /// <param name="s2"></param>
+        /// <returns></returns>
+        public static bool operator ==(CMStringBuilder s1, CMStringBuilder s2)
+        {
+            if ((object)s1 == (object)s2) return true;
+            if (s1 is null || s2 is null) return false;
+
+            var len = s1.Length;
+            if (len != s2.Length) return false;
+
+            fixed (char* cp1 = s1.p_charBuffer, cp2 = s2.p_charBuffer)
+            {
+                return MemoryOperation.EqualsMemory(cp1, cp2, len * sizeof(char));
+            }
+        }
+
+        /// <summary>
+        /// 比较内容是否不相等
+        /// </summary>
+        /// <param name="s1"></param>
+        /// <param name="s2"></param>
+        /// <returns></returns>
+        public static bool operator !=(CMStringBuilder s1, CMStringBuilder s2)
+        {
+            if ((object)s1 == (object)s2) return false;
+            if (s1 is null || s2 is null) return true;
+
+            var len = s1.Length;
+            if (len != s2.Length) return true;
+
+            fixed (char* cp1 = s1.p_charBuffer, cp2 = s2.p_charBuffer)
+            {
+                return !MemoryOperation.EqualsMemory(cp1, cp2, len * sizeof(char));
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is CMStringBuilder s) return this == s;
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            fixed (char* p = p_charBuffer)
+            {
+                return Cheng.Algorithm.HashCodes.HashCode64.GetHashCode64ByPointer(p, p_length).GetHashCode();
             }
         }
 

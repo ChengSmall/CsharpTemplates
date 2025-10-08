@@ -106,7 +106,7 @@ namespace Cheng.Windows.Hooks
     {
 
         /// <summary>
-        /// winapi所在的dll名
+        /// winapi所在的dll库
         /// </summary>
         public const string dllName = "user32.dll";
 

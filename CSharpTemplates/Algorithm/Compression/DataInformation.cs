@@ -9,7 +9,7 @@ namespace Cheng.Algorithm.Compressions
     /// <summary>
     /// 压缩数据信息，派生该类以实现相应可访问的数据信息
     /// </summary>
-    public abstract class DataInformation : IDataEntry
+    public abstract class DataInformation : IDataEntry, IEquatable<DataInformation>
     {
 
         #region 结构
@@ -78,6 +78,45 @@ namespace Cheng.Algorithm.Compressions
                 if (path is null) throw new NotSupportedException();
                 return path;
             }
+        }
+
+        /// <summary>
+        /// 对比是否为同一个项数据
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public virtual bool Equals(DataInformation other)
+        {
+            if (other is null) return false;
+            return DataPath == other.DataPath;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is DataInformation inf)
+            {
+                return Equals(inf);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return (DataPath?.GetHashCode()).GetValueOrDefault();
+        }
+
+        public static bool operator ==(DataInformation a, DataInformation b)
+        {
+            if ((object)a == (object)b) return true;
+            if (a is null || b is null) return false;
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(DataInformation a, DataInformation b)
+        {
+            if ((object)a == (object)b) return false;
+            if (a is null || b is null) return true;
+            return !a.Equals(b);
         }
 
         #endregion

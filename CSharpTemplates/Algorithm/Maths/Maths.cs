@@ -62,7 +62,7 @@ namespace Cheng.Algorithm
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static float Clamp(float value, float min, float max)
+        public static float Clamp(this float value, float min, float max)
         {
             if (value > max) return max;
             if (value < min) return min;
@@ -76,7 +76,7 @@ namespace Cheng.Algorithm
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static double Clamp(double value, double min, double max)
+        public static double Clamp(this double value, double min, double max)
         {
             if (value > max) return max;
             if (value < min) return min;
@@ -90,7 +90,7 @@ namespace Cheng.Algorithm
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static int Clamp(int value, int min, int max)
+        public static int Clamp(this int value, int min, int max)
         {
             if (value > max) return max;
             if (value < min) return min;
@@ -104,7 +104,7 @@ namespace Cheng.Algorithm
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static long Clamp(long value, long min, long max)
+        public static long Clamp(this long value, long min, long max)
         {
             if (value > max) return max;
             if (value < min) return min;
@@ -118,7 +118,7 @@ namespace Cheng.Algorithm
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static decimal Clamp(decimal value, decimal min, decimal max)
+        public static decimal Clamp(this decimal value, decimal min, decimal max)
         {
             if (value > max) return max;
             if (value < min) return min;
@@ -132,7 +132,7 @@ namespace Cheng.Algorithm
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static uint Clamp(uint value, uint min, uint max)
+        public static uint Clamp(this uint value, uint min, uint max)
         {
             if (value > max) return max;
             if (value < min) return min;
@@ -146,7 +146,21 @@ namespace Cheng.Algorithm
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static ulong Clamp(ulong value, ulong min, ulong max)
+        public static ulong Clamp(this ulong value, ulong min, ulong max)
+        {
+            if (value > max) return max;
+            if (value < min) return min;
+            return value;
+        }
+
+        /// <summary>
+        /// 将值限制在指定范围内
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="min">最小值</param>
+        /// <param name="max">最大值</param>
+        /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
+        public static char Clamp(this char value, char min, char max)
         {
             if (value > max) return max;
             if (value < min) return min;
@@ -162,7 +176,7 @@ namespace Cheng.Algorithm
         /// <param name="max">最大值</param>
         /// <param name="comparer">定义值比较器，若为null则使用默认比较器</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static T Clamp<T>(T value, T min, T max, IComparer<T> comparer)
+        public static T Clamp<T>(this T value, T min, T max, IComparer<T> comparer)
         {
             if (comparer is null) comparer = Comparer<T>.Default;
 
@@ -178,7 +192,7 @@ namespace Cheng.Algorithm
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
         /// <returns>当值小于最小值时返回最小值，大于最大值时返回最大值，否则返回值本身</returns>
-        public static T Clamp<T>(T value, T min, T max)
+        public static T Clamp<T>(this T value, T min, T max)
         {
             var comparer = Comparer<T>.Default;
             if (comparer.Compare(value, max) > 0) return max;

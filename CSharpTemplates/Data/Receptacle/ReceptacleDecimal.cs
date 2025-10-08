@@ -10,6 +10,7 @@ namespace Cheng.DataStructure.Receptacles
     /// <summary>
     /// 表示一个有最大值的容器结构，十进制数
     /// </summary>
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct ReceptacleDecimal : IEquatable<ReceptacleDecimal>, IComparable<ReceptacleDecimal>, IHashCode64
     {

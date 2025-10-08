@@ -303,11 +303,6 @@ namespace Cheng.Parsers.CommandParsers
             return true;
         }
 
-        bool ICommandParser.Execute(string command)
-        {
-            return Execute(command);
-        }
-
         #endregion
 
         #endregion

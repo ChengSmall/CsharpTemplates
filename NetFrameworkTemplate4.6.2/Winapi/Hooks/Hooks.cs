@@ -151,6 +151,9 @@ namespace Cheng.Windows.Hooks
 
         #region 参数
 
+        /// <summary>
+        /// 指向挂钩过程的回调函数
+        /// </summary>
         protected ProcCallBack p_callback;
 
         /// <summary>

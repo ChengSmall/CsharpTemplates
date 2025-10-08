@@ -13,7 +13,7 @@ namespace Cheng.Streams
     /// <remarks>
     /// <para>封装指定的流对象，将其截断其中一部分数据作为只读流；封装的流必须要有读取和查找功能</para>
     /// </remarks>
-    public unsafe class TruncateStream : HEStream   //byd这是爷写的最实用的派生类之一(●'◡'●)
+    public unsafe class TruncateStream : HEStream
     {
 
         #region 释放

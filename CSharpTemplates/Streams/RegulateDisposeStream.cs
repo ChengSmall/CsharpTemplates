@@ -68,7 +68,7 @@ namespace Cheng.Streams
             set => stream.Position = value;
         }
 
-        public override bool CanTimeout => base.CanTimeout;
+        public override bool CanTimeout => stream.CanTimeout;
 
         public override int ReadTimeout 
         { 

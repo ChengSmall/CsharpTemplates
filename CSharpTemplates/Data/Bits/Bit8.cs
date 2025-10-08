@@ -7,7 +7,7 @@ namespace Cheng.DataStructure.Bits
     /// 8bit位域真值结构
     /// </summary>
     [Serializable]
-    public struct Bit8 : IEquatable<Bit8>, IComparable<Bit8>
+    public readonly struct Bit8 : IEquatable<Bit8>, IComparable<Bit8>
     {
 
         #region 构造
@@ -51,7 +51,7 @@ namespace Cheng.DataStructure.Bits
 
         #region 参数
 
-        internal byte p_value;
+        internal readonly byte p_value;
 
         #endregion
 

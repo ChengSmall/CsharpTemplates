@@ -35,10 +35,9 @@ namespace Cheng.DataStructure.Collections
 
         public sealed override bool Equals(char[] x, char[] y)
         {
-            if (x == y) return true;
+            if (x == (object)y) return true;
 
-            if (x is null) return y is null;
-            else if (y is null) return false;
+            if (x is null || y is null) return false;
 
             var len = x.Length;
             if (len != y.Length) return false;
@@ -53,12 +52,12 @@ namespace Cheng.DataStructure.Collections
 
         public sealed override int GetHashCode(char[] obj)
         {
-            return GetHashCode64(obj ?? throw new ArgumentNullException(nameof(obj))).GetHashCode();
+            return GetHashCode64(obj).GetHashCode();
         }
 
         public unsafe sealed override long GetHashCode64(char[] value)
         {
-            if (value is null) return 0;
+            if (value is null) throw new ArgumentNullException(nameof(value));
             int length = value.Length;
             if (length == 0) return 0;
 

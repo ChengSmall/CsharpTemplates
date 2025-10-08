@@ -53,11 +53,6 @@ namespace Cheng.DataStructure.Collections
         {
             if (x == y) return true;
             return ((x == '/' || x == '\\') && (y == '/' || y == '\\'));
-            //if ((x == '/' || x == '\\') && (y == '/' || y == '\\'))
-            //{
-            //    return true;
-            //}
-            //return false;
         }
 
         /// <summary>
@@ -72,11 +67,6 @@ namespace Cheng.DataStructure.Collections
             y = y.ToLower();
             if (x == y) return true;
             return ((x == '/' || x == '\\') && (y == '/' || y == '\\'));
-            //if ((x == '/' || x == '\\') && (y == '/' || y == '\\'))
-            //{
-            //    return true;
-            //}
-            //return false;
         }
 
         public override long GetHashCode64(char value)
