@@ -147,6 +147,12 @@ namespace Cheng.DEBUG
             return str;
         }
 
+        public static string defToStr(object obj)
+        {
+            if (obj is null) return nullstr;
+            return obj.ToString();
+        }
+
         /// <summary>
         /// 二进制序列字符串
         /// </summary>
@@ -269,8 +275,7 @@ namespace Cheng.DEBUG
         public static string Foreach(this IEnumerable arr, int lineCount = 10, string fen = " ", Func<object, string> toStr = null, Predicate<object> isPrint = null)
         {
             if (arr is null) throw new ArgumentNullException();
-            if (toStr is null) toStr = defToStr;
-            return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr, isPrint);
+            return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr ?? defToStr, isPrint);
         }
 
         /// <summary>
@@ -284,11 +289,9 @@ namespace Cheng.DEBUG
         public static string Foreach<T>(this IEnumerable<T> arr, int lineCount = 10, string fen = " ", Func<T, string> toStr = null, Predicate<T> isPrint = null)
         {
             if (arr is null) throw new ArgumentNullException();
-            if (toStr is null) toStr = defToStr;
-
             using (var e = arr.GetEnumerator())
             {
-                return foreachEnumator(e, lineCount, fen, toStr, isPrint);
+                return foreachEnumator(e, lineCount, fen, toStr ?? defToStr, isPrint);
             }
         }
 
@@ -304,7 +307,7 @@ namespace Cheng.DEBUG
 
                 var print = isPrint?.Invoke(temp);
 
-                if (print.GetValueOrDefault(false))
+                if (print.GetValueOrDefault(true))
                 {
 
                     if ((count % lineCount == 0) && count != 0)
@@ -442,7 +445,7 @@ namespace Cheng.DEBUG
 
                 var print = isPrint?.Invoke(temp);
 
-                if (print.GetValueOrDefault(false))
+                if (print.GetValueOrDefault(true))
                 {
                     if ((count % lineCount == 0) && count != 0)
                     {
