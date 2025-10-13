@@ -334,11 +334,12 @@ namespace Cheng.DEBUG
         /// <param name="lineCount">一行打印数</param>
         /// <param name="fen">元素分隔符</param>
         /// <param name="toStr">元素转化为字符串的方法</param>
+        /// <param name="isPrint">该元素是否需要打印</param>
         /// <returns></returns>
-        public static string ForeachList(this IList list, int index, int count, int lineCount = 10, string fen = " ", Func<object, string> toStr = null)
+        public static string ForeachList(this IList list, int index, int count, int lineCount = 10, string fen = " ", Func<object, string> toStr = null, Predicate<object> isPrint = null)
         {
             if (toStr is null) toStr = defToStr;
-            StringBuilder sb = new StringBuilder(list.Count);
+            StringBuilder sb = new StringBuilder(list.Count * 2);
 
             int i;
             int length = index + count;
@@ -347,12 +348,16 @@ namespace Cheng.DEBUG
             int ct;
             for (i = index, ct = 0; i < length; i++)
             {
-
                 obj = list[i];
 
-                sb.Append(toStr.Invoke(obj));
-                if (i + 1 < length) sb.Append(fen);
-                ct++;
+                bool isP = (isPrint?.Invoke(obj)).GetValueOrDefault(true);
+
+                if (isP)
+                {
+                    sb.Append(toStr.Invoke(obj));
+                    if (i + 1 < length) sb.Append(fen);
+                    ct++;
+                }
 
                 if (i != end)
                 {
@@ -377,11 +382,12 @@ namespace Cheng.DEBUG
         /// <param name="lineCount">一行打印数</param>
         /// <param name="fen">元素分隔符</param>
         /// <param name="toStr">元素转化为字符串的方法</param>
+        /// <param name="isPrint">该元素是否需要打印</param>
         /// <returns></returns>
-        public static string ForeachList<T>(this IList<T> list, int index, int count, int lineCount = 10, string fen = " ", Func<T, string> toStr = null)
+        public static string ForeachList<T>(this IList<T> list, int index, int count, int lineCount = 10, string fen = " ", Func<T, string> toStr = null, Predicate<T> isPrint = null)
         {
-            if (toStr is null) toStr = defToStr<T>;
-            StringBuilder sb = new StringBuilder(list.Count);
+            if (toStr is null) toStr = defToStr;
+            StringBuilder sb = new StringBuilder(list.Count * 2);
 
             int i;
             int length = index + count;
@@ -393,9 +399,14 @@ namespace Cheng.DEBUG
 
                 obj = list[i];
 
-                sb.Append(toStr.Invoke(obj));
-                if (i + 1 < length) sb.Append(fen);
-                ct++;
+                bool isP = (isPrint?.Invoke(obj)).GetValueOrDefault(true);
+
+                if (isP)
+                {
+                    sb.Append(toStr.Invoke(obj));
+                    if (i + 1 < length) sb.Append(fen);
+                    ct++;
+                }
 
                 if (i != end)
                 {

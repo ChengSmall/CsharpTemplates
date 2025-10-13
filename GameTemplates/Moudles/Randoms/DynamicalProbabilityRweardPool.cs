@@ -52,7 +52,7 @@ namespace Cheng.Algorithm.Randoms.RewardPools
         #region 功能
 
         /// <summary>
-        /// 当一次抽取没有成功是则下一次提升的概率
+        /// 当一次抽取没有成功时则下一次提升的概率
         /// </summary>
         public double UpperProbability
         {

@@ -1587,27 +1587,27 @@ namespace Cheng.Json
 
         private void f_writeInt(TextWriter wr, long value)
         {
-            var nf = p_cultureInfo?.NumberFormat;
-            if (nf is null)
+            //var nf = p_cultureInfo?.NumberFormat;
+            if (p_cultureInfo is null)
             {
-                wr.Write(value.ToString());
+                wr.Write(value);
             }
             else
             {
-                wr.Write(value.ToString(nf));
+                wr.Write(value.ToString(p_cultureInfo));
             }
         }
 
         private void f_writeDouble(TextWriter wr, double value)
         {
-            var nf = p_cultureInfo?.NumberFormat;
+            var nf = p_cultureInfo;
             if (nf is null)
             {
-                wr.Write(value.ToString("R"));
+                wr.Write(value);
             }
             else
             {
-                wr.Write(value.ToString(nf));
+                wr.Write(value.ToString("R", nf));
             }
         }
 
@@ -1842,7 +1842,7 @@ namespace Cheng.Json
             p_numStyles = TextParserNumStylesDefault;
             p_jsonEscapeCharacterSingleQuotation = true;
             p_jsonWriterCharacterSingleQuotation = false;
-            p_cultureInfo = null;
+            p_cultureInfo = CultureInfo.InvariantCulture;
         }
         #endregion
 
@@ -2010,14 +2010,14 @@ namespace Cheng.Json
         }
 
         /// <summary>
-        /// 访问或设置该解析器在进行文本转化时的区域信息
+        /// 访问或设置该解析器在进行转化时的区域信息
         /// </summary>
         /// <value>
         /// <para>该对象用于本地化处理值和文本的相互转化</para>
         /// <para>
-        /// 若该值设置为null，则不使用区域信息；将对象转化为文本时，采用解析器默认的转化方案
+        /// 若该值设置为null，则不使用区域信息；将对象转化为文本或写入json文本时，采用写入器默认的方案
         /// </para>
-        /// <para>初始化时默认为null</para>
+        /// <para>参数时默认为<see cref="CultureInfo.InvariantCulture"/></para>
         /// </value>
         public CultureInfo ParserCultureInfo
         {

@@ -95,7 +95,7 @@ namespace Cheng.Algorithm.Randoms
 
         public sealed override float NextFloat()
         {
-            return (Next() / 2147483647f);
+            return NextLong(0, 8388607) / 8388607F;
         }
 
         public sealed override double NextDouble()
