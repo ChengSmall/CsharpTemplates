@@ -9,6 +9,9 @@ using System.ComponentModel;
 namespace Cheng.Windows.Threads
 {
 
+    /// <summary>
+    /// win32线程API
+    /// </summary>
     public unsafe static class WinThreadAPI
     {
 
@@ -66,7 +69,7 @@ namespace Cheng.Windows.Threads
         /// <exception cref="Win32Exception">句柄无效</exception>
         public static uint GetWindowThreadProcessId(IntPtr hwnd, out uint processID)
         {
-            processID = default;
+            //processID = default;
             uint re;
 
             fixed(uint* up = &processID)

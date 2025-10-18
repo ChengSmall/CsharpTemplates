@@ -19,11 +19,11 @@ namespace Cheng.Timers
 
         #region api
 
-        [DllImport("Kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", SetLastError = true)]
         [return:MarshalAs(UnmanagedType.Bool)]
         internal extern static bool QueryPerformanceCounter(long* lpPerformanceCount);
 
-        [DllImport("Kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal extern static bool QueryPerformanceFrequency(long* frequency);
 
@@ -94,7 +94,7 @@ namespace Cheng.Timers
         {
             get
             {
-                long t;
+                long t = 0;
                 QueryPerformanceCounter(&t);
                 return (ulong)t;
             }
@@ -104,7 +104,7 @@ namespace Cheng.Timers
         {
             get
             {
-                long t;
+                long t = 0;
                 QueryPerformanceCounter(&t);
                 return new DateTime(t);
             }

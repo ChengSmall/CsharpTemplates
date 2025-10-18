@@ -83,12 +83,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compressions\ResourcePackageWinForm\CompressionParserListView.cs" />
-    <Compile Include="Compressions\ZipArchive\ReadOnlyZipArchiveCompress.cs" />
-    <Compile Include="Compressions\ZipArchive\ZipArchiveCompress.cs" />
-    <Compile Include="Compressions\ZipArchive\ZipArchiveInf.cs" />
     <Compile Include="Data\Colour\ColourExtend.cs" />
     <Compile Include="Data\Timer\PerformanceCounterTimer.cs" />
-    <Compile Include="IO\FileSysInfo\ZipEntryFileInfo.cs" />
     <Compile Include="Processes\API.cs" />
     <Compile Include="Processes\ProcessAccessFlags.cs" />
     <Compile Include="Processes\ProcessOperation.cs" />
@@ -117,13 +113,13 @@
     <Compile Include="WinForms\Forms\InputValueDialog.Designer.cs">
       <DependentUpon>InputValueDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinForms\Message\MessageBoxExtend.cs" />
     <Compile Include="WinForms\ParserToJsonExtend.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Algorithm\Pathfindings\" />
-    <Folder Include="Device\" />
+    <Folder Include="Algorithm\" />
+    <Folder Include="IO\FileSysInfo\" />
     <Folder Include="Text\" />
-    <Folder Include="Winapi\Icon\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

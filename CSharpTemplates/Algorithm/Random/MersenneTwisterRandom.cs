@@ -128,10 +128,10 @@ namespace Cheng.Algorithm.Randoms
         }
 
         /// <summary>
-        /// 获取一个随机长整型值
+        /// 生成一个随机值
         /// </summary>
-        /// <returns>一个随机长整型值，范围在[0,9223372036854775807)</returns>
-        public override long NextLong()
+        /// <returns>随机值</returns>
+        public ulong Generate()
         {
             if (mti >= N)
             {
@@ -143,9 +143,17 @@ namespace Cheng.Algorithm.Randoms
             x ^= (x << 17) & 0x71D67FFFEDA60000;
             x ^= (x << 37) & 0xFFF7EEE000000000;
             x ^= (x >> 43);
+            return x;
+        }
 
+        /// <summary>
+        /// 获取一个随机长整型值
+        /// </summary>
+        /// <returns>一个随机长整型值，范围在[0,9223372036854775807)</returns>
+        public override long NextLong()
+        {
             //确保返回值为非负数
-            return (long)(x >> 1);
+            return (long)(Generate() >> 1);
         }
 
         /// <summary>
@@ -154,7 +162,7 @@ namespace Cheng.Algorithm.Randoms
         /// <returns>一个随机整数，范围在[0, 2147483647)</returns>
         public override int Next()
         {
-            return (int)(NextLong() % int.MaxValue);
+            return (int)(Generate() % int.MaxValue);
         }
 
         /// <summary>
@@ -169,7 +177,7 @@ namespace Cheng.Algorithm.Randoms
         public override int Next(int min, int max)
         {
             if (min >= max) throw new ArgumentOutOfRangeException();
-            return (int)(min + (NextLong() % (max - min)));
+            return (int)(min + (long)(Generate() % ((ulong)(max - min))));
         }
 
         public override long NextLong(long min, long max)

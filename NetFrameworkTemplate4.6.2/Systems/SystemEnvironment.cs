@@ -116,14 +116,14 @@ namespace Cheng.Systems
                     return false;
                 }
                 char* cp = stackalloc char[3];
-                cp[1] = ':';
-                cp[2] = '\\';
                 while (p_index < 26)
                 {
                     p_index++;
                     if (((p_value >> p_index) & 0b1) == 1)
                     {
                         cp[0] = (char)('A' + p_index);
+                        cp[1] = ':';
+                        cp[2] = '\\';
                         p_cut = new string(cp, 0, 3);
                         return true;
                     }
@@ -298,6 +298,15 @@ namespace Cheng.Systems
         }
 
         /// <summary>
+        /// 返回一个逻辑驱动器卷标枚举器
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<char> GetLogicalDrives()
+        {
+            return new UpdateGetLogicalsEnumerable();
+        }
+
+        /// <summary>
         /// 获取一个逻辑驱动器卷标名称枚举器
         /// </summary>
         /// <returns>
@@ -315,17 +324,23 @@ namespace Cheng.Systems
         }
 
         /// <summary>
+        /// 返回一个逻辑驱动器卷标名称枚举器
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<string> GetLogicalDriveNames()
+        {
+            return new UpdateGetLogicalNamesEnumerable();
+        }
+
+        /// <summary>
         /// 获取当前系统逻辑驱动器的数量
         /// </summary>
-        /// <returns>当前系统逻辑驱动器的数量</returns>
-        /// <exception cref="Win32Exception">无法获取逻辑驱动器信息</exception>
+        /// <returns>当前系统逻辑驱动器的数量，0表示无法获取逻辑驱动器信息</returns>
         public static int GetLogicalDiriveCount()
         {
             var value = win_getLogicalDrives();
-            if (value == 0)
-            {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-            }
+            if (value == 0) return 0;
+
             int count = 0;
             for (int i = 0; i < 26; i++)
             {

@@ -97,12 +97,12 @@ namespace Cheng.Algorithm.Compressions.Systems
         {
             var ens = p_zip.Entries;
             int length = ens.Count;
-            p_zipDict = new Dictionary<string, ZipArchiveInf>(length, new Cheng.DataStructure.Collections.EqualityStrNotPathSeparator());
+            p_zipDict = new Dictionary<string, ZipArchiveInf>(length, new Cheng.DataStructure.Collections.EqualityStrNotPathSeparator(false, true));
             p_zipList = new List<ZipArchiveInf>(length);
             for (int i = 0; i < length; i++)
             {
                 var entry = ens[i];
-                if (entry.Length == 0) continue;
+                if (entry.Length <= 0) continue;
                 var enf = new ZipArchiveInf(entry);
                 p_zipList.Add(enf);
                 p_zipDict.Add(entry.FullName, enf);
@@ -435,7 +435,6 @@ namespace Cheng.Algorithm.Compressions.Systems
         #endregion
 
         #endregion
-
 
     }
 

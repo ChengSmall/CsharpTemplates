@@ -16,7 +16,7 @@ namespace Cheng.IO.Systems
     public class ZipEntryFileInfo : CFileInfo
     {
 
-        #region
+        #region 构造
 
         /// <summary>
         /// 使用zip的一个<see cref="ZipArchiveEntry"/>对象封装文件对象
@@ -30,7 +30,7 @@ namespace Cheng.IO.Systems
 
         #endregion
 
-        #region
+        #region 参数
 
         private ZipArchiveEntry p_entry;
 
