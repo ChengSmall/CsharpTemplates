@@ -262,6 +262,7 @@ namespace Cheng.Algorithm.Compressions
         /// <exception cref="NotSupportedException"><see cref="CanDeCompressionByPath"/>属性为false或流数据未拥有指定权限</exception>
         /// <exception cref="ObjectDisposedException">基础流已关闭</exception>
         /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="KeyNotFoundException">路径不存在</exception>
         /// <exception cref="Exception">其它错误</exception>
         public virtual void DeCompressionTo(string dataPath, Stream stream)
         {
@@ -878,13 +879,7 @@ namespace Cheng.Algorithm.Compressions
         /// <returns>一个像数据路径接口的枚举器</returns>
         public virtual IEnumerator<IDataEntry> GetDataEntryEnumrator()
         {
-            
-            int length = Count;
-            for (int i = 0; i < length; i++)
-            {
-                yield return this[i];
-            }
-
+            return GetEnumerator();
         }
 
         IEnumerator<IDataEntry> IEnumerable<IDataEntry>.GetEnumerator()

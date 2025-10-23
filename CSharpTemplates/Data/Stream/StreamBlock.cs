@@ -11,7 +11,7 @@ namespace Cheng.DataStructure.Streams
     /// 表示流数据块位置
     /// </summary>
     [Serializable]
-    public struct StreamBlock : IEquatable<StreamBlock>, IHashCode64, IComparable<StreamBlock>
+    public readonly struct StreamBlock : IEquatable<StreamBlock>, IHashCode64, IComparable<StreamBlock>
     {
 
         #region 构造

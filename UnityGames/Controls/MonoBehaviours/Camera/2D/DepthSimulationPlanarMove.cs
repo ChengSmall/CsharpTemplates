@@ -79,9 +79,11 @@ namespace Cheng.Unitys.Cameras._2D
 
         #region 内部参数
 
+        #if DEBUG
         /// <summary>
         /// 上一帧位置
         /// </summary>
+        #endif
         private Vector3 p_lastCameraPos;
         
         #endregion
@@ -155,7 +157,6 @@ namespace Cheng.Unitys.Cameras._2D
                 moveType = value;
             }
         }
-
 
         /// <summary>
         /// 是否启用移动
@@ -253,5 +254,6 @@ namespace Cheng.Unitys.Cameras._2D
 
 }
 #if UNITY_EDITOR
-
+#endif
+#if DEBUG
 #endif

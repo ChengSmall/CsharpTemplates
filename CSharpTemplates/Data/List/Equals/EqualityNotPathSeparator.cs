@@ -178,11 +178,20 @@ namespace Cheng.DataStructure.Collections
                 c = str[length - 1];
                 if (c == '/' || c == '\\') length--;
             }
+            fixed (char* cp = str)
+            {
+                return GetHashCodeUInt64(cp, length, caseInsensitive);
+            }
+        }
+
+        public static ulong GetHashCodeUInt64(char* str, int length, bool caseInsensitive)
+        {
 
             const ulong FNV_OFFSET_BASIS = 14695981039346656037UL;
             const ulong FNV_PRIME = 1099511628211UL;
             int i;
             ulong hash = FNV_OFFSET_BASIS;
+            char c;
             if (caseInsensitive)
             {
                 for (i = 0; i < length; i++)
@@ -256,28 +265,42 @@ namespace Cheng.DataStructure.Collections
                         else return false; //不属于分隔符
                     }
                 }
-
-                //长度不等
-                return false;
-            }
-            int i;
-            fixed (char* xp = x, yp = y)
-            {
-                if (caseInsensitive)
-                {
-                    for (i = 0; i < length; i++)
-                    {
-                        if (!EqualityNotPathSeparator.EqualCaseInsensitiveChar(xp[i], yp[i])) return false;
-                    }
-                }
                 else
                 {
-                    for (i = 0; i < length; i++)
-                    {
-                        if (!EqualityNotPathSeparator.EqualChar(xp[i], yp[i])) return false;
-                    }
+                    //长度不等
+                    return false;
                 }
+            }
+            fixed (char* xp = x, yp = y)
+            {
+                return EqualPathByAddress(xp, yp, length, caseInsensitive);
+            }
+        }
 
+        /// <summary>
+        /// 忽略路径分隔符的字符串比较函数
+        /// </summary>
+        /// <param name="x">要进行比较的字符串首地址</param>
+        /// <param name="y">要进行比较的字符串首地址</param>
+        /// <param name="length">两个字符串的长度，默认两个字符串长度相同地址不同</param>
+        /// <param name="caseInsensitive">是否开启大小写不敏感比较；true表示进行字母对比时不区分大小写，false区分大小写</param>
+        /// <returns>字符串相同返回true，字符串不同返回false</returns>
+        public static bool EqualPathByAddress(char* x, char* y, int length, bool caseInsensitive)
+        {
+            int i;
+            if (caseInsensitive)
+            {
+                for (i = 0; i < length; i++)
+                {
+                    if (!EqualityNotPathSeparator.EqualCaseInsensitiveChar(x[i], y[i])) return false;
+                }
+            }
+            else
+            {
+                for (i = 0; i < length; i++)
+                {
+                    if (!EqualityNotPathSeparator.EqualChar(x[i], y[i])) return false;
+                }
             }
             return true;
         }

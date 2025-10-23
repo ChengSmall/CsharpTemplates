@@ -29,6 +29,7 @@ namespace Cheng.Unitys.Colors
         {
             return ((uint)color.a << 24) | ((uint)color.b << 16) | ((uint)color.g << 8) | color.r;
         }
+
         /// <summary>
         /// 将rgb通用色值转化为32位颜色
         /// </summary>
@@ -50,6 +51,7 @@ namespace Cheng.Unitys.Colors
         {
             Color.RGBToHSV(color, out H, out S, out V);
         }
+
         /// <summary>
         /// 将颜色值转化为HSV颜色模型
         /// </summary>

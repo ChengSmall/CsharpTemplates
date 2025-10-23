@@ -527,6 +527,20 @@ namespace Cheng.Streams
             }
         }
 
+        /// <summary>
+        /// 读取一个字节并判断是否能否读取
+        /// </summary>
+        /// <param name="stream">要读取的流对象</param>
+        /// <param name="value">成功读取到的字节值；如果返回值是false该参数无效</param>
+        /// <returns>如果成功读取一个字节返回true，如果读取到末尾返回false</returns>
+        public static bool ReadByte(this Stream stream, out byte value)
+        {
+            if (stream is null) throw new ArgumentNullException();
+            var re = stream.ReadByte();
+            value = (byte)re;
+            return re != -1;
+        }
+
         #endregion
 
     }

@@ -5,7 +5,7 @@ namespace Cheng.Streams
 {
 
     /// <summary>
-    /// 释放方法高度封装的流
+    /// 二次抽象封装的流
     /// </summary>
     public unsafe abstract class HEStream : Stream
     {

@@ -985,7 +985,7 @@ namespace Cheng.IO
             try
             {
                 if (CanRefresh) Refresh();
-                if (CanOpenStream) return OpenStream(CFileAccess.Read);
+                if (CanOpenStream) return OpenStream(CFileAccess.Read, CFileShare.Read);
             }
             catch (Exception)
             {

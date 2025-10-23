@@ -150,6 +150,20 @@ namespace Cheng.Algorithm.Compressions
         public virtual bool ContainsData(string path) => throw new NotSupportedException();
 
         /// <summary>
+        /// 删除某个路径上的待打包数据
+        /// </summary>
+        /// <param name="path">要删除的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
+        /// <returns>返回true表示成功删除，false表示当前待打包队列内没有此路径数据</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="NotSupportedException">没有删除权限</exception>
+        public virtual bool TryRemoveData(string path)
+        {
+            if (!ContainsData(path)) return false;
+            RemoveData(path);
+            return true;
+        }
+
+        /// <summary>
         /// 将当前队列的数据打包并写入指定流
         /// </summary>
         /// <param name="stream">接收包体数据的可写流</param>

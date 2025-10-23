@@ -20,7 +20,7 @@ namespace Cheng.Unitys
         /// <summary>
         /// 实例化一个协程等待枚举器
         /// </summary>
-        /// <param name="waitForSeconds">枚举器每次推进后的等待描述，使用<see cref="UnityEngine.WaitForSeconds"/>作为返回值</param>
+        /// <param name="waitForSeconds">枚举器每次推进后的等待秒数，使用<see cref="UnityEngine.WaitForSeconds"/>作为返回值</param>
         public CoroutineEasyTimer(float waitForSeconds) : this(new WaitForSeconds(waitForSeconds))
         {
         }

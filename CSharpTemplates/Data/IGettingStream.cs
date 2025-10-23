@@ -1,3 +1,4 @@
+using Cheng.IO;
 using System;
 using System.IO;
 
@@ -23,7 +24,6 @@ namespace Cheng.DataStructure
         Stream OpenStream();
 
     }
-
 
     /// <summary>
     /// 使用委托函数实现一个<see cref="IGettingStream"/>
@@ -73,5 +73,64 @@ namespace Cheng.DataStructure
         }
     }
 
+    /// <summary>
+    /// 提供一个打开指定路径的文件流对象接口
+    /// </summary>
+    public class GettingFileStream : IGettingStream
+    {
+
+        #region
+
+        /// <summary>
+        /// 实例化一个打开指定路径的文件流接口
+        /// </summary>
+        /// <param name="filePath"></param>
+        public GettingFileStream(string filePath)
+        {
+            fileInfo = new FileInfo(Path.GetFullPath(filePath));
+        }
+
+        #endregion
+
+        #region
+
+        private readonly FileInfo fileInfo;
+
+        #endregion
+
+        #region 派生
+
+        public long StreamLength
+        {
+            get
+            {
+                try
+                {
+                    fileInfo.Refresh();
+                    return fileInfo.Length;
+                }
+                catch (Exception)
+                {
+                    return -1;
+                }
+                
+            }
+        }
+
+        public Stream OpenStream()
+        {
+            try
+            {
+                return fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
+    }
 
 }

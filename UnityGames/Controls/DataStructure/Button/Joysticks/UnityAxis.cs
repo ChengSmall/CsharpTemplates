@@ -230,7 +230,6 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                 var re = p_isYSmooth ? Input.GetAxis(p_verticalName) : Input.GetAxisRaw(p_verticalName);
                 return p_isYReversed ? -re : re;
             }
-            set { ThrowNotSupportedException(); }
         }
 
         /// <summary>
@@ -245,7 +244,6 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
                 var re = p_isXSmooth ? Input.GetAxis(p_horizontalName) : Input.GetAxisRaw(p_horizontalName);
                 return p_isXReversed ? -re : re;
             }
-            set { ThrowNotSupportedException(); }
         }
 
         public override bool IsHorizontalReverse

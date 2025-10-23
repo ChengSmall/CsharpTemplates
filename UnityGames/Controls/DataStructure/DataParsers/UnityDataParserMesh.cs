@@ -53,7 +53,7 @@ namespace Cheng.Streams.Parsers.Default.Unitys
         #region 
 
         /*
-        
+
         Vertices (顶点): OK
         mesh.vertices: 定义了网格的顶点位置。
 
@@ -95,12 +95,14 @@ namespace Cheng.Streams.Parsers.Default.Unitys
 
         #region 封装
 
+#if DEBUG
         /// <summary>
         /// 读取数组
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="stream"></param>
         /// <returns></returns>
+#endif
         private T[] f_readArr<T>(Stream stream) where T : unmanaged
         {
             int length;
@@ -117,6 +119,7 @@ namespace Cheng.Streams.Parsers.Default.Unitys
             return arr;
         }
 
+#if DEBUG
         /// <summary>
         /// 读取集合并添加
         /// </summary>
@@ -124,6 +127,7 @@ namespace Cheng.Streams.Parsers.Default.Unitys
         /// <param name="stream"></param>
         /// <param name="list"></param>
         /// <returns></returns>
+#endif
         private bool f_readList<T>(Stream stream, IList<T> list) where T : unmanaged
         {
             int length;
@@ -141,6 +145,7 @@ namespace Cheng.Streams.Parsers.Default.Unitys
             return true;
         }
 
+#if DEBUG
         /// <summary>
         /// 读取一个值
         /// </summary>
@@ -148,6 +153,7 @@ namespace Cheng.Streams.Parsers.Default.Unitys
         /// <param name="stream"></param>
         /// <param name="reValue">要读取到的引用</param>
         /// <returns>是否读取完整</returns>
+#endif
         private bool f_readValue<T>(Stream stream, out T reValue) where T : unmanaged
         {
             var rs = stream.ReadBlock(p_buffer, 0, sizeof(T));
@@ -374,24 +380,28 @@ namespace Cheng.Streams.Parsers.Default.Unitys
 
         #region 封装
 
+#if DEBUG
         /// <summary>
         /// 写入值
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="stream"></param>
         /// <param name="value"></param>
+#endif
         private void f_writeValue<T>(Stream stream, T value) where T : unmanaged
         {
             value.ToByteArray(p_buffer);
             stream.Write(p_buffer, 0, sizeof(T));
         }
 
+#if DEBUG
         /// <summary>
         /// 写入数组
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr">要写入的数组</param>
         /// <param name="stream">要写入的流</param>
+#endif
         private void f_writeArr<T>(T[] arr, Stream stream) where T : unmanaged
         {
             //数组元素
@@ -404,12 +414,14 @@ namespace Cheng.Streams.Parsers.Default.Unitys
             }
         }
 
+#if DEBUG
         /// <summary>
         /// 写入集合
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <param name="stream"></param>
+#endif
         private void f_writerList<T>(IList<T> list, Stream stream) where T : unmanaged
         {
             int length = list.Count;
@@ -436,3 +448,5 @@ namespace Cheng.Streams.Parsers.Default.Unitys
 
 
 }
+#if DEBUG
+#endif

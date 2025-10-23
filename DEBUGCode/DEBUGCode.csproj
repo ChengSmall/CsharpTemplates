@@ -104,11 +104,6 @@
       <Name>NetFrameworkTemplate</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\OtherCode\OtherCode.csproj">
-      <Project>{5c493d14-a1fd-41d5-8908-fc752ba3ce80}</Project>
-      <Name>OtherCode</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DEBUG\Button\Debutton.cs" />

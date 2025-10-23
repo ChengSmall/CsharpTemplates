@@ -133,6 +133,15 @@ namespace Cheng.Properties {
         }
         
         /// <summary>
+        ///   查找类似 流无法完整写入数据 的本地化字符串。
+        /// </summary>
+        internal static string Exception_PartialStreamNotWriterAllData {
+            get {
+                return ResourceManager.GetString("Exception_PartialStreamNotWriterAllData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 路径为空 的本地化字符串。
         /// </summary>
         internal static string Exception_PathIsEmpty {

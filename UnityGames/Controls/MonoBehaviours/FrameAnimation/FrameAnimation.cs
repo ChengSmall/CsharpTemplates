@@ -76,31 +76,41 @@ namespace Cheng.Unitys.Animators.FrameAnimations
 
         #region 内部参数
 
+        #if DEBUG
         /// <summary>
         /// 内部计时器
         /// </summary>
+        #endif
         private UnityRealTimer p_timer;
 
+        #if DEBUG
         /// <summary>
         /// 帧动画事件
         /// </summary>
+        #endif
         private FrameAnimationEvent p_frameRenderEvent;
 
+        #if DEBUG
         /// <summary>
         /// 完播事件
         /// </summary>
+        #endif
         private FrameAnimationEvent p_aLoopEndEvent;
 
         private Sprite p_nowPlaySprite;
 
+        #if DEBUG
         /// <summary>
         /// 当前播放帧
         /// </summary>
+        #endif
         private int p_nowFrame;
 
+        #if DEBUG
         /// <summary>
         /// 是否正在播放
         /// </summary>
+        #endif
         private bool p_isPlay;
         #endregion
 
@@ -501,5 +511,6 @@ namespace Cheng.Unitys.Animators.FrameAnimations
 
     }
 
-
 }
+#if DEBUG
+#endif

@@ -148,7 +148,7 @@ namespace Cheng.IO
 
             if (index + sizeof(uint) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -175,7 +175,7 @@ namespace Cheng.IO
 
             if (index + sizeof(int) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -202,7 +202,7 @@ namespace Cheng.IO
 
             if (index + sizeof(long) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -229,7 +229,7 @@ namespace Cheng.IO
 
             if (index + sizeof(ulong) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -256,7 +256,7 @@ namespace Cheng.IO
 
             if (index + sizeof(short) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -283,7 +283,7 @@ namespace Cheng.IO
 
             if (index + sizeof(ushort) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -310,7 +310,7 @@ namespace Cheng.IO
 
             if (index + sizeof(char) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -337,7 +337,7 @@ namespace Cheng.IO
 
             if (index + sizeof(float) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -364,7 +364,7 @@ namespace Cheng.IO
 
             if (index + sizeof(double) > buffer.Length)
             {
-                throw new ArgumentOutOfRangeException(Cheng.Properties.Resources.Exception_FuncArgOutOfRange);
+                throw new ArgumentOutOfRangeException();
             }
 
             fixed (byte* bptr = buffer)
@@ -388,18 +388,8 @@ namespace Cheng.IO
         /// <returns>转化后的值</returns>
         public static uint OrderToUInt32(this IntPtr buffer)
         {
-            
             byte* bptr = (byte*)buffer;
-
             return ((uint)bptr[0] | ((uint)bptr[1] << 8) | (((uint)bptr[2]) << (16)) | (((uint)bptr[3]) << (24)));
-
-            //const int size = sizeof(uint);
-            //uint t = default;
-            //for (int i = 0; i < size; i++)
-            //{
-            //    t |= (((uint)bptr[i]) << (i * 8));
-            //}
-            //return t;
         }
 
         /// <summary>
@@ -412,14 +402,6 @@ namespace Cheng.IO
             byte* bptr = (byte*)buffer;
 
             return (((ulong)bptr[0]) | ((ulong)bptr[1] << 8) | (((ulong)bptr[2]) << (8 * 2)) | (((ulong)bptr[3]) << (8 * 3)) | (((ulong)bptr[4]) << (8 * 4)) | ((ulong)bptr[5] << (8 * 5)) | (((ulong)bptr[6]) << (8 * 6)) | (((ulong)bptr[7]) << (8 * 7)));
-
-            //const int size = sizeof(ulong);
-            //ulong t = default;
-            //for (int i = 0; i < size; i++)
-            //{
-            //    t |= (((ulong)bptr[i]) << (i * 8));
-            //}
-            //return t;
         }
 
         /// <summary>
@@ -473,11 +455,6 @@ namespace Cheng.IO
         {
             byte* bptr = (byte*)buffer;
             return (ushort)(bptr[0] | ((bptr[1]) << 8));
-
-            //ushort t = default;
-            //t |= bptr[0];
-            //t |= (ushort)((bptr[1]) << (1 * 8));
-            //return t;
         }
 
         /// <summary>
@@ -489,11 +466,6 @@ namespace Cheng.IO
         {
             byte* bptr = (byte*)buffer;
             return (short)(bptr[0] | ((bptr[1]) << 8));
-
-            //short t = default;
-            //t |= (short)bptr[0];
-            //t |= (short)(((uint)bptr[1]) << (1 * 8));
-            //return t;
         }
 
         #endregion

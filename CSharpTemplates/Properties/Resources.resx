@@ -143,6 +143,10 @@
     <value>上级目录节点超出参数范围</value>
     <comment>异常消息：上级目录节点超出路径参数范围</comment>
   </data>
+  <data name="Exception_PartialStreamNotWriterAllData" xml:space="preserve">
+    <value>流无法完整写入数据</value>
+    <comment>异常消息：流无法完整写入数据</comment>
+  </data>
   <data name="Exception_PathIsEmpty" xml:space="preserve">
     <value>路径为空</value>
   </data>
