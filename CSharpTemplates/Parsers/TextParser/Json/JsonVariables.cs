@@ -159,6 +159,42 @@ namespace Cheng.Json
                 }
             }
         }
+
+        /// <summary>
+        /// 当前实例是否为数值类型
+        /// </summary>
+        /// <returns>
+        /// <para>如果<see cref="DataType"/>属于<see cref="JsonType.RealNum"/>或<see cref="JsonType.Integer"/>则返回true，否则返回false</para>
+        /// </returns>
+        public virtual bool IsNumberType
+        {
+            get => false;
+        }
+
+        /// <summary>
+        /// 返回此实例的数值
+        /// </summary>
+        /// <returns>如果该实例是<see cref="JsonType.RealNum"/>则返回值，如果是<see cref="JsonType.Integer"/>则转化并返回双浮点值</returns>
+        /// <exception cref="NotImplementedException">不是数值类型</exception>
+        public virtual double Number
+        {
+            get
+            {
+                throw new NotImplementedException(NotDataTypeException);
+            }
+        }
+
+        /// <summary>
+        /// 获取此实例的数值
+        /// </summary>
+        /// <param name="number">获取</param>
+        /// <returns>如果<see cref="DataType"/>属于<see cref="JsonType.RealNum"/>或<see cref="JsonType.Integer"/>则返回true并将值写入<paramref name="number"/>；否则返回false，并且<paramref name="number"/>参数无效</returns>
+        public virtual bool TryGetNumber(out double number)
+        {
+            number = default;
+            return false;
+        }
+
         #endregion
 
         #region 功能
@@ -736,6 +772,16 @@ namespace Cheng.Json
             }
         }
 
+        public override bool IsNumberType => true;
+
+        public override double Number => value;
+
+        public override bool TryGetNumber(out double number)
+        {
+            number = value;
+            return true;
+        }
+
         public override int GetHashCode()
         {
             return value.GetHashCode();
@@ -905,6 +951,16 @@ namespace Cheng.Json
         public override bool IsNull => false;
 
         public override object Data => value;
+
+        public override bool IsNumberType => true;
+
+        public override double Number => value;
+
+        public override bool TryGetNumber(out double number)
+        {
+            number = value;
+            return true;
+        }
 
         public override string ToString()
         {
@@ -1258,6 +1314,11 @@ namespace Cheng.Json
             carr[leng - 1] = '"';
             value.CopyTo(0, carr, 1, len);
             return new string(carr);
+        }
+
+        public override string ToString(IFormatProvider formatProvider)
+        {
+            return "\"" + value + "\"";
         }
 
         #endregion

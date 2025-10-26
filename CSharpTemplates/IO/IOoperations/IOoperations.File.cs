@@ -12,11 +12,38 @@ using Cheng.Streams;
 
 namespace Cheng.IO
 {
-    
+
     public static unsafe partial class IOoperations
     {
 
         #region File
+
+        #region 扩展
+
+        /// <summary>
+        /// 使用只读方式打开文件并从初始位读取数据到缓冲区后关闭
+        /// </summary>
+        /// <param name="file">要读取的文件路径</param>
+        /// <param name="buffer">读取到的缓冲区</param>
+        /// <param name="offset">读取数据写入到缓冲区的起始偏移</param>
+        /// <param name="count">要读取的字节数</param>
+        /// <returns>实际读取到的字节数</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">给定参数超出范围</exception>
+        /// <exception cref="ArgumentOutOfRangeException">给定参数超出范围</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">不支持方法</exception>
+        /// <exception cref="ObjectDisposedException">资源已释放</exception>
+        public static int OpenStreamRead(this FileInfo file, byte[] buffer, int offset, int count)
+        {
+            if (file is null) throw new ArgumentNullException();
+            using (var open = file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            {
+                return open.ReadBlock(buffer, offset, count);
+            }
+        }
+
+        #endregion
 
         #region Hash256
 

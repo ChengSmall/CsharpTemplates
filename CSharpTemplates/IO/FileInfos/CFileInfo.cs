@@ -6,6 +6,7 @@ using System.Reflection;
 using Cheng.Algorithm.Collections;
 using System.Linq;
 using Cheng.DataStructure;
+using Cheng.Streams;
 
 namespace Cheng.IO
 {
@@ -991,6 +992,27 @@ namespace Cheng.IO
             {
             }
             return null;
+        }
+
+        /// <summary>
+        /// 使用只读方式打开文件并从初始位读取数据到缓冲区后关闭
+        /// </summary>
+        /// <param name="buffer">读取到的缓冲区</param>
+        /// <param name="offset">读取数据写入到缓冲区的起始偏移</param>
+        /// <param name="count">要读取的字节数</param>
+        /// <returns>实际读取到的字节数</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">给定参数超出范围</exception>
+        /// <exception cref="ArgumentOutOfRangeException">给定参数超出范围</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">不支持方法</exception>
+        /// <exception cref="ObjectDisposedException">资源已释放</exception>
+        public int OpenStreamRead(byte[] buffer, int offset, int count)
+        {
+            using (var s = OpenStream(CFileAccess.Read, CFileShare.ReadWrite | CFileShare.Delete))
+            {
+                return s.ReadBlock(buffer, offset, count);
+            }
         }
 
         #endregion

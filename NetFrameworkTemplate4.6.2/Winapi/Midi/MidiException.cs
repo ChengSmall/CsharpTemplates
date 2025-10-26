@@ -19,7 +19,7 @@ namespace Cheng.Windows.MIDI
 
         #region
 
-        public MidiException(MidiError error) : base(Cheng.Properties.Resources.ExceptionMeg_MIDI_Error)
+        public MidiException(MidiError error) : base(Cheng.NetFrameworkTemplate.Properties.Resources.ExceptionMeg_MIDI_Error)
         {
             p_error = error;
         }
@@ -34,7 +34,7 @@ namespace Cheng.Windows.MIDI
             p_error = error;
         }
 
-        public MidiException() : base(Cheng.Properties.Resources.ExceptionMeg_MIDI_Error)
+        public MidiException() : base(Cheng.NetFrameworkTemplate.Properties.Resources.ExceptionMeg_MIDI_Error)
         {
         }
 
@@ -77,7 +77,7 @@ namespace Cheng.Windows.MIDI
         /// <summary>
         /// 系统找不到MIDI设备
         /// </summary>
-        public NotMidiDeviceException() : base(Cheng.Properties.Resources.ExceptionMeg_MIDI_SysNotMidiDev)
+        public NotMidiDeviceException() : base(Cheng.NetFrameworkTemplate.Properties.Resources.ExceptionMeg_MIDI_SysNotMidiDev)
         {
             p_error = MidiError.NoDevice;
         }

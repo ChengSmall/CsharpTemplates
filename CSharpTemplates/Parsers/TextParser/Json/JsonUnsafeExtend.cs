@@ -17,7 +17,7 @@ namespace Cheng.Json
         /// 获取json对象内部用于储存数据的字典实例
         /// </summary>
         /// <remarks>
-        /// <para>提示：修改内部实例可能会导致无法捕获的异常出现</para>
+        /// <para>提示：修改内部实例可能会导致未知的异常出现</para>
         /// </remarks>
         /// <param name="json">json对象</param>
         /// <returns>对象内部用于储存数据的字典</returns>
@@ -32,7 +32,7 @@ namespace Cheng.Json
         /// 获取json对象内部用于储存数据的集合实例
         /// </summary>
         /// <remarks>
-        /// <para>提示：修改内部实例可能会导致无法捕获的异常出现</para>
+        /// <para>提示：修改内部实例可能会导致未知的异常出现</para>
         /// </remarks>
         /// <param name="json">json对象</param>
         /// <returns>对象内部用于储存数据的集合</returns>

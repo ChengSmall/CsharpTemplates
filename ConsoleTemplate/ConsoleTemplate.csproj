@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{985D5B0D-5A00-4E1A-A0F1-9EFC688D3B27}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Cheng.Consoles</RootNamespace>
+    <RootNamespace>Cheng.ConsoleTemplate</RootNamespace>
     <AssemblyName>ConsoleTemplate</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\temp\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -66,9 +66,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
-del /q "$(TargetDir)$(TargetFileName).config"
-)
-copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>if "Release" == "$(ConfigurationName)" (
+copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"
+copy /y "$(TargetDir)$(TargetName).xml" "$(ProjectDir)bin\$(ConfigurationName)\"
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

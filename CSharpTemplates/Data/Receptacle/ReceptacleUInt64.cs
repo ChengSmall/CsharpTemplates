@@ -94,20 +94,15 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="value">要减少的值</param>
         /// <param name="reValue">运算结果</param>
-        /// <returns>当此次运算后的值小于0，则值设为0并返回true；否则返回false</returns>
+        /// <returns>当此次运算后的值小于或等于0，则值设为0并返回true；否则返回false</returns>
         public bool SubMinZero(ulong value, out ReceptacleUInt64 reValue)
         {
-            if (value >= this.value)
-            {
-                reValue = new ReceptacleUInt64(0, maxValue);
-                return true;
-            }
-
             var v = this.value - value;
-
-            //if (v > maxValue) v = maxValue;
-            reValue = new ReceptacleUInt64(v, maxValue);
-            return false;
+            bool flag = v <= 0 || v > maxValue;
+            if (flag) v = 0;
+            if (v > maxValue) v = maxValue;
+            reValue = new Rec(v, maxValue);
+            return flag;
         }
 
         /// <summary>
@@ -116,25 +111,16 @@ namespace Cheng.DataStructure.Receptacles
         /// <param name="subValue">要减少的值</param>
         /// <param name="minValue">要减少最小的值</param>
         /// <param name="reValue">运算结果</param>
-        /// <returns>当此次运算后的值小于<paramref name="minValue"/>，则值设为<paramref name="minValue"/>并返回true；否则返回false</returns>
+        /// <returns>当此次运算后的值小于或等于<paramref name="minValue"/>，则值设为<paramref name="minValue"/>并返回true；否则返回false</returns>
         public bool SubMin(ulong subValue, ulong minValue, out ReceptacleUInt64 reValue)
         {
-
-            if (this.value <= subValue)
-            {
-                reValue = new ReceptacleUInt64(minValue, maxValue);
-                return true;
-            }
-
             var v = this.value - subValue;
-            if(v <= minValue)
-            {
-                reValue = new ReceptacleUInt64(minValue, maxValue);
-                return true;
-            }
+            bool flag = v <= minValue || v > maxValue;
 
-            reValue = new ReceptacleUInt64(v, maxValue);
-            return false;
+            if (flag) v = minValue;
+            if (v > maxValue) v = maxValue;
+            reValue = new Rec(v, maxValue);
+            return flag;
         }
 
         /// <summary>
@@ -144,15 +130,9 @@ namespace Cheng.DataStructure.Receptacles
         /// <returns>运算结果</returns>
         public ReceptacleUInt64 SubMinZero(ulong value)
         {
-            if(value >= this.value)
-            {
-                return new ReceptacleUInt64(0, maxValue);
-            }
-
             var v = this.value - value;
-
-            //if (v > maxValue) v = maxValue;
-            return new ReceptacleUInt64(v, maxValue);
+            if (v < 0 || v > this.maxValue) v = 0;
+            return new Rec(v, maxValue);
         }
 
         /// <summary>
@@ -163,18 +143,9 @@ namespace Cheng.DataStructure.Receptacles
         /// <returns>运算结果</returns>
         public ReceptacleUInt64 SubMin(ulong subValue, ulong minValue)
         {
-            if (this.value <= subValue)
-            {
-                return new ReceptacleUInt64(minValue, maxValue);
-            }
-
             var v = this.value - subValue;
-            if (v <= minValue)
-            {
-                return new ReceptacleUInt64(minValue, maxValue);                
-            }
-
-            return new ReceptacleUInt64(v, maxValue);
+            if (v < minValue || v > this.maxValue) v = minValue;
+            return new Rec(v, maxValue);
         }
 
         /// <summary>
@@ -241,6 +212,7 @@ namespace Cheng.DataStructure.Receptacles
         #endregion
 
         #region 参数判断
+
         /// <summary>
         /// 当前值是否为0
         /// </summary>
@@ -248,6 +220,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             get => value == 0;
         }
+
         /// <summary>
         /// 当前值是否为最大值
         /// </summary>
@@ -255,9 +228,11 @@ namespace Cheng.DataStructure.Receptacles
         {
             get => value == maxValue;
         }
+
         #endregion
 
         #region 比较运算
+
         /// <summary>
         /// 比较两个容器是否相等
         /// </summary>
@@ -328,10 +303,12 @@ namespace Cheng.DataStructure.Receptacles
             }
             return false;
         }
+
         public override int GetHashCode()
         {
             return (value ^ maxValue).GetHashCode();
         }
+
         public bool Equals(ReceptacleUInt64 other)
         {
             return this == other;
@@ -348,9 +325,8 @@ namespace Cheng.DataStructure.Receptacles
         }
         #endregion
 
-        #endregion
-
         #region 派生
+
         /// <summary>
         /// 返回容器的字符串形式
         /// </summary>
@@ -359,6 +335,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             return value.ToString() + "/" + maxValue.ToString();
         }
+
         /// <summary>
         /// 返回容器的字符串形式
         /// </summary>
@@ -368,10 +345,58 @@ namespace Cheng.DataStructure.Receptacles
         {
             return value.ToString(format) + "/" + maxValue.ToString(format);
         }
+
         public long GetHashCode64()
         {
             return (long)(value ^ maxValue);
         }
+
+        #endregion
+
+        #region 转化
+
+        #region 元组转化
+
+        /// <summary>
+        /// 使用元组值初始化容器
+        /// </summary>
+        /// <param name="valueTuple">第一个值初始化为value，第二个值初始化为maxValue</param>
+        public static implicit operator Rec((ty, ty) valueTuple)
+        {
+            return new Rec(valueTuple.Item1, valueTuple.Item2);
+        }
+
+        /// <summary>
+        /// 将容器转化为元组值
+        /// </summary>
+        /// <param name="rec">value设为第一个参数，maxValue设为第二个参数</param>
+        public static implicit operator (ty, ty)(Rec rec)
+        {
+            return (rec.value, rec.maxValue);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 转化为双浮点类型容器
+        /// </summary>
+        /// <param name="rec"></param>
+        public static implicit operator ReceptacleDouble(Rec rec)
+        {
+            return new ReceptacleDouble(rec.value, rec.maxValue);
+        }
+
+        /// <summary>
+        /// 指定最大值的满容器
+        /// </summary>
+        /// <param name="value">设置最大值和当前值</param>
+        public static implicit operator Rec(ty value)
+        {
+            return new Rec(value);
+        }
+
+        #endregion
+
         #endregion
 
     }

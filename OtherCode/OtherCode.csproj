@@ -26,14 +26,14 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\temp\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\OtherCode.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\temp\OtherCode.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -44,7 +44,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\OtherCode.xml</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
@@ -55,7 +55,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\OtherCode.xml</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
@@ -66,7 +66,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\OtherCode.xml</DocumentationFile>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Compressions\" />
+    <Folder Include="Resources\" />
     <Folder Include="structure\MindMap\" />
     <Folder Include="Systems\" />
     <Folder Include="Texter\" />
@@ -140,9 +141,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not "Debug" == "$(ConfigurationName)" (
-del /q "$(TargetDir)$(TargetName).pdb"
-del /q "$(TargetDir)$(TargetFileName).config"
+    <PostBuildEvent>if "Release" == "$(ConfigurationName)" (
+copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"
+copy /y "$(TargetDir)$(TargetName).xml" "$(ProjectDir)bin\$(ConfigurationName)\"
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

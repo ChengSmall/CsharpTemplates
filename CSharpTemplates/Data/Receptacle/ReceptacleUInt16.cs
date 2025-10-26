@@ -93,7 +93,7 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="value">要减少的值</param>
         /// <param name="reValue">运算结果</param>
-        /// <returns>当此次运算后的值小于0，则值设为0并返回true；否则返回false</returns>
+        /// <returns>当此次运算后的值小于或等于0，则值设为0并返回true；否则返回false</returns>
         public bool SubMinZero(ushort value, out ReceptacleUInt16 reValue)
         {
             var v = this.value - value;
@@ -111,7 +111,7 @@ namespace Cheng.DataStructure.Receptacles
         /// <param name="subValue">要减少的值</param>
         /// <param name="minValue">要减少最小的值</param>
         /// <param name="reValue">运算结果</param>
-        /// <returns>当此次运算后的值小于<paramref name="minValue"/>，则值设为<paramref name="minValue"/>并返回true；否则返回false</returns>
+        /// <returns>当此次运算后的值小于或等于<paramref name="minValue"/>，则值设为<paramref name="minValue"/>并返回true；否则返回false</returns>
         public bool SubMin(ushort subValue, ushort minValue, out ReceptacleUInt16 reValue)
         {
             var v = this.value - subValue;
@@ -132,7 +132,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             var v = this.value - value;
 
-            if (v < 0) v = 0;
+            if (v < 0 || v > this.maxValue) v = 0;
 
             return new ReceptacleUInt16((ushort)v, maxValue);
         }
@@ -147,7 +147,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             var v = this.value - subValue;
 
-            if (v < minValue) v = minValue;
+            if (v < minValue || v > this.maxValue) v = minValue;
 
             return new ReceptacleUInt16((ushort)v, maxValue);
         }
@@ -322,8 +322,6 @@ namespace Cheng.DataStructure.Receptacles
         }
         #endregion
 
-        #endregion
-
         #region 派生
         /// <summary>
         /// 返回容器的字符串形式
@@ -346,6 +344,43 @@ namespace Cheng.DataStructure.Receptacles
         {
             return (value ^ ((uint)maxValue << 16));
         }
+        #endregion
+
+        #region 转化
+
+        #region 元组转化
+
+        /// <summary>
+        /// 使用元组值初始化容器
+        /// </summary>
+        /// <param name="valueTuple">第一个值初始化为value，第二个值初始化为maxValue</param>
+        public static implicit operator Rec((ty, ty) valueTuple)
+        {
+            return new Rec(valueTuple.Item1, valueTuple.Item2);
+        }
+
+        /// <summary>
+        /// 将容器转化为元组值
+        /// </summary>
+        /// <param name="rec">value设为第一个参数，maxValue设为第二个参数</param>
+        public static implicit operator (ty, ty)(Rec rec)
+        {
+            return (rec.value, rec.maxValue);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 指定最大值的满容器
+        /// </summary>
+        /// <param name="value">设置最大值和当前值</param>
+        public static implicit operator Rec(ty value)
+        {
+            return new Rec(value);
+        }
+
+        #endregion
+
         #endregion
 
 

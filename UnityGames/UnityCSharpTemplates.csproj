@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Cheng</RootNamespace>
+    <RootNamespace>Cheng.UnityCSharpTemplates</RootNamespace>
     <Authors>Cheng</Authors>
     <Copyright>© Cheng</Copyright>
     <Configurations>Debug;Release;UnityEditor;UnityWindows;UnityAndroid</Configurations>
@@ -334,7 +334,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y &quot;$(TargetDir)&quot; &quot;$(ProjectDir)bin\$(ConfigurationName)&quot;" />
+    <Exec Command="if not &quot;Debug&quot; == &quot;$(ConfigurationName)&quot; (&#xD;&#xA;copy /y &quot;$(TargetDir)&quot; &quot;$(ProjectDir)bin\$(ConfigurationName)&quot;&#xD;&#xA;)&#xD;&#xA;" />
   </Target>
 
 </Project>

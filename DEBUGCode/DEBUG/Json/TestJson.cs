@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Cheng.Json;
 
 namespace Cheng.DEBUG
@@ -28,7 +29,7 @@ namespace Cheng.DEBUG
         /// </summary>
         public static JsonParser Parser
         {
-            //[Thr]
+            [MethodImpl(MethodImplOptions.Synchronized)]
             get
             {
                 if(p_jp is null)

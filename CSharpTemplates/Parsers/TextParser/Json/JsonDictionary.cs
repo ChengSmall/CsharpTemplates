@@ -355,9 +355,13 @@ namespace Cheng.Json
             return sb.ToString();
         }
 
+        public override string ToString(IFormatProvider formatProvider)
+        {
+            return ToString();
+        }
+
         #endregion
 
     }
-
 
 }

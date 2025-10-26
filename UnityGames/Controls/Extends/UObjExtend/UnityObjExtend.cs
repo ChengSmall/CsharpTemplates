@@ -9,13 +9,11 @@ using UObj = UnityEngine.Object;
 namespace Cheng.Unitys
 {
 
-
-    public static class UnityObjExtend
+    /// <summary>
+    /// Unity对象扩展
+    /// </summary>
+    public static unsafe partial class UnityObjExtend
     {
-
-        #region
-
-        #endregion
 
         #region 对象管理
 

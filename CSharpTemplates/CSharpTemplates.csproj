@@ -45,7 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Algorithm\Maths\Structures\" />
     <Folder Include="Algorithm\Pathfindings\GridPathfindings\AStar\" />
     <Folder Include="Audio\Midi\" />
     <Folder Include="Data\BehaviorTrees\" />
