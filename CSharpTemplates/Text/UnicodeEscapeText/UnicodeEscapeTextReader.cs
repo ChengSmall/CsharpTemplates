@@ -315,7 +315,10 @@ namespace Cheng.Texts
                 return -1; //没有读取到完整块
             }
 
-            f_peekBuffer();
+            if (!f_peekBuffer())
+            {
+                throw new ArgumentException();
+            }
 
             //没有到达结尾
 
@@ -340,6 +343,7 @@ namespace Cheng.Texts
                 int re = Read();
                 if (re == -1) break;
                 buffer[index] = (char)re;
+                index++;
                 count--;
                 rec++;
             }
@@ -349,25 +353,7 @@ namespace Cheng.Texts
 
         public override int ReadBlock(char[] buffer, int index, int count)
         {
-            ThrowObjectDisposed();
-            if (buffer is null) throw new ArgumentNullException();
-            int length = buffer.Length;
-            if (index < 0 || count < 0 || (index + count > length))
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            int rec = 0;
-            while (count != 0)
-            {
-                int re = Read();
-                if (re == -1) break;
-                buffer[index] = (char)re;
-                count--;
-                rec++;
-            }
-
-            return rec;
+            return Read(buffer, index, count);
         }
 
         public override string ReadToEnd()
@@ -375,7 +361,7 @@ namespace Cheng.Texts
             ThrowObjectDisposed();
             if (p_isEnd) return string.Empty;
             
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(1024 * 2);
 
             while (true)
             {

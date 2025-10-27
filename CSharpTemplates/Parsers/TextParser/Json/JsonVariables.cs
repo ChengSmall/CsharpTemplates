@@ -451,9 +451,10 @@ namespace Cheng.Json
         /// 强转为整数
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">无效转化</exception>
         public static explicit operator long?(JsonVariable jobj)
         {
-            if (jobj is null) return null;
+            if (jobj is null || jobj.IsNull) return null;
             var t = jobj.DataType;
             if (t == JsonType.Integer)
             {
@@ -470,9 +471,10 @@ namespace Cheng.Json
         /// 强转为浮点数
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">无效转化</exception>
         public static explicit operator double?(JsonVariable jobj)
         {
-            if (jobj is null) return null;
+            if (jobj is null || jobj.IsNull) return null;
             var t = jobj.DataType;
             if (t == JsonType.RealNum)
             {
@@ -485,9 +487,10 @@ namespace Cheng.Json
         /// 强转为整数
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">无效转化</exception>
         public static explicit operator int?(JsonVariable jobj)
         {
-            if (jobj is null) return null;
+            if (jobj is null || jobj.IsNull) return null;
             var t = jobj.DataType;
             if (t == JsonType.Integer)
             {
@@ -504,9 +507,10 @@ namespace Cheng.Json
         /// 强转为浮点数
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">无效转化</exception>
         public static explicit operator float?(JsonVariable jobj)
         {
-            if (jobj is null) return null;
+            if (jobj is null || jobj.IsNull) return null;
             var t = jobj.DataType;
             if (t == JsonType.RealNum)
             {
@@ -519,9 +523,10 @@ namespace Cheng.Json
         /// 强转为布尔值
         /// </summary>
         /// <param name="jobj"></param>
+        /// <exception cref="InvalidCastException">无效转化</exception>
         public static explicit operator bool?(JsonVariable jobj)
         {
-            if (jobj is null) return null;
+            if (jobj is null || jobj.IsNull) return null;
             var t = jobj.DataType;
             if (t == JsonType.Boolean)
             {
@@ -581,7 +586,8 @@ namespace Cheng.Json
         /// <param name="value"></param>
         public static explicit operator JsonVariable(long? value)
         {
-            return value.HasValue ? new JsonInteger(value.Value) : null;
+            if (value.HasValue) return new JsonInteger(value.Value);
+            return JsonNull.Nullable;
         }
 
         /// <summary>
@@ -590,7 +596,8 @@ namespace Cheng.Json
         /// <param name="value"></param>
         public static explicit operator JsonVariable(double? value)
         {
-            return value.HasValue ? new JsonRealNumber(value.Value) : null;
+            if (value.HasValue) return new JsonRealNumber(value.Value);
+            return JsonNull.Nullable;
         }
 
         /// <summary>
@@ -599,7 +606,8 @@ namespace Cheng.Json
         /// <param name="value"></param>
         public static explicit operator JsonVariable(int? value)
         {
-            return value.HasValue ? new JsonInteger(value.Value) : null;
+            if (value.HasValue) return new JsonInteger(value.Value);
+            return JsonNull.Nullable;
         }
 
         /// <summary>
@@ -608,7 +616,8 @@ namespace Cheng.Json
         /// <param name="value"></param>
         public static explicit operator JsonVariable(float? value)
         {
-            return value.HasValue ? new JsonRealNumber(value.Value) : null;
+            if (value.HasValue) return new JsonRealNumber(value.Value);
+            return JsonNull.Nullable;
         }
 
         /// <summary>
@@ -617,7 +626,8 @@ namespace Cheng.Json
         /// <param name="value"></param>
         public static explicit operator JsonVariable(bool? value)
         {
-            return value.HasValue ? new JsonBoolean(value.Value) : null;
+            if (value.HasValue) return new JsonBoolean(value.Value);
+            return JsonNull.Nullable;
         }
 
         /// <summary>
@@ -647,7 +657,6 @@ namespace Cheng.Json
     }
 
     #region json对象
-
 
     /// <summary>
     /// 表示一个null类型的json对象
@@ -714,7 +723,6 @@ namespace Cheng.Json
         }
 
     }
-
 
     /// <summary>
     /// 表示整数类型的json对象
@@ -874,7 +882,6 @@ namespace Cheng.Json
         #endregion
 
     }
-
 
     /// <summary>
     /// 表示小数类型的json对象
@@ -1076,7 +1083,6 @@ namespace Cheng.Json
 
     }
 
-
     /// <summary>
     /// 表示布尔类型的json对象
     /// </summary>
@@ -1194,7 +1200,6 @@ namespace Cheng.Json
         #endregion
 
     }
-
 
     /// <summary>
     /// 表示字符串类型的json对象
@@ -1324,7 +1329,6 @@ namespace Cheng.Json
         #endregion
 
     }
-
 
     #endregion
 

@@ -19,17 +19,28 @@ namespace Cheng.Texts.Consoles
     public sealed class ConsoleStyleTextWriter : SafeReleaseTextWriter
     {
 
-        #region
+        #region 构造
 
         /// <summary>
         /// 实例化一个控制台样式转义字符写入器
         /// </summary>
         /// <param name="writer">要封装的文本写入器</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
-        public ConsoleStyleTextWriter(TextWriter writer)
+        public ConsoleStyleTextWriter(TextWriter writer) : this(writer, true)
+        {
+        }
+
+        /// <summary>
+        /// 实例化一个控制台样式转义字符写入器
+        /// </summary>
+        /// <param name="writer">要封装的文本写入器</param>
+        /// <param name="disposeBaseWriter">在释放对象时是否释放封装的写入器对象；默认为true</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public ConsoleStyleTextWriter(TextWriter writer, bool disposeBaseWriter)
         {
             p_writer = writer ?? throw new ArgumentNullException();
             p_enc = p_writer.Encoding;
+            p_disposeBase = disposeBaseWriter;
             f_init();
         }
 
@@ -46,6 +57,7 @@ namespace Cheng.Texts.Consoles
         private TextWriter p_writer;
         private Encoding p_enc;
         private Colour? p_style_color;
+        private bool p_disposeBase;
 
         #endregion
 
@@ -73,11 +85,12 @@ namespace Cheng.Texts.Consoles
 
         protected override bool Disposing(bool disposeing)
         {
-            if (disposeing)
+            if (p_disposeBase && disposeing)
             {
                 p_writer.Close();
             }
             p_writer = null;
+            p_enc = null;
             return true;
         }
 
