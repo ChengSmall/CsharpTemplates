@@ -10,7 +10,7 @@ namespace Cheng.Memorys
     /// <summary>
     /// 一个64位指针，该指针在任何环境下都是8个字节大小
     /// </summary>
-    public unsafe struct Pointer64 : IEquatable<Pointer64>, IComparable<Pointer64>, IConvertible, IHashCode64
+    public unsafe readonly struct Pointer64 : IEquatable<Pointer64>, IComparable<Pointer64>, IConvertible, IHashCode64
     {
 
         #region 构造
@@ -78,7 +78,7 @@ namespace Cheng.Memorys
         /// </summary>
         public static Pointer64 Null => default;
 
-        private readonly ulong p_ptr;
+        internal readonly ulong p_ptr;
 
         #endregion
 

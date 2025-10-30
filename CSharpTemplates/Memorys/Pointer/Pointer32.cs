@@ -9,7 +9,7 @@ namespace Cheng.Memorys
     /// <summary>
     /// 一个32位指针，该指针在任何环境下都是4个字节大小
     /// </summary>
-    public unsafe struct Pointer32 : IEquatable<Pointer32>, IComparable<Pointer32>, IConvertible
+    public unsafe readonly struct Pointer32 : IEquatable<Pointer32>, IComparable<Pointer32>, IConvertible
     {
 
         #region 构造
@@ -59,7 +59,7 @@ namespace Cheng.Memorys
         /// </summary>
         public static Pointer32 Null => default;
 
-        private readonly uint p_ptr;
+        internal readonly uint p_ptr;
 
         #endregion
 

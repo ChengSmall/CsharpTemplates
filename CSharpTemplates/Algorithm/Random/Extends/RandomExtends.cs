@@ -10,7 +10,7 @@ namespace Cheng.Algorithm.Randoms.Extends
     /// <summary>
     /// 随机相关扩展方法
     /// </summary>
-    public static class RandomExtends
+    public static unsafe class RandomExtends
     {
 
         #region 洗牌

@@ -11,7 +11,7 @@ namespace Cheng.Consoles
     /// <summary>
     /// 控制台更改文本样式的ASNI转移序列
     /// </summary>
-    /// <remarks>使用前需要开启控制台虚拟终端；使用<see cref="Consoles.VirtualTerminalConsole"/>开启虚拟终端</remarks>
+    /// <remarks>使用前需要开启控制台虚拟终端；使用<see cref="ConsoleSystem.EnableVirtualTerminalProcessingOnWindows"/>开启虚拟终端</remarks>
     public unsafe static class ConsoleTextStyle
     {
 

@@ -1,3 +1,4 @@
+using Cheng.Memorys;
 using System;
 
 namespace Cheng.Algorithm.Randoms
@@ -255,6 +256,20 @@ namespace Cheng.Algorithm.Randoms
         public virtual bool NextDouble(double probability)
         {
             return NextDouble() < probability;
+        }
+
+        /// <summary>
+        /// 用随机数填充指定内存中的每一个字节
+        /// </summary>
+        /// <param name="ptr">指向字节数据的指针</param>
+        /// <param name="length">要填充的字节长度</param>
+        public virtual unsafe void NextPtr(IntPtr ptr, int length)
+        {
+            byte* buffer = (byte*)ptr;
+            for (int i = 0; i < length; i++)
+            {
+                buffer[i] = (byte)Next(0, 256);
+            }
         }
 
         #endregion

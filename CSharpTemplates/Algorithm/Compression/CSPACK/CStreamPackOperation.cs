@@ -178,7 +178,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// <summary>
         /// CSPACK包的文件标准后缀名
         /// </summary>
-        public const string StandardExtensionName = ".esp";
+        public const string StandardExtensionName = ".csp";
 
         #endregion
 
@@ -377,6 +377,19 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         }
 
         #endregion
+
+        /// <summary>
+        /// 写入CSPACK包标准头数据
+        /// </summary>
+        /// <param name="stream">要写入的流</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="NotSupportedException">没有写入权限</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        public static void WriteHeader(Stream stream)
+        {
+            f_writeHeader(stream ?? throw new ArgumentNullException(nameof(stream)));
+        }
 
         /// <summary>
         /// 将当前待打包数据队列打包到指定流，使用枚举器逐步打包

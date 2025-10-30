@@ -381,13 +381,13 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                 {
                     throw new InvalidOperationException(); //预期之外的结构
                 }
-                ushort cuv = (byte)re;
+                ushort cuv = (byte)(re & 0xFF);
                 re = stream.ReadByte();
                 if (re == -1)
                 {
                     throw new InvalidOperationException(); //预期之外的结构
                 }
-                cuv |= (byte)(re << 8);
+                cuv |= (ushort)((uint)re << 8);
                 cbuf255[i] = (char)cuv;
             }
 
