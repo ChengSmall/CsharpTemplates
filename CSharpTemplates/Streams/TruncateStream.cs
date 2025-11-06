@@ -12,6 +12,7 @@ namespace Cheng.Streams
     /// </summary>
     /// <remarks>
     /// <para>封装指定的流对象，将其截断其中一部分数据作为只读流；封装的流必须要有读取和查找功能</para>
+    /// <para>对封装的同一个内部<see cref="System.IO.Stream"/>线程安全（类型本身并不是线程安全的）</para>
     /// </remarks>
     public unsafe class TruncateStream : HEStream
     {

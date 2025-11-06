@@ -39,16 +39,11 @@ namespace Cheng.Algorithm.Sorts.Comparers
         private System.Collections.Generic.IReadOnlyList<IComparer<T>> p_arr;
 
         /// <summary>
-        /// 访问或设置比较器列表
+        /// 访问比较器列表
         /// </summary>
-        /// <exception cref="ArgumentNullException">设置的比较器列表为null</exception>
         public System.Collections.Generic.IReadOnlyList<IComparer<T>> Comparers
         {
             get => p_arr;
-            set
-            {
-                p_arr = value ?? throw new ArgumentNullException();
-            }
         }
 
         #endregion
@@ -65,10 +60,8 @@ namespace Cheng.Algorithm.Sorts.Comparers
         /// </returns>
         public override int Compare(T x, T y)
         {
-            int length = p_arr.Count;
-            for (int i = 0; i < length; i++)
+            foreach (var comp in p_arr)
             {
-                var comp = p_arr[i];
                 if (comp is null) continue;
                 var c = comp.Compare(x, y);
                 if (c != 0) return c;

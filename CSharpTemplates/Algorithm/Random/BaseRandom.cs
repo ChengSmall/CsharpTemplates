@@ -180,8 +180,7 @@ namespace Cheng.Algorithm.Randoms
         public virtual float NextFloat(float min, float max)
         {
             if (min > max) throw new ArgumentOutOfRangeException();
-            return (float)(min + ((max - min) * NextFloat()));
-            //return (float)(min + (NextDouble() * (max - min)));
+            return (float)(min + ((max - min) * NextDouble()));
         }
 
         /// <summary>
@@ -202,14 +201,12 @@ namespace Cheng.Algorithm.Randoms
         /// </summary>
         /// <param name="buffer">待填充的字节数组</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public virtual void NextBytes(byte[] buffer)
+        public virtual unsafe void NextBytes(byte[] buffer)
         {
             if (buffer is null) throw new ArgumentNullException();
-
-            int length = buffer.Length;
-            for (int i = 0; i < length; i++)
+            fixed (byte* ptr = buffer)
             {
-                buffer[i] = (byte)Next(0, 256);
+                NextPtr(new IntPtr(ptr), buffer.Length);
             }
         }
 
@@ -220,18 +217,14 @@ namespace Cheng.Algorithm.Randoms
         /// <param name="offset">待填充字节数组的起始位置</param>
         /// <param name="count">要填充的字节数量</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public virtual void NextBytes(byte[] buffer, int offset, int count)
+        public virtual unsafe void NextBytes(byte[] buffer, int offset, int count)
         {
             if (buffer is null) throw new ArgumentNullException();
             if (offset < 0 || count < 0 || (count + offset > buffer.Length)) throw new ArgumentOutOfRangeException();
-
-            int length = offset + count;
-            int i;
-            for (i = offset; i < length; i++)
+            fixed (byte* ptr = buffer)
             {
-                buffer[i] = (byte)Next(0, 256);
+                NextPtr(new IntPtr(ptr + offset), count);
             }
-
         }
 
         /// <summary>
@@ -243,6 +236,8 @@ namespace Cheng.Algorithm.Randoms
         /// </returns>
         public virtual bool NextFloat(float probability)
         {
+            if (probability < 0) return false;
+            if (probability >= 1) return true;
             return NextFloat() < probability;
         }
 
@@ -255,6 +250,8 @@ namespace Cheng.Algorithm.Randoms
         /// </returns>
         public virtual bool NextDouble(double probability)
         {
+            if (probability < 0) return false;
+            if (probability >= 1) return true;
             return NextDouble() < probability;
         }
 
@@ -265,10 +262,17 @@ namespace Cheng.Algorithm.Randoms
         /// <param name="length">要填充的字节长度</param>
         public virtual unsafe void NextPtr(IntPtr ptr, int length)
         {
-            byte* buffer = (byte*)ptr;
-            for (int i = 0; i < length; i++)
+            if (length == 0) return;
+            int len = length / 2;
+            ushort* buffer = (ushort*)ptr;
+            int i;
+            for (i = 0; i < len; i++)
             {
-                buffer[i] = (byte)Next(0, 256);
+                buffer[i] = (ushort)Next(0, ushort.MaxValue + 1);
+            }
+            if((length % 2) != 0)
+            {
+                *((byte*)(buffer + i)) = (byte)Next(0, byte.MaxValue + 1);
             }
         }
 

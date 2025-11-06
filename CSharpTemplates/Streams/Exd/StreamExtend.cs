@@ -350,7 +350,7 @@ namespace Cheng.Streams
                     stream.CopyToStream(ms, new byte[1024]);
                     if (ms.TryGetBuffer(out var arr))
                     {
-                        if (arr.Count == ms.Length && arr.Offset == 0)
+                        if (arr.Count == ms.Capacity && arr.Offset == 0)
                         {
                             return arr.Array;
                         }

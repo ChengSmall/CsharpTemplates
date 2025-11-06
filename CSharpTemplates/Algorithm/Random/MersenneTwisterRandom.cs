@@ -19,7 +19,7 @@ namespace Cheng.Algorithm.Randoms
         /// 随机器状态的数据备份
         /// </summary>
         [Serializable]
-        public struct RandomState
+        public readonly struct RandomState
         {
             /// <summary>
             /// 初始化随机器状态
@@ -184,6 +184,29 @@ namespace Cheng.Algorithm.Randoms
         {
             if (min >= max) throw new ArgumentOutOfRangeException();
             return min + (NextLong() % (max - min));
+        }
+
+        public override unsafe void NextPtr(IntPtr ptr, int length)
+        {
+            if (length == 0) return;
+            int len = length / sizeof(ulong);
+            ulong* buffer = (ulong*)ptr;
+            int i;
+            for (i = 0; i < len; i++)
+            {
+                buffer[i] = this.Generate();
+            }
+            var mod = (length % sizeof(ulong));
+            if (mod != 0)
+            {
+                byte* mp = (byte*)(buffer + i);
+                ulong re = Generate();
+                byte* reb = (byte*)&re;
+                for (i = 0; i < mod; i++)
+                {
+                    mp[i] = reb[i];
+                }
+            }
         }
 
         #endregion

@@ -305,11 +305,11 @@ namespace Cheng.DEBUG
             {
                 p_buffer.Clear();
 
-                p_buffer.Append("释放DEBUG流 =>");
+                p_buffer.Append("释放DEBUG流 ");
 
                 if (disposing)
                 {
-                    p_buffer.Append("释放托管对象 =>");
+                    p_buffer.Append("释放托管对象 ");
                 }
                 if (p_disposed)
                 {

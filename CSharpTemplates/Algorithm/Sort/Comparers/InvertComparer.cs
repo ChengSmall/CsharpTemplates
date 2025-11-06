@@ -25,7 +25,7 @@ namespace Cheng.Algorithm.Sorts.Comparers
         /// 实例化一个可反转比较结果的比较器
         /// </summary>
         /// <param name="comparer">要反转的比较器</param>
-        /// <param name="invert">是否使用反转功能</param>
+        /// <param name="invert">是否使用反转功能；初始化默认为true</param>
         public InvertComparer(IComparer<T> comparer, bool invert)
         {
             this.comparer = comparer ?? throw new ArgumentNullException();

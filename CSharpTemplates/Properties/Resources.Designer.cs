@@ -88,6 +88,15 @@ namespace Cheng.Properties {
         }
         
         /// <summary>
+        ///   查找类似 无法将数据转化为字节数据 的本地化字符串。
+        /// </summary>
+        internal static string Exception_Char16NotConvertBytes {
+            get {
+                return ResourceManager.GetString("Exception_Char16NotConvertBytes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 给定方法的参数不合规 的本地化字符串。
         /// </summary>
         internal static string Exception_FuncArgError {

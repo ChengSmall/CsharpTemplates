@@ -23,15 +23,6 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 {
 
     /// <summary>
-    /// 用于创建只读字典的函数委托
-    /// </summary>
-    /// <param name="collection">要创建字典的数据集合</param>
-    /// <param name="dictToKeyFunc">通过集合元素创建对应字典的key</param>
-    /// <param name="keyEqualityComparer">指定字典的key比较器和哈希获取值函数</param>
-    /// <returns>从<paramref name="collection"/>创建的只读字典</returns>
-    public delegate ReadDict CreateDictionaryFunc(IEnumerable<CSPInformation> collection, Func<CSPInformation, string> dictToKeyFunc, IEqualityComparer<string> keyEqualityComparer);
-
-    /// <summary>
     /// CSPACK包项数据信息
     /// </summary>
     public sealed class CSPInformation : DataInformation
@@ -119,7 +110,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
         /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
         /// <exception cref="Exception">操作流时产生的其它错误</exception>
-        public CStreamPackReader(Stream stream) : this(stream, true, true, 1024 * 8)
+        public CStreamPackReader(Stream stream) : this(stream, true, true, 1024 * 8, f_defCreateDict)
         {
         }
 
@@ -132,7 +123,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
         /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
         /// <exception cref="Exception">操作流时产生的其它错误</exception>
-        public CStreamPackReader(Stream stream, bool disposeBaseStream) : this(stream, disposeBaseStream, true, 1024 * 8)
+        public CStreamPackReader(Stream stream, bool disposeBaseStream) : this(stream, disposeBaseStream, true, 1024 * 8, f_defCreateDict)
         {
         }
 
@@ -146,7 +137,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
         /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
         /// <exception cref="Exception">操作流时产生的其它错误</exception>
-        public CStreamPackReader(Stream stream, bool disposeBaseStream, bool checkHeader) : this(stream, disposeBaseStream, checkHeader, 1024 * 8)
+        public CStreamPackReader(Stream stream, bool disposeBaseStream, bool checkHeader) : this(stream, disposeBaseStream, checkHeader, 1024 * 8, f_defCreateDict)
         {
         }
 
@@ -162,7 +153,24 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
         /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
         /// <exception cref="Exception">操作流时产生的其它错误</exception>
-        public CStreamPackReader(Stream stream, bool disposeBaseStream, bool checkHeader, int bufferSize)
+        public CStreamPackReader(Stream stream, bool disposeBaseStream, bool checkHeader, int bufferSize) : this(stream, disposeBaseStream, checkHeader, bufferSize, f_defCreateDict)
+        {
+        }
+
+        /// <summary>
+        /// 初始化csp包读取器
+        /// </summary>
+        /// <param name="stream">要从中解析的包数据流</param>
+        /// <param name="disposeBaseStream">在释放时是否释放封装的基础流，默认为true</param>
+        /// <param name="checkHeader">初始化索引前是否逐步搜寻csp包数据头，默认为true</param>
+        /// <param name="bufferSize">读取或拷贝时所用的缓冲区大小，默认为8192</param>
+        /// <param name="createDictionary">用于创建字典的函数，null表示使用默认实现的方法创建字典</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区大小没有大于0</exception>
+        /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
+        /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
+        /// <exception cref="Exception">操作流时产生的其它错误</exception>
+        public CStreamPackReader(Stream stream, bool disposeBaseStream, bool checkHeader, int bufferSize, CreateDictionaryByCollection<string, CSPInformation> createDictionary)
         {
             if (stream is null) throw new ArgumentNullException();
             if (!(stream.CanRead && stream.CanSeek))
@@ -171,6 +179,48 @@ namespace Cheng.Algorithm.Compressions.CSPACK
             }
             if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
 
+            if(createDictionary is null)
+            {
+                createDictionary = Enumerable.ToDictionary;
+            }
+            if (stream is null || createDictionary is null) throw new ArgumentNullException();
+            if (!(stream.CanRead && stream.CanSeek))
+            {
+                throw new NotSupportedException();
+            }
+
+            if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
+            f_init(stream, disposeBaseStream, checkHeader, bufferSize, null, createDictionary);
+            //return @this;
+        }
+
+        /// <summary>
+        /// 初始化csp包读取器
+        /// </summary>
+        /// <param name="stream">要从中解析的包数据流</param>
+        /// <param name="disposeBaseStream">在释放时是否释放封装的基础流，默认为true</param>
+        /// <param name="checkHeader">初始化索引前是否逐步搜寻csp包数据头，默认为true</param>
+        /// <param name="bufferSize">读取或拷贝时所用的缓冲区大小，默认为8192</param>
+        /// <param name="createDictionary">用于创建字典的函数，null表示使用默认实现的方法创建字典</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区大小没有大于0</exception>
+        /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
+        /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
+        /// <exception cref="Exception">操作流时产生的其它错误</exception>
+        public CStreamPackReader(Stream stream, bool disposeBaseStream, bool checkHeader, int bufferSize, CreateDictionaryByPairs<string, CSPInformation> createDictionary)
+        {
+            if (stream is null) throw new ArgumentNullException();
+            if (!(stream.CanRead && stream.CanSeek))
+            {
+                throw new NotSupportedException();
+            }
+            if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
+            if (createDictionary is null) createDictionary = f_defCreateDict;
+            f_init(stream, disposeBaseStream, checkHeader, bufferSize, createDictionary, null);
+        }
+
+        private void f_init(Stream stream, bool disposeBaseStream, bool checkHeader, int bufferSize, CreateDictionaryByPairs<string, CSPInformation> createDictionaryPair, CreateDictionaryByCollection<string, CSPInformation> createDictionaryCol)
+        {
             if (checkHeader)
             {
                 if (!CheckHeaderNextLoop(stream))
@@ -178,30 +228,65 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                     throw new NotImplementedException();
                 }
             }
+            //CStreamPackReader @this = new CStreamPackReader();
+            this.p_disposeBase = disposeBaseStream;
+            this.p_buffer = new byte[bufferSize];
 
-            p_disposeBase = disposeBaseStream;
-            p_buffer = new byte[bufferSize];
-
-            var col = f_readData(stream, new char[255], bufferSize >= 8 ? p_buffer : new byte[8]);
-            p_dict = col.ToDictionary(f_getKey, new EqualityStrNotPathSeparator(false, true));
-
-            //p_list = col.ToList();
-            p_list = new List<CSPInformation>(p_dict.Count);
-            foreach (var pair in p_dict)
+            if (createDictionaryPair is null)
             {
-                p_list.Add(pair.Value);
+                var col = f_readDataPair(stream, new char[255], bufferSize >= 8 ? this.p_buffer : new byte[8]);
+                this.p_dict = createDictionaryPair.Invoke(col, new EqualityStrNotPathSeparator(false, true));
             }
-            if (this.p_list.Capacity > this.p_list.Count) this.p_list.Capacity = p_list.Count;
-            p_stream = stream;
-        }
+            else
+            {
+                var col = f_readData(stream, new char[255], bufferSize >= 8 ? this.p_buffer : new byte[8]);
+                this.p_dict = createDictionaryCol.Invoke(col, f_getKey, new EqualityStrNotPathSeparator(false, true));
+            }
 
-        private CStreamPackReader()
-        {
+
+            if (this.p_dict is null) throw new ArgumentException();
+            //@this.p_list = col.ToList();
+            this.p_list = new List<CSPInformation>(this.p_dict.Count);
+            foreach (var pair in this.p_dict)
+            {
+                this.p_list.Add(pair.Value);
+            }
+            this.p_stream = stream;
+
+            //return @this;
         }
 
         static string f_getKey(CSPInformation inf)
         {
             return inf.path;
+        }
+
+        static ReadDict f_defCreateDict(IEnumerable<KeyValuePair<string, CSPInformation>> pair, IEqualityComparer<string> eq)
+        {
+            if(pair is IDictionary<string, CSPInformation> pd)
+            {
+                return new Dictionary<string, CSPInformation>(pd, eq);
+            }
+            int cap;
+            if(pair is ICollection<CSPInformation>)
+            {
+                cap = ((ICollection<CSPInformation>)pair).Count;
+            }
+            else if (pair is ICollection)
+            {
+                cap = ((ICollection)pair).Count;
+            }
+            else
+            {
+                cap = 4;
+            }
+
+            var dict = new Dictionary<string, CSPInformation>(cap, eq);
+            foreach (var item in pair)
+            {
+                dict[item.Key] = item.Value;
+            }
+            return dict;
         }
 
         #endregion
@@ -404,6 +489,66 @@ namespace Cheng.Algorithm.Compressions.CSPACK
             //跳转
             stream.Seek(dataLen, SeekOrigin.Current);
             yield return inf;
+            //yield return new KeyValuePair<string, CSPInformation>(path, inf);
+
+            goto Loop;
+
+        }
+
+
+        internal static IEnumerable<KeyValuePair<string, CSPInformation>> f_readDataPair(Stream stream, char[] cbuf255, byte[] buf8)
+        {
+            int i;
+            int re;
+            int keyLen;
+
+            Loop:
+            //读取头字节以及路径字符数值
+            keyLen = stream.ReadByte();
+            if (keyLen < 0 || keyLen > byte.MaxValue)
+            {
+                //路径字符数超出预期
+                throw new InvalidOperationException();
+            }
+
+            if (keyLen == 0)
+            {
+                //末尾
+                yield break;
+            }
+
+            //读取路径
+            for (i = 0; i < keyLen; i++)
+            {
+                re = stream.ReadByte();
+                if (re == -1)
+                {
+                    throw new InvalidOperationException(); //预期之外的结构
+                }
+                ushort cuv = (byte)(re & 0xFF);
+                re = stream.ReadByte();
+                if (re == -1)
+                {
+                    throw new InvalidOperationException(); //预期之外的结构
+                }
+                cuv |= (ushort)((uint)re << 8);
+                cbuf255[i] = (char)cuv;
+            }
+
+            string path = new string(cbuf255, 0, keyLen);
+
+            //读取长度
+            re = stream.ReadBlock(buf8, 0, 8);
+            if (re != 8)
+            {
+                throw new InvalidOperationException(); //预期之外的结构
+            }
+            long dataLen = buf8.OrderToInt64();
+            CSPInformation inf = new CSPInformation(path, new StreamBlock(stream.Position, dataLen));
+            //跳转
+            stream.Seek(dataLen, SeekOrigin.Current);
+            //yield return inf;
+            yield return new KeyValuePair<string, CSPInformation>(path, inf);
             //yield return new KeyValuePair<string, CSPInformation>(path, inf);
 
             goto Loop;
@@ -661,116 +806,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
         #endregion
 
-        #region 扩展
-
-        /// <summary>
-        /// 初始化csp包读取器，自定义字典创建方案
-        /// </summary>
-        /// <param name="stream">要从中解析的包数据流</param>
-        /// <param name="createDictionaryFunc">用于创建字典的函数</param>
-        /// <returns>
-        /// <para>完成索引初始化的csp包读取器</para>
-        /// </returns>
-        /// <exception cref="ArgumentNullException">存在参数是null</exception>
-        /// <exception cref="ArgumentException">字典创建函数返回的对象是null</exception>
-        /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
-        /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
-        /// <exception cref="Exception">操作流时产生的其它错误</exception>
-        public static CStreamPackReader CreateReaderByCustomDictionary(Stream stream, CreateDictionaryFunc createDictionaryFunc)
-        {
-            return CreateReaderByCustomDictionary(stream, createDictionaryFunc, true, true, 1024 * 8);
-        }
-
-        /// <summary>
-        /// 初始化csp包读取器，自定义字典创建方案
-        /// </summary>
-        /// <param name="stream">要从中解析的包数据流</param>
-        /// <param name="createDictionaryFunc">用于创建字典的函数</param>
-        /// <param name="disposeBaseStream">在释放时是否释放封装的基础流，默认为true</param>
-        /// <returns>
-        /// <para>完成索引初始化的csp包读取器</para>
-        /// </returns>
-        /// <exception cref="ArgumentNullException">存在参数是null</exception>
-        /// <exception cref="ArgumentException">字典创建函数返回的对象是null</exception>
-        /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
-        /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
-        /// <exception cref="Exception">操作流时产生的其它错误</exception>
-        public static CStreamPackReader CreateReaderByCustomDictionary(Stream stream, CreateDictionaryFunc createDictionaryFunc, bool disposeBaseStream)
-        {
-            return CreateReaderByCustomDictionary(stream, createDictionaryFunc, disposeBaseStream, true, 1024 * 8);
-        }
-
-        /// <summary>
-        /// 初始化csp包读取器，自定义字典创建方案
-        /// </summary>
-        /// <param name="stream">要从中解析的包数据流</param>
-        /// <param name="createDictionaryFunc">用于创建字典的函数</param>
-        /// <param name="disposeBaseStream">在释放时是否释放封装的基础流，默认为true</param>
-        /// <param name="checkHeader">初始化索引前是否逐步搜寻csp包数据头，默认为true</param>
-        /// <returns>
-        /// <para>完成索引初始化的csp包读取器</para>
-        /// </returns>
-        /// <exception cref="ArgumentNullException">存在参数是null</exception>
-        /// <exception cref="ArgumentException">字典创建函数返回的对象是null</exception>
-        /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
-        /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
-        /// <exception cref="Exception">操作流时产生的其它错误</exception>
-        public static CStreamPackReader CreateReaderByCustomDictionary(Stream stream, CreateDictionaryFunc createDictionaryFunc, bool disposeBaseStream, bool checkHeader)
-        {
-            return CreateReaderByCustomDictionary(stream, createDictionaryFunc, disposeBaseStream, checkHeader, 1024 * 8);
-        }
-
-        /// <summary>
-        /// 初始化csp包读取器，自定义字典创建方案
-        /// </summary>
-        /// <param name="stream">要从中解析的包数据流</param>
-        /// <param name="createDictionaryFunc">用于创建字典的函数</param>
-        /// <param name="disposeBaseStream">在释放时是否释放封装的基础流，默认为true</param>
-        /// <param name="checkHeader">初始化索引前是否逐步搜寻csp包数据头，默认为true</param>
-        /// <param name="bufferSize">读取或拷贝时所用的缓冲区大小，默认为8192</param>
-        /// <returns>
-        /// <para>完成索引初始化的csp包读取器</para>
-        /// </returns>
-        /// <exception cref="ArgumentNullException">存在参数是null</exception>
-        /// <exception cref="ArgumentException">字典创建函数返回的对象是null</exception>
-        /// <exception cref="ArgumentOutOfRangeException">缓冲区大小没有大于0</exception>
-        /// <exception cref="NotSupportedException">流没有读取和查找权限</exception>
-        /// <exception cref="NotImplementedException">数据不是严格的csp包，无法解析</exception>
-        /// <exception cref="Exception">操作流时产生的其它错误</exception>
-        public static CStreamPackReader CreateReaderByCustomDictionary(Stream stream, CreateDictionaryFunc createDictionaryFunc, bool disposeBaseStream, bool checkHeader, int bufferSize)
-        {
-            if (stream is null || createDictionaryFunc is null) throw new ArgumentNullException();
-            if (!(stream.CanRead && stream.CanSeek))
-            {
-                throw new NotSupportedException();
-            }
-            if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
-
-            if (checkHeader)
-            {
-                if (!CheckHeaderNextLoop(stream))
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            CStreamPackReader @this = new CStreamPackReader();
-            @this.p_disposeBase = disposeBaseStream;
-            @this.p_buffer = new byte[bufferSize];
-
-            var col = f_readData(stream, new char[255], bufferSize >= 8 ? @this.p_buffer : new byte[8]);
-            @this.p_dict = createDictionaryFunc.Invoke(col, f_getKey, new EqualityStrNotPathSeparator(false, true));
-
-            if (@this.p_dict is null) throw new ArgumentException();
-            //@this.p_list = col.ToList();
-            @this.p_list = new List<CSPInformation>(@this.p_dict.Count);
-            foreach (var pair in @this.p_dict)
-            {
-                @this.p_list.Add(pair.Value);
-            }
-            @this.p_stream = stream;
-
-            return @this;
-        }
+        #region 扩展功能
 
         #endregion
 
