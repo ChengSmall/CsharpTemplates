@@ -142,7 +142,7 @@ namespace Cheng.Algorithm.DataStructure
         {
             get
             {
-                return double.IsNaN(a);
+                return double.IsNaN(a) || double.IsInfinity(a);
             }
         }
 
@@ -271,6 +271,10 @@ namespace Cheng.Algorithm.DataStructure
         }
 
         #endregion
+
+        #endregion
+
+        #region 扩展
 
         #endregion
 

@@ -10,10 +10,10 @@ namespace Cheng.DataStructure
     /// 引用值类型
     /// </summary>
     /// <remarks>
-    /// <para>将值类型封装到引用类型对象，可以避免频繁装箱导致的额外开销</para>
+    /// <para>将值类型封装到引用类型对象</para>
     /// </remarks>
     /// <typeparam name="T">值类型</typeparam>
-    public sealed class RefStructure<T> : IEquatable<RefStructure<T>>, IEquatable<T>, IEquatable<T?>, IComparable<RefStructure<T>>, IComparable<T>, IComparable<T?>, IHashCode64 where T : struct
+    public sealed class RefStructure<T> : IEquatable<RefStructure<T>>, IEquatable<T>, IEquatable<T?>, IComparable<RefStructure<T>>, IComparable<T>, IComparable<T?>, IFormattable, IHashCode64 where T : struct
     {
 
         #region
@@ -63,9 +63,13 @@ namespace Cheng.DataStructure
         {
             if(obj is RefStructure<T> refv)
             {
-                return this.value.Equals(refv.value);
+                return Equals(refv);
             }
-            return value.Equals(obj);
+            if(obj is T t)
+            {
+                return EqualityComparer<T>.Default.Equals(value, t);
+            }
+            return false;
         }
 
         public override int GetHashCode()
@@ -91,6 +95,7 @@ namespace Cheng.DataStructure
 
         public int CompareTo(RefStructure<T> other)
         {
+            if (other is null) return 1;
             return Comparer<T>.Default.Compare(value, other.value);
         }
 
@@ -101,12 +106,22 @@ namespace Cheng.DataStructure
 
         public bool Equals(T? other)
         {
+            if (other is null) return false;
             return EqualityComparer<T?>.Default.Equals(value, other);
         }
 
         public int CompareTo(T? other)
         {
             return Comparer<T?>.Default.Compare(value, other);
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if(value is IFormattable fv)
+            {
+                return fv.ToString(format, formatProvider);
+            }
+            return value.ToString();
         }
 
         /// <summary>

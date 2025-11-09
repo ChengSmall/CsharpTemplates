@@ -256,7 +256,7 @@ namespace Cheng.Algorithm
             /// 根据三角形两个边长和一个夹角，计算三角形面积
             /// </summary>
             /// <param name="a">边长1</param>
-            /// <param name="radian">连边夹角的角弧度</param>
+            /// <param name="radian">两边夹角的角弧度</param>
             /// <param name="b">边长2</param>
             /// <returns>三角形面积</returns>
             public static double TriangleAreaSAS(double a, double radian, double b)
@@ -273,30 +273,47 @@ namespace Cheng.Algorithm
             /// <returns>三角形面积</returns>
             public static double TriangleAreaASA(double A, double length, double B)
             {
-                #region
-                //return ((length * Math.Sin(B)) / Math.Sin(Math.PI - (A + B))) * length * Math.Sin(A) * 0.5;
 
-                //var x = length * Math.Sin(B);
+                return (((System.Math.Sin(A) * length) / System.Math.Sin(A + B)) * length * System.Math.Sin(B)) / 2;
 
-                //var C = Math.PI - (A + B);
+            }
 
-                //var b = x / Math.Sin(C);
+            /// <summary>
+            /// 根据三角形两个角度一个边长，计算三角形面积
+            /// </summary>
+            /// <param name="A">弧度角A</param>
+            /// <param name="B">弧度角B</param>
+            /// <param name="length">边长</param>
+            /// <returns>三角形面积</returns>
+            public static double TriangleAreaAAS(double A, double B, double length)
+            {
+                /* 
+                    正弦定理 a/sinA == b/sinB == c/sinC == 2r == D
+                    b = (a / SinA) * SinB
+                */
+                ////角C弧度
+                //double C = System.Math.PI - (A + B);
+                ////另一边 b
+                //double b = (length / System.Math.Sin(A)) * System.Math.Sin(B);
+                //return (System.Math.Sin(C) * length * b) / 2;
 
-                //return b * length * Math.Sin(A) * 0.5;
-                #endregion
+                return (System.Math.Sin((System.Math.PI - (A + B))) * length * ((length / System.Math.Sin(A)) * System.Math.Sin(B))) / 2;
+            }
 
-                #region
-                //确保角度在0到π之间，否则取其余角
+            #endregion
 
-                //只需要一个角的正弦值来计算高，这里选择第一个角
-                double sinValue = Math.Sin(Math.Abs(A) % (Math.PI * 2));
+            #region 内切圆
 
-                //确保正弦值不为零，避免除以零的错误  
-                if (sinValue == 0) sinValue = Math.Sin(Math.Abs(B) % (Math.PI * 2));
-
-                // 计算面积  
-                return 0.5 * length * (length * sinValue);
-                #endregion
+            /// <summary>
+            /// 输入三边长，求三角形内切圆半径
+            /// </summary>
+            /// <param name="a">边长1</param>
+            /// <param name="b">边长2</param>
+            /// <param name="c">边长3</param>
+            /// <returns>内切圆半径</returns>
+            public static double TrianleInCircle(double a, double b, double c)
+            {
+                return (TriangleAreaSSS(a, b, c) * 2) / (a + b + c);
             }
 
             #endregion

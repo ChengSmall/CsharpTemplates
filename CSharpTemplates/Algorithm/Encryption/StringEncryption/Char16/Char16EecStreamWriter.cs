@@ -23,7 +23,54 @@ namespace Cheng.Algorithm.Encryptions.Char16
 
         #region 构造
 
-        public Char16EecStreamWriter(char[] char16, TextWriter writer, bool disposeBaseWriter, int bufferSize)
+        /// <summary>
+        /// 实例化半字节16字数据加密写入器
+        /// </summary>
+        /// <param name="char16">有16个不同字符的字符串</param>
+        /// <param name="writer">要封装的文本写入器</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        public Char16EecStreamWriter(string char16, TextWriter writer) : this(char16, writer, true, 1024 * 2)
+        {
+        }
+
+        /// <summary>
+        /// 实例化半字节16字数据加密写入器
+        /// </summary>
+        /// <param name="char16">有16个不同字符的字符串</param>
+        /// <param name="writer">要封装的文本写入器</param>
+        /// <param name="disposeBaseWriter">释放时是否释放封装的对象</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        public Char16EecStreamWriter(string char16, TextWriter writer, bool disposeBaseWriter) : this(char16, writer, disposeBaseWriter, 1024 * 2)
+        {
+        }
+
+        /// <summary>
+        /// 实例化半字节16字数据加密写入器
+        /// </summary>
+        /// <param name="char16">有16个不同字符的字符数组</param>
+        /// <param name="writer">要封装的文本写入器</param>
+        /// <param name="disposeBaseWriter">释放时是否释放封装的对象</param>
+        /// <param name="bufferSize">缓冲区大小，默认为2048</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区没有大于0</exception>
+        public Char16EecStreamWriter(char[] char16, TextWriter writer, bool disposeBaseWriter, int bufferSize) : this(new string(char16), writer, disposeBaseWriter, bufferSize)
+        {
+        }
+
+        /// <summary>
+        /// 实例化半字节16字数据加密写入器
+        /// </summary>
+        /// <param name="char16">有16个不同字符的字符串</param>
+        /// <param name="writer">要封装的文本写入器</param>
+        /// <param name="disposeBaseWriter">释放时是否释放封装的对象</param>
+        /// <param name="bufferSize">缓冲区大小，默认为2048</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区没有大于0</exception>
+        public Char16EecStreamWriter(string char16, TextWriter writer, bool disposeBaseWriter, int bufferSize)
         {
             if (writer is null || char16 is null) throw new ArgumentNullException();
             if (char16.Length != 16) throw new ArgumentException();
@@ -51,7 +98,7 @@ namespace Cheng.Algorithm.Encryptions.Char16
 #endif
         private char[] p_charBuf;
 
-        private char[] p_char16;
+        private string p_char16;
 
 #if DEBUG
         /// <summary>

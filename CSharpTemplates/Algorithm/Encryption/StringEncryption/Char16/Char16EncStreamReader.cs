@@ -80,23 +80,12 @@ namespace Cheng.Algorithm.Encryptions.Char16
 
         private static System.Collections.Generic.IReadOnlyDictionary<int, int> f_init(char[] char16, CreateDictionaryByCollection<int, int> createDictionaryFunc)
         {
+            return createDictionaryFunc.Invoke(Enumerable.Range(0, 16), f_toKey, EqualityComparer<int>.Default);
 
-            return createDictionaryFunc.Invoke(f_craeteIntEnumator(char16), f_toInt, EqualityComparer<int>.Default);
-            //throw null;
-
-            int f_toInt(int t_c)
+            // 通过value (index)获取key (char)函数
+            int f_toKey(int t_c)
             {
-                return char16[t_c & 0xF];
-                //var tcr = Array.IndexOf<char>(char16, (char)t_c);
-                //return tcr;
-            }
-        }
-
-        static IEnumerable<int> f_craeteIntEnumator(char[] c16)
-        {
-            foreach (var re in c16)
-            {
-                yield return (int)re;
+                return char16[t_c];
             }
         }
 
