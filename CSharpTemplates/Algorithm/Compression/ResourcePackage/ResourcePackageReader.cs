@@ -696,7 +696,7 @@ namespace Cheng.Algorithm.Compressions.ResourcePackages
         public override void SortInformationIndex(IComparer comparer, int index, int count)
         {
             ThrowObjectDisposeException();
-            p_lists.Sort(index, count, comparer ?? throw new ArgumentNullException());
+            p_lists.Sort(comparer ?? throw new ArgumentNullException(), index, count);
         }
 
         public override void SortInformationIndex(IComparer<DataInformation> comparer, int index, int count)

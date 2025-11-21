@@ -32,6 +32,11 @@ namespace Cheng.Memorys
         /// </summary>
         public static CPtr Null => default;
 
+        /// <summary>
+        /// 获取当前进程内指针对象占用的字节大小
+        /// </summary>
+        public static int Size => sizeof(void*);
+
         internal readonly void* p_ptr;
 
         #endregion
@@ -45,6 +50,11 @@ namespace Cheng.Memorys
         /// </summary>
         /// <returns></returns>
         public void* ToPointer() => p_ptr;
+
+        /// <summary>
+        /// 该指针是否为表示null的空指针
+        /// </summary>
+        public bool IsEmpty => p_ptr == null;
 
         #endregion
 
@@ -191,7 +201,7 @@ namespace Cheng.Memorys
         /// <returns></returns>
         public static CPtr operator --(CPtr p)
         {
-            return new CPtr((byte*)p.p_ptr + 1);
+            return new CPtr((byte*)p.p_ptr - 1);
         }
 
         public static bool operator ==(CPtr a, CPtr b)
@@ -216,12 +226,12 @@ namespace Cheng.Memorys
 
         public static bool operator <=(CPtr a, CPtr b)
         {
-            return a.p_ptr < b.p_ptr;
+            return a.p_ptr <= b.p_ptr;
         }
 
         public static bool operator >=(CPtr a, CPtr b)
         {
-            return a.p_ptr > b.p_ptr;
+            return a.p_ptr >= b.p_ptr;
         }
 
         #endregion
@@ -322,13 +332,27 @@ namespace Cheng.Memorys
 
         #region 派生
 
+        private string f_toStrDef()
+        {
+            if (sizeof(void*) == 4)
+            {
+                char* cp = stackalloc char[8];
+                Cheng.Texts.TextManipulation.ValueToFixedX16Text((uint)p_ptr, true, cp);
+                return new string(cp, 0, 8);
+            }
+
+            char* cps = stackalloc char[16];
+            Cheng.Texts.TextManipulation.ValueToFixedX16Text((ulong)p_ptr, true, cps);
+            return new string(cps, 0, 16);
+        }
+
         /// <summary>
         /// 返回指针的字符串格式
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return ToString(null, null);
+            return f_toStrDef();
         }
 
         public bool Equals(CPtr other)
@@ -360,6 +384,18 @@ namespace Cheng.Memorys
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
+            if (format is null)
+            {
+                format = "X";
+            }
+
+            if (format.Length > 0 && (format[0] == 'G' || format[0] == 'g'))
+            {
+                var cars = format.ToCharArray();
+                cars[0] = 'X';
+                format = new string(cars);
+            }
+
             if (sizeof(void*) == 4)
             {
                 return ((uint)p_ptr).ToString(format, formatProvider);

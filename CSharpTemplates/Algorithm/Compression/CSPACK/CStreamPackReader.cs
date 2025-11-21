@@ -773,7 +773,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
         public override void SortInformationIndex(IComparer comparer, int index, int count)
         {
-            p_list.Sort(index, count, comparer);
+            p_list.Sort(comparer, index, count);
         }
 
         public override void DeCompressionToText(int index, Encoding encoding, TextWriter writer)

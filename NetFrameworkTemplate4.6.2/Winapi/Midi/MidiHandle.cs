@@ -192,7 +192,7 @@ namespace Cheng.Windows.MIDI
         /// 向系统发送音色（乐器）变更消息
         /// </summary>
         /// <param name="channel">指定midi通道，范围区间在[0,15]</param>
-        /// <param name="type">范围区间在[0,127]的音色编号</param>
+        /// <param name="number">范围区间在[0,127]的音色编号</param>
         /// <returns>错误代码</returns>
         /// <exception cref="ObjectDisposedException">对象已释放</exception>
         public MidiError MIDIShortMegByProgramChange(byte channel, byte number)

@@ -48,6 +48,11 @@ namespace Cheng.Memorys
         /// <returns></returns>
         public T* ToPointer() => p_ptr;
 
+        /// <summary>
+        /// 该指针是否为表示null的空指针
+        /// </summary>
+        public bool IsEmpty => p_ptr == null;
+
         #endregion
 
         #region 解引用
@@ -99,6 +104,16 @@ namespace Cheng.Memorys
         public ref T Ref()
         {
             return ref *p_ptr;
+        }
+
+        /// <summary>
+        /// 解引用到引用对象
+        /// </summary>
+        /// <param name="index">类型块偏移，偏移单位按<typeparamref name="T"/>的大小计算</param>
+        /// <returns>指针指向的对象引用</returns>
+        public ref T Ref(int index)
+        {
+            return ref p_ptr[index];
         }
 
         #endregion
@@ -210,15 +225,26 @@ namespace Cheng.Memorys
         /// <returns></returns>
         public static CPtr<T> operator --(CPtr<T> p)
         {
-            return new CPtr<T>(p.p_ptr + 1);
+            return new CPtr<T>(p.p_ptr - 1);
         }
 
+        /// <summary>
+        /// 比较相等
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator ==(CPtr<T> a, CPtr<T> b)
         {
             return a.p_ptr == b.p_ptr;
         }
 
-
+        /// <summary>
+        /// 比较不相等
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator !=(CPtr<T> a, CPtr<T> b)
         {
             return a.p_ptr != b.p_ptr;
@@ -239,13 +265,13 @@ namespace Cheng.Memorys
 
         public static bool operator <=(CPtr<T> a, CPtr<T> b)
         {
-            return a.p_ptr < b.p_ptr;
+            return a.p_ptr <= b.p_ptr;
         }
 
 
         public static bool operator >=(CPtr<T> a, CPtr<T> b)
         {
-            return a.p_ptr > b.p_ptr;
+            return a.p_ptr >= b.p_ptr;
         }
 
         #endregion
@@ -279,7 +305,7 @@ namespace Cheng.Memorys
 
         public static explicit operator CPtr<T>(IntPtr ptr)
         {
-            return new CPtr<T>((T*)ptr.ToPointer());
+            return new CPtr<T>((T*)ptr);
         }
 
         public static implicit operator UIntPtr(CPtr<T> cp)
@@ -365,13 +391,27 @@ namespace Cheng.Memorys
 
         #region 派生
 
+        private string f_toStrDef()
+        {
+            if (sizeof(void*) == 4)
+            {
+                char* cp = stackalloc char[8];
+                Cheng.Texts.TextManipulation.ValueToFixedX16Text((uint)p_ptr, true, cp);
+                return new string(cp, 0, 8);
+            }
+
+            char* cps = stackalloc char[16];
+            Cheng.Texts.TextManipulation.ValueToFixedX16Text((ulong)p_ptr, true, cps);
+            return new string(cps, 0, 16);
+        }
+
         /// <summary>
         /// 返回指针的字符串格式
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return ToString(null, null);
+            return f_toStrDef();
         }
 
         public bool Equals(CPtr<T> other)
@@ -403,6 +443,18 @@ namespace Cheng.Memorys
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
+            if(format is null)
+            {
+                format = "X";
+            }
+
+            if(format.Length > 0 && (format[0] == 'G' || format[0] == 'g'))
+            {
+                var cars = format.ToCharArray();
+                cars[0] = 'X';
+                format = new string(cars);
+            }
+
             if (sizeof(void*) == 4)
             {
                 return ((uint)p_ptr).ToString(format, formatProvider);

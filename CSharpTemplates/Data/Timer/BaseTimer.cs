@@ -342,7 +342,7 @@ namespace Cheng.Timers
         }
 
         /// <summary>
-        /// 在派生类重写，将浮点型时间转化为<see cref="TimeSpan"/>以实现公共接口
+        /// 在派生类重写，将浮点数时间转化为<see cref="TimeSpan"/>以实现公共接口
         /// </summary>
         /// <param name="elapsed"><see cref="Elapsed"/>属性的浮点刻度值</param>
         /// <returns>一个与<see cref="Elapsed"/>属性等价的<see cref="TimeSpan"/>实例</returns>

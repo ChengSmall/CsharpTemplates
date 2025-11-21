@@ -8,10 +8,11 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Cheng</RootNamespace>
     <AssemblyName>OtherCode</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -97,6 +98,7 @@
     <Compile Include="Webs\Bilibili\BilibiliLiveRoom.cs" />
     <Compile Include="Webs\Bilibili\BilibiliPendant.cs" />
     <Compile Include="Webs\Bilibili\BilibiliSpaceInfo.cs" />
+    <Compile Include="WinApi\EnvironmentVariables\EnvironmentVariable.cs" />
     <Compile Include="WinApi\Window\Window.cs" />
     <Compile Include="WinApi\Kernel32_Other.cs" />
     <Compile Include="WinApi\Memory.cs" />

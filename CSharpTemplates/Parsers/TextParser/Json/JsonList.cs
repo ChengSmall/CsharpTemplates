@@ -49,6 +49,34 @@ namespace Cheng.Json
             }
         }
 
+        /// <summary>
+        /// 实例化一个集合json对象
+        /// </summary>
+        /// <param name="collection">指定要拷贝内容的集合对象</param>
+        public JsonList(IEnumerable<JsonVariable> collection)
+        {
+            if (collection is null) throw new ArgumentNullException();
+            int count;
+
+            if (collection is ICollection<KeyValuePair<string, JsonVariable>>)
+            {
+                count = ((ICollection<KeyValuePair<string, JsonVariable>>)collection).Count;
+            }
+            else if (collection is ICollection)
+            {
+                count = ((ICollection)collection).Count;
+            }
+            else
+            {
+                count = 0;
+            }
+            p_list = new List<JsonVariable>(count);
+            foreach (var item in collection)
+            {
+                p_list.Add(item ?? JsonNull.Nullable);
+            }
+        }
+
         #endregion
 
         #region 参数

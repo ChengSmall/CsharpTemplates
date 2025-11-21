@@ -132,11 +132,11 @@ namespace Cheng.Algorithm.Randoms
         /// <returns>一个随机长整型值，范围在[0,9223372036854775807)</returns>
         public virtual long NextLong()
         {
-            var n1 = ((ulong)Next()) & 0xFFFF;
-            var n2 = ((ulong)Next()) & 0xFFFF;
-            var n3 = ((ulong)Next()) & 0xFFFF;
-            var n4 = ((ulong)Next()) & 0xFFFF;
-            return (long)(((n1) | (n2 << 16) | (n3 << 32) | (n4 << 48)) & (~(0b1UL << 63)));
+            ulong n1 = (ulong)this.Next(0, 0x1000000);
+            ulong n2 = (ulong)this.Next(0, 0x1000000);
+            ulong n3 = (ulong)this.Next(0, 0b10000000_00000000);
+
+            return (long)(((n3 << (8 * 6)) | (n2 << (8 * 3)) | (n1)));
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace Cheng.DataStructure.Colors
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct Colour : IEquatable<Colour>
+    public unsafe struct Colour : IEquatable<Colour>, IFormattable
     {
 
         #region 构造
@@ -117,7 +117,7 @@ namespace Cheng.DataStructure.Colors
         }
 
         /// <summary>
-        /// 返回一个重新分配a色值的颜色结构
+        /// 返回一个重新分配alpha值的颜色结构
         /// </summary>
         /// <param name="a"></param>
         /// <returns></returns>
@@ -166,17 +166,36 @@ namespace Cheng.DataStructure.Colors
         /// <returns>表示rgba颜色值的32位整数</returns>
         public uint ToInt32()
         {
-            return ((uint)b << 16) | ((uint)g << 8) | ((uint)r) | ((uint)a << 24);
+            return ToARGB();
         }
 
         /// <summary>
         /// 将32位颜色值转化为颜色结构
         /// </summary>
         /// <param name="rgb">表示rgb颜色值的32位整数</param>
-        /// <returns>一个颜色结构</returns>
+        /// <returns>颜色结构</returns>
         public static Colour ToColor(uint rgb)
         {
-            return new Colour((byte)((rgb) & byte.MaxValue), (byte)((rgb >> 8) & byte.MaxValue), (byte)((rgb >> 16) & byte.MaxValue), (byte)((rgb >> 24) & byte.MaxValue));
+            return ToColorByARGB(rgb);
+        }
+
+        /// <summary>
+        /// 将颜色值转化为ARGB格式的32位整数值
+        /// </summary>
+        /// <returns>位格式为ARGB的整数</returns>
+        public uint ToARGB()
+        {
+            return ((uint)r << 16) | ((uint)g << 8) | ((uint)b) | ((uint)a << 24);
+        }
+
+        /// <summary>
+        /// 使用位格式为ARGB的整数初始化颜色值
+        /// </summary>
+        /// <param name="argb">位格式为ARGB的整数</param>
+        /// <returns>颜色结构</returns>
+        public static Colour ToColorByARGB(uint argb)
+        {
+            return new Colour((byte)((argb >> 16) & byte.MaxValue), (byte)((argb >> 8) & byte.MaxValue), (byte)((argb) & byte.MaxValue), (byte)((argb >> 24) & byte.MaxValue));
         }
 
         #endregion
@@ -590,37 +609,17 @@ namespace Cheng.DataStructure.Colors
         /// <returns>(r,g,b)</returns>
         public override string ToString()
         {
-            return "(" + r.ToString() + "," + g.ToString() + "," + b.ToString() + ")";
+            return f_toStrDef(null);
         }
 
         /// <summary>
         /// 返回指定格式颜色
         /// </summary>
-        /// <param name="format">格式参数；参数为"RGB"时以RGB三色值返回，参数是"HSL"时以HSL色值返回，参数是"value"时返回32位整数型色值</param>
+        /// <param name="format">格式参数；参数为"RGB"时以RGB三色值返回，参数是"HSL"时以HSL色值返回，参数是"value"时返回32位整数型色值；null使用默认的"RGB"格式</param>
         /// <returns>指定格式颜色</returns>
         public string ToString(string format)
         {
-            if (format == "rgb" || format == "RGB") return ToString();
-            double H, S, L;
-            if (format == "HSL" || format == "hsl")
-            {
-                ToHSL(out H, out S, out L);
-                return "(H:" + H.ToString() + ",S:" + S.ToString() + ",L:" + L.ToString() + ")";
-            }
-            if (format == "HSV" || format == "hsv")
-            {
-                ToHSL(out H, out S, out L);
-                return "(H:" + H.ToString() + ",S:" + S.ToString() + ",L:" + L.ToString() + ")";
-            }
-            if (format == "value")
-            {
-                var re = ToInt32();
-                char* cp = stackalloc char[8];
-                re.ValueToFixedX16Text(true, cp);
-                return new string(cp, 0, 8);
-            }
-
-            return ToString();
+            return ToString(format, null);
         }
 
         /// <summary>
@@ -631,7 +630,7 @@ namespace Cheng.DataStructure.Colors
         /// <returns></returns>
         public static bool operator ==(Colour c1, Colour c2)
         {
-            return c1.r == c2.r && c1.g == c2.g && c1.b == c2.b && c1.a == c2.a;
+            return (*((int*)&c1)) == (*((int*)&c2));
         }
 
         /// <summary>
@@ -642,7 +641,7 @@ namespace Cheng.DataStructure.Colors
         /// <returns></returns>
         public static bool operator !=(Colour c1, Colour c2)
         {
-            return c1.r != c2.r || c1.g != c2.g || c1.b != c2.b || c1.a != c2.a;
+            return (*((int*)&c1)) != (*((int*)&c2));
         }
 
         /// <summary>
@@ -652,7 +651,8 @@ namespace Cheng.DataStructure.Colors
         /// <returns></returns>
         public bool Equals(Colour other)
         {
-            return this == other;
+            var t = this;
+            return (*((int*)&t)) == (*((int*)&other));
         }
 
         /// <summary>
@@ -671,7 +671,38 @@ namespace Cheng.DataStructure.Colors
 
         public override int GetHashCode()
         {
-            return (int)ToInt32();
+            return (int)ToARGB();
+        }
+
+        private string f_toStrDef(IFormatProvider formatProvider)
+        {
+            return "(" + r.ToString(formatProvider) + "," + g.ToString(formatProvider) + "," + b.ToString(formatProvider) + ")";
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if(format is null) return f_toStrDef(formatProvider);
+            format = TextManipulation.ToLower(format);
+            double H, S, L;
+
+            switch (format)
+            {
+                case "g":
+                case "rgb":
+                default:
+                    return f_toStrDef(formatProvider);
+                case "hsl":
+                    ToHSL(out H, out S, out L);
+                    return "(H:" + H.ToString() + ",S:" + S.ToString() + ",L:" + L.ToString() + ")";
+                case "hsv":
+                    ToHSV(out H, out S, out L);
+                    return "(H:" + H.ToString() + ",S:" + S.ToString() + ",V:" + L.ToString() + ")";
+                case "value":
+                    var re = ToInt32();
+                    char* cp = stackalloc char[8];
+                    re.ValueToFixedX16Text(true, cp);
+                    return new string(cp, 0, 8);
+            }
         }
 
         #endregion

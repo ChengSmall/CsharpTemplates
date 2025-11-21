@@ -5,9 +5,9 @@ using Cheng.Memorys;
 using Cheng.Algorithm;
 using Cheng.Algorithm.Collections;
 using Cheng.DataStructure.Cherrsdinates;
+using Cheng.Algorithm.HashCodes;
 
 using ty = System.Double;
-using Cheng.Algorithm.HashCodes;
 
 namespace Cheng.Algorithm.DataStructure
 {
@@ -211,7 +211,7 @@ namespace Cheng.Algorithm.DataStructure
         /// 顶点式: a(x - h)^2 + k = 0
         /// </para>
         /// </remarks>
-        /// <param name="a">顶点式系数 a，决定抛物线宽度</param>
+        /// <param name="a">顶点式系数 a，决定抛物线宽度与开口方向</param>
         /// <param name="h">顶点式系数 h，决定抛物线高度</param>
         /// <param name="k">顶点式系数 k，决定抛物线位移</param>
         /// <returns>抛物线方程</returns>
@@ -233,64 +233,35 @@ namespace Cheng.Algorithm.DataStructure
         public static ParabolicEquation CreateFormPoint(in Point2 p1, in Point2 p2, in Point2 p3)
         {
             // 计算系数矩阵行列式D
-            double D = f_determinant3x3(
+            double D = determinant3x3(
                 p1.x * p1.x, p1.x, 1,
                 p2.x * p2.x, p2.x, 1,
                 p3.x * p3.x, p3.x, 1
             );
 
-            #region
-
-            //if (D <= 0) throw new ArgumentException("三点共线");
-
-            //// 替换后的行列式
-            //double Da = Determinant3x3(
-            //    p1.y, p1.x, 1,
-            //    p2.y, p2.x, 1,
-            //    p3.y, p3.x, 1
-            //);
-
-            //double Db = Determinant3x3(
-            //    p1.x * p1.x, p1.y, 1,
-            //    p2.x * p2.x, p2.y, 1,
-            //    p3.x * p3.x, p3.y, 1
-            //);
-
-            //double Dc = Determinant3x3(
-            //    p1.x * p1.x, p1.x, p1.y,
-            //    p2.x * p2.x, p2.x, p2.y,
-            //    p3.x * p3.x, p3.x, p3.y
-            //);
-
-            //// 最终系数
-            //double a = Da / D;
-            //double b = Db / D;
-            //double c = Dc / D;
-
-            #endregion
-
             return new ParabolicEquation(
-                f_determinant3x3(
+                determinant3x3(
                 p1.y, p1.x, 1,
                 p2.y, p2.x, 1,
                 p3.y, p3.x, 1) / D,
-                f_determinant3x3(
+                determinant3x3(
                 p1.x * p1.x, p1.y, 1,
                 p2.x * p2.x, p2.y, 1,
                 p3.x * p3.x, p3.y, 1) / D,
-                f_determinant3x3(
+                determinant3x3(
                 p1.x * p1.x, p1.x, p1.y,
                 p2.x * p2.x, p2.x, p2.y,
                 p3.x * p3.x, p3.x, p3.y) / D);
 
-        }
+            double determinant3x3(double a1, double a2, double a3,
+                double b1, double b2, double b3,
+                double c1, double c2, double c3)
+            {
+                return (a1 * ((b2 * c3) - (b3 * c2)))
+                     - (a2 * (b1 * c3 - b3 * c1))
+                     + (a3 * (b1 * c2 - b2 * c1));
+            }
 
-        private static double f_determinant3x3(double a1, double a2, double a3, 
-            double b1, double b2, double b3, double c1, double c2, double c3)
-        {
-            return (a1 * ((b2 * c3) - (b3 * c2)))
-                 - (a2 * (b1 * c3 - b3 * c1))
-                 + (a3 * (b1 * c2 - b2 * c1));
         }
 
         #endregion

@@ -68,6 +68,37 @@ namespace Cheng.Json
             }
         }
 
+        /// <summary>
+        /// 实例化一个键值对类型的json对象
+        /// </summary>
+        /// <param name="pairs">指定要拷贝的键值对集合对象</param>
+        /// <param name="comparer">指定key的比较器和哈希算法；null表示使用默认比较器</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public JsonDictionary(IEnumerable<KeyValuePair<string, JsonVariable>> pairs, IEqualityComparer<string> comparer)
+        {
+            if (pairs is null) throw new ArgumentNullException();
+            int count;
+            if(pairs is ICollection<KeyValuePair<string, JsonVariable>>)
+            {
+                count = ((ICollection<KeyValuePair<string, JsonVariable>>)pairs).Count;
+            }
+            else if (pairs is ICollection)
+            {
+                count = ((ICollection)pairs).Count;
+            }
+            else
+            {
+                count = 0;
+            }
+
+            p_dict = new Dictionary<string, JsonVariable>(count, comparer);
+
+            foreach (var pair in pairs)
+            {
+                add(pair.Key, pair.Value?.Clone());
+            }
+        }
+
         #endregion
 
         #region 参数

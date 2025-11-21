@@ -193,6 +193,20 @@ namespace Cheng.DataStructure.BoundedContainers
             return new BC(re, this.min, this.max);
         }
 
+        /// <summary>
+        /// 设置值并返回新设置的对象
+        /// </summary>
+        /// <param name="value">设置为此值</param>
+        /// <returns>设置后的新对象</returns>
+        public BC SetValue(bc value)
+        {
+            bc re;
+            if (value < min) re = min;
+            else if (value > max) re = max;
+            else re = value;
+            return new BC(re, min, max);
+        }
+
         #endregion
 
         #region 参数获取

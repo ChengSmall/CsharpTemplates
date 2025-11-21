@@ -161,7 +161,7 @@ namespace Cheng.Algorithm.Sorts
         /// <returns>分组完毕后的中间索引</returns>
         /// <exception cref="ArgumentNullException">集合为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">索引格式错误</exception>
-        public static int Partition<T>(IList<T> list, int low, int high, IComparer<T> comparer = null)
+        public static int Partition<T>(IList<T> list, int low, int high, IComparer<T> comparer)
         {
             if (list is null) throw new ArgumentNullException();
             

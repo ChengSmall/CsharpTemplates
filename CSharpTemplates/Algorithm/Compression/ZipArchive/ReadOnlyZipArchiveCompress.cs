@@ -402,7 +402,7 @@ namespace Cheng.Algorithm.Compressions.Systems
 
         public override void SortInformationIndex(IComparer comparer, int index, int count)
         {
-            p_zipList.Sort(index, count, comparer);
+            p_zipList.Sort(comparer, index, count);
         }
 
         public override void SortInformationIndex(IComparer<DataInformation> comparer, int index, int count)

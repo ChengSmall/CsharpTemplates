@@ -36,11 +36,8 @@ namespace Cheng.Systems
                 Process pro = null;
                 try
                 {
-
                     pro = Process.GetCurrentProcess();
-
                     count = pro.Threads.Count;
-
                 }
                 catch (Exception)
                 {

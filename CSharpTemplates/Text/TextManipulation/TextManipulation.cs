@@ -425,18 +425,23 @@ namespace Cheng.Texts
 
         }
 
+        [Obsolete("", true)]
+        public static void ToLopper(this TextReader reader, TextWriter toLopper, char[] buffer)
+        {
+            ToLower(reader, toLopper, buffer);
+        }
+
         /// <summary>
         /// 将读取器中的字符序列的字母转化为小写并写入到写入器
         /// </summary>
         /// <param name="reader">要读取的字符序列</param>
-        /// <param name="toLopper">转化后要写入的字符序列</param>
+        /// <param name="toLower">转化后要写入的字符序列</param>
         /// <param name="buffer">转化时读取字符的缓冲区</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">缓冲区长度为0</exception>
-        public static void ToLopper(this TextReader reader, TextWriter toLopper, char[] buffer)
+        public static void ToLower(this TextReader reader, TextWriter toLower, char[] buffer)
         {
-
-            if (reader is null || toLopper is null || buffer is null) throw new ArgumentNullException();
+            if (reader is null || toLower is null || buffer is null) throw new ArgumentNullException();
 
             int length = buffer.Length;
 
@@ -449,13 +454,13 @@ namespace Cheng.Texts
 
                 if (re == 0) return;
 
-                Memorys.MemoryOperation.ToLopper(bp, bp, re);
+                Memorys.MemoryOperation.ToLower(bp, bp, re);
 
-                toLopper.Write(buffer, 0, re);
+                toLower.Write(buffer, 0, re);
 
             }
-
         }
+
 
         /// <summary>
         /// 将指定字符数组的字符转化为大写并写入另一个字符数组
@@ -497,26 +502,32 @@ namespace Cheng.Texts
 
         }
 
+        [Obsolete("", true)]
+        public static void ToLopper(this char[] buffer, int index, int count, char[] toLopper, int toIndex)
+        {
+            ToLower(buffer, index, count, toLopper, toIndex);
+        }
+
         /// <summary>
         /// 将指定字符数组的字符转化为小写并写入另一个字符数组
         /// </summary>
         /// <param name="buffer">要转化的原字符数组</param>
         /// <param name="index">原字符数组的起始位置</param>
         /// <param name="count">要转化的字符数量</param>
-        /// <param name="toLopper">转化到的字符数组</param>
+        /// <param name="toLower">转化到的字符数组</param>
         /// <param name="toIndex">转化后写入的起始位置</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
-        public static void ToLopper(this char[] buffer, int index, int count, char[] toLopper, int toIndex)
+        public static void ToLower(this char[] buffer, int index, int count, char[] toLower, int toIndex)
         {
-            if (buffer is null || toLopper is null) throw new ArgumentNullException();
+            if (buffer is null || toLower is null) throw new ArgumentNullException();
 
             if (index < 0 || count < 0 || toIndex < 0)
             {
                 throw new ArgumentOutOfRangeException();
             }
 
-            var toLength = toLopper.Length;
+            var toLength = toLower.Length;
 
             if (index + count > buffer.Length || toIndex >= toLength)
             {
@@ -530,13 +541,80 @@ namespace Cheng.Texts
 
             if (count == 0) return;
 
-            fixed (char* op = buffer, tp = toLopper)
+            fixed (char* op = buffer, tp = toLower)
             {
-
-                MemoryOperation.ToLopper(op + index, tp + toIndex, count);
-
+                MemoryOperation.ToLower(op + index, tp + toIndex, count);
             }
+        }
 
+        /// <summary>
+        /// 将字符串内的字母转化为大写字母
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>转化后的字符串，如果不存在小写字母或为空字符串或是null，返回原实例</returns>
+        public static string ToUpper(this string value)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+
+            var len = value.Length;
+
+            string tostr;
+            fixed (char* strp = value)
+            {
+                for (int i = 0; i < len; i++)
+                {
+                    char c = strp[i];
+                    if ((c >= 'a' && c <= 'z'))
+                    {
+                        goto IsUp;
+                    }
+                }
+                //没有出现小写字母
+                return value;
+
+                IsUp:
+                tostr = new string('\0', len);
+                fixed (char* sc = tostr)
+                {
+                    MemoryOperation.ToUpper(strp, sc, len);
+                }
+            }
+            return tostr;
+        }
+
+        /// <summary>
+        /// 将字符串内的字母转化为小写字母
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>转化后的字符串，如果不存在大写字母或为空字符串或是null，返回原实例</returns>
+        public static string ToLower(this string value)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+
+            var len = value.Length;
+
+            string tostr;
+            fixed (char* strp = value)
+            {
+                for (int i = 0; i < len; i++)
+                {
+                    char c = strp[i];
+                    if ((c >= 'A' && c <= 'Z'))
+                    {
+                        goto IsUp;
+                    }
+                }
+                //没有出现大写字母
+                return value;
+
+                IsUp:
+                tostr = new string('\0', len);
+                fixed (char* sc = tostr)
+                {
+                    MemoryOperation.ToLower(strp, sc, len);
+                }
+            }
+            return tostr;
         }
 
         #endregion

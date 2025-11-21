@@ -153,41 +153,91 @@ namespace Cheng.DEBUG
             return obj.ToString();
         }
 
-        /// <summary>
-        /// 二进制序列字符串
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static string ToBin(this byte value)
-        {
-            const char c0 = '0';
-            const char c1 = '1';
-            char* cs = stackalloc char[8];
+        #region
+        //public static void ToBin(ulong value, char fen, char* buffer71)
+        //{
+        //    const char c0 = '0';
+        //    const char c1 = '1';
 
-            for (int i = 0; i < 8; i++)
-            {
-                cs[7 - i] = ((value >> i) & 0b1) == 1 ? c1 : c0;
-            }
+        //    //char* cp = buffer;
+        //    //fixed (char* cp = carr)
+        //    //{
 
-            return new string(cs, 0, 8);
-        }
+        //    int i = 0;
+        //    for (int boi = 0; boi < sizeof(ulong); boi++, i++)
+        //    {
+        //        for (int bi = 0; bi < 8; bi++, i++)
+        //        {
+        //            int rimov = ((sizeof(ulong) * 8) - 1) - ((boi * 8) + bi);
 
-        /// <summary>
-        /// 将单字节二进制序列写入到指定地址的字符串中
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="cs"></param>
-        public static void ToBinptr(this byte value, char* cs)
-        {
-            const char c0 = '0';
-            const char c1 = '1';
+        //            char sc = ((value >> rimov) & 0b1) == 0b1 ? c1 : c0;
+        //            buffer71[i] = sc;
+        //        }
+        //        if (sizeof(ulong) - 1 != boi)
+        //        {
+        //            buffer71[i] = fen;
+        //        }
+        //    }
+        //    //return new string(cp, 0, 8 * sizeof(ulong) + sizeof(ulong));
+        //}
 
-            for (int i = 0; i < 8; i++)
-            {
-                cs[7 - i] = ((value >> i) & 0b1) == 1 ? c1 : c0;
-            }
+        //public static void ToBin(uint value, char fen, char* buffer35)
+        //{
+        //    const char c0 = '0';
+        //    const char c1 = '1';
 
-        }
+        //    //char* cp = buffer;
+
+        //    int i = 0;
+        //    for (int boi = 0; boi < sizeof(uint); boi++, i++)
+        //    {
+        //        for (int bi = 0; bi < 8; bi++, i++)
+        //        {
+        //            int rimov = ((sizeof(uint) * 8) - 1) - ((boi * 8) + bi);
+
+        //            char sc = ((value >> rimov) & 0b1) == 0b1 ? c1 : c0;
+        //            buffer35[i] = sc;
+        //        }
+        //        if (sizeof(uint) - 1 != boi)
+        //        {
+        //            buffer35[i] = fen;
+        //        }
+        //    }
+        //}
+
+        //public static void ToBin(ushort value, char fen, char* buffer17)
+        //{
+        //    const char c0 = '0';
+        //    const char c1 = '1';
+
+        //    //char* cp = buffer;
+        //    int i = 0;
+        //    for (int boi = 0; boi < sizeof(ushort); boi++, i++)
+        //    {
+        //        for (int bi = 0; bi < 8; bi++, i++)
+        //        {
+        //            int rimov = ((sizeof(ushort) * 8) - 1) - ((boi * 8) + bi);
+
+        //            char sc = ((value >> rimov) & 0b1) == 0b1 ? c1 : c0;
+        //            buffer17[i] = sc;
+        //        }
+        //        if (sizeof(ushort) - 1 != boi)
+        //        {
+        //            buffer17[i] = fen;
+        //        }
+        //    }
+        //}
+
+        //public static void ToBin(byte value, char* buffer8)
+        //{
+        //    const char c0 = '0';
+        //    const char c1 = '1';
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        buffer8[i] = ((value >> (7 - i)) & 0b1) == 0b1 ? c1 : c0;
+        //    }
+        //}
+        #endregion
 
         /// <summary>
         /// 返回16进制数字符串

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cheng.Memorys;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Cheng.Algorithm.Randoms
     /// <summary>
     /// 基于梅森旋转算法的随机数生成器
     /// </summary>
-    public sealed class MersenneTwisterRandom : BaseRandom
+    public unsafe sealed class MersenneTwisterRandom : BaseRandom
     {
 
         #region 结构
@@ -63,11 +64,104 @@ namespace Cheng.Algorithm.Randoms
         {
         }
 
+        /// <summary>
+        /// 使用随机字节初始化随机器
+        /// </summary>
+        /// <param name="seed">要初始化的字节数组</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public MersenneTwisterRandom(byte[] seed)
+        {
+            if (seed is null) throw new ArgumentNullException();
+
+            fixed (byte* buffer = seed)
+            {
+                mt = new ulong[N];
+                f_init(buffer, seed.Length);
+            }
+        }
+
+        /// <summary>
+        /// 使用随机字节初始化随机器
+        /// </summary>
+        /// <param name="seed">要初始化的字节数组</param>
+        /// <param name="offset">要从字节数组指定位置开始读取</param>
+        /// <param name="size">从字节数组读取的字节大小，有效最大字节大小是2496字节</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public MersenneTwisterRandom(byte[] seed, int offset, int size)
+        {
+            if (seed is null) throw new ArgumentNullException();
+            if(offset < 0 || size < 0 || (offset + size > seed.Length))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* buffer = seed)
+            {
+                mt = new ulong[N];
+                f_init(buffer + offset, size);
+            }
+        }
+
+        /// <summary>
+        /// 使用随机字节初始化随机器
+        /// </summary>
+        /// <param name="seed">指向要初始化的字节值的首地址</param>
+        /// <param name="size"><paramref name="seed"/>指向的位置可用字节容量</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public MersenneTwisterRandom(CPtr<byte> seed, int size)
+        {
+            if (seed.IsEmpty) throw new ArgumentNullException();
+            mt = new ulong[N];
+            f_init(seed, size);
+        }
+
+        private unsafe void f_init(byte* seed, int size)
+        {
+            var lenb8 = (size / 8);
+            var mod8 = size % 8;
+            int overIndex = 1;
+            if (lenb8 == 0 && (mod8 == 0)) goto StartInit;
+
+            int i;
+            int sc = Math.Min(lenb8, N);
+            overIndex = Math.Max(1, sc);
+            //byte* bps = seed;
+            ulong* LP = (ulong*)(seed);
+            for (i = 0; i < sc; i++)
+            {
+                mt[i] = LP[i];
+            }
+            if(lenb8 < N)
+            {
+                //var mod8 = (size % 8);
+                if(mod8 != 0)
+                {
+                    int mtidex = i;
+                    byte* bmp = (byte*)(LP + i);
+                    ulong temp = 0;
+                    for (i = 0; i < mod8; i++)
+                    {
+                        *(((byte*)&temp) + i) = bmp[i];
+                    }
+                    mt[mtidex] = temp;
+                }
+            }
+            
+            StartInit:
+
+            for (i = overIndex; i < N; i++)
+            {
+                mt[i] ^= (6364136223846793005 * (mt[i - 1] ^ (mt[i - 1] >> 62)) + (ulong)i);
+            }
+            f_twist();
+        }
+
         private void f_init(long seed)
         {
             mt = new ulong[N];
             mt[0] = (ulong)seed;
-            //this.mti = 0;
+
             for (int i = 1; i < N; i++)
             {
                 mt[i] = (6364136223846793005 * (mt[i - 1] ^ (mt[i - 1] >> 62)) + (ulong)i);

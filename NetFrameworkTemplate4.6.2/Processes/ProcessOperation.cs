@@ -60,7 +60,6 @@ namespace Cheng.Windows.Processes
         /// 实例化指定进程的操作实例
         /// </summary>
         /// <param name="processID">进程ID</param>
-        /// <param name="access">进程访问权限枚举</param>
         /// <exception cref="ArgumentException">参数不正确</exception>
         /// <exception cref="InvalidOperationException">无法打开进程句柄</exception>
         /// <exception cref="NotSupportedException">无法访问句柄</exception>
@@ -76,6 +75,9 @@ namespace Cheng.Windows.Processes
         /// 实例化进程操作实例
         /// </summary>
         /// <param name="process">封装进程对象</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="InvalidOperationException">封装的对象进程尚未启动或已退出</exception>
+        /// <exception cref="NotSupportedException">尝试访问在远程计算机上运行的进程标识符</exception>
         public ProcessOperation(Process process) : this(process, true)
         {
         }

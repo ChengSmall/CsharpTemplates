@@ -74,6 +74,7 @@ namespace Cheng.DataStructure.Receptacles
         /// 将结构转化为<see cref="short"/>容器
         /// </summary>
         /// <returns></returns>
+        [Obsolete("", true)]
         public static ReceptacleInt16 ToReceptacle(this ReceptacleValue<short> value)
         {
             return new ReceptacleInt16(value.value, value.maxValue);
@@ -83,6 +84,7 @@ namespace Cheng.DataStructure.Receptacles
         /// 将结构转化为<see cref="ushort"/>容器
         /// </summary>
         /// <returns></returns>
+        [Obsolete("", true)]
         public static ReceptacleUInt16 ToReceptacle(this ReceptacleValue<ushort> value)
         {
             return new ReceptacleUInt16(value.value, value.maxValue);
@@ -92,6 +94,7 @@ namespace Cheng.DataStructure.Receptacles
         /// 将结构转化为<see cref="byte"/>容器
         /// </summary>
         /// <returns></returns>
+        [Obsolete("", true)]
         public static ReceptacleByte ToReceptacle(this ReceptacleValue<byte> value)
         {
             return new ReceptacleByte(value.value, value.maxValue);
@@ -115,6 +118,7 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="rec"></param>
         /// <returns>转化后的值</returns>
+        [Obsolete("", true)]
         public static ReceptacleValue<byte> ToReceptacle(this ReceptacleByte rec)
         {
             return new ReceptacleValue<byte>(rec.value, rec.maxValue);
@@ -125,6 +129,7 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="rec"></param>
         /// <returns>转化后的值</returns>
+        [Obsolete("", true)]
         public static ReceptacleValue<short> ToReceptacle(this ReceptacleInt16 rec)
         {
             return new ReceptacleValue<short>(rec.value, rec.maxValue);
@@ -135,6 +140,7 @@ namespace Cheng.DataStructure.Receptacles
         /// </summary>
         /// <param name="rec"></param>
         /// <returns>转化后的值</returns>
+        [Obsolete("", true)]
         public static ReceptacleValue<ushort> ToReceptacle(this ReceptacleUInt16 rec)
         {
             return new ReceptacleValue<ushort>(rec.value, rec.maxValue);

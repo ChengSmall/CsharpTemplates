@@ -12,7 +12,9 @@ namespace Cheng.Texts
 
         #region 字符串和值
 
-        #region
+        #region 16进制
+
+        #region 16进制
 
         /// <summary>
         /// 将一个字节值的前4bit返回为一个表示十六进制的个位数文本
@@ -308,7 +310,7 @@ namespace Cheng.Texts
 
         #endregion
 
-        #region
+        #region 值
 
         static bool X16TextToBit4(char c, out byte value)
         {
@@ -651,6 +653,125 @@ namespace Cheng.Texts
             {
                 return X16ToValue(p + index, count, out value);
             }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region 二进制
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <param name="fen">每个字节之间的分隔符</param>
+        /// <returns>表示二进制文本的字符串</returns>
+        public static string ToBin(this ulong value, char fen)
+        {
+            char* cp = stackalloc char[8 * sizeof(ulong) + (sizeof(ulong) - 1)];
+            MemoryOperation.ToBinStr(value, fen, cp);
+            return new string(cp, 0, 8 * sizeof(ulong) + (sizeof(ulong) - 1));
+        }
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <param name="fen">每个字节之间的分隔符</param>
+        /// <returns>表示二进制文本的字符串</returns>
+        public static string ToBin(this long value, char fen)
+        {
+            return ToBin((ulong)value, fen);
+        }
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <param name="fen">每个字节之间的分隔符</param>
+        /// <returns>表示二进制文本的字符串</returns>
+        public static string ToBin(this uint value, char fen)
+        {
+            char* cp = stackalloc char[8 * sizeof(uint) + (sizeof(uint) - 1)];
+            MemoryOperation.ToBinStr(value, fen, cp);
+            return new string(cp, 0, 8 * sizeof(uint) + (sizeof(uint) - 1));
+        }
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <param name="fen">每个字节之间的分隔符</param>
+        /// <returns>表示二进制文本的字符串</returns>
+        public static string ToBin(this int value, char fen)
+        {
+            return ToBin((uint)value, fen);
+        }
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <param name="fen">每个字节之间的分隔符</param>
+        /// <returns>表示二进制文本的字符串</returns>
+        public static string ToBin(this ushort value, char fen)
+        {
+            char* cp = stackalloc char[8 * sizeof(ushort) + (sizeof(ushort) - 1)];
+            MemoryOperation.ToBinStr(value, fen, cp);
+            return new string(cp, 0, 8 * sizeof(ushort) + (sizeof(ushort) - 1));
+        }
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <param name="fen">每个字节之间的分隔符</param>
+        /// <returns>表示二进制文本的字符串</returns>
+        public static string ToBin(this short value, char fen)
+        {
+            char* cp = stackalloc char[8 * sizeof(short) + (sizeof(short) - 1)];
+            MemoryOperation.ToBinStr((ushort)value, fen, cp);
+            return new string(cp, 0, 8 * sizeof(short) + (sizeof(short) - 1));
+        }
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <returns></returns>
+        public static string ToBin(this byte value)
+        {
+            const char c0 = '0';
+            const char c1 = '1';
+            char* cs = stackalloc char[8];
+            for (int i = 0; i < 8; i++)
+            {
+                cs[7 - i] = ((value >> i) & 0b1) == 1 ? c1 : c0;
+            }
+            return new string(cs, 0, 8);
+        }
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <param name="fen">每个字节之间的分隔符</param>
+        /// <returns>表示二进制文本的字符串</returns>
+        public static string ToBin(this float value, char fen)
+        {
+            return ToBin(*(uint*)&value, fen);
+        }
+
+        /// <summary>
+        /// 将值转化为二进制文本
+        /// </summary>
+        /// <param name="value">要转化的值</param>
+        /// <param name="fen">每个字节之间的分隔符</param>
+        /// <returns>表示二进制文本的字符串</returns>
+        public static string ToBin(this double value, char fen)
+        {
+            return ToBin(*(ulong*)&value, fen);
         }
 
         #endregion

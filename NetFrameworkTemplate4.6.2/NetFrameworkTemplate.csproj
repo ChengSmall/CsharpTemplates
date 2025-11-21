@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cheng.NetFrameworkTemplate</RootNamespace>
     <AssemblyName>NetFrameworkTemplate</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -107,6 +108,13 @@
     <Compile Include="Winapi\Midi\WinAPI.cs" />
     <Compile Include="Winapi\WinThreadAPI.cs" />
     <Compile Include="WinForms\Controls\ControlExtend.cs" />
+    <Compile Include="WinForms\Controls\Slider\DragSlider.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WinForms\Controls\Slider\DragSlider.Code.cs" />
+    <Compile Include="WinForms\Controls\Slider\DragSlider.Designer.cs">
+      <DependentUpon>DragSlider.cs</DependentUpon>
+    </Compile>
     <Compile Include="WinForms\Forms\InputValueDialog.cs">
       <SubType>Form</SubType>
     </Compile>
