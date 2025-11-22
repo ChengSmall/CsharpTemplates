@@ -213,6 +213,59 @@ namespace Cheng.Json
 
         #endregion
 
+        #region 层次
+
+        /// <summary>
+        /// 获取json对象内最深的层数
+        /// </summary>
+        /// <param name="json">json对象</param>
+        /// <returns>
+        /// <para>表示一个层级数</para>
+        /// <para>当<paramref name="json"/>属于简单类型时，返回0；若<paramref name="json"/>属于复合类型，则返回复合嵌套最深的层次，返回值最小为0</para>
+        /// </returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static int GetDeepestLevel(this JsonVariable json)
+        {
+            if (json is null) throw new ArgumentNullException(nameof(json));
+
+            return f_deplvl(json, 0);
+
+            int f_deplvl(JsonVariable t_json, int t_lvl)
+            {
+                var dataType = t_json.DataType;
+
+                if ((int)dataType < (int)JsonType.List)
+                {
+                    //简单对象
+                    return t_lvl;
+                }
+                else
+                {
+                    t_lvl++;
+                    int parlvl = t_lvl;
+                    //复合对象
+                    if (dataType == JsonType.List)
+                    {
+                        foreach (var item in t_json.Array)
+                        {
+                            parlvl = Math.Max(f_deplvl(item, t_lvl), parlvl);
+                        }
+                        return parlvl;
+                    }
+                    else
+                    {
+                        foreach (var pair in t_json.JsonObject.p_dict)
+                        {
+                            parlvl = Math.Max(f_deplvl(pair.Value, t_lvl), parlvl);
+                        }
+                        return parlvl;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
     }
 
 }

@@ -9,7 +9,7 @@ namespace Cheng.Timers
 {
 
     /// <summary>
-    /// 微秒级别的高精度低损耗计时器；可用于测量性能，计时等功能
+    /// 微秒级别的高精度计时器；可用于测量性能，计时等功能
     /// </summary>
     /// <remarks>
     /// <para>在原理上和<see cref="Stopwatch"/>一致</para>

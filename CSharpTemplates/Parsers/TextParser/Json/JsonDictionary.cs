@@ -287,6 +287,15 @@ namespace Cheng.Json
             p_dict = new Dictionary<string, JsonVariable>(p_dict, p_dict.Comparer);
         }
 
+        /// <summary>
+        /// 返回一个可循环访问<see cref="JsonDictionary"/>的枚举器
+        /// </summary>
+        /// <returns>可循环访问当前对象的枚举器</returns>
+        public Dictionary<string, JsonVariable>.Enumerator GetEnumerator()
+        {
+            return p_dict.GetEnumerator();
+        }
+
         #region
 
         void ICollection<KeyValuePair<string, JsonVariable>>.Add(KeyValuePair<string, JsonVariable> item)
@@ -308,7 +317,7 @@ namespace Cheng.Json
             return p_dict.Remove(item.Key);
         }
 
-        public IEnumerator<KeyValuePair<string, JsonVariable>> GetEnumerator()
+        IEnumerator<KeyValuePair<string, JsonVariable>> IEnumerable<KeyValuePair<string, JsonVariable>>.GetEnumerator()
         {
             return p_dict.GetEnumerator();
         }

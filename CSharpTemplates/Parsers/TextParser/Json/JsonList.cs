@@ -349,7 +349,16 @@ namespace Cheng.Json
             return p_list.ToArray();
         }
 
-        public IEnumerator<JsonVariable> GetEnumerator()
+        /// <summary>
+        /// 返回一个循环访问集合元素的枚举器
+        /// </summary>
+        /// <returns>循环访问集合元素的枚举器</returns>
+        public List<JsonVariable>.Enumerator GetEnumerator()
+        {
+            return p_list.GetEnumerator();
+        }
+
+        IEnumerator<JsonVariable> IEnumerable<JsonVariable>.GetEnumerator()
         {
             return p_list.GetEnumerator();
         }

@@ -32,21 +32,7 @@ namespace Cheng.Systems
         {
             get
             {
-                bool flag;
-                try
-                {
-                    using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
-                    {
-                        var ws = new WindowsPrincipal(identity);
-
-                        flag = ws.IsInRole(WindowsBuiltInRole.Administrator);
-                    }
-                }
-                catch (Exception)
-                {
-                    flag = false;
-                }
-                return flag;
+                return ProcessUser(WindowsBuiltInRole.Administrator);
             }
         }
 
@@ -66,9 +52,7 @@ namespace Cheng.Systems
                 using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
                 {
                     // 使用身份对象进行操作
-                    var ws = new WindowsPrincipal(identity);
-
-                    flag = ws.IsInRole(role);
+                    flag = new WindowsPrincipal(identity).IsInRole(role);
                 }
             }
             catch (Exception)
@@ -83,7 +67,7 @@ namespace Cheng.Systems
         #region 逻辑驱动器
 
         [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetLogicalDrives")]
-        private static extern uint win_getLogicalDrives();
+        private static extern uint f_win_getLogicalDrives();
 
         private class Enumerator_getLogiaclsStr : IEnumerator<string>
         {
@@ -232,7 +216,7 @@ namespace Cheng.Systems
             /// <exception cref="Win32Exception">无法获取逻辑驱动器卷标集合</exception>
             public IEnumerator<char> GetEnumerator()
             {
-                var value = win_getLogicalDrives();
+                var value = f_win_getLogicalDrives();
                 if (value == 0)
                 {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -267,7 +251,7 @@ namespace Cheng.Systems
             /// <exception cref="Win32Exception">无法获取逻辑驱动器信息</exception>
             public IEnumerator<string> GetEnumerator()
             {
-                var value = win_getLogicalDrives();
+                var value = f_win_getLogicalDrives();
                 if (value == 0)
                 {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -291,7 +275,7 @@ namespace Cheng.Systems
         /// <exception cref="Win32Exception">无法获取逻辑驱动器信息</exception>
         public static IEnumerator<char> EnumableGetLogicalDrives()
         {
-            var value = win_getLogicalDrives();
+            var value = f_win_getLogicalDrives();
             if(value == 0)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -317,7 +301,7 @@ namespace Cheng.Systems
         /// <exception cref="Win32Exception">无法获取逻辑驱动器信息</exception>
         public static IEnumerator<string> EnumableGetLogicalDriveNames()
         {
-            var value = win_getLogicalDrives();
+            var value = f_win_getLogicalDrives();
             if (value == 0)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -340,7 +324,7 @@ namespace Cheng.Systems
         /// <returns>当前系统逻辑驱动器的数量，0表示无法获取逻辑驱动器信息</returns>
         public static int GetLogicalDiriveCount()
         {
-            var value = win_getLogicalDrives();
+            var value = f_win_getLogicalDrives();
             if (value == 0) return 0;
 
             int count = 0;
@@ -362,7 +346,7 @@ namespace Cheng.Systems
         public static void ForeachLogicalDrives(Action<char> action)
         {
             if (action is null) throw new ArgumentNullException();
-            var value = win_getLogicalDrives();
+            var value = f_win_getLogicalDrives();
             if (value == 0)
             {
                 return;
@@ -376,6 +360,24 @@ namespace Cheng.Systems
                 }
             }
 
+        }
+
+        #endregion
+
+        #region TickCount
+
+        [DllImport("kernel32.dll", EntryPoint = "GetTickCount64")]
+        private static extern ulong f_win_GetTickCount64();
+
+        /// <summary>
+        /// 获取一个64位整数，表示自操作系统启动后经过的毫秒数
+        /// </summary>
+        public static long TickCount64
+        {
+            get
+            {
+                return (long)f_win_GetTickCount64();
+            }
         }
 
         #endregion
