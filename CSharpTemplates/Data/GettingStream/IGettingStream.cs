@@ -76,7 +76,7 @@ namespace Cheng.DataStructure
     /// <summary>
     /// 提供一个打开指定路径的文件流对象接口
     /// </summary>
-    public class GettingFileStream : IGettingStream
+    public sealed class GettingFileStream : IGettingStream
     {
 
         #region
@@ -131,6 +131,31 @@ namespace Cheng.DataStructure
 
         #endregion
 
+    }
+
+    /// <summary>
+    /// 使用一个字节数组实现流对象获取接口
+    /// </summary>
+    public sealed class GettingMemoryStream : IGettingStream
+    {
+
+        /// <summary>
+        /// 使用一个字节数组实例化流对象获取接口
+        /// </summary>
+        /// <param name="buffer">要使用的字节数组</param>
+        public GettingMemoryStream(byte[] buffer)
+        {
+            p_buffer = buffer ?? throw new ArgumentNullException();
+        }
+
+        private readonly byte[] p_buffer;
+
+        public long StreamLength => p_buffer.Length;
+
+        public Stream OpenStream()
+        {
+            return new MemoryStream(p_buffer);
+        }
     }
 
 }

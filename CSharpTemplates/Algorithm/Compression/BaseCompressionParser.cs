@@ -20,7 +20,7 @@ namespace Cheng.Algorithm.Compressions
     /// <para>派生该类以实现各种数据包或压缩算法的实现</para>
     /// <para>注重于读取和访问操作实现</para>
     /// </remarks>
-    public abstract class BaseCompressionParser : SafreleaseUnmanagedResources, IDataList, Cheng.DataStructure.Collections.IReadOnlyList<DataInformation>, System.Collections.Generic.IReadOnlyList<DataInformation>
+    public abstract class BaseCompressionParser : SafreleaseUnmanagedResources, IDataList, System.Collections.Generic.IReadOnlyList<DataInformation>
     {
 
         #region 构造
@@ -186,7 +186,10 @@ namespace Cheng.Algorithm.Compressions
         /// <exception cref="Exception">其它错误</exception>
         public virtual void Add(byte[] data, string dataPath)
         {
-            Add(new MemoryStream(data), dataPath);
+            using(MemoryStream ms = new MemoryStream(data))
+            {
+                Add(ms, dataPath);
+            }
         }
 
         /// <summary>

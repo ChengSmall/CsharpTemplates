@@ -13,7 +13,7 @@ namespace Cheng.DataStructure.Collections
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public sealed class ImmediatelyQueue<T> : IReadOnlyCollection<T>, IList<T>
+    public sealed class ImmediatelyQueue<T> : IList<T>, System.Collections.Generic.IReadOnlyList<T>
     {
 
         #region 构造
@@ -51,7 +51,7 @@ namespace Cheng.DataStructure.Collections
         public ImmediatelyQueue(IEnumerable<T> collection)
         {
             p_size = 0;
-            _version = 0;
+            p_version = 0;
             if (collection is null)
             {
                 p_array = sp_emptyArray;
@@ -85,38 +85,46 @@ namespace Cheng.DataStructure.Collections
 
         private T[] p_array;
 
+#if DEBUG
         /// <summary>
         /// 头索引
         /// </summary>
+#endif
         private int p_head;
 
+#if DEBUG
         /// <summary>
         /// 尾索引
         /// </summary>
+#endif
         private int p_tail;
 
+#if DEBUG
         /// <summary>
         /// 整体长度
         /// </summary>
+#endif
         private int p_size;
 
+#if DEBUG
         /// <summary>
         /// 变更参数
         /// </summary>
-        [NonSerialized] private int _version;
+#endif
+        [NonSerialized] private int p_version;
 
         #endregion
 
         #region 功能
 
-        #region
+        #region 封装
 
-        internal T GetElement(int i)
+        internal T f_getElement(int i)
         {
             return p_array[(p_head + i) % p_array.Length];
         }
 
-        internal void SetElement(int i, T value)
+        internal void f_setElement(int i, T value)
         {
             p_array[(p_head + i) % p_array.Length] = value;
         }
@@ -124,7 +132,7 @@ namespace Cheng.DataStructure.Collections
         private void SetCapacity(int capacity)
         {
             T[] array = new T[capacity];
-
+            p_version++;
             if (p_size > 0)
             {
                 if (p_head < p_tail)
@@ -141,7 +149,6 @@ namespace Cheng.DataStructure.Collections
             p_array = array;
             p_head = 0;
             p_tail = ((p_size != capacity) ? p_size : 0);
-            _version++;
         }
 
         #endregion
@@ -168,14 +175,36 @@ namespace Cheng.DataStructure.Collections
         {
             get
             {
-                if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
                 return GetElement(index);
             }
             set
             {
-                if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
                 SetElement(index, value);
             }
+        }
+
+        /// <summary>
+        /// 使用索引从最前端向后访问已有元素
+        /// </summary>
+        /// <param name="index">元素索引，0表示最前端</param>
+        /// <returns>索引<paramref name="index"/>下的元素</returns>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public T GetElement(int index)
+        {
+            if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
+            return f_getElement(index);
+        }
+
+        /// <summary>
+        /// 使用索引从最前端向后设置已有元素
+        /// </summary>
+        /// <param name="index">元素索引，0表示最前端</param>
+        /// <param name="item">要覆盖的新元素</param>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public void SetElement(int index, T item)
+        {
+            if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
+            f_setElement(index, item);
         }
 
         /// <summary>
@@ -183,10 +212,11 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         /// <param name="index">反向索引，0表示最末端元素</param>
         /// <returns>索引<paramref name="index"/>下的元素</returns>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public T LastGetElement(int index)
         {
-            if (index < 0 || index >= p_size) throw new ArgumentNullException();
-            return GetElement((p_size - 1) - index);
+            if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
+            return f_getElement((p_size - 1) - index);
         }
 
         /// <summary>
@@ -194,10 +224,11 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         /// <param name="index">反向索引，0表示最末端元素</param>
         /// <param name="item">索引<paramref name="index"/>下的元素</param>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public void LastSetElement(int index, T item)
         {
-            if (index < 0 || index >= p_size) throw new ArgumentNullException();
-            SetElement((p_size - 1) - index, item);
+            if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
+            f_setElement((p_size - 1) - index, item);
         }
 
         #endregion
@@ -222,7 +253,7 @@ namespace Cheng.DataStructure.Collections
             p_head = 0;
             p_tail = 0;
             p_size = 0;
-            _version++;
+            p_version++;
         }
 
         /// <summary>
@@ -241,7 +272,7 @@ namespace Cheng.DataStructure.Collections
             p_array[p_head] = default(T);
             p_head = (p_head + 1) % p_array.Length;
             p_size--;
-            _version++;
+            p_version++;
             return result;
         }
 
@@ -328,7 +359,7 @@ namespace Cheng.DataStructure.Collections
             p_array[p_tail] = item;
             p_tail = (p_tail + 1) % p_array.Length;
             p_size++;
-            _version++;
+            p_version++;
         }
 
         /// <summary>
@@ -423,7 +454,7 @@ namespace Cheng.DataStructure.Collections
 
             for (int i = size - 1; i >= 0; i++)
             {
-                if(eq.Equals(GetElement(i), item))
+                if(eq.Equals(f_getElement(i), item))
                 {
                     return i;
                 }
@@ -471,7 +502,7 @@ namespace Cheng.DataStructure.Collections
 
             for (int i = size - 1; i >= 0; i++)
             {
-                if (predicate.Invoke(GetElement(i)))
+                if (predicate.Invoke(f_getElement(i)))
                 {
                     return i;
                 }
@@ -491,7 +522,7 @@ namespace Cheng.DataStructure.Collections
             internal Enumerator(ImmediatelyQueue<T> q)
             {
                 p_queue = q;
-                p_version = p_queue._version;
+                p_version = p_queue.p_version;
                 p_index = -1;
                 p_cut = default(T);
             }
@@ -532,7 +563,7 @@ namespace Cheng.DataStructure.Collections
 
             public bool MoveNext()
             {
-                if ((p_queue is null) || p_version != p_queue._version)
+                if ((p_queue is null) || p_version != p_queue.p_version)
                 {
                     throw new InvalidOperationException();
                 }
@@ -550,14 +581,14 @@ namespace Cheng.DataStructure.Collections
                     return false;
                 }
 
-                p_cut = p_queue.GetElement(p_index);
+                p_cut = p_queue.f_getElement(p_index);
                 return true;
             }
 
             public void Reset()
             {
 
-                if ((p_queue is null) || p_version != p_queue._version)
+                if ((p_queue is null) || p_version != p_queue.p_version)
                 {
                     throw new InvalidOperationException();
                 }

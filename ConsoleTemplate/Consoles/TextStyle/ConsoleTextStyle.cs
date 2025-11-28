@@ -282,6 +282,17 @@ namespace Cheng.Consoles
         /// <summary>
         /// 转化修改文本颜色的ASNI转义序列
         /// </summary>
+        /// <param name="color">指定颜色，忽略<see cref="Colour.a"/></param>
+        /// <param name="isBackground">是否为背景色，背景色则为true，前景色（文本颜色）则为false</param>
+        /// <returns>转化后的ASNI转义序列文本</returns>
+        public static string ColorToText(Colour color, bool isBackground)
+        {
+            return ColorToText(color.r, color.g, color.b, isBackground);
+        }
+
+        /// <summary>
+        /// 转化修改文本颜色的ASNI转义序列
+        /// </summary>
         /// <param name="r">颜色的R值</param>
         /// <param name="g">颜色的G值</param>
         /// <param name="b">颜色的B值</param>
@@ -289,47 +300,7 @@ namespace Cheng.Consoles
         /// <returns>转化后的ASNI转义序列文本</returns>
         public static string ColorToText(byte r, byte g, byte b, bool isBackground)
         {
-            int count;
-            if (r > 99)
-            {
-                count = 3;
-            }
-            else if(r > 9)
-            {
-                count = 2;
-            }
-            else
-            {
-                count = 1;
-            }
-
-            if (g > 99)
-            {
-                count += 3;
-            }
-            else if (r > 9)
-            {
-                count += 2;
-            }
-            else
-            {
-                count += 1;
-            }
-
-            if (b > 99)
-            {
-                count += 3;
-            }
-            else if (r > 9)
-            {
-                count += 2;
-            }
-            else
-            {
-                count += 1;
-            }
-
-            StringBuilder sb = new StringBuilder(10 + count);
+            StringBuilder sb = new StringBuilder(ColorToTextCount(r, g, b));
             ColorToText(r, g, b, isBackground, sb);
             return sb.ToString();
         }

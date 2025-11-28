@@ -560,31 +560,8 @@ namespace Cheng.Memorys
         /// <returns></returns>
         public static bool EqualsMemory(this IntPtr ptr1, IntPtr ptr2, int length)
         {
-            long* xlp = (long*)ptr1, ylp = (long*)ptr2;
-            if (xlp == ylp) return true;
-
-            int i;
-            int size8 = length / 8;
-            int sf8 = length % 8;
-
-            for (i = 0; i < size8; i++)
-            {
-                if ((*(xlp + i)) != (*(ylp + i))) return false;
-            }
-
-            if (sf8 != 0)
-            {
-                xlp += i;
-                ylp += i;
-
-                for (i = 0; i < sf8; i++)
-                {
-                    if ((*(((byte*)xlp) + i)) != (*(((byte*)ylp) + i))) return false;
-                }
-
-            }
-
-            return true;
+            
+            return EqualsMemory(ptr1.ToPointer(), ptr2.ToPointer(), length);
         }
 
         /// <summary>
@@ -596,30 +573,33 @@ namespace Cheng.Memorys
         /// <returns></returns>
         public static bool EqualsMemory(void* ptr1, void* ptr2, int length)
         {
-            long* xlp = (long*)ptr1, ylp = (long*)ptr2;
-            if (xlp == ylp) return true;
+            if (length == 0) return true;
+            var lenM4 = length / 4;
 
+            int* ia = (int*)ptr1;
+            int* ib = (int*)ptr2;
             int i;
-            int size8 = length / 8;
-            int sf8 = length % 8;
-
-            for (i = 0; i < size8; i++)
+            for (i = 0; i < lenM4; i++)
             {
-                if ((*(xlp + i)) != (*(ylp + i))) return false;
+                if (ia[i] != ib[i]) return false;
             }
 
-            if (sf8 != 0)
-            {
-                xlp += i;
-                ylp += i;
+            byte* ba = (byte*)(ia + i);
+            byte* bb = (byte*)(ib + i);
 
-                for (i = 0; i < sf8; i++)
+            var ms = length % 4;
+            if (ms != 0)
+            {
+                //至少是1
+                if (ba[0] != bb[0]) return false;
+                if (ms > 1)
                 {
-                    if ((*(((byte*)xlp) + i)) != (*(((byte*)ylp) + i))) return false;
+                    //2 或 3
+                    if (ba[1] != bb[1]) return false;
+                    //是3
+                    if (ms == 3) if (ba[2] != bb[2]) return false;
                 }
-
             }
-
             return true;
         }
 
@@ -639,7 +619,7 @@ namespace Cheng.Memorys
 
             fixed(byte* bp = buffer1, bp2 = buffer2)
             {
-                return EqualsMemory(new IntPtr(bp), new IntPtr(bp2), length);
+                return EqualsMemory(bp, bp2, length);
             }
         }
 

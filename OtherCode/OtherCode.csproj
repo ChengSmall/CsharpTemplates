@@ -87,6 +87,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Alg\RsaSSH\RsaSSH.cs" />
+    <Compile Include="Alg\RsaSSH\RsaSSH.Extend.cs" />
     <Compile Include="Assembly\AssemblyLoading.cs" />
     <Compile Include="CSharpCode\ChangyongFunc.cs" />
     <Compile Include="CSharpCode\ProcessStart.cs" />

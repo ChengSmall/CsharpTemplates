@@ -6,37 +6,10 @@ namespace Cheng.DataStructure.Collections
 {
 
     /// <summary>
-    /// 表示一个只读集合
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IReadOnlyCollection<T> : IEnumerable<T>
-    {
-        /// <summary>
-        /// 集合内的元素数量
-        /// </summary>
-        int Count { get; }
-    }
-
-    /// <summary>
-    /// 表示一个按索引访问的只读集合
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IReadOnlyList<T> : IReadOnlyCollection<T>
-    {
-        /// <summary>
-        /// 使用索引访问集合
-        /// </summary>
-        /// <param name="index">索引</param>
-        /// <returns>访问到的值</returns>
-        /// <exception cref="ArgumentException">超出索引范围</exception>
-        T this[int index] { get; }
-    }
-
-    /// <summary>
     /// 封装一个数组做只读数组
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ArrayReadOnly<T> : IReadOnlyList<T>
+    public sealed class ArrayReadOnly<T> : System.Collections.Generic.IReadOnlyList<T>
     {
 
         /// <summary>
@@ -44,7 +17,7 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         public ArrayReadOnly()
         {
-            p_list = emptyArray;
+            p_list = Array.Empty<T>();
         }
 
         /// <summary>
@@ -58,8 +31,6 @@ namespace Cheng.DataStructure.Collections
 
             p_list = list;
         }
-
-        private static readonly T[] emptyArray = new T[0];
 
         private readonly IList<T> p_list;
 

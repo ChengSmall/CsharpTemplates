@@ -13,31 +13,29 @@ namespace Cheng.Algorithm.Sorts.Comparers.Pokers
     public sealed class PokerComparerDouDiZhu : Comparer<Poker>
     {
 
-        static int ToNum(PokerNum num)
+        static short ToNum(PokerNum num)
         {
-            if(num >= PokerNum._3 && num <= PokerNum.K)
+            if (num >= PokerNum._3 && num <= PokerNum.K)
             {
-                return ((int)num) - 3;
+                return (short)(((int)num) - 3);
             }
 
-            if(num == PokerNum.A || num == PokerNum._2)
+            if (num == PokerNum.A || num == PokerNum._2)
             {
-                return ((int)num) + 11;
+                return (short)(((int)num) + 11);
             }
 
             if (num == PokerNum.LittleJoker) return 100;
             if (num == PokerNum.Joker) return 1000;
 
-            return (int)num;
+            return (short)num;
 
         }
 
         public override int Compare(Poker x, Poker y)
         {
-            int r = ToNum(x.Num).CompareTo(ToNum(y.Num));
-
-            return r != 0 ? r : ((byte)x.Flower).CompareTo((byte)y.Flower);
-
+            int r = ToNum(x.Num) - ToNum(y.Num);
+            return r != 0 ? r : (((byte)x.Flower) - ((byte)y.Flower));
         }
 
     }
@@ -45,94 +43,61 @@ namespace Cheng.Algorithm.Sorts.Comparers.Pokers
     /// <summary>
     /// 扑克组排序 - 21点规则
     /// </summary>
-    public sealed class PokerComparer21Point : Comparer<IEnumerable<Poker>>, IComparer<IList<Poker>>, IComparer<Poker[]>
+    /// <typeparam name="T">表示一个扑克牌牌组</typeparam>
+    public sealed class PokerComparer21Point<T> : IComparer<T> where T : class, IEnumerable<Poker>
     {
 
-        static int getPoint(PokerNum num)
+        public PokerComparer21Point()
         {
-            //var num = poker.Num;
-            if(num > PokerNum._10 && num <= PokerNum.K)
-            {
-                return 10;
-            }
-            return (int)num;
+            p_boon = true;
         }
 
         /// <summary>
-        /// 计算一组扑克牌的21点值
+        /// 初始化排序器并指定是否实施爆牌机制
         /// </summary>
-        /// <param name="list">一组扑克</param>
-        /// <returns>最终值，按理论最大值计算</returns>
-        /// <exception cref="ArgumentNullException">集合是null</exception>
-        public static int GetPokersPoint(IEnumerable<Poker> list)
+        /// <param name="boon">如参数为true，则当点数大于21时视为无点数</param>
+        public PokerComparer21Point(bool boon)
         {
-            if (list is null) throw new ArgumentNullException();
-            int i;
-            //总点数
-            int point = 0;
-            //A的数量
-            int count_A = 0;
-
-            //int count = list.Count;
-            //Poker poker;
-            PokerNum pn;
-            foreach (var item in list)
-            {
-                //poker = list[i];
-                pn = item.Num;
-                if (pn == PokerNum.A)
-                {
-                    count_A++;
-                    point += 11; //默认按11点算
-                }
-                else
-                {
-                    point += getPoint(pn); //默认点数获取
-                }
-            }
-
-            //按A牌数量计数 且 点数超出21点
-            for(i = count_A; i > 0 && point > 21; i--)
-            {
-                //将其中一个A牌变为1
-                point -= 10;
-            }
-
-            return point;
+            p_boon = boon;
         }
 
+        private readonly bool p_boon;
+
         /// <summary>
-        /// 计算一组扑克牌的21点值
+        /// 对比两组扑克按照21点规则比较大小
         /// </summary>
-        /// <param name="array">一组扑克</param>
-        /// <returns>最终值，按理论最大值计算；如果集合是null直接返回0</returns>
-        public static int GetPokersPoint(params Poker[] array)
+        /// <param name="x">前一个牌组</param>
+        /// <param name="y">后一个牌组</param>
+        /// <param name="boon">是否实施爆牌机制，超出21点的牌视为最低点数，两方皆爆则表示为相等</param>
+        /// <returns>按照21点公共规则返回比较的值</returns>
+        public static int Comparer(IEnumerable<Poker> x, IEnumerable<Poker> y, bool boon)
         {
-            if (array is null) return 0;
-            return GetPokersPoint(array as IList<Poker>);
+            var xv = PokerGameExtends.GetPokersPoint(x);
+            var yv = PokerGameExtends.GetPokersPoint(y);
+            if (boon)
+            {
+                if (xv > 21) xv = -1;
+                if (yv > 21) yv = -1;
+            }
+            return xv - yv;
         }
 
         /// <summary>
         /// 对比两组扑克按照21点规则比较大小
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns><paramref name="x"/>小于<paramref name="y"/>返回值小于0；<paramref name="x"/>大于<paramref name="y"/>返回值大于0；<paramref name="x"/>等于<paramref name="y"/>返回0</returns>
-        public override int Compare(IEnumerable<Poker> x, IEnumerable<Poker> y)
+        /// <param name="x">前一个值</param>
+        /// <param name="y">后一个值</param>
+        /// <returns>按照21点公共规则比较牌组，根据点数比较，并实施爆牌机制</returns>
+        public static int Comparer(IEnumerable<Poker> x, IEnumerable<Poker> y)
         {
-            //if (x is null || y is null) throw new ArgumentNullException();
-            return GetPokersPoint(x).CompareTo(GetPokersPoint(y));
+            return Comparer(x, y, true);
         }
 
-        int IComparer<Poker[]>.Compare(Poker[] x, Poker[] y)
+        public int Compare(T x, T y)
         {
-            return GetPokersPoint(x).CompareTo(GetPokersPoint(y));
+            return Comparer(x, y, p_boon);
         }
 
-        int IComparer<IList<Poker>>.Compare(IList<Poker> x, IList<Poker> y)
-        {
-            return GetPokersPoint(x).CompareTo(GetPokersPoint(y));
-        }
     }
 
 }

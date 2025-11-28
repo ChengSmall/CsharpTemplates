@@ -25,8 +25,8 @@ namespace Cheng.Timers
         {
         }
 
-        protected override DateTime NowTime => DateTime.UtcNow;
-        protected override ulong NowTimeTick => (ulong)DateTime.UtcNow.Ticks;
+        protected override DateTime NowTime => new DateTime(System.Diagnostics.Stopwatch.GetTimestamp());
+        protected override ulong NowTimeTick => (ulong)System.Diagnostics.Stopwatch.GetTimestamp();
 
         /// <summary>
         /// 返回一个开始计时的新实例

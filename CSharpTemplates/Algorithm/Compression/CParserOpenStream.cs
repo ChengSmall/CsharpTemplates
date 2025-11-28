@@ -36,8 +36,15 @@ namespace Cheng.Algorithm.Compressions
             get
             {
                 if (p_i < 0 || p_i >= p_par.Count) return -1;
-                var inf = p_par[p_i];
-                return inf.BeforeSize;
+                try
+                {
+                    var inf = p_par[p_i];
+                    return inf.BeforeSize;
+                }
+                catch (Exception)
+                {
+                    return -1;
+                }
             }
         }
 
@@ -86,8 +93,16 @@ namespace Cheng.Algorithm.Compressions
         {
             get
             {
-                var inf = p_par[p_path];
-                return inf.BeforeSize;
+                try
+                {
+                    var inf = p_par[p_path];
+                    return inf.BeforeSize;
+                }
+                catch (Exception)
+                {
+                    return -1;
+                }
+                
             }
         }
 

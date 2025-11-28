@@ -11,7 +11,7 @@ namespace Cheng.GameTemplates.Pokers
     #region 类型
 
     /// <summary>
-    /// 扑克牌牌面数值
+    /// 扑克牌牌面值
     /// </summary>
     public enum PokerNum : byte
     {
@@ -74,7 +74,7 @@ namespace Cheng.GameTemplates.Pokers
     /// <summary>
     /// 一个扑克牌结构
     /// </summary>
-    public struct Poker : IEquatable<Poker>, IComparable<Poker>
+    public readonly struct Poker : IEquatable<Poker>, IComparable<Poker>
     {
 
         #region 构造
@@ -95,7 +95,7 @@ namespace Cheng.GameTemplates.Pokers
         /// <param name="flower">扑克牌花色</param>
         public Poker(PokerNum num, PokerFlower flower)
         {
-            id = (byte)(((byte)((((byte)num) & 0xF) << 3)) | (((byte)(((byte)flower) & 0x7))));
+            id = (byte)(((uint)num & 0xF) | (((uint)flower << 4) & 0b01110000));
         }
 
         #endregion
@@ -106,7 +106,7 @@ namespace Cheng.GameTemplates.Pokers
         /// 扑克牌类型id
         /// </summary>
         /// <remarks>
-        /// <para>一个扑克牌类型组合值；右侧3bit表示花色，中间4bit表示牌面值，最后1bit保留</para>
+        /// <para>一个扑克牌类型组合值；前4bit表示牌面值，后3bit表示花色，最后1bit保留</para>
         /// </remarks>
         public readonly byte id;
 
@@ -124,7 +124,7 @@ namespace Cheng.GameTemplates.Pokers
             //中4bit => [1,15]
             get
             {
-                return (PokerNum)((id >> 3) & 0xF);
+                return (PokerNum)((id) & 0xF);
             }
         }
 
@@ -136,7 +136,7 @@ namespace Cheng.GameTemplates.Pokers
             // 右侧3bit => [1,4]
             get
             {
-                return (PokerFlower)((id) & 0b111);
+                return (PokerFlower)((id >> 4) & 0b111);
             }
         }
 
@@ -147,8 +147,8 @@ namespace Cheng.GameTemplates.Pokers
         /// <param name="flower">扑克牌花色</param>
         public void GetValue(out PokerNum num, out PokerFlower flower)
         {
-            flower = (PokerFlower)(id & 0x7);
-            num = (PokerNum)((id >> 3) & 0xF);
+            flower = (PokerFlower)((id >> 4) & 0b111);
+            num = (PokerNum)((id) & 0xF);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Cheng.GameTemplates.Pokers
         /// </summary>
         public bool IsEmpty
         {
-            get => id == 0;
+            get => (id & 0b01111111) == 0;
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace Cheng.GameTemplates.Pokers
         /// </summary>
         public static Poker LittleJoker
         {
-            get => new Poker(PokerNum.LittleJoker, 0);
+            get => new Poker(PokerNum.LittleJoker, (PokerFlower)0b111);
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Cheng.GameTemplates.Pokers
         /// </summary>
         public static Poker Joker
         {
-            get => new Poker(PokerNum.Joker, 0);
+            get => new Poker(PokerNum.Joker, (PokerFlower)0b111);
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace Cheng.GameTemplates.Pokers
         /// <returns>新设置的扑克牌</returns>
         public Poker SetNum(PokerNum newNum)
         {
-            return new Poker((byte)((id & 0b1_0000_111) | (((byte)newNum) << 3)));
+            return new Poker(newNum, Flower);
         }
 
         /// <summary>
@@ -213,7 +213,19 @@ namespace Cheng.GameTemplates.Pokers
         /// <returns>新设置的扑克牌</returns>
         public Poker SetFlower(PokerFlower flower)
         {
-            return new Poker((byte)((id & 0b1_1111_000) | ((byte)flower)));
+            return new Poker(Num, flower);
+        }
+
+        /// <summary>
+        /// 该扑克属于一张鬼牌
+        /// </summary>
+        public bool IsJoker
+        {
+            get
+            {
+                var num = Num;
+                return num == PokerNum.Joker || num == PokerNum.LittleJoker;
+            }
         }
 
         #endregion
@@ -298,13 +310,31 @@ namespace Cheng.GameTemplates.Pokers
             return new Poker((byte)id);
         }
 
+        /// <summary>
+        /// 元组数据隐式转化
+        /// </summary>
+        /// <param name="t"></param>
+        public static implicit operator Poker((PokerNum, PokerFlower) t)
+        {
+            return new Poker(t.Item1, t.Item2);
+        }
+
+        /// <summary>
+        /// 转化为元组数据
+        /// </summary>
+        /// <param name="poker"></param>
+        public static implicit operator (PokerNum, PokerFlower)(Poker poker)
+        {
+            return (poker.Num, poker.Flower);
+        }
+
         #endregion
 
         #region 派生
 
         public override bool Equals(object obj)
         {
-            if(obj is Poker p)
+            if (obj is Poker p)
             {
                 return id == p.id;
             }

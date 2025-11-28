@@ -23,16 +23,16 @@ namespace Cheng.Algorithm.Collections
         /// <summary>
         /// 查询集合是否拥有匹配项
         /// </summary>
-        /// <typeparam name="T">类型</typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <param name="list">集合</param>
-        /// <param name="index">查询的起始索引</param>
-        /// <param name="count">要查询的元素数量</param>
         /// <param name="value">要查询的匹配项</param>
         /// <param name="equalityComparer">对象比较器，null表示使用默认比较器</param>
+        /// <param name="index">查询的起始索引</param>
+        /// <param name="count">要查询的元素数量</param>
         /// <returns>匹配的第一个索引；若没有则返回-1</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
-        public static int QueryIndex<T>(this IList<T> list, int index, int count, T value, IEqualityComparer<T> equalityComparer)
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public static int QueryIndex<T>(this IReadOnlyList<T> list, T value, IEqualityComparer<T> equalityComparer, int index, int count)
         {
             if (list is null) throw new ArgumentNullException();
 
@@ -43,10 +43,87 @@ namespace Cheng.Algorithm.Collections
             if (count == 0) return -1;
 
             if (equalityComparer is null) equalityComparer = EqualityComparer<T>.Default;
-            
+
             for (int i = index; i < end; i++)
             {
-                if(equalityComparer.Equals(list[i], value))
+                if (equalityComparer.Equals(list[i], value))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 查询集合是否拥有匹配项
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="list">集合</param>
+        /// <param name="value">要查询的匹配项</param>
+        /// <param name="equalityComparer">对象比较器，null表示使用默认比较器</param>
+        /// <returns>匹配的第一个索引；若没有则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static int QueryIndex<T>(this IReadOnlyList<T> list, T value, IEqualityComparer<T> equalityComparer)
+        {
+            if (list is null) throw new ArgumentNullException();
+
+            int length = list.Count;
+            //int end = index + count;
+            //if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
+
+            if (length == 0) return -1;
+            if (equalityComparer is null) equalityComparer = EqualityComparer<T>.Default;
+
+            for (int i = 0; i < length; i++)
+            {
+                if (equalityComparer.Equals(list[i], value))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 查询集合是否拥有匹配项
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="list">集合</param>
+        /// <param name="value">要查询的匹配项</param>
+        /// <returns>匹配的第一个索引；若没有则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static int QueryIndex<T>(this IReadOnlyList<T> list, T value)
+        {
+            return QueryIndex(list, value, EqualityComparer<T>.Default);
+        }
+
+        /// <summary>
+        /// 查询集合是否拥有匹配项
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">集合</param>
+        /// <param name="value">要查询的匹配项</param>
+        /// <param name="equalityComparer">对象比较器，null表示使用默认比较器</param>
+        /// <param name="index">查询的起始索引</param>
+        /// <param name="count">要查询的元素数量</param>
+        /// <returns>匹配的第一个索引；若没有则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public static int QueryIndex<T>(this IList<T> list, T value, IEqualityComparer<T> equalityComparer, int index, int count)
+        {
+            if (list is null) throw new ArgumentNullException();
+
+            int length = list.Count;
+            int end = index + count;
+            if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
+
+            if (count == 0) return -1;
+
+            if (equalityComparer is null) equalityComparer = EqualityComparer<T>.Default;
+
+            for (int i = index; i < end; i++)
+            {
+                if (equalityComparer.Equals(list[i], value))
                 {
                     return i;
                 }
@@ -101,15 +178,75 @@ namespace Cheng.Algorithm.Collections
         /// 从最后一位元素开始查询集合是否拥有匹配项
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
+        /// <param name="list">集合</param>
+        /// <param name="value">查询的匹配项</param>
+        /// <param name="equalityComparer">比较器，null表示默认比较器</param>
         /// <param name="index">起始索引</param>
         /// <param name="count">查询的元素数量</param>
+        /// <returns>匹配的最后一位元素索引；若没有则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
+        public static int QueryLastIndex<T>(this IReadOnlyList<T> list, T value, IEqualityComparer<T> equalityComparer, int index, int count)
+        {
+            if (list is null) throw new ArgumentNullException();
+
+            int length = list.Count;
+            int end = index + count;
+            if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
+
+            if (count == 0) return -1;
+            if (equalityComparer is null) equalityComparer = EqualityComparer<T>.Default;
+            for (int i = end - 1; i >= index; i--)
+            {
+                if (equalityComparer.Equals(list[i], value))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// 从最后一位元素开始查询集合是否拥有匹配项
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
         /// <param name="value">查询的匹配项</param>
         /// <param name="equalityComparer">比较器，null表示默认比较器</param>
         /// <returns>匹配的最后一位元素索引；若没有则返回-1</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static int QueryLastIndex<T>(this IReadOnlyList<T> list, T value, IEqualityComparer<T> equalityComparer)
+        {
+            if (list is null) throw new ArgumentNullException();
+            return QueryLastIndex(list, value, equalityComparer, 0, list.Count);
+        }
+
+        /// <summary>
+        /// 从最后一位元素开始查询集合是否拥有匹配项
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="value">查询的匹配项</param>
+        /// <returns>匹配的最后一位元素索引；若没有则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static int QueryLastIndex<T>(this IReadOnlyList<T> list, T value)
+        {
+            return QueryLastIndex(list, value, EqualityComparer<T>.Default);
+        }
+
+        /// <summary>
+        /// 从最后一位元素开始查询集合是否拥有匹配项
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">集合</param>
+        /// <param name="value">查询的匹配项</param>
+        /// <param name="equalityComparer">比较器，null表示默认比较器</param>
+        /// <param name="index">起始索引</param>
+        /// <param name="count">查询的元素数量</param>
+        /// <returns>匹配的最后一位元素索引；若没有则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
-        public static int QueryLastIndex<T>(this IList<T> list, int index, int count, T value, IEqualityComparer<T> equalityComparer)
+        public static int QueryLastIndex<T>(this IList<T> list, T value, IEqualityComparer<T> equalityComparer, int index, int count)
         {
             if (list is null) throw new ArgumentNullException();
 
@@ -141,22 +278,7 @@ namespace Cheng.Algorithm.Collections
         public static int QueryLastIndex<T>(this IList<T> list, T value, IEqualityComparer<T> equalityComparer)
         {
             if (list is null) throw new ArgumentNullException();
-
-            int length = list.Count;
-            //int end = index + count;
-            //if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
-
-            if (length == 0) return -1;
-            if (equalityComparer is null) equalityComparer = EqualityComparer<T>.Default;
-
-            for (int i = length - 1; i >= 0; i--)
-            {
-                if (equalityComparer.Equals(list[i], value))
-                {
-                    return i;
-                }
-            }
-            return -1;
+            return QueryLastIndex(list, value, equalityComparer, 0, list.Count);
         }
 
         /// <summary>
@@ -180,14 +302,14 @@ namespace Cheng.Algorithm.Collections
         /// 查询集合是否拥有匹配项
         /// </summary>
         /// <param name="list">集合</param>
+        /// <param name="value">要查询的匹配项</param>
+        /// <param name="equalityComparer">对象比较器</param>
         /// <param name="index">查询的起始索引</param>
         /// <param name="count">要查询的元素数量</param>
-        /// <param name="value">要查询的匹配项</param>
-        /// <param name="equalityComparer">对象比较器，null表示使用默认比较器</param>
         /// <returns>匹配的第一个索引；若没有则返回-1</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
-        public static int QueryIndex(this IList list, int index, int count, object value, IEqualityComparer equalityComparer)
+        public static int QueryIndex(this IList list, object value, IEqualityComparer equalityComparer, int index, int count)
         {
             if (list is null) throw new ArgumentNullException();
 
@@ -196,7 +318,6 @@ namespace Cheng.Algorithm.Collections
             if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
 
             if (count == 0) return -1;
-
             if (equalityComparer is null) equalityComparer = EqualityComparer<object>.Default;
 
             for (int i = index; i < end; i++)
@@ -255,14 +376,14 @@ namespace Cheng.Algorithm.Collections
         /// 从最后一位元素开始查询集合是否拥有匹配项
         /// </summary>
         /// <param name="list"></param>
+        /// <param name="value">查询的匹配项</param>
+        /// <param name="equalityComparer">比较器</param>
         /// <param name="index">起始索引</param>
         /// <param name="count">查询的元素数量</param>
-        /// <param name="value">查询的匹配项</param>
-        /// <param name="equalityComparer">比较器，null表示使用默认比较器</param>
         /// <returns>匹配的最后一位元素索引；若没有则返回-1</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
-        public static int QueryLastIndex(this IList list, int index, int count, object value, IEqualityComparer equalityComparer)
+        public static int QueryLastIndex(this IList list, object value, IEqualityComparer equalityComparer, int index, int count)
         {
             if (list is null) throw new ArgumentNullException();
 
@@ -293,22 +414,7 @@ namespace Cheng.Algorithm.Collections
         public static int QueryLastIndex(this IList list, object value, IEqualityComparer equalityComparer)
         {
             if (list is null) throw new ArgumentNullException();
-
-            int length = list.Count;
-            //int end = index + count;
-            //if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
-
-            if (length == 0) return -1;
-            if (equalityComparer is null) equalityComparer = EqualityComparer<object>.Default;
-
-            for (int i = length - 1; i >= 0; i--)
-            {
-                if (equalityComparer.Equals(list[i], value))
-                {
-                    return i;
-                }
-            }
-            return -1;
+            return QueryLastIndex(list, value, equalityComparer, 0, list.Count);
         }
 
         /// <summary>
@@ -323,12 +429,41 @@ namespace Cheng.Algorithm.Collections
             return QueryLastIndex(list, value, EqualityComparer<object>.Default);
         }
 
-
         #endregion
 
         #endregion
 
         #region Find
+
+        /// <summary>
+        /// 查询元素是否拥匹配谓词条件，并返回索引
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">集合</param>
+        /// <param name="predicate">谓词条件</param>
+        /// <param name="index">起始索引</param>
+        /// <param name="count">查询的元素数量</param>
+        /// <returns>第一个匹配谓词的元素索引，如果没有匹配元素则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public static int FindIndex<T>(this IReadOnlyList<T> list, Predicate<T> predicate, int index, int count)
+        {
+            if (list is null || predicate is null) throw new ArgumentNullException();
+
+            int length = list.Count;
+            int end = index + count;
+            if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
+            if (count == 0) return -1;
+
+            for (int i = index; i < end; i++)
+            {
+                if (predicate.Invoke(list[i]))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
 
         /// <summary>
         /// 查询元素是否拥匹配谓词条件，并返回索引
@@ -354,12 +489,10 @@ namespace Cheng.Algorithm.Collections
 
             for (int i = index; i < end; i++)
             {
-                                
                 if (predicate.Invoke(list[i]))
                 {
                     return i;
                 }
-
             }
 
             return -1;
@@ -388,15 +521,27 @@ namespace Cheng.Algorithm.Collections
 
             for (int i = index; i < end; i++)
             {
-
                 if (predicate.Invoke(list[i]))
                 {
                     return i;
                 }
-
             }
 
             return -1;
+        }
+
+        /// <summary>
+        /// 查询元素是否拥匹配谓词条件，并返回索引
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">集合</param>
+        /// <param name="predicate">谓词条件</param>
+        /// <returns>第一个匹配谓词的元素索引，如果没有匹配元素则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static int FindIndex<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
+        {
+            if (list is null) throw new ArgumentNullException();
+            return FindIndex(list, predicate, 0, list.Count);
         }
 
         /// <summary>
@@ -424,6 +569,37 @@ namespace Cheng.Algorithm.Collections
         {
             if (list is null) throw new ArgumentNullException();
             return FindIndex(list, predicate, 0, list.Count);
+        }
+
+        /// <summary>
+        /// 查询元素是否拥匹配谓词条件，并返回索引
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">集合</param>
+        /// <param name="predicate">谓词条件</param>
+        /// <param name="index">起始索引</param>
+        /// <param name="count">查询的元素数量</param>
+        /// <returns>最后一个匹配谓词的元素索引，如果没有匹配元素则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public static int FindLastIndex<T>(this IReadOnlyList<T> list, Predicate<T> predicate, int index, int count)
+        {
+            if (list is null || predicate is null) throw new ArgumentNullException();
+
+            int length = list.Count;
+            int end = index + count;
+
+            if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
+            if (count == 0) return -1;
+
+            for (int i = end - 1; i >= index; i--)
+            {
+                if (predicate.Invoke(list[i]))
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         /// <summary>
@@ -503,6 +679,20 @@ namespace Cheng.Algorithm.Collections
         /// <param name="predicate">谓词条件</param>
         /// <returns>最后一个匹配谓词的元素索引，如果没有匹配元素则返回-1</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static int FindLastIndex<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
+        {
+            if (list is null) throw new ArgumentNullException();
+            return FindLastIndex(list, predicate, 0, list.Count);
+        }
+
+        /// <summary>
+        /// 查询元素是否拥匹配谓词条件，并返回索引
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">集合</param>
+        /// <param name="predicate">谓词条件</param>
+        /// <returns>最后一个匹配谓词的元素索引，如果没有匹配元素则返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
         public static int FindLastIndex<T>(this IList<T> list, Predicate<T> predicate)
         {
             if (list is null) throw new ArgumentNullException();
@@ -525,6 +715,39 @@ namespace Cheng.Algorithm.Collections
         #endregion
 
         #region FindAll
+
+        /// <summary>
+        /// 将所有匹配谓词的元素添加到指定集合
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">要查询的集合</param>
+        /// <param name="predicate">谓词</param>
+        /// <param name="index">要查询的起始索引</param>
+        /// <param name="count">要查询的元素数量</param>
+        /// <param name="append">将匹配谓词的元素添加到的集合</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
+        /// <exception cref="NotSupportedException">添加的集合为只读集合</exception>
+        public static void FindAll<T>(this IReadOnlyList<T> list, Predicate<T> predicate, int index, int count, ICollection<T> append)
+        {
+            if (list is null || predicate is null || append is null) throw new ArgumentNullException();
+
+            int length = list.Count;
+            int end = index + count;
+
+            if (index < 0 || count < 0 || (end > length)) throw new ArgumentOutOfRangeException();
+
+            if (count == 0) return;
+
+            for (int i = index; i < end; i++)
+            {
+                T t = list[i];
+                if (predicate.Invoke(t))
+                {
+                    append.Add(t);
+                }
+            }
+        }
 
         /// <summary>
         /// 将所有匹配谓词的元素添加到指定集合
@@ -590,7 +813,21 @@ namespace Cheng.Algorithm.Collections
                     append.Add(t);
                 }
             }
+        }
 
+        /// <summary>
+        /// 将所有匹配谓词的元素添加到指定集合
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">要查询的集合</param>
+        /// <param name="predicate">谓词</param>
+        /// <param name="append">将匹配谓词的元素添加到的集合</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="NotSupportedException">添加的集合为只读集合</exception>
+        public static void FindAll<T>(this IReadOnlyList<T> list, Predicate<T> predicate, ICollection<T> append)
+        {
+            if (list is null) throw new ArgumentNullException();
+            FindAll(list, predicate, 0, list.Count, append);
         }
 
         /// <summary>
@@ -605,7 +842,6 @@ namespace Cheng.Algorithm.Collections
         public static void FindAll<T>(this IList<T> list, Predicate<T> predicate, ICollection<T> append)
         {
             if (list is null) throw new ArgumentNullException();
-
             FindAll(list, predicate, 0, list.Count, append);
         }
 
@@ -620,7 +856,6 @@ namespace Cheng.Algorithm.Collections
         public static void FindAll(this IList list, Predicate<object> predicate, IList append)
         {
             if (list is null) throw new ArgumentNullException();
-
             FindAll(list, predicate, 0, list.Count, append);
         }
 
@@ -725,24 +960,84 @@ namespace Cheng.Algorithm.Collections
         /// </remarks>
         /// <typeparam name="T"></typeparam>
         /// <param name="list">要查找的集合</param>
-        /// <param name="index">查询范围的起始索引</param>
-        /// <param name="count">要查询的集合数量范围</param>
         /// <param name="obj">要查找的元素</param>
         /// <param name="comparer">进行二分查找时的比较方法接口；该参数为null则表示使用默认的<see cref="Comparer{T}.Default"/></param>
+        /// <param name="index">查询范围的起始索引</param>
+        /// <param name="count">要查询的集合数量范围</param>
         /// <returns>元素<paramref name="obj"/>的索引，若找不到则返回-1</returns>
         /// <exception cref="ArgumentNullException">list或comparer参数为null</exception>
         /// <exception cref="ArgumentException">集合不是有序的或者无法进行查询</exception>
-        public static int BinarySearch<T>(this IList<T> list, int index, int count, T obj, IComparer<T> comparer)
+        public static int BinarySearch<T>(this IReadOnlyList<T> list, T obj, IComparer<T> comparer, int index, int count)
         {
             if (list is null) throw new ArgumentNullException();
-            //if (comparer == null) comparer = Comparer<T>.Default;
+            int ir = index + count;
+            if ((ir > list.Count) || index < 0 || count < 0) throw new ArgumentOutOfRangeException();
+
+            if (count == 0) return -1;
+            return f_binSearch(list, index, ir - 1, obj, comparer ?? Comparer<T>.Default);
+        }
+
+        /// <summary>
+        /// 使用二分查找返回指定元素的索引
+        /// </summary>
+        /// <remarks>
+        /// 如果集合内有相等的元素，则返回值是其中一个元素索引；请保证集合必须是能够被参数<paramref name="comparer"/>有序比较的数组
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">要查找的集合，请保证集合必须是能够被参数<paramref name="comparer"/>有序比较的数组</param>
+        /// <param name="obj">要查找的元素</param>
+        /// <param name="comparer">进行二分查找时的比较方法接口；该参数为null则表示使用默认的<see cref="Comparer{T}.Default"/></param>
+        /// <returns></returns>
+        public static int BinarySearch<T>(this IReadOnlyList<T> list, T obj, IComparer<T> comparer)
+        {
+            if (list is null) throw new ArgumentNullException();
+            return BinarySearch(list, obj, comparer, 0, list.Count);
+        }
+
+        /// <summary>
+        /// 使用二分查找返回指定元素的索引
+        /// </summary>
+        /// <remarks>
+        /// 如果集合内有相等的元素，则返回值是其中一个元素索引；请保证集合必须是能够被有序比较的数组
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">要查找的集合，请保证集合必须是能够被默认比较器有序比较的数组</param>
+        /// <param name="obj">要查找的元素</param>
+        /// <returns>元素<paramref name="obj"/>的索引，若找不到则返回-1</returns>
+        /// <exception cref="ArgumentNullException">list或comparer参数为null</exception>
+        /// <exception cref="ArgumentException">集合不是有序的或者无法进行查询</exception>
+        public static int BinarySearch<T>(this IReadOnlyList<T> list, T obj)
+        {
+            if (list is null) throw new ArgumentNullException();
+            if (list.Count == 0) return -1;
+            return f_binSearch(list, 0, list.Count - 1, obj, Comparer<T>.Default);
+        }
+
+        /// <summary>
+        /// 使用二分查找返回指定元素的索引
+        /// </summary>
+        /// <remarks>
+        /// 如果集合内有相等的元素，则返回值是其中一个元素索引；请保证集合必须是能够被参数<paramref name="comparer"/>有序比较的数组
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">要查找的集合</param>
+        /// <param name="obj">要查找的元素</param>
+        /// <param name="comparer">进行二分查找时的比较方法接口；该参数为null则表示使用默认的<see cref="Comparer{T}.Default"/></param>
+        /// <param name="index">查询范围的起始索引</param>
+        /// <param name="count">要查询的集合数量范围</param>
+        /// <returns>元素<paramref name="obj"/>的索引，若找不到则返回-1</returns>
+        /// <exception cref="ArgumentNullException">list或comparer参数为null</exception>
+        /// <exception cref="ArgumentException">集合不是有序的或者无法进行查询</exception>
+        public static int BinarySearch<T>(this IList<T> list, T obj, IComparer<T> comparer, int index, int count)
+        {
+            if (list is null) throw new ArgumentNullException();
 
             int ir = index + count;
             if ((ir > list.Count) || index < 0 || count < 0) throw new ArgumentOutOfRangeException();
 
             if (count == 0) return -1;
 
-            return f_binSearch(list, index, ir - 1, obj, comparer);
+            return f_binSearch(list, index, ir - 1, obj, comparer ?? Comparer<T>.Default);
         }
 
         /// <summary>
@@ -759,26 +1054,7 @@ namespace Cheng.Algorithm.Collections
         public static int BinarySearch<T>(this IList<T> list, T obj, IComparer<T> comparer)
         {
             if (list is null) throw new ArgumentNullException();
-            return BinarySearch(list, 0, list.Count, obj, comparer);
-        }
-
-        /// <summary>
-        /// 使用二分查找返回指定元素的索引
-        /// </summary>
-        /// <remarks>
-        /// 如果集合内有相等的元素，则返回值是其中一个元素索引；请保证集合必须是能够被有序比较的数组
-        /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list">要查找的集合，请保证集合必须是能够被默认比较器有序比较的数组</param>
-        /// <param name="index">查询范围的起始索引</param>
-        /// <param name="count">要查询的集合数量范围</param>
-        /// <param name="obj">要查找的元素</param>
-        /// <returns>元素<paramref name="obj"/>的索引，若找不到则返回-1</returns>
-        /// <exception cref="ArgumentNullException">list或comparer参数为null</exception>
-        /// <exception cref="ArgumentException">集合不是有序的或者无法进行查询</exception>
-        public static int BinarySearch<T>(this IList<T> list, int index, int count, T obj)
-        {
-            return BinarySearch(list, index, count, obj, Comparer<T>.Default);
+            return BinarySearch(list, obj, comparer ?? Comparer<T>.Default, 0, list.Count);
         }
 
         /// <summary>
@@ -807,14 +1083,14 @@ namespace Cheng.Algorithm.Collections
         /// 如果集合内有相等的元素，则返回值是其中一个元素索引；请保证集合必须是能够被参数<paramref name="comparer"/>有序比较的数组
         /// </remarks>
         /// <param name="list">要查找的集合</param>
+        /// <param name="obj">要查找的元素</param>
+        /// <param name="comparer">进行二分查找时的比较方法</param>
         /// <param name="index">查询范围的起始索引</param>
         /// <param name="count">要查询的集合数量范围</param>
-        /// <param name="obj">要查找的元素</param>
-        /// <param name="comparer">进行二分查找时的比较方法；</param>
         /// <returns>元素<paramref name="obj"/>的索引，若找不到则返回-1</returns>
         /// <exception cref="ArgumentNullException">list或comparer参数为null</exception>
         /// <exception cref="ArgumentException">集合不是有序的或无法进行查询或排序方法出错</exception>
-        public static int BinarySearch(this IList list, int index, int count, object obj, IComparer comparer)
+        public static int BinarySearch(this IList list, object obj, IComparer comparer, int index, int count)
         {
             if (list is null || comparer is null) throw new ArgumentNullException();
 
@@ -841,10 +1117,39 @@ namespace Cheng.Algorithm.Collections
         public static int BinarySearch(this IList list, object obj, IComparer comparer)
         {
             if (list is null || comparer is null) throw new ArgumentNullException();
-
             int count = list.Count;
             if (count == 0) return -1;
             return fng_binSearch(list, 0, count - 1, obj, comparer);
+        }
+
+        static int f_binSearch<T>(IReadOnlyList<T> list, int left, int right, T obj, IComparer<T> comparer)
+        {
+            int n;
+            int temp;
+
+            while (left <= right)
+            {
+                n = left + ((right - left) / 2);
+
+                temp = comparer.Compare(list[n], obj);
+                if (temp == 0)
+                {
+                    return n;
+                }
+                else if (temp < 0)
+                {
+                    //在对象左边
+                    //移动左指针到索引
+                    left = n + 1;
+                }
+                else if (temp > 0)
+                {
+                    //在对象右边
+                    //移动右指针到索引
+                    right = n - 1;
+                }
+            }
+            return -1;
         }
 
         static int f_binSearch<T>(IList<T> list, int left, int right, T obj, IComparer<T> comparer)
@@ -930,9 +1235,7 @@ namespace Cheng.Algorithm.Collections
         public static void Swap(this IList list, int index1, int index2)
         {
             if (list is null) throw new ArgumentNullException();
-            object temp = list[index1];
-            list[index1] = list[index2];
-            list[index2] = temp;
+            f_Swap(list, index1, index2);
         }
 
         /// <summary>
@@ -948,9 +1251,7 @@ namespace Cheng.Algorithm.Collections
         public static void Swap<T>(this IList<T> list, int index1, int index2)
         {
             if (list is null) throw new ArgumentNullException();
-            T temp = list[index1];
-            list[index1] = list[index2];
-            list[index2] = temp;
+            f_Swap(list, index1, index2);
         }
 
         internal static void f_Swap(this IList list, int index1, int index2)
@@ -1006,18 +1307,6 @@ namespace Cheng.Algorithm.Collections
                 f_qukeAndInsertSort(list, index, index + count - 1, comparer, 32);
             }
 
-        }
-
-        [Obsolete("", true)]
-        public static void Sort<T>(this IList<T> list, int index, int count, IComparer<T> comparer)
-        {
-            Sort(list, comparer, index, count);
-        }
-
-        [Obsolete("", true)]
-        public static void Sort<T>(this IList<T> list, int index, int count)
-        {
-            Sort(list, null, index, count);
         }
 
         /// <summary>
@@ -1080,11 +1369,6 @@ namespace Cheng.Algorithm.Collections
             {
                 ng_QukeAndInsertSort(list, index, index + count - 1, comparer, 32);
             }
-        }
-
-        [Obsolete("", true)] public static void Sort(this IList list, int index, int count, IComparer comparer)
-        {
-            Sort(list, comparer, index, count);
         }
 
         /// <summary>
@@ -1175,9 +1459,7 @@ namespace Cheng.Algorithm.Collections
 
             if (count == 0) return;
 
-            if (comparer is null) comparer = Comparer<T>.Default;
-
-            f_qukeAndInsertSort(list, index, index + count - 1, comparer, stackDepth);
+            f_qukeAndInsertSort(list, index, index + count - 1, comparer ?? Comparer<T>.Default, stackDepth);
         }
 
         static void f_qukeAndInsertSort<T>(IList<T> list, int low, int high, IComparer<T> comparer, int count)

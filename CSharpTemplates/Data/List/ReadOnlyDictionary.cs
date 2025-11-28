@@ -6,68 +6,20 @@ namespace Cheng.DataStructure.Collections
 {
 
     /// <summary>
-    /// 表示一个只读键值对公共接口
-    /// </summary>
-    /// <typeparam name="TKey">键的类型</typeparam>
-    /// <typeparam name="TValue">值的类型</typeparam>
-    public interface IReadOnlyDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
-    {
-        /// <summary>
-        /// 根据键名访问值
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <returns>访问到的值</returns>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        /// <exception cref="KeyNotFoundException">键不存在</exception>
-        TValue this[TKey key] { get; }
-
-        /// <summary>
-        /// 根据键名访问值
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <param name="value">访问到的值，无法获取则表示一个默认值</param>
-        /// <returns>若成功获取值返回true，若无法成功获取返回false</returns>
-        /// <exception cref="ArgumentNullException">key为null</exception>
-        bool TryGetValue(TKey key, out TValue value);
-
-        /// <summary>
-        /// 获取当前键值对集合内拥有的键值对数量
-        /// </summary>
-        int Count { get; }
-
-        /// <summary>
-        /// 访问所有的键
-        /// </summary>
-        IReadOnlyCollection<TKey> Keys { get; }
-
-        /// <summary>
-        /// 访问所有的值
-        /// </summary>
-        IReadOnlyCollection<TValue> Values { get; }
-
-        /// <summary>
-        /// 确认指定键是否存在于该键值对集合中
-        /// </summary>
-        /// <param name="key">要确认的键</param>
-        /// <returns>存在于集合中返回true，不存在集合中返回false</returns>
-        /// <exception cref="ArgumentNullException">键为null</exception>
-        bool ContainsKey(TKey key);
-    }
-
-    /// <summary>
     /// 封装一个键值对为只读
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class ReadOnlyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
+    public sealed class ReadOnlyDictionary<TKey, TValue> : System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>
     {
 
         #region 结构
+
         /// <summary>
         /// 表示一个只读集合
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public class ReadOnlyCollection<T> : IReadOnlyCollection<T>
+        public sealed class ReadOnlyCollection<T> : System.Collections.Generic.IReadOnlyCollection<T>
         {
             /// <summary>
             /// 实例化一个只读集合
@@ -96,10 +48,16 @@ namespace Cheng.DataStructure.Collections
         #endregion
 
         #region 构造
+
+        /// <summary>
+        /// 实例化一个只读键值对
+        /// </summary>
+        /// <param name="dict">要封装的键值对</param>
         public ReadOnlyDictionary(IDictionary<TKey,TValue> dict)
         {
             p_dict = dict ?? throw new ArgumentNullException();
         }
+
         #endregion
 
         #region 参数
@@ -113,6 +71,7 @@ namespace Cheng.DataStructure.Collections
         #region 派生
 
         public int Count => p_dict.Count;
+
         /// <summary>
         /// 获取所有的键
         /// </summary>
@@ -120,6 +79,7 @@ namespace Cheng.DataStructure.Collections
         {
             get => new ReadOnlyCollection<TKey>(p_dict.Keys);
         }
+
         /// <summary>
         /// 获取所有的值
         /// </summary>
@@ -128,14 +88,9 @@ namespace Cheng.DataStructure.Collections
             get => new ReadOnlyCollection<TValue>(p_dict.Values);
         }
 
-        IReadOnlyCollection<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
-        {
-            get => this.Keys;
-        }
-        IReadOnlyCollection<TValue> IReadOnlyDictionary<TKey, TValue>.Values
-        {
-            get => this.Values;
-        }
+        IEnumerable<TKey> System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.Keys => this.Keys;
+
+        IEnumerable<TValue> System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.Values => this.Values;
 
         public TValue this[TKey key] => p_dict[key];
 

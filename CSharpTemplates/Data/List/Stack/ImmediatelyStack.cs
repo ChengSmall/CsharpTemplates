@@ -9,7 +9,7 @@ namespace Cheng.DataStructure.Collections
     /// 可访问任意元素的先进后出的栈
     /// </summary>
     /// <typeparam name="T">元素类型</typeparam>
-    public sealed class ImmediatelyStack<T> : IReadOnlyList<T>, IList<T>
+    public sealed class ImmediatelyStack<T> : IList<T>, System.Collections.Generic.IReadOnlyList<T>
     {
 
         #region 结构
@@ -42,20 +42,19 @@ namespace Cheng.DataStructure.Collections
             {
                 get
                 {
-                    if (p_index == -2)
-                    {
-                        throw new InvalidOperationException();
-                    }
+                    //if (p_index == -2)
+                    //{
+                    //    throw new InvalidOperationException();
+                    //}
 
-                    if (p_index == -1)
-                    {
-                        throw new InvalidOperationException();
-                    }
+                    //if (p_index == -1)
+                    //{
+                    //    throw new InvalidOperationException();
+                    //}
 
                     return p_current;
                 }
             }
-
 
             /// <summary>
             /// 将枚举数推进到集合的下一个元素
@@ -218,7 +217,7 @@ namespace Cheng.DataStructure.Collections
         #region 栈功能
 
         /// <summary>
-        /// 当前栈的元素数量
+        /// 栈的元素数量
         /// </summary>
         public int Count
         {
@@ -238,15 +237,37 @@ namespace Cheng.DataStructure.Collections
         {
             get
             {
-                if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
-                return p_arr[(p_size - 1) - index];
+                return GetStack(index);
             }
             set
             {
-                if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
-                p_version++;
-                p_arr[(p_size - 1) - index] = value;
+                SetStack(index, value);
             }
+        }
+
+        /// <summary>
+        /// 按索引顺序从栈顶访问栈元素
+        /// </summary>
+        /// <param name="index">从栈顶开始的索引，范围在[0,<see cref="Count"/>)</param>
+        /// <returns>指定栈位的元素</returns>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出元素范围</exception>
+        public T GetStack(int index)
+        {
+            if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
+            return p_arr[(p_size - 1) - index];
+        }
+
+        /// <summary>
+        /// 按索引顺序从栈顶设置栈元素
+        /// </summary>
+        /// <param name="index">从栈顶开始的索引，范围在[0,<see cref="Count"/>)</param>
+        /// <param name="item">要覆盖到此处的新元素</param>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出元素范围</exception>
+        public void SetStack(int index, T item)
+        {
+            if (index < 0 || index >= p_size) throw new ArgumentOutOfRangeException();
+            p_version++;
+            p_arr[(p_size - 1) - index] = item;
         }
 
         /// <summary>
@@ -388,8 +409,6 @@ namespace Cheng.DataStructure.Collections
                 }
             }
         }
-
-        bool ICollection<T>.IsReadOnly => true;
 
         /// <summary>
         /// 仅将栈顶元素返回
@@ -539,25 +558,6 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 返回一个可循环访问的枚举器
-        /// </summary>
-        /// <returns></returns>
-        public Enumerator GetEnumerator()
-        {
-            return new Enumerator(this);
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        /// <summary>
         /// 查找指定元素所在索引，从栈顶开始查找
         /// </summary>
         /// <param name="item">待查找元素</param>
@@ -579,6 +579,31 @@ namespace Cheng.DataStructure.Collections
             return (p_size - 1) - i;
         }
 
+        /// <summary>
+        /// 返回一个可循环访问的枚举器
+        /// </summary>
+        /// <returns></returns>
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        #endregion
+
+        #region 派生
+
+        bool ICollection<T>.IsReadOnly => true;
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
         void IList<T>.Insert(int index, T item)
         {
             throw new NotSupportedException();
@@ -597,6 +622,17 @@ namespace Cheng.DataStructure.Collections
         bool ICollection<T>.Remove(T item)
         {
             throw new NotSupportedException();
+        }
+
+        T IList<T>.this[int index]
+        {
+            get => GetStack(index);
+            set => SetStack(index, value);
+        }
+
+        T System.Collections.Generic.IReadOnlyList<T>.this[int index]
+        {
+            get => GetStack(index);
         }
 
         #endregion

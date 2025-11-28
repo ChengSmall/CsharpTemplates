@@ -59,7 +59,7 @@ namespace Cheng.Consoles
         /// <summary>
         /// 关闭虚拟终端
         /// </summary>
-        /// <returns>0表示成功启动，否则返回错误参数</returns>
+        /// <returns>0表示成功关闭，否则返回错误参数</returns>
         public static uint TryDisableVirtualTerminalProcessingOnWindows()
         {
             var iStdOut = GetStdHandle(STD_Output_HandleID);

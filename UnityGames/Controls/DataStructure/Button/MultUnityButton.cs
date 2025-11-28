@@ -8,7 +8,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
     /// <summary>
     /// Unity多按钮状态封装
     /// </summary>
-    public sealed class MultUnityButton : UnityButton, Cheng.DataStructure.Collections.IReadOnlyList<UnityButton>, System.Collections.Generic.IReadOnlyList<UnityButton>
+    public sealed class MultUnityButton : UnityButton, System.Collections.Generic.IReadOnlyList<UnityButton>
     {
 
         #region 构造

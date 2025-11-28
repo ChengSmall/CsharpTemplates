@@ -843,7 +843,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 获取对象数据长度
+        /// 获取对象数据的字节长度
         /// </summary>
         /// <exception cref="NotSupportedException">没有访问权限</exception>
         /// <exception cref="Exception">其它错误</exception>

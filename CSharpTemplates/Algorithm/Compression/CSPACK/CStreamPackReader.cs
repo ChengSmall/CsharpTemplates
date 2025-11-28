@@ -178,20 +178,9 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                 throw new NotSupportedException();
             }
             if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
+            if(createDictionary is null) createDictionary = Enumerable.ToDictionary;
 
-            if(createDictionary is null)
-            {
-                createDictionary = Enumerable.ToDictionary;
-            }
-            if (stream is null || createDictionary is null) throw new ArgumentNullException();
-            if (!(stream.CanRead && stream.CanSeek))
-            {
-                throw new NotSupportedException();
-            }
-
-            if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
             f_init(stream, disposeBaseStream, checkHeader, bufferSize, null, createDictionary);
-            //return @this;
         }
 
         /// <summary>
@@ -228,13 +217,17 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                     throw new NotImplementedException();
                 }
             }
-            //CStreamPackReader @this = new CStreamPackReader();
+            //首个数据位置
+            p_headerNextDataPos = stream.Position;
+
+            p_canWriter = stream.CanWrite;
             this.p_disposeBase = disposeBaseStream;
             this.p_buffer = new byte[bufferSize];
 
-            if (createDictionaryPair is null)
+            if (createDictionaryCol is null)
             {
                 var col = f_readDataPair(stream, new char[255], bufferSize >= 8 ? this.p_buffer : new byte[8]);
+
                 this.p_dict = createDictionaryPair.Invoke(col, new EqualityStrNotPathSeparator(false, true));
             }
             else
@@ -242,7 +235,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                 var col = f_readData(stream, new char[255], bufferSize >= 8 ? this.p_buffer : new byte[8]);
                 this.p_dict = createDictionaryCol.Invoke(col, f_getKey, new EqualityStrNotPathSeparator(false, true));
             }
-
+            p_endDataPos = stream.Position - 1;
 
             if (this.p_dict is null) throw new ArgumentException();
             //@this.p_list = col.ToList();
@@ -252,6 +245,8 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                 this.p_list.Add(pair.Value);
             }
             this.p_stream = stream;
+
+            p_dictIsWriter = p_dict is IDictionary<string, Cheng.Algorithm.Compressions.CSPACK.CSPInformation> wrDict;
 
             //return @this;
         }
@@ -300,6 +295,29 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         internal List<CSPInformation> p_list;
 
         private byte[] p_buffer;
+
+#if DEBUG
+        /// <summary>
+        /// 首个数据的第一个字节或终止符
+        /// </summary>
+#endif
+        private long p_headerNextDataPos;
+
+#if DEBUG
+        /// <summary>
+        /// 最后一个数据的终止符位置
+        /// </summary>
+#endif
+        private long p_endDataPos;
+
+        private bool p_canWriter;
+
+#if DEBUG
+        /// <summary>
+        /// 字典是一个可写的
+        /// </summary>
+#endif
+        private bool p_dictIsWriter;
 
         private bool p_disposeBase;
 
@@ -565,11 +583,12 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         {
             if (disposeing && p_disposeBase)
             {
-                p_stream.Close();
+                p_stream?.Close();
             }
             p_stream = null;
             p_dict = null;
             p_list = null;
+            p_buffer = null;
             return true;
         }
 
@@ -802,6 +821,135 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                     sr.CopyToText(writer, new char[1024]);
                 }
             }
+        }
+
+        public override T GetInformation<T>(int index)
+        {
+            ThrowObjectDisposeException(nameof(CStreamPackReader));
+            return p_list[index] as T;
+        }
+
+        /// <summary>
+        /// 获取指定索引项的信息
+        /// </summary>
+        /// <param name="index">索引</param>
+        /// <returns>数据信息</returns>
+        /// <exception cref="ObjectDisposedException">已释放</exception>
+        /// <exception cref="ArgumentOutOfRangeException">超出索引范围</exception>
+        public CSPInformation GetCSPInformation(int index)
+        {
+            ThrowObjectDisposeException(nameof(CStreamPackReader));
+            return p_list[index];
+        }
+
+        /// <summary>
+        /// 获取指定项的信息
+        /// </summary>
+        /// <param name="dataPath">项数据的路径索引</param>
+        /// <returns>数据信息</returns>
+        /// <exception cref="ObjectDisposedException">已释放</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="KeyNotFoundException">项路径不匹配</exception>
+        public CSPInformation GetCSPInformation(string dataPath)
+        {
+            ThrowObjectDisposeException(nameof(CStreamPackReader));
+            return p_dict[dataPath];
+        }
+
+        public override bool CanAddData => p_canWriter && p_dictIsWriter;
+
+        public override void Add(Stream stream, string dataPath)
+        {
+            ThrowObjectDisposeException(nameof(CStreamPackReader));
+            if (stream is null || dataPath is null) throw new ArgumentNullException();
+            if (dataPath.Length == 0 || dataPath.Length > byte.MaxValue)
+            {
+                throw new ArgumentException();
+            }
+            if ((!p_dictIsWriter) || (!p_canWriter))
+            {
+                throw new NotSupportedException();
+            }
+
+            if (!stream.CanRead) throw new NotSupportedException();
+
+
+            //路径字符数
+            byte pathLen = (byte)dataPath.Length;
+            //创建路径写入缓冲区
+            byte[] bufpathStr = new byte[pathLen * 2];
+
+            for (int i = 0; i < pathLen; i++)
+            {
+                dataPath[i].OrderToByteArray(bufpathStr, i * 2);
+            }
+
+            //最后的终止符位置
+            long endPos = p_endDataPos;
+
+            CSPInformation inf;
+
+            lock (p_stream)
+            {
+                p_stream.Seek(endPos, SeekOrigin.Begin);
+                //写入路径长度
+                p_stream.WriteByte(pathLen);
+                //写入路径数据
+                p_stream.Write(bufpathStr, 0, bufpathStr.Length);
+                //新数据的起始位
+                var newDataPos = endPos + bufpathStr.Length;
+                //长度
+                long wrSize = 0;
+                //获取长度参数写入的位置
+                var lenWrPos = p_stream.Position;
+                //向后推进8个字节
+                p_stream.Seek(8, SeekOrigin.Current);
+                //写入数据
+                foreach (var wrSizeByte in stream.CopyToStreamEnumator(p_stream, p_buffer))
+                {
+                    wrSize += wrSizeByte;
+                }
+                inf = new CSPInformation(dataPath, new StreamBlock(newDataPos, wrSize));
+                p_endDataPos = newDataPos + wrSize;
+                //写入终止符
+                p_stream.WriteByte(0);
+
+                //回头写入长度
+                byte* ptr_dataLen = stackalloc byte[8];
+                IOoperations.OrderToBytes(wrSize, ptr_dataLen);
+                p_stream.Seek(lenWrPos, SeekOrigin.Begin);
+                p_stream.WriteToAddress(ptr_dataLen, 8);
+
+                var wrDict = (IDictionary<string, Cheng.Algorithm.Compressions.CSPACK.CSPInformation>)p_dict;
+
+                if (wrDict.TryGetValue(dataPath, out var dinf))
+                {
+                    //存在旧项
+                    var indexOf = p_list.IndexOf(dinf);
+                    if (indexOf == -1)
+                    {
+                        p_list.Add(inf);
+                    }
+                    else
+                    {
+                        p_list[indexOf] = inf;
+                    }
+                    wrDict[dataPath] = inf;
+                }
+                else
+                {
+                    //不存在
+                    //写入新值
+                    wrDict.Add(dataPath, inf);
+                    p_list.Add(inf);
+                }
+            }
+
+        }
+
+        public override void Flush()
+        {
+            p_stream?.Flush();
         }
 
         #endregion

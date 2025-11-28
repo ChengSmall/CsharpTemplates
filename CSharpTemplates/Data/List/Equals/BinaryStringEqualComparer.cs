@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Cheng.DataStructure.Hashs;
+using Cheng.Algorithm.HashCodes;
 
 namespace Cheng.DataStructure.Collections
 {
@@ -13,7 +15,7 @@ namespace Cheng.DataStructure.Collections
     /// <remarks>
     /// 实现一个使用字符值比较的字符串比较器，内部实现使用字符串的 == 运算符重载
     /// </remarks>
-    public sealed class BinaryStringEqualComparer : EqualityComparer<string>
+    public sealed class BinaryStringEqualComparer : EqualityComparer<string>, IEqualityComparerHash64<string>
     {
 
         /// <summary>
@@ -32,6 +34,12 @@ namespace Cheng.DataStructure.Collections
         {
             if (obj is null) throw new ArgumentNullException();
             return obj.GetHashCode();
+        }
+
+        public long GetHashCode64(string value)
+        {
+            if (value is null) throw new ArgumentNullException();
+            return value.GetHashCode64();
         }
 
         static readonly BinaryStringEqualComparer binEqual = new BinaryStringEqualComparer();
