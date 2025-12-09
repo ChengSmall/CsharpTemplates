@@ -8,7 +8,7 @@ namespace Cheng.DataStructure.Streams
 {
 
     /// <summary>
-    /// 表示流数据块位置
+    /// 表示流对象内的一段数据
     /// </summary>
     [Serializable]
     public readonly struct StreamBlock : IEquatable<StreamBlock>, IHashCode64, IComparable<StreamBlock>
@@ -114,7 +114,6 @@ namespace Cheng.DataStructure.Streams
             }
             return position < other.position ? -1 : 1;
         }
-
 
         #endregion
 

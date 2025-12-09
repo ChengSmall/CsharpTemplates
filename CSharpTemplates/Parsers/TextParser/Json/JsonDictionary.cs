@@ -1,3 +1,4 @@
+using Cheng.DataStructure.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,21 +36,21 @@ namespace Cheng.Json
         /// <summary>
         /// 实例化一个键值对类型的json对象
         /// </summary>
-        /// <param name="comparer">指定key的比较器和哈希算法</param>
+        /// <param name="comparer">指定key的比较器和哈希算法，null使用默认的值比较器</param>
         public JsonDictionary(IEqualityComparer<string> comparer)
         {
-            p_dict = new Dictionary<string, JsonVariable>(comparer);
+            p_dict = new Dictionary<string, JsonVariable>(comparer ?? BinaryStringEqualComparer.Default);
         }
 
         /// <summary>
         /// 实例化一个键值对类型的json对象
         /// </summary>
         /// <param name="capacity">指定初始容量</param>
-        /// <param name="comparer">指定key的比较器和哈希算法</param>
+        /// <param name="comparer">指定key的比较器和哈希算法，null使用默认的值比较器</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="comparer"/> 小于 0</exception>
         public JsonDictionary(int capacity, IEqualityComparer<string> comparer)
         {
-            p_dict = new Dictionary<string, JsonVariable>(capacity, comparer);
+            p_dict = new Dictionary<string, JsonVariable>(capacity, comparer ?? BinaryStringEqualComparer.Default);
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Cheng.Json
         /// 实例化一个键值对类型的json对象
         /// </summary>
         /// <param name="pairs">指定要拷贝的键值对集合对象</param>
-        /// <param name="comparer">指定key的比较器和哈希算法；null表示使用默认比较器</param>
+        /// <param name="comparer">指定key的比较器和哈希算法；null使用默认的值比较器</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         public JsonDictionary(IEnumerable<KeyValuePair<string, JsonVariable>> pairs, IEqualityComparer<string> comparer)
         {
@@ -91,7 +92,7 @@ namespace Cheng.Json
                 count = 0;
             }
 
-            p_dict = new Dictionary<string, JsonVariable>(count, comparer);
+            p_dict = new Dictionary<string, JsonVariable>(count, comparer ?? BinaryStringEqualComparer.Default);
 
             foreach (var pair in pairs)
             {

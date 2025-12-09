@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Cheng.Memorys;
 
 namespace Cheng.Texts
 {
@@ -7,7 +8,7 @@ namespace Cheng.Texts
     /// <summary>
     /// 安全释放封装的文本写入器
     /// </summary>
-    public abstract class SafeReleaseTextWriter : TextWriter
+    public abstract class SafeReleaseTextWriter : TextWriter, IIsDisposed
     {
 
         #region 封装

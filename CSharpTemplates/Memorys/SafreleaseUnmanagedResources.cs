@@ -4,13 +4,24 @@ namespace Cheng.Memorys
 {
 
     /// <summary>
-    /// 一个高度封装的管理非托管资源安全释放的类
+    /// 提供判断资源是否释放的公共接口
+    /// </summary>
+    public interface IIsDisposed : IDisposable
+    {
+        /// <summary>
+        /// 判断当前实例是否已被释放
+        /// </summary>
+        bool IsDispose { get; }
+    }
+
+    /// <summary>
+    /// 管理非托管资源安全释放的基类
     /// </summary>
     /// <remarks>
     /// <para>派生该类的对象，无需从头编写<see cref="IDisposable"/>释放代码，只需重写<see cref="UnmanagedReleasources"/>方法或<see cref="Disposeing(bool)"/>，并添加资源释放代码即可；一般情况下无需重写<see cref="Close"/>方法，除非您要重新注释</para>
     /// <para>根据<see cref="IsNotDispose"/>和<see cref="IsDispose"/>属性判断对象是否已经释放相关资源</para>
     /// </remarks>
-    public abstract class SafreleaseUnmanagedResources : IDisposable
+    public abstract class SafreleaseUnmanagedResources : IIsDisposed
     {
 
         /// <summary>
@@ -50,7 +61,7 @@ namespace Cheng.Memorys
         /// <summary>
         /// 当前实例是否已被释放
         /// </summary>
-        protected bool IsDispose => p_isDispose;
+        public bool IsDispose => p_isDispose;
 
         #region 封装
 

@@ -73,7 +73,7 @@ namespace Cheng.DataStructure.DynamicVariables
 
             foreach (var item in pairs)
             {
-                p_dict[item.Key] = item.Value ?? CreateEmpty();
+                p_dict[item.Key] = item.Value ?? EmptyValue;
             }
         }
 
@@ -95,7 +95,7 @@ namespace Cheng.DataStructure.DynamicVariables
             if (!p_open) throw new NotSupportedException();
             if (key is null) throw new ArgumentNullException();
             if (key.Length > ushort.MaxValue) throw new ArgumentException();
-            p_dict.Add(key, value ?? CreateEmpty());
+            p_dict.Add(key, value ?? EmptyValue);
         }
 
         private void f_set(string key, DynVariable value)
@@ -103,7 +103,7 @@ namespace Cheng.DataStructure.DynamicVariables
             if (!p_open) throw new NotSupportedException();
             if (key is null) throw new ArgumentNullException();
             if (key.Length > ushort.MaxValue) throw new ArgumentException();
-            p_dict[key] = value ?? CreateEmpty();
+            p_dict[key] = value ?? EmptyValue;
         }
 
         #endregion
@@ -218,7 +218,7 @@ namespace Cheng.DataStructure.DynamicVariables
         /// <exception cref="ArgumentException">key的长度不属于范围内</exception>
         public void Add(string key, string value)
         {
-            f_add(key, CreateString(value));
+            f_add(key, value is null ? EmptyValue : CreateString(value));
         }
 
         /// <summary>
@@ -231,7 +231,19 @@ namespace Cheng.DataStructure.DynamicVariables
         /// <exception cref="ArgumentException">key的长度不属于范围内</exception>
         public void Add(string key, bool value)
         {
-            f_add(key, CreateBoolean(value));
+            f_add(key, value ? BooleanTrue : BooleanFalse);
+        }
+
+        /// <summary>
+        /// 添加一个空值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <exception cref="NotSupportedException">对象已锁定</exception>
+        /// <exception cref="ArgumentNullException">key是null</exception>
+        /// <exception cref="ArgumentException">key的长度不属于范围内</exception>
+        public void AddEmpty(string key)
+        {
+            f_add(key, EmptyValue);
         }
 
         public bool ContainsKey(string key)
@@ -256,7 +268,16 @@ namespace Cheng.DataStructure.DynamicVariables
             p_dict.Clear();
         }
 
-        public IEnumerator<KeyValuePair<string, DynVariable>> GetEnumerator()
+        /// <summary>
+        /// 返回一个循环访问字典元素的枚举器
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, DynVariable>.Enumerator GetEnumerator()
+        {
+            return p_dict.GetEnumerator();
+        }
+
+        IEnumerator<KeyValuePair<string, DynVariable>> IEnumerable<KeyValuePair<string, DynVariable>>.GetEnumerator()
         {
             return p_dict.GetEnumerator();
         }

@@ -44,7 +44,7 @@ namespace Cheng.Json.GeneratorNumbers
         /// <returns>一个新的随机数生成器</returns>
         protected virtual BaseRandom CreateRandom()
         {
-            return new LICRandom((((long)Environment.TickCount) << 16) ^ DateTime.UtcNow.Ticks);
+            return new XorshiftRandom((((long)Environment.TickCount) << 16) ^ DateTime.UtcNow.Ticks);
         }
 
         private NumGenerator f_fixedValue(JsonDictionary json)
@@ -168,22 +168,36 @@ namespace Cheng.Json.GeneratorNumbers
                     json = jd["type"];
                     var type = json.String;
 
-                    if (type == "fixed")
+                    switch (type)
                     {
-                        return f_fixedValue(jd);
+                        case "fixed":
+                            return f_fixedValue(jd);
+                        case "random":
+                            return f_random(jd);
+                        case "arith":
+                            return f_math(jd);
+                        case "bernoulli":
+                            return f_randomBer(jd);
+                        default:
+                            break;
                     }
-                    if (type == "random")
-                    {
-                        return f_random(jd);
-                    }
-                    if (type == "arith")
-                    {
-                        return f_math(jd);
-                    }
-                    if (type == "bernoulli")
-                    {
-                        return f_randomBer(jd);
-                    }
+
+                    //if (type == "fixed")
+                    //{
+                    //    return f_fixedValue(jd);
+                    //}
+                    //if (type == "random")
+                    //{
+                    //    return f_random(jd);
+                    //}
+                    //if (type == "arith")
+                    //{
+                    //    return f_math(jd);
+                    //}
+                    //if (type == "bernoulli")
+                    //{
+                    //    return f_randomBer(jd);
+                    //}
 
                     return OtherJsonToNum(jd);
                 }

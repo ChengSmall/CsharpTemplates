@@ -20,8 +20,9 @@ namespace Cheng.Algorithm.Randoms
         /// 随机器状态的数据备份
         /// </summary>
         [Serializable]
-        public readonly struct RandomState
+        public readonly struct RandomState : ICloneable
         {
+
             /// <summary>
             /// 初始化随机器状态
             /// </summary>
@@ -42,6 +43,25 @@ namespace Cheng.Algorithm.Randoms
             /// 指向表的索引
             /// </summary>
             public readonly int index;
+
+            /// <summary>
+            /// 随机表数组的元素数量
+            /// </summary>
+            public const int MatrixLength = N;
+
+            /// <summary>
+            /// 将当前的状态对象克隆到新的值
+            /// </summary>
+            /// <returns>参数相同的新的状态对象，克隆后的<see cref="RandomState.matrix"/>与原先的数组是不同的实例</returns>
+            public RandomState Clone()
+            {
+                return new RandomState((ulong[])matrix.Clone(), index);
+            }
+
+            object ICloneable.Clone()
+            {
+                return Clone();
+            }
         }
 
         #endregion
@@ -172,8 +192,8 @@ namespace Cheng.Algorithm.Randoms
         /// <summary>
         /// 使用随机器状态数据实例化随机器
         /// </summary>
-        /// <param name="state">随机器的状态副本</param>
-        /// <exception cref="ArgumentException">参数错误</exception>
+        /// <param name="state">随机器的状态对象</param>
+        /// <exception cref="ArgumentException">参数错误，例如随机表数组元素数量不是<see cref="RandomState.MatrixLength"/></exception>
         public MersenneTwisterRandom(RandomState state)
         {
             if(state.matrix is null || state.matrix.Length != N)
@@ -246,8 +266,7 @@ namespace Cheng.Algorithm.Randoms
         /// <returns>一个随机长整型值，范围在[0,9223372036854775807)</returns>
         public override long NextLong()
         {
-            //确保返回值为非负数
-            return (long)(Generate() >> 1);
+            return (long)(Generate() % long.MaxValue);
         }
 
         /// <summary>
@@ -280,7 +299,7 @@ namespace Cheng.Algorithm.Randoms
             return min + (NextLong() % (max - min));
         }
 
-        public override unsafe void NextPtr(IntPtr ptr, int length)
+        public override void NextPtr(IntPtr ptr, int length)
         {
             if (length == 0) return;
             int len = length / sizeof(ulong);
@@ -301,6 +320,16 @@ namespace Cheng.Algorithm.Randoms
                     mp[i] = reb[i];
                 }
             }
+        }
+
+        public override float NextFloat()
+        {
+            return ((int)(Generate() % 8388607)) / 8388607F;
+        }
+
+        public override double NextDouble()
+        {
+            return ((Generate() % int.MaxValue)) / 2147483647d;
         }
 
         #endregion

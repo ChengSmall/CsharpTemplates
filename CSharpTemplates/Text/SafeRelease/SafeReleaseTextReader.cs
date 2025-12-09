@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Cheng.Memorys;
 
 namespace Cheng.Texts
 {
@@ -9,7 +10,7 @@ namespace Cheng.Texts
     /// <summary>
     /// 安全释放封装的文本读取器
     /// </summary>
-    public abstract class SafeReleaseTextReader : TextReader
+    public abstract class SafeReleaseTextReader : TextReader, IIsDisposed
     {
 
         #region 封装

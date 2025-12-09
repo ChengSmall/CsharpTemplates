@@ -15,7 +15,7 @@ namespace Cheng.DataStructure.Collections
     /// <remarks>
     /// 实现一个使用字符值比较的字符串比较器，内部实现使用字符串的 == 运算符重载
     /// </remarks>
-    public sealed class BinaryStringEqualComparer : EqualityComparer<string>, IEqualityComparerHash64<string>
+    public sealed unsafe class BinaryStringEqualComparer : EqualityComparer<string>, IEqualityComparerHash64<string>, IComparer<string>
     {
 
         /// <summary>
@@ -42,6 +42,11 @@ namespace Cheng.DataStructure.Collections
             return value.GetHashCode64();
         }
 
+        public int Compare(string x, string y)
+        {
+            return string.CompareOrdinal(x, y);
+        }
+
         static readonly BinaryStringEqualComparer binEqual = new BinaryStringEqualComparer();
 
         /// <summary>
@@ -50,6 +55,23 @@ namespace Cheng.DataStructure.Collections
         public static new BinaryStringEqualComparer Default
         {
             get => binEqual;
+        }
+
+        /// <summary>
+        /// 比较两个指针指向同样长度的字符串并返回比较的值
+        /// </summary>
+        /// <param name="x">字符串1</param>
+        /// <param name="y">字符串2</param>
+        /// <param name="length">两个字符串的字符数量</param>
+        /// <returns>依次比较字符值的比较结果</returns>
+        public static int CompareFixedBuffer(char* x, char* y, int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                var re = x[i] - y[i];
+                if (re != 0) return re;
+            }
+            return 0;
         }
 
     }

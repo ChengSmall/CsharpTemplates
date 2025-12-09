@@ -301,7 +301,7 @@ namespace Cheng.DataStructure.DynamicVariables
         /// 创建一个布尔值
         /// </summary>
         /// <param name="value">要创建的值</param>
-        /// <returns>表示布尔类型的动态对象</returns>
+        /// <returns>表示布尔类型的新对象</returns>
         public static DynVariable CreateBoolean(bool value)
         {
             return new DynBoolean(value);
@@ -315,6 +315,47 @@ namespace Cheng.DataStructure.DynamicVariables
         {
             return new DynEmpty();
         }
+
+        #endregion
+
+        #region 常量
+
+        /// <summary>
+        /// 表示空值的对象
+        /// </summary>
+        public static DynVariable EmptyValue => sp_constVar.p_empty;
+
+        /// <summary>
+        /// 值为true的布尔值
+        /// </summary>
+        public static DynVariable BooleanTrue => sp_constVar.p_true;
+
+        /// <summary>
+        /// 值为false的布尔值
+        /// </summary>
+        public static DynVariable BooleanFalse => sp_constVar.p_false;
+
+        #region
+
+        private static readonly c_constVar sp_constVar = f_createConstVar();
+
+        static c_constVar f_createConstVar()
+        {
+            c_constVar var;
+            var.p_empty = CreateEmpty();
+            var.p_true = CreateBoolean(true);
+            var.p_false = CreateBoolean(false);
+            return var;
+        }
+
+        private struct c_constVar
+        {
+            public DynVariable p_true;
+            public DynVariable p_false;
+            public DynVariable p_empty;
+        }
+
+        #endregion
 
         #endregion
 

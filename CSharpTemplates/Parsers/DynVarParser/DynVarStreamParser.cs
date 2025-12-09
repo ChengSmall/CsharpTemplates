@@ -28,20 +28,13 @@ namespace Cheng.Streams.Parsers.DynVariableParser
         /// </summary>
         public DynVarStreamParser()
         {
-            p_empty = new DynEmpty();
-            p_true = new DynBoolean(true);
-            p_false = new DynBoolean(false);
             p_strBuf = new StringBuilder(32);
-            p_dynObjOnLock = true;
+            p_dynObjOnLock = false;
         }
 
         #endregion
 
         #region 参数
-
-        private readonly DynEmpty p_empty;
-        private readonly DynBoolean p_true;
-        private readonly DynBoolean p_false;
 
         private StringBuilder p_strBuf;
 
@@ -286,15 +279,15 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                 switch (dt)
                 {
                     case DynVariableType.Empty:
-                        return p_empty;
+                        return DynVariable.EmptyValue;
                     case DynVariableType.Boolean:
                         if((firstType & 0b10000) == 0b10000)
                         {
-                            return p_true;
+                            return DynVariable.BooleanTrue;
                         }
                         else
                         {
-                            return p_false;
+                            return DynVariable.BooleanFalse;
                         }
                     case DynVariableType.Int32:
                         return f_getInt32(stream);
@@ -577,7 +570,7 @@ namespace Cheng.Streams.Parsers.DynVariableParser
         {
             if (stream is null) throw new ArgumentNullException();
 
-            f_setVar(value ?? p_empty, stream, (byte)value.DynType);
+            f_setVar(value ?? DynVariable.EmptyValue, stream, (byte)value.DynType);
         }
 
         #endregion
@@ -606,24 +599,24 @@ namespace Cheng.Streams.Parsers.DynVariableParser
         /// <summary>
         /// 一个值是true的布尔类型对象
         /// </summary>
-        public DynVariable BooleanTrue => p_true;
+        public DynVariable BooleanTrue => DynVariable.BooleanTrue;
 
         /// <summary>
         /// 一个值是false的布尔类型对象
         /// </summary>
-        public DynVariable BooleanFalse => p_false;
+        public DynVariable BooleanFalse => DynVariable.BooleanFalse;
 
         /// <summary>
         /// 表示空对象
         /// </summary>
-        public DynVariable EmptyValue => p_empty;
+        public DynVariable EmptyValue => DynVariable.EmptyValue;
 
         /// <summary>
         /// 反序列化可变类型时将其锁定
         /// </summary>
         /// <value>
         /// <para>参数为true时，在反序列化创建集合或键值对后，调用<see cref="DynamicObject.OnLock"/>进行锁定；false则不进行锁定</para>
-        /// <para>该参数默认为true</para>
+        /// <para>该参数默认为false</para>
         /// </value>
         public bool ConverDynObjectOnLock
         {

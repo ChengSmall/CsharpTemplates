@@ -667,7 +667,7 @@ namespace Cheng.Texts
         /// <param name="value">要转化的值</param>
         /// <param name="fen">每个字节之间的分隔符</param>
         /// <returns>表示二进制文本的字符串</returns>
-        public static string ToBin(this ulong value, char fen)
+        public static string ToBinary(this ulong value, char fen)
         {
             char* cp = stackalloc char[8 * sizeof(ulong) + (sizeof(ulong) - 1)];
             MemoryOperation.ToBinStr(value, fen, cp);
@@ -680,9 +680,9 @@ namespace Cheng.Texts
         /// <param name="value">要转化的值</param>
         /// <param name="fen">每个字节之间的分隔符</param>
         /// <returns>表示二进制文本的字符串</returns>
-        public static string ToBin(this long value, char fen)
+        public static string ToBinary(this long value, char fen)
         {
-            return ToBin((ulong)value, fen);
+            return ToBinary((ulong)value, fen);
         }
 
         /// <summary>
@@ -691,7 +691,7 @@ namespace Cheng.Texts
         /// <param name="value">要转化的值</param>
         /// <param name="fen">每个字节之间的分隔符</param>
         /// <returns>表示二进制文本的字符串</returns>
-        public static string ToBin(this uint value, char fen)
+        public static string ToBinary(this uint value, char fen)
         {
             char* cp = stackalloc char[8 * sizeof(uint) + (sizeof(uint) - 1)];
             MemoryOperation.ToBinStr(value, fen, cp);
@@ -704,9 +704,9 @@ namespace Cheng.Texts
         /// <param name="value">要转化的值</param>
         /// <param name="fen">每个字节之间的分隔符</param>
         /// <returns>表示二进制文本的字符串</returns>
-        public static string ToBin(this int value, char fen)
+        public static string ToBinary(this int value, char fen)
         {
-            return ToBin((uint)value, fen);
+            return ToBinary((uint)value, fen);
         }
 
         /// <summary>
@@ -715,7 +715,7 @@ namespace Cheng.Texts
         /// <param name="value">要转化的值</param>
         /// <param name="fen">每个字节之间的分隔符</param>
         /// <returns>表示二进制文本的字符串</returns>
-        public static string ToBin(this ushort value, char fen)
+        public static string ToBinary(this ushort value, char fen)
         {
             char* cp = stackalloc char[8 * sizeof(ushort) + (sizeof(ushort) - 1)];
             MemoryOperation.ToBinStr(value, fen, cp);
@@ -728,7 +728,7 @@ namespace Cheng.Texts
         /// <param name="value">要转化的值</param>
         /// <param name="fen">每个字节之间的分隔符</param>
         /// <returns>表示二进制文本的字符串</returns>
-        public static string ToBin(this short value, char fen)
+        public static string ToBinary(this short value, char fen)
         {
             char* cp = stackalloc char[8 * sizeof(short) + (sizeof(short) - 1)];
             MemoryOperation.ToBinStr((ushort)value, fen, cp);
@@ -740,7 +740,7 @@ namespace Cheng.Texts
         /// </summary>
         /// <param name="value">要转化的值</param>
         /// <returns></returns>
-        public static string ToBin(this byte value)
+        public static string ToBinary(this byte value)
         {
             const char c0 = '0';
             const char c1 = '1';
@@ -758,9 +758,9 @@ namespace Cheng.Texts
         /// <param name="value">要转化的值</param>
         /// <param name="fen">每个字节之间的分隔符</param>
         /// <returns>表示二进制文本的字符串</returns>
-        public static string ToBin(this float value, char fen)
+        public static string ToBinary(this float value, char fen)
         {
-            return ToBin(*(uint*)&value, fen);
+            return ToBinary(*(uint*)&value, fen);
         }
 
         /// <summary>
@@ -769,9 +769,9 @@ namespace Cheng.Texts
         /// <param name="value">要转化的值</param>
         /// <param name="fen">每个字节之间的分隔符</param>
         /// <returns>表示二进制文本的字符串</returns>
-        public static string ToBin(this double value, char fen)
+        public static string ToBinary(this double value, char fen)
         {
-            return ToBin(*(ulong*)&value, fen);
+            return ToBinary(*(ulong*)&value, fen);
         }
 
         #endregion

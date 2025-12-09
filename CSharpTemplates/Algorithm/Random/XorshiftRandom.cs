@@ -152,24 +152,12 @@ namespace Cheng.Algorithm.Randoms
 
         public override int Next()
         {
-            //const uint maxs = 0b01111111_11111111_11111111_11111111U;
-            var re = (f_generate() >> 33);
-            if (re == int.MaxValue) return 0;
-            return (int)re;
-            //return (int)((f_generate() >> 33) % int.MaxValue);
-
+            return (int)(f_generate() % int.MaxValue);
         }
 
         public override long NextLong()
         {
-            //const ulong maxs = 
-                //0b01111111_11111111_11111111_11111111__11111111_11111111_11111111_11111111UL;
-
-            var re = f_generate() >> 1;
-            if (re == long.MaxValue) return 0;
-            return (long)re;
-            //return (long)((f_generate() >> 1) % long.MaxValue);
-
+            return (long)(f_generate() % long.MaxValue);
         }
 
         public override int Next(int min, int max)
@@ -185,7 +173,7 @@ namespace Cheng.Algorithm.Randoms
 
         public override double NextDouble()
         {
-            return (f_generate() >> 33) / 2147483648D;
+            return (f_generate() % int.MaxValue) / 2147483647D;
         }
 
         #endregion

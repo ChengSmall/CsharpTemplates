@@ -135,6 +135,7 @@ namespace Cheng.Memorys
         /// </summary>
         /// <param name="ptr">要释放的内存指针</param>
         /// <returns>是否成功释放，成功释放返回true；如果指定内存不是已分配内存返回false</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
         public bool FreeMemory(IntPtr ptr)
         {
             ThrowObjectDisposeException();
@@ -188,10 +189,22 @@ namespace Cheng.Memorys
         /// <typeparam name="T">类型</typeparam>
         /// <param name="memory">内存所在地址</param>
         /// <returns>值引用</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
         public ref T AllocStructure<T>(out IntPtr memory) where T : unmanaged
         {
             memory = AllocMemory(sizeof(T));
             return ref *(T*)memory;
+        }
+
+        /// <summary>
+        /// 开辟指定类型大小的非托管内存并返回值引用
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <returns>指向内存位置的指针</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        public CPtr<T> AllocStructure<T>() where T : unmanaged
+        {
+            return (CPtr<T>)AllocMemory(sizeof(T));
         }
 
         /// <summary>
@@ -200,6 +213,7 @@ namespace Cheng.Memorys
         /// <typeparam name="T"></typeparam>
         /// <param name="refValue">值引用</param>
         /// <returns>是否成功释放，成功释放返回true；如果指定内存不是已分配内存返回false</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
         public bool FreeStructure<T>(ref T refValue) where T : unmanaged
         {
             fixed (T* ptr = &refValue)
@@ -224,9 +238,10 @@ namespace Cheng.Memorys
         /// <param name="value">要获取的值引用</param>
         /// <param name="offsetOutAddress">给定的最终目标地址是否超出<paramref name="address"/>的可用内存范围</param>
         /// <returns>给定的<paramref name="address"/>是否处于当前对象管理范围内</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
         public bool GetValueOffset<T>(IntPtr address, int offset, out T value, out bool offsetOutAddress) where T : unmanaged
         {
-
+            ThrowObjectDisposeException();
             lock (p_list)
             {
                 int size;
@@ -270,9 +285,10 @@ namespace Cheng.Memorys
         /// <param name="value">要设置的值</param>
         /// <param name="offsetOutAddress">给定的最终目标地址是否超出<paramref name="address"/>的可用内存范围</param>
         /// <returns>给定的<paramref name="address"/>是否处于当前对象管理范围内</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
         public bool SetValueOffset<T>(IntPtr address, int offset, T value, out bool offsetOutAddress) where T : unmanaged
         {
-
+            ThrowObjectDisposeException();
             lock (p_list)
             {
                 int size;

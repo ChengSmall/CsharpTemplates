@@ -57,7 +57,7 @@ namespace Cheng.DataStructure.DynamicVariables
             p_list = new List<DynVariable>(count);
             foreach (var item in collection)
             {
-                p_list.Add(item ?? CreateEmpty());
+                p_list.Add(item ?? EmptyValue);
             }
         }
 
@@ -102,7 +102,7 @@ namespace Cheng.DataStructure.DynamicVariables
             set
             {
                 if (!p_open) throw new NotSupportedException();
-                p_list[index] = value ?? CreateEmpty();
+                p_list[index] = value ?? EmptyValue;
             }
         }
 
@@ -120,7 +120,7 @@ namespace Cheng.DataStructure.DynamicVariables
         public void Add(DynVariable item)
         {
             if (!p_open) throw new NotSupportedException();
-            p_list.Add(item ?? DynVariable.CreateEmpty());
+            p_list.Add(item ?? EmptyValue);
         }
 
         /// <summary>
@@ -174,13 +174,22 @@ namespace Cheng.DataStructure.DynamicVariables
         /// <param name="value">要添加的值</param>
         public void Add(bool value)
         {
-            Add(CreateBoolean(value));
+            Add((value) ? BooleanTrue : BooleanFalse);
+        }
+
+        /// <summary>
+        /// 添加一个空值
+        /// </summary>
+        public void AddEmpty()
+        {
+            if (!p_open) throw new NotSupportedException();
+            p_list.Add(EmptyValue);
         }
 
         public void Insert(int index, DynVariable item)
         {
             if (!p_open) throw new NotSupportedException();
-            p_list.Insert(index, item ?? DynVariable.CreateEmpty());
+            p_list.Insert(index, item ?? EmptyValue);
         }
 
         /// <summary>
@@ -193,10 +202,9 @@ namespace Cheng.DataStructure.DynamicVariables
             if (collection is null) return;
             foreach (var item in collection)
             {
-                p_list.Add(item ?? CreateEmpty());
+                p_list.Add(item ?? EmptyValue);
             }
         }
-
 
         public void RemoveAt(int index)
         {
@@ -230,19 +238,31 @@ namespace Cheng.DataStructure.DynamicVariables
             p_list.RemoveAll(match);
         }
 
-
+        /// <summary>
+        /// 将当前集合元素拷贝到指定数组
+        /// </summary>
+        /// <param name="array"></param>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
         public void CopyTo(DynVariable[] array)
         {
             p_list.CopyTo(array);
         }
-
 
         public void CopyTo(DynVariable[] array, int arrayIndex)
         {
             p_list.CopyTo(array, arrayIndex);
         }
 
-
+        /// <summary>
+        /// 从目标数组指定的索引处开始，拷贝当前数组元素
+        /// </summary>
+        /// <param name="index">要拷贝的当前集合的起始索引</param>
+        /// <param name="array">要拷贝到的数组</param>
+        /// <param name="arrayIndex">目标数组的起始位置</param>
+        /// <param name="count">要拷贝的元素数</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数错误，索引超出范围</exception>
         public void CopyTo(int index, DynVariable[] array, int arrayIndex, int count)
         {
             p_list.CopyTo(index, array, arrayIndex, count);
@@ -454,7 +474,16 @@ namespace Cheng.DataStructure.DynamicVariables
 
         #region enumator
 
-        public IEnumerator<DynVariable> GetEnumerator()
+        /// <summary>
+        /// 返回一个循环访问元素的枚举器
+        /// </summary>
+        /// <returns></returns>
+        public List<DynVariable>.Enumerator GetEnumerator()
+        {
+            return p_list.GetEnumerator();
+        }
+
+        IEnumerator<DynVariable> IEnumerable<DynVariable>.GetEnumerator()
         {
             return p_list.GetEnumerator();
         }

@@ -226,13 +226,13 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
             if (createDictionaryCol is null)
             {
-                var col = f_readDataPair(stream, new char[255], bufferSize >= 8 ? this.p_buffer : new byte[8]);
+                var col = f_readDataPair(stream, new char[255]);
 
                 this.p_dict = createDictionaryPair.Invoke(col, new EqualityStrNotPathSeparator(false, true));
             }
             else
             {
-                var col = f_readData(stream, new char[255], bufferSize >= 8 ? this.p_buffer : new byte[8]);
+                var col = f_readData(stream, new char[255]);
                 this.p_dict = createDictionaryCol.Invoke(col, f_getKey, new EqualityStrNotPathSeparator(false, true));
             }
             p_endDataPos = stream.Position - 1;
@@ -446,6 +446,16 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
         #region 封装
 
+        static bool f_readInt64(Stream stream, out long reValue)
+        {
+            reValue = default;
+            long buf8;
+            var re = stream.ReadBlock((byte*)&buf8, 8);
+            if (re != 8) return false;
+            reValue = IOoperations.OrderToInt64(new IntPtr(&buf8));
+            return true;
+        }
+
         #if DEBUG
         /// <summary>
         /// 读取数据并使用枚举器返回数据索引
@@ -455,7 +465,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// <param name="buf8"></param>
         /// <returns></returns>
         #endif
-        internal static IEnumerable<CSPInformation> f_readData(Stream stream, char[] cbuf255, byte[] buf8)
+        internal static IEnumerable<CSPInformation> f_readData(Stream stream, char[] cbuf255)
         {
             int i;
             int re;
@@ -496,13 +506,14 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
             string path = new string(cbuf255, 0, keyLen);
 
+            long dataLen;
+
             //读取长度
-            re = stream.ReadBlock(buf8, 0, 8);
-            if(re != 8)
+            if (!f_readInt64(stream, out dataLen))
             {
                 throw new InvalidOperationException(); //预期之外的结构
             }
-            long dataLen = buf8.OrderToInt64();
+
             CSPInformation inf = new CSPInformation(path, new StreamBlock(stream.Position, dataLen));
             //跳转
             stream.Seek(dataLen, SeekOrigin.Current);
@@ -514,7 +525,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         }
 
 
-        internal static IEnumerable<KeyValuePair<string, CSPInformation>> f_readDataPair(Stream stream, char[] cbuf255, byte[] buf8)
+        internal static IEnumerable<KeyValuePair<string, CSPInformation>> f_readDataPair(Stream stream, char[] cbuf255)
         {
             int i;
             int re;
@@ -555,13 +566,13 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
             string path = new string(cbuf255, 0, keyLen);
 
+            long dataLen;
             //读取长度
-            re = stream.ReadBlock(buf8, 0, 8);
-            if (re != 8)
+            if (!f_readInt64(stream, out dataLen))
             {
                 throw new InvalidOperationException(); //预期之外的结构
             }
-            long dataLen = buf8.OrderToInt64();
+
             CSPInformation inf = new CSPInformation(path, new StreamBlock(stream.Position, dataLen));
             //跳转
             stream.Seek(dataLen, SeekOrigin.Current);
@@ -955,6 +966,20 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         #endregion
 
         #region 扩展功能
+
+        /// <summary>
+        /// 返回一个枚举器
+        /// </summary>
+        /// <param name="stream">要在其中当前位置读取数据的流对象</param>
+        /// <returns>数据枚举器，每次推进将寻找一个数据项信息并返回，直至CSPACK数据结尾</returns>
+        /// <exception cref=""></exception>
+        public static IEnumerable<CSPInformation> EnumerateReadCStreamPackData(Stream stream)
+        {
+            if (stream is null) throw new ArgumentNullException();
+            if (!(stream.CanRead && stream.CanSeek)) throw new NotSupportedException();
+
+            return f_readData(stream, new char[255]);
+        }
 
         #endregion
 

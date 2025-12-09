@@ -1,3 +1,4 @@
+using Cheng.Memorys;
 using System;
 using System.IO;
 
@@ -7,7 +8,7 @@ namespace Cheng.Streams
     /// <summary>
     /// 二次抽象封装的流
     /// </summary>
-    public unsafe abstract class HEStream : Stream
+    public unsafe abstract class HEStream : Stream, IIsDisposed
     {
 
         #region 释放

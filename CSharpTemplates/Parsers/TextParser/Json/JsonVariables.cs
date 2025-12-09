@@ -199,6 +199,58 @@ namespace Cheng.Json
 
         #region 功能
 
+        #region 创建
+
+        /// <summary>
+        /// 创建一个浮点值json对象
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static JsonVariable CreateNumber(double value)
+        {
+            return new JsonRealNumber(value);
+        }
+
+        /// <summary>
+        /// 创建一个整数值json对象
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static JsonVariable CreateInteger(long value)
+        {
+            return new JsonInteger(value);
+        }
+
+        /// <summary>
+        /// 创建一个布尔类型json对象
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static JsonVariable CreateBoolean(bool value)
+        {
+            return new JsonBoolean(value);
+        }
+
+        /// <summary>
+        /// 创建一个字符串类型json对象
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static JsonVariable CreateString(string value)
+        {
+            return new JsonString(value);
+        }
+
+        /// <summary>
+        /// 表示null的json对象
+        /// </summary>
+        public static JsonVariable JsonNullValue
+        {
+            get => JsonNull.Nullable;
+        }
+
+        #endregion
+
         #region 派生
 
         /// <summary>

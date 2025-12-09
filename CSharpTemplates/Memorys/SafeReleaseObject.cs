@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace Cheng.Memorys
 {
@@ -63,6 +64,97 @@ namespace Cheng.Memorys
         /// 获取内部封装的非托管对象
         /// </summary>
         public T DisposingObject => p_obj;
+
+        #endregion
+
+    }
+
+    /// <summary>
+    /// 使用<see cref="GCHandle"/>将托管对象固定为一个无法被GC回收的对象
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public sealed unsafe class SafeAllocObject<T> : ReleaseDestructor where T : class
+    {
+
+        #region 参数
+
+        /// <summary>
+        /// 实例化一个固定对象
+        /// </summary>
+        /// <param name="obj"></param>
+        public SafeAllocObject(T obj)
+        {
+            p_gc = GCHandle.Alloc(obj, GCHandleType.Pinned);
+            try
+            {
+                p_obj = (p_gc.Target as T) ?? throw new ArgumentNullException();
+            }
+            catch (Exception)
+            {
+                if(p_gc.IsAllocated) p_gc.Free();
+                throw;
+            }
+        }
+
+        private GCHandle p_gc;
+        private T p_obj;
+
+        #endregion
+
+        #region 释放
+
+        protected override bool Disposeing(bool disposeing)
+        {
+            if (disposeing)
+            {
+                p_gc.Free();
+            }
+            p_obj = null;
+            return true;
+        }
+
+        #endregion
+
+        #region 功能
+
+        /// <summary>
+        /// 获取已固定的对象
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        public T Target
+        {
+            get
+            {
+                ThrowObjectDisposeException();
+                return p_obj;
+            }
+        }
+
+        /// <summary>
+        /// 获取对象固定后的地址
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        public IntPtr IntPointer
+        {
+            get
+            {
+                ThrowObjectDisposeException();
+                return p_gc.AddrOfPinnedObject();
+            }
+        }
+
+        /// <summary>
+        /// 获取对象固定后的地址，如果对象已释放返回null
+        /// </summary>
+        public void* Pointer
+        {
+            get
+            {
+                ThrowObjectDisposeException();
+                if (IsDispose) return null;
+                return p_gc.AddrOfPinnedObject().ToPointer();
+            }
+        }
 
         #endregion
 
