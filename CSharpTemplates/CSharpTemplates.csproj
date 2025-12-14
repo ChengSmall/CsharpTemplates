@@ -26,7 +26,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Algorithm\Compression\PackagingOperation.cs~RF317a6b8.TMP" />
+    <None Remove="Resources\System.Runtime.CompilerServices.Unsafe.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\System.Runtime.CompilerServices.Unsafe.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,6 +53,13 @@
     <Folder Include="Audio\Midi\" />
     <Folder Include="Data\BehaviorTrees\" />
     <Folder Include="Parsers\TextParser\Json\ToText\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>Resources\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -332,6 +332,7 @@ namespace Cheng.Streams
         /// </summary>
         /// <param name="stream">要读取的流对象</param>
         /// <returns>从<paramref name="stream"/>读取的所有数据</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
         public static byte[] ReadAll(this Stream stream)
         {
             if (stream is null) throw new ArgumentNullException();
