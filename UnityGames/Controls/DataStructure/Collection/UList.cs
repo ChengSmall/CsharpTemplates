@@ -782,12 +782,12 @@ namespace Cheng.DataStructure.Collections
         /// <summary>
         /// 对数组排序
         /// </summary>
+        /// <param name="comparer">数据比较器</param>
         /// <param name="index">起始索引</param>
         /// <param name="count">排序的元素数量</param>
-        /// <param name="comparer">数据比较器</param>
         /// <exception cref="ArgumentException">参数超出范围或发生错误</exception>
         /// <exception cref="InvalidOperationException">用于排序的比较器实现有错误或冲突</exception>
-        public void Sort(int index, int count, IComparer<T> comparer)
+        public void Sort(IComparer<T> comparer, int index, int count)
         {
             if(index < 0 || count < 0 || (index + count) > p_length)
             {
@@ -806,22 +806,6 @@ namespace Cheng.DataStructure.Collections
         {
             p_changeCount++;
             Array.Sort<T>(p_arr, 0, p_length, comparer);
-        }
-
-        /// <summary>
-        /// 对数组排序
-        /// </summary>
-        /// <param name="index">起始索引</param>
-        /// <param name="count">排序的元素数量</param>
-        /// <exception cref="ArgumentOutOfRangeException">参数超出范围或发生错误</exception>
-        public void Sort(int index, int count)
-        {
-            if (index < 0 || count < 0 || (index + count) > p_length)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            p_changeCount++;
-            Array.Sort<T>(p_arr, index, count);
         }
 
         /// <summary>

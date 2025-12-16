@@ -26,6 +26,7 @@ namespace Cheng.Algorithm.Sorts
         {
             Sort(list, Comparer<T>.Default);
         }
+
         /// <summary>
         /// 排序集合元素
         /// </summary>
@@ -40,12 +41,12 @@ namespace Cheng.Algorithm.Sorts
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list">要排序的集合</param>
+        /// <param name="comparer">定义的排序规则</param>
         /// <param name="beginIndex">排序的元素起始索引</param>
         /// <param name="count">要排序的元素数量</param>
-        /// <param name="comparer">定义的排序规则</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="NotSupportedException">无法使用范围内排序</exception>
-        public virtual void Sort<T>(IList<T> list, int beginIndex, int count, IComparer<T> comparer)
+        public virtual void Sort<T>(IList<T> list, IComparer<T> comparer, int beginIndex, int count)
         {
             throw new NotSupportedException();
         }
@@ -63,13 +64,13 @@ namespace Cheng.Algorithm.Sorts
         /// 排序集合内指定范围的元素
         /// </summary>
         /// <param name="list">要排序的集合</param>
+        /// <param name="comparer">定义的排序规则</param>
         /// <param name="beginIndex">排序的元素起始索引</param>
         /// <param name="count">要排序的元素数量</param>
-        /// <param name="comparer">定义的排序规则</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentException">参数不合规</exception>
         /// <exception cref="NotSupportedException">无法使用范围内排序</exception>
-        public virtual void Sort(IList list, int beginIndex, int count, IComparer comparer)
+        public virtual void Sort(IList list, IComparer comparer, int beginIndex, int count)
         {
             throw new NotSupportedException();
         }

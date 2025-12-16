@@ -793,16 +793,19 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
         public override void SortInformationIndex(IComparer<DataInformation> comparer, int index, int count)
         {
+            ThrowObjectDisposeException(nameof(CStreamPackReader));
             p_list.Sort(index, count, comparer);
         }
 
         public override void SortInformationIndex(IComparer<DataInformation> comparer)
         {
+            ThrowObjectDisposeException(nameof(CStreamPackReader));
             p_list.Sort(comparer);
         }
 
         public override void SortInformationIndex(IComparer comparer, int index, int count)
         {
+            ThrowObjectDisposeException(nameof(CStreamPackReader));
             p_list.Sort(comparer, index, count);
         }
 
@@ -972,7 +975,9 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// </summary>
         /// <param name="stream">要在其中当前位置读取数据的流对象</param>
         /// <returns>数据枚举器，每次推进将寻找一个数据项信息并返回，直至CSPACK数据结尾</returns>
-        /// <exception cref=""></exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="NotSupportedException">流对象无法读取和查找</exception>
+        /// <exception cref="Exception">枚举器解析时出现错误格式</exception>
         public static IEnumerable<CSPInformation> EnumerateReadCStreamPackData(Stream stream)
         {
             if (stream is null) throw new ArgumentNullException();

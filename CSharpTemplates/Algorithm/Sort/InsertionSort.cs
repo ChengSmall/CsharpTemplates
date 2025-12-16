@@ -14,10 +14,22 @@ namespace Cheng.Algorithm.Sorts
 
         public override void Sort<T>(IList<T> list, IComparer<T> comparer)
         {
-            Sort(list, 0, list.Count, comparer);
+            if (list is null) throw new ArgumentNullException();
+            Sort(list, comparer, 0, list.Count);
         }
 
-        public override void Sort<T>(IList<T> list, int beginIndex, int count, IComparer<T> comparer)
+        public override void Sort<T>(IList<T> list, IComparer<T> comparer, int beginIndex, int count)
+        {
+            InsertSort(list, comparer, beginIndex, count);
+        }
+
+        public override void Sort(IList list, IComparer comparer)
+        {
+            if (list is null) throw new ArgumentNullException();
+            Sort(list, comparer, 0, list.Count);
+        }
+
+        public override void Sort(IList list, IComparer comparer, int beginIndex, int count)
         {
             InsertSort(list, comparer, beginIndex, count);
         }
@@ -37,9 +49,14 @@ namespace Cheng.Algorithm.Sorts
             if (list is null) throw new ArgumentNullException();
             if (comparer is null) comparer = Comparer<T>.Default;
 
+            if (beginIndex < 0 || count < 0 || beginIndex + count > list.Count) throw new ArgumentOutOfRangeException();
+
+            f_InsertSort(list, comparer, beginIndex, count);
+        }
+
+        internal static void f_InsertSort<T>(IList<T> list, IComparer<T> comparer, int beginIndex, int count)
+        {
             int length = beginIndex + count;
-            if (beginIndex < 0 || length < 0 || length > list.Count) throw new ArgumentOutOfRangeException();
-            
             T tmp;
             for (int index = beginIndex; index < length; index++)
             {
@@ -104,16 +121,6 @@ namespace Cheng.Algorithm.Sorts
             }
         }
 
-        public override void Sort(IList list, IComparer comparer)
-        {
-            if (list is null) throw new ArgumentNullException();
-            Sort(list, 0, list.Count, comparer);
-        }
-
-        public override void Sort(IList list, int beginIndex, int count, IComparer comparer)
-        {
-            InsertSort(list, comparer, beginIndex, count);
-        }
-
     }
+
 }

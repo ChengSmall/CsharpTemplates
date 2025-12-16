@@ -865,6 +865,74 @@ namespace Cheng.Algorithm.Collections
 
         #region 检查是否有序
 
+        public static bool IsOrdered<T>(this IEnumerable<T> collection, IComparer<T> comparer)
+        {
+            if (collection is null) throw new ArgumentNullException();
+            if (comparer is null) comparer = Comparer<T>.Default;
+
+            using (var enr = collection.GetEnumerator())
+            {
+                T last;
+
+                if (!enr.MoveNext())
+                {
+                    return true;
+                }
+                last = enr.Current;
+
+                while (enr.MoveNext())
+                {
+                    var cur = enr.Current;
+                    if (comparer.Compare(last, cur) >= 0)
+                    {
+                        return false;
+                    }
+                    last = cur;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 验证集合是否有序
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">要验证的集合</param>
+        /// <param name="comparer">进行验证时的比较方法实现，参数为null时使用默认实现的<see cref="Comparer{T}.Default"/></param>
+        /// <returns>有序集合返回true，无序集合返回false</returns>
+        /// <exception cref="ArgumentNullException">集合为null</exception>
+        public static bool IsOrdered<T>(this IReadOnlyList<T> list, IComparer<T> comparer)
+        {
+            if (list is null) throw new ArgumentNullException();
+            if (comparer is null) comparer = Comparer<T>.Default;
+
+            int count = list.Count;
+            if (count <= 1) return true;
+            int i;
+            int length = count - 1;
+
+            for (i = 0; i < length; i++)
+            {
+                if (comparer.Compare(list[i], list[i + 1]) >= 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 验证集合是否有序
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">要验证的集合</param>
+        /// <returns>有序集合返回true，无序集合返回false</returns>
+        /// <exception cref="ArgumentNullException">集合为null</exception>
+        public static bool IsOrdered<T>(this IReadOnlyList<T> list)
+        {
+            return IsOrdered(list, null);
+        }
+
         /// <summary>
         /// 验证集合是否有序
         /// </summary>
@@ -1304,7 +1372,7 @@ namespace Cheng.Algorithm.Collections
             }
             else
             {
-                f_qukeAndInsertSort(list, index, index + count - 1, comparer, 32);
+                f_qukeAndInsertSort(list, index, index + count - 1, comparer, 64);
             }
 
         }
@@ -1367,7 +1435,7 @@ namespace Cheng.Algorithm.Collections
             }
             else
             {
-                ng_QukeAndInsertSort(list, index, index + count - 1, comparer, 32);
+                ng_QukeAndInsertSort(list, index, index + count - 1, comparer, 64);
             }
         }
 
@@ -1396,7 +1464,7 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentException">默认排序器没有默认排序实现</exception>
         public static void QukeAndInsertSort<T>(this IList<T> list)
         {
-            QukeAndInsertSort(list ?? throw new ArgumentNullException(), null, 0, list.Count, 32);
+            QukeAndInsertSort(list ?? throw new ArgumentNullException(), null, 0, list.Count);
         }
 
         /// <summary>
@@ -1414,7 +1482,7 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentException">排序器是null并且没有默认排序实现，或其他参数错误</exception>
         public static void QukeAndInsertSort<T>(this IList<T> list, IComparer<T> comparer)
         {
-            QukeAndInsertSort(list ?? throw new ArgumentNullException(), comparer, 0, list.Count, 32);
+            QukeAndInsertSort(list ?? throw new ArgumentNullException(), comparer, 0, list.Count);
         }
 
         /// <summary>
@@ -1433,7 +1501,7 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentException">排序器是null并且没有默认排序实现，或其他参数错误</exception>
         public static void QukeAndInsertSort<T>(this IList<T> list, IComparer<T> comparer, int index, int count)
         {
-            QukeAndInsertSort(list, comparer, index, count, 32);
+            QukeAndInsertSort(list, comparer, index, count, 64);
         }
 
         /// <summary>
@@ -1447,7 +1515,7 @@ namespace Cheng.Algorithm.Collections
         /// <param name="comparer">排序方法，null表示使用<typeparamref name="T"/>类型的默认排序方法</param>
         /// <param name="index">排序的起始索引</param>
         /// <param name="count">要排序的元素数量</param>
-        /// <param name="stackDepth">进行快速排序时的入栈深度，值越大深度越深，等于或小于0则不使用快速排序，默认值为32</param>
+        /// <param name="stackDepth">进行快速排序时的递归深度，值越大深度越深，等于或小于0则不使用快速排序，默认值为64</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         /// <exception cref="ArgumentException">排序器是null并且没有默认排序实现，或其他参数错误</exception>
@@ -1466,10 +1534,10 @@ namespace Cheng.Algorithm.Collections
         {
             if (low < high)
             {
-                if (count <= 0 || ((high - low) <= 16))
+                if (count <= 0 /*|| ((high - low) <= 8)*/)
                 {
-                    //到达深度或区间过小用插排
-                    InsertionSort.InsertSort(list, comparer, low, high - low + 1);
+                    //按条件插排
+                    InsertionSort.f_InsertSort(list, comparer, low, high - low + 1);
                 }
                 else
                 {
@@ -1538,7 +1606,7 @@ namespace Cheng.Algorithm.Collections
         {
             if (low < high)
             {
-                if (count <= 0 || (high - low) <= 16)
+                if (count <= 0 /*|| (high - low) <= 16*/)
                 {
                     //按条件插排
                     InsertionSort.InsertSort(list, comparer, low, high - low + 1);

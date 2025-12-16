@@ -25,7 +25,7 @@ namespace Cheng.Algorithm.Sorts
             QukeliySort(list ?? throw new ArgumentNullException(), 0, list.Count - 1, comparer);
         }
 
-        public override void Sort<T>(IList<T> list, int beginIndex, int count, IComparer<T> comparer)
+        public override void Sort<T>(IList<T> list, IComparer<T> comparer, int beginIndex, int count)
         {
             QukeliySort(list ?? throw new ArgumentNullException(), beginIndex, list.Count - 1, comparer);
         }
@@ -36,7 +36,7 @@ namespace Cheng.Algorithm.Sorts
             QukeliySort(list ?? throw new ArgumentNullException(), 0, list.Count - 1, comparer);
         }
 
-        public override void Sort(IList list, int beginIndex, int count, IComparer comparer)
+        public override void Sort(IList list, IComparer comparer, int beginIndex, int count)
         {
 
             QukeliySort(list ?? throw new ArgumentNullException(), beginIndex, list.Count - 1, comparer);
@@ -93,6 +93,7 @@ namespace Cheng.Algorithm.Sorts
             }
         }
 
+#if DEBUG
         /// <summary>
         /// 进行一次快速筛选
         /// </summary>
@@ -102,6 +103,7 @@ namespace Cheng.Algorithm.Sorts
         /// <param name="high"></param>
         /// <param name="comparer"></param>
         /// <returns></returns>
+#endif
         internal static int partition<T>(IList<T> list, int low, int high, IComparer<T> comparer)
         {
             //选择最后一个元素作为基准元素
@@ -191,7 +193,6 @@ namespace Cheng.Algorithm.Sorts
             return ng_partition(list, low, high, comparer);
         }
 
-       
     }
 
 }
