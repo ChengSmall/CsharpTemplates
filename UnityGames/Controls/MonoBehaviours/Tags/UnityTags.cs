@@ -17,7 +17,7 @@ namespace Cheng.Unitys.Tags
     [AddComponentMenu("Cheng/其它/标签组")]
 #endif
     [DisallowMultipleComponent]
-    public class UnityTags : MonoBehaviour
+    public sealed class UnityTags : MonoBehaviour
     {
 
         #region 初始化

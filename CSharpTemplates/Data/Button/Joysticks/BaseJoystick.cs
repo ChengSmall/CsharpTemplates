@@ -5,8 +5,6 @@ using System;
 namespace Cheng.ButtonTemplates.Joysticks
 {
 
-
-
     /// <summary>
     /// 表示一个摇杆控制器的基类
     /// </summary>
@@ -87,6 +85,12 @@ namespace Cheng.ButtonTemplates.Joysticks
         /// 允许设置内部封装的摇杆参数
         /// </summary>
         public virtual bool CanSetInternalJoystick => false;
+
+        /// <summary>
+        /// 参数是否有独立的双精度浮点值
+        /// </summary>
+        /// <returns>true表示双精度版本的参数访问与修改是主要的独立数据，单精度值为次要或由双精度参数转化的兼容参数；false表示参数没有主要的双精度独立参数，主要参数集中在单精度浮点值参数</returns>
+        public virtual bool CanDoubleValue => false;
 
         #endregion
 

@@ -74,8 +74,8 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
         {
             //获取字段
-            var nameProperty = property.FindPropertyRelative(UnityNameButton.EditorProperityFieldButtonName);
-            var smoothPro = property.FindPropertyRelative(UnityNameButton.EditorProperityFieldAxisToolName);
+            var nameProperty = property.FindPropertyRelative(UnityNameButton.FieldName_ButtonName);
+            var smoothPro = property.FindPropertyRelative(UnityNameButton.FieldName_axisSmooth);
 
             //float height = position.height;
 

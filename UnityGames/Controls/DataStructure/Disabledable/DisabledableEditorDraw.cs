@@ -98,8 +98,8 @@ namespace Cheng.Unitys.DataStructure
                 EditorGUI.LabelField(pos_label, label);
             }
 
-            var pro_obj = property.FindPropertyRelative(Disabledable<UObj>.fieldName_object);
-            var pro_active = property.FindPropertyRelative(Disabledable<UObj>.fieldName_activeBoolean);
+            var pro_obj = property.FindPropertyRelative(Disabledable<UObj>.FieldName_object);
+            var pro_active = property.FindPropertyRelative(Disabledable<UObj>.FieldName_activeBoolean);
 
             Rect pos_value_active, pos_value_obj;
 

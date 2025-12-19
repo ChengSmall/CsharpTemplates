@@ -9,12 +9,13 @@ using System.Security;
 using System.IO;
 
 using SCol = global::System.Console;
+using Cheng.Texts;
 
 namespace Cheng.Consoles
 {
 
     /// <summary>
-    /// Windows .Net 控制台系统
+    /// Windows 控制台系统
     /// </summary>
     public static class ConsoleSystem
     {
@@ -68,8 +69,6 @@ namespace Cheng.Consoles
             {
                 return GetLastError();
             }
-
-            //outConsoleMode |= (ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
 
             if (!SetConsoleMode(iStdOut, (outConsoleMode & ~(ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN))))
             {
@@ -180,12 +179,14 @@ namespace Cheng.Consoles
 
         #region 原始
 
+#if DEBUG
         /// <summary>
         /// 设置指定窗口的显示状态
         /// </summary>
         /// <param name="hWnd">窗口句柄</param>
         /// <param name="nCmdShow"></param>
         /// <returns>以前可见返回true，以前隐藏返回false</returns>
+#endif
         [DllImport("user32.dll", SetLastError = true)]
         [return:MarshalAs(UnmanagedType.Bool)]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
@@ -208,12 +209,14 @@ namespace Cheng.Consoles
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
+#if DEBUG
         /// <summary>
         /// 设置控制台输入缓冲区的输入模式或控制台屏幕缓冲区的输出模式
         /// </summary>
         /// <param name="hConsoleHandle">控制台输入缓冲区或控制台屏幕缓冲区的句柄</param>
         /// <param name="dwMode">要设置的输入或输出模式</param>
         /// <returns></returns>
+#endif
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
@@ -228,7 +231,7 @@ namespace Cheng.Consoles
 
         #endregion
 
-        #region 扩展
+        #region 宽高
 
         /// <summary>
         /// 将控制台的缓冲区大小设置为当前控制台窗口区域大小
@@ -278,6 +281,258 @@ namespace Cheng.Consoles
 
         #endregion
 
+        #region 标准输入
+
+        /// <summary>
+        /// 进入控制台输入模式
+        /// </summary>
+        /// <remarks>
+        /// <para>进入输入模式后可自由编写文本，并允许使用退格键，换行键操作输入的内容</para>
+        /// <para>按下回车键换行；按Shift + 回车键退出输入模式，或按下<paramref name="cancelKey"/>退出输入模式并将返回值设为false</para>
+        /// </remarks>
+        /// <param name="intercept">输入时是否禁止显示字符</param>
+        /// <param name="cancelKey">按下该按键后将立即结束，并返回false；不想设退出键可将参数设为0</param>
+        /// <param name="inputAction">每次检测到一次输入都会执行回调，null表示不使用回调</param>
+        /// <param name="inputText">所有输入的内容，List每一个元素代表一行内容</param>
+        /// <returns>按下回车结束输入并返回true，输入结果保存到<paramref name="inputText"/>；如果按下<paramref name="cancelKey"/>返回false，也会将结果保存到<paramref name="inputText"/></returns>
+        public static bool ReadInput(bool intercept, ConsoleKey cancelKey, Action<ConsoleKeyInfo> inputAction, out List<CMStringBuilder> inputText)
+        {
+
+            bool isAction = inputAction != null;
+            inputText = new List<CMStringBuilder>();
+            inputText.Add(new CMStringBuilder());
+            Loop:
+
+            var rk = SCol.ReadKey(true);
+
+            var key = rk.Key;
+            if ((cancelKey != 0) && (key == cancelKey)) return false;
+
+            var mod = rk.Modifiers;
+
+            if (isAction)
+            {
+                inputAction.Invoke(rk);
+            }
+
+            if (key == ConsoleKey.Enter)
+            {
+                //回车
+                if ((mod & ConsoleModifiers.Shift) == ConsoleModifiers.Shift)
+                {
+                    //Shift + 回车
+                    return true;
+                }
+                else
+                {
+                    //单回车
+                    //换行
+                    inputText.Add(new CMStringBuilder());
+                    if (!intercept) SCol.WriteLine();
+                    goto Loop;
+                }
+            }
+
+            if (key == ConsoleKey.Backspace)
+            {
+                //退格
+                if (inputText.Count > 0)
+                {
+                    //当前行缓存
+                    var sb = inputText[inputText.Count - 1];
+                    if (sb.Length > 0)
+                    {
+                        //当前行退格
+                        //最后一个字符
+                        var endc = sb[sb.Length - 1];
+                        sb.RemoveEnd(1);
+                        //覆盖当前行
+                        if (!intercept)
+                        {
+                            SCol.CursorLeft = 0;
+                            int i;
+                            for (i = 0; i < sb.Length; i++)
+                            {
+                                var sbc = sb[i];
+                                SCol.Write(sbc);
+                            }
+                            //最后一个打印
+                            if (endc.IsFullWidth())
+                            {
+                                //全角字符用全角空格
+                                SCol.Write('\u3000');
+                                SCol.CursorLeft = SCol.CursorLeft - 2;
+                            }
+                            else
+                            {
+                                SCol.Write(' ');
+                                SCol.CursorLeft = SCol.CursorLeft - 1;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        //当前行为空
+                        if (inputText.Count > 1)
+                        {
+                            //最后一行缓存
+                            sb = inputText[inputText.Count - 1];
+
+                            //删除最后一行
+                            inputText.RemoveAt(inputText.Count - 1);
+                            if (!intercept)
+                            {
+                                Console.CursorLeft = 0;
+                                int i;
+                                for (i = 0; i < sb.Length; i++)
+                                {
+                                    var sbc = sb[i];
+                                    if (sbc.IsFullWidth())
+                                    {
+                                        //全角字符用全角空格
+                                        Console.Write('\u3000');
+                                    }
+                                    else
+                                    {
+                                        Console.Write(' ');
+                                    }
+                                }
+
+                                //提升光标并左移到顶
+                                Console.SetCursorPosition(0, Console.CursorTop - 1);
+                                //获取上一行缓存
+                                sb = inputText[inputText.Count - 1];
+                                //打印
+                                var cbuf = sb.GetCharBuffer();
+                                Console.Write(cbuf.Array, cbuf.Offset, cbuf.Count);
+                            }
+                        }
+                        else
+                        {
+                            //退回到顶
+                        }
+                    }
+                }
+
+                goto Loop;
+            }
+
+            var kc = rk.KeyChar;
+
+            if (!intercept) Console.Write(kc);
+
+            inputText[inputText.Count - 1].Append(kc);
+
+            goto Loop;
+        }
+
+        /// <summary>
+        /// 进入控制台行输入模式
+        /// </summary>
+        /// <remarks>
+        /// <para>用于获取一行输入的模式</para>
+        /// </remarks>
+        /// <param name="inputText">要使用并用于接受输入的缓冲区</param>
+        /// <param name="intercept">输入时是否禁止在控制台显示字符</param>
+        /// <param name="maxCount">限制最大字符输入数量，0表示无限制</param>
+        /// <param name="cancelKey">按下该按键后将立即结束，并返回false；不想设退出键可将参数设为0</param>
+        /// <returns>成功获取一行true，如果按下了<paramref name="cancelKey"/>按键则返回false</returns>
+        /// <exception cref="ArgumentNullException">缓冲区参数为null</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxCount"/>小于0</exception>
+        public static bool ReadInputLine(CMStringBuilder inputText, bool intercept, int maxCount, ConsoleKey cancelKey)
+        {
+            if (inputText is null) throw new ArgumentNullException();
+            if (maxCount < 0) throw new ArgumentOutOfRangeException();
+            inputText.Clear();
+
+            Loop:
+            var rk = SCol.ReadKey(true);
+
+            var key = rk.Key;
+            if ((cancelKey != 0) && (key == cancelKey)) return false;
+
+            if (key == ConsoleKey.Enter)
+            {
+                return true;
+            }
+
+            if (key == ConsoleKey.Backspace)
+            {
+                var sb = inputText;
+                if (sb.Length > 0)
+                {
+                    //当前行退格
+                    //最后一个字符
+                    var endc = sb[sb.Length - 1];
+                    sb.RemoveEnd(1);
+                    //覆盖当前行
+                    if (!intercept)
+                    {
+                        SCol.CursorLeft = 0;
+                        int i;
+                        for (i = 0; i < sb.Length; i++)
+                        {
+                            var sbc = sb[i];
+                            SCol.Write(sbc);
+                        }
+                        //最后一个覆盖
+                        if (endc.IsFullWidth())
+                        {
+                            //全角字符用全角空格
+                            SCol.Write('\u3000');
+                            SCol.CursorLeft = SCol.CursorLeft - 2;
+                        }
+                        else
+                        {
+                            SCol.Write(' ');
+                            SCol.CursorLeft = SCol.CursorLeft - 1;
+                        }
+                    }
+                }
+                goto Loop;
+            }
+            if ((maxCount != 0) && inputText.Length >= maxCount)
+            {
+
+                goto Loop;
+            }
+            var kc = rk.KeyChar;
+            inputText.Append(kc);
+            if (!intercept)
+            {
+                SCol.Write(kc);
+            }
+            goto Loop;
+        }
+
+        /// <summary>
+        /// 进入控制台行输入模式
+        /// </summary>
+        /// <param name="inputText">要使用并用于接受输入的缓冲区</param>
+        /// <param name="intercept">输入时是否禁止在控制台显示字符</param>
+        /// <returns>成功获取一行true，如果按下了<see cref="ConsoleKey.Escape"/>则返回false</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static bool ReadInputLine(CMStringBuilder inputText, bool intercept)
+        {
+            return ReadInputLine(inputText, intercept, 0, ConsoleKey.Escape);
+        }
+
+        /// <summary>
+        /// 进入控制台行输入模式
+        /// </summary>
+        /// <param name="inputText">要使用并用于接受输入的缓冲区</param>
+        /// <returns>成功获取一行true，如果按下了<see cref="ConsoleKey.Escape"/>则返回false</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static bool ReadInputLine(CMStringBuilder inputText)
+        {
+            return ReadInputLine(inputText, false, 0, ConsoleKey.Escape);
+        }
+
+        #endregion
+
     }
 
 }
+#if DEBUG
+#endif

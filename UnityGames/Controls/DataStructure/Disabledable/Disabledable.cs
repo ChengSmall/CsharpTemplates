@@ -15,7 +15,7 @@ namespace Cheng.Unitys.DataStructure
 {
 
     /// <summary>
-    /// 可禁用对象封装结构
+    /// 可在 Inspector 禁用的对象
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
@@ -50,12 +50,12 @@ namespace Cheng.Unitys.DataStructure
         /// <summary>
         /// 字段名称 - Unity对象
         /// </summary>
-        public const string fieldName_object = nameof(p_obj);
+        public const string FieldName_object = nameof(p_obj);
 
         /// <summary>
         /// 字段名称 - 真值开关
         /// </summary>
-        public const string fieldName_activeBoolean = nameof(p_active);
+        public const string FieldName_activeBoolean = nameof(p_active);
 
 #endif
 
@@ -177,6 +177,3 @@ namespace Cheng.Unitys.DataStructure
 
 
 }
-#if UNITY_EDITOR
-
-#endif

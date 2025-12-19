@@ -7,10 +7,10 @@ namespace Cheng.Memorys
 {
 
     /// <summary>
-    /// 完全不安全代码的底层内存操作口
+    /// 不安全代码的低级别内存操作口
     /// </summary>
     /// <remarks>
-    /// <para>在当前代码库嵌入 System.Runtime.CompilerServices.Unsafe 类进行更底层的操作，在调用相关函数之前请确保程序已正确解析<see cref="UnsafeExtend.UnsafeAssembly"/></para>
+    /// <para>使用 System.Runtime.CompilerServices.Unsafe 类进行更底层的操作，在调用相关函数之前请确保程序已正确解析<see cref="UnsafeExtend.UnsafeAssembly"/></para>
     /// </remarks>
     public static unsafe class UnsafeExtend
     {

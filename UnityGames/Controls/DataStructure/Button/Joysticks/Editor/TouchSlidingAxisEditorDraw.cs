@@ -92,7 +92,7 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys.UnityEditors
         public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label)
         {
 
-            var pro_speed = property.FindPropertyRelative(TouchSlidingAxis.fieldName_speed);
+            var pro_speed = property.FindPropertyRelative(TouchSlidingAxis.FieldName_speed);
 
             Rect pos_label, pos_ver;
 

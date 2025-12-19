@@ -41,7 +41,10 @@ namespace Cheng.ButtonTemplates.UnityButtons
         #region 参数
 
 #if UNITY_EDITOR
-        public const string EditorProperityFieldName = nameof(p_buttonKey);
+        /// <summary>
+        /// 对象内的字段名
+        /// </summary>
+        public const string FieldName_ButtonKey = nameof(p_buttonKey);
 #endif
 
         [SerializeField] private KeyCode p_buttonKey;

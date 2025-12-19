@@ -14,7 +14,7 @@ namespace Cheng.ButtonTemplates.UnityButtons
     /// <para>将<see cref="Input.anyKey"/>封装到按钮状态的Unity按钮</para>
     /// </remarks>
     [Serializable]
-    public class AnyUnityButton : UnityButton
+    public sealed class AnyUnityButton : UnityButton
     {
 
         #region 构造

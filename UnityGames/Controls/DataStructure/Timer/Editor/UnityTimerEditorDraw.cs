@@ -82,7 +82,7 @@ namespace Cheng.Timers.Unitys.UnityEditors
         /// <param name="label">主标签</param>
         public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label)
         {
-            var t = property.FindPropertyRelative(UnityTimer.fieldName_type);
+            var t = property.FindPropertyRelative(UnityTimer.FieldName_type);
             
             t.intValue = (int)(UnityTimerType)EditorGUI.EnumPopup(position, label, (UnityTimerType)t.intValue);
         }

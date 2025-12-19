@@ -6,7 +6,7 @@ namespace Cheng.ButtonTemplates
     /// <summary>
     /// 一个需要释放资源的按钮基类
     /// </summary>
-    public abstract class ResourceButton : BaseButton , IDisposable
+    public abstract class ResourceButton : BaseButton, IDisposable
     {
 
         #region 释放

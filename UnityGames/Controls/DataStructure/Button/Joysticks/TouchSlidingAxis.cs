@@ -10,6 +10,7 @@ using UnityEditor;
 namespace Cheng.ButtonTemplates.Joysticks.Unitys
 {
 
+#if UNITY_EDITOR
     /// <summary>
     /// 触摸滑动轴
     /// </summary>
@@ -19,8 +20,20 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
     /// <para>
     /// 访问的总是第一个触控参数，也就是<see cref="Input.GetTouch(int)"/>函数参数为0的返回值
     /// </para>
-    /// <para>可在 Unity 编辑器中设置速率值</para>
+    /// <para>允许作为脚本参数在 Unity Inspector 中设置速率值</para>
     /// </remarks>
+#else
+    /// <summary>
+    /// 触摸滑动轴
+    /// </summary>
+    /// <remarks>
+    /// <para>能够访问用手指在屏幕上滑动的速度</para>
+    /// <para>使用<see cref="Speed"/>参数设置或访问滑动速率值，速率值决定最终访问到的摇杆参数的大小；当<see cref="Speed"/>设置为（1，1）时，摇杆速度表示为 像素/秒 </para>
+    /// <para>
+    /// 访问的总是第一个触控参数，也就是<see cref="Input.GetTouch(int)"/>函数参数为0的返回值
+    /// </para>
+    /// </remarks>
+#endif
     [Serializable]
     public sealed class TouchSlidingAxis : BaseJoystick
     {
@@ -64,7 +77,10 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
 
 #if UNITY_EDITOR
 
-        public const string fieldName_speed = nameof(p_speed);
+        /// <summary>
+        /// 字段名
+        /// </summary>
+        public const string FieldName_speed = nameof(p_speed);
 
 #endif
 
@@ -278,4 +294,3 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
     }
 
 }
-

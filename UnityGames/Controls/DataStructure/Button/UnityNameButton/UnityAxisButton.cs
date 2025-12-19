@@ -81,17 +81,17 @@ namespace Cheng.ButtonTemplates.UnityButtons
         /// <summary>
         /// 名称变量名字符串
         /// </summary>
-        public const string cp_EditorProperityFieldButtonName = nameof(p_buttonName);
+        public const string FieldName_ButtonName = nameof(p_buttonName);
 
         /// <summary>
         /// 是否开启平滑的布尔值变量名
         /// </summary>
-        public const string cp_EditorProperityFieldAxisToolName = nameof(p_axisSmooth);
+        public const string FieldName_axisSmooth = nameof(p_axisSmooth);
 
         /// <summary>
         /// Power映射State中间值浮点数变量名称
         /// </summary>
-        public const string cp_EditorMid_Name = nameof(p_mid);
+        public const string FieldName_mid = nameof(p_mid);
 
 #endif
 

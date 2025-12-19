@@ -62,7 +62,7 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            var listPro = property.FindPropertyRelative(MultKeyCodeButton.cp_keyArrText);
+            var listPro = property.FindPropertyRelative(MultKeyCodeButton.FieldName_keys);
 
             if (!listPro.isExpanded)
             {
@@ -92,8 +92,8 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
         public static void OnGUIDraw(Rect position, SerializedProperty property, GUIContent label, GUIContent toggleLabel)
         {
             //获取两个字段
-            var listPro = property.FindPropertyRelative(MultKeyCodeButton.cp_keyArrText);
-            var andBoolPro = property.FindPropertyRelative(MultKeyCodeButton.cp_isAndText);
+            var listPro = property.FindPropertyRelative(MultKeyCodeButton.FieldName_keys);
+            var andBoolPro = property.FindPropertyRelative(MultKeyCodeButton.FieldName_isAnd);
 
             //获取映射方式布尔值
             bool and = andBoolPro.boolValue;
@@ -123,7 +123,7 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
         /// <returns></returns>
         public static float GetHeight(SerializedProperty property, GUIContent label)
         {
-            var listPro = property.FindPropertyRelative(MultKeyCodeButton.cp_keyArrText);
+            var listPro = property.FindPropertyRelative(MultKeyCodeButton.FieldName_keys);
 
             if (!listPro.isExpanded)
             {

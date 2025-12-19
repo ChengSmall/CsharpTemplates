@@ -105,7 +105,10 @@ namespace Cheng.Timers.Unitys
 
 #if UNITY_EDITOR
 
-        public const string fieldName_type = nameof(type);
+        /// <summary>
+        /// 对象内<see cref="TimeType"/>的字段名
+        /// </summary>
+        public const string FieldName_type = nameof(type);
 
 #endif
 

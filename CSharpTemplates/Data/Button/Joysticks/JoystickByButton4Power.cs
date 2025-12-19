@@ -139,6 +139,11 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         public override bool CanGetVerticalReverse => true;
 
+        public override bool CanDoubleValue
+        {
+            get => p_left.CanDoubleValueIsPower || p_right.CanDoubleValueIsPower || p_up.CanDoubleValueIsPower || p_down.CanDoubleValueIsPower;
+        }
+
         #endregion
 
         #region 数据
@@ -157,7 +162,15 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         public override void GetVector(out float radian, out float length)
         {
-            GetVectorRadionAndLength(Horizontal, Vertical, out radian, out length);
+            var h = Horizontal;
+            var v = Vertical;
+            if (h == 0 && v == 0)
+            {
+                radian = 0;
+                length = 0;
+                return;
+            }
+            GetVectorRadionAndLength(h, v, out radian, out length);
         }
 
         public override void GetAxis(out float horizontal, out float vertical)
@@ -223,6 +236,76 @@ namespace Cheng.ButtonTemplates.Joysticks
             }
             set { ThrowNotSupportedException(); }
         }
+
+        public override void GetVectorD(out double radian, out double length)
+        {
+            var h = HorizontalD;
+            var v = VerticalD;
+            if(h == 0 && v == 0)
+            {
+                radian = 0;
+                length = 0;
+                return;
+            }
+            GetVectorRadionAndLength(h, v, out radian, out length);
+        }
+
+        public override void GetAxisD(out double horizontal, out double vertical)
+        {
+            horizontal = HorizontalD;
+            vertical = VerticalD;
+        }
+
+        public override double HorizontalD
+        {
+            get
+            {
+                double left, right;
+                if (p_isHorReverse)
+                {
+                    right = p_left.PowerDouble;
+                    left = p_right.PowerDouble;
+                }
+                else
+                {
+                    left = p_left.PowerDouble;
+                    right = p_right.PowerDouble;
+                }
+
+                if (left == right) return 0;
+
+                return right - left;
+
+            }
+            set { ThrowNotSupportedException(); }
+        }
+
+        public override double VerticalD
+        {
+            get
+            {
+                double down, up;
+                if (p_isVerReverse)
+                {
+                    up = p_left.PowerDouble;
+                    down = p_right.PowerDouble;
+                }
+                else
+                {
+                    down = p_left.PowerDouble;
+                    up = p_right.PowerDouble;
+                }
+
+                if (down == up) return 0;
+
+                return up - down;
+            }
+            set { ThrowNotSupportedException(); }
+        }
+
+        #endregion
+
+        #region 无实现
 
         public override void SetAxis(float horizontal, float vertical)
         {

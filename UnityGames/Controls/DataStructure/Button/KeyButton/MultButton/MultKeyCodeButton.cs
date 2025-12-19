@@ -43,14 +43,16 @@ namespace Cheng.ButtonTemplates.UnityButtons
         private bool p_isAnd;
 
 #if UNITY_EDITOR
+
         /// <summary>
         /// 按键集合的字段名称
         /// </summary>
-        public const string cp_keyArrText = nameof(p_keys);
+        public const string FieldName_keys = nameof(p_keys);
+
         /// <summary>
         /// 映射方法的布尔值字段名称
         /// </summary>
-        public const string cp_isAndText = nameof(p_isAnd);
+        public const string FieldName_isAnd = nameof(p_isAnd);
 #endif
 
         #endregion

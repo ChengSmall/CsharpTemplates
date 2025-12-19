@@ -57,7 +57,6 @@
   <ItemGroup>
     <Folder Include="Controls\DataStructure\Button\Androids\" />
     <Folder Include="Controls\DataStructure\Button\ConditionButtons\" />
-    <Folder Include="Controls\DataStructure\Gun\" />
     <Folder Include="Controls\MonoBehaviours\Camera\3D\" />
     <Folder Include="DEBUG\MonoBehaviour\" />
   </ItemGroup>

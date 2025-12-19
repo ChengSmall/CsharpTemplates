@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Cheng.ButtonTemplates.UnityButtons
 {
 
+#if UNITY_EDITOR
     /// <summary>
     /// 使用Unity虚拟按钮映射的按钮
     /// </summary>
@@ -16,6 +17,16 @@ namespace Cheng.ButtonTemplates.UnityButtons
     /// 通过 Inspector 设置虚拟按钮名称和是否应用平滑开关
     /// </para>
     /// </remarks>
+#else
+    /// <summary>
+    /// 使用Unity虚拟按钮映射的按钮
+    /// </summary>
+    /// <remarks>
+    /// 此按钮封装一个 Input Manager 窗口中的虚拟按钮名称，
+    /// 通过 <see cref="ButtonName"/> 属性设置虚拟按钮标识，使用 <see cref="Input"/> 类实现按钮状态；<br/>
+    /// 使用<see cref="UnityEngine.Input.GetButton(string)"/>获取按钮状态；使用<see cref="UnityEngine.Input.GetAxis(string)"/>或<see cref="UnityEngine.Input.GetAxisRaw(string)"/>获取按钮力度值；
+    /// </remarks>
+#endif
     [Serializable]
     public sealed class UnityNameButton : UnityButton
     {
@@ -61,8 +72,16 @@ namespace Cheng.ButtonTemplates.UnityButtons
         [SerializeField] private bool p_axisSmooth;
 
 #if UNITY_EDITOR
-        public const string EditorProperityFieldButtonName = nameof(p_buttonName);
-        public const string EditorProperityFieldAxisToolName = nameof(p_axisSmooth);
+
+        /// <summary>
+        /// 字符串对象buttonName字段名
+        /// </summary>
+        public const string FieldName_ButtonName = nameof(p_buttonName);
+
+        /// <summary>
+        /// 布尔值axisSmooth字段名
+        /// </summary>
+        public const string FieldName_axisSmooth = nameof(p_axisSmooth);
 #endif
 
         #endregion

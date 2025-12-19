@@ -239,13 +239,13 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys.UnityEditors
 
             SerializedProperty pro_horRev, pro_verRev;
 
-            pro_left = property.FindPropertyRelative(UnityKeyCode4Joystick.cp_leftFieldName);
-            pro_right = property.FindPropertyRelative(UnityKeyCode4Joystick.cp_rightFieldName);
-            pro_up = property.FindPropertyRelative(UnityKeyCode4Joystick.cp_upFieldName);
-            pro_down = property.FindPropertyRelative(UnityKeyCode4Joystick.cp_downFieldName);
+            pro_left = property.FindPropertyRelative(UnityKeyCode4Joystick.FieldName_left);
+            pro_right = property.FindPropertyRelative(UnityKeyCode4Joystick.FieldName_right);
+            pro_up = property.FindPropertyRelative(UnityKeyCode4Joystick.FieldName_up);
+            pro_down = property.FindPropertyRelative(UnityKeyCode4Joystick.FieldName_down);
 
-            pro_horRev = property.FindPropertyRelative(UnityKeyCode4Joystick.cp_horRevFieldName);
-            pro_verRev = property.FindPropertyRelative(UnityKeyCode4Joystick.cp_verRevFieldName);
+            pro_horRev = property.FindPropertyRelative(UnityKeyCode4Joystick.FieldName_HorizontalReverse);
+            pro_verRev = property.FindPropertyRelative(UnityKeyCode4Joystick.FieldName_VerticalReverse);
 
             #endregion
 

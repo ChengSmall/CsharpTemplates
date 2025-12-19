@@ -1,19 +1,29 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 using UnityEngine;
+using Cheng.DataStructure;
+using Cheng.DataStructure.Cherrsdinates;
+using Cheng.DataStructure.Collections;
+using Cheng.DataStructure.Colors;
 
-namespace Cheng.ButtonTemplates.Joysticks.Unitys
+using Cheng.ButtonTemplates.Joysticks.Unitys;
+using Cheng.ButtonTemplates.Joysticks;
+using Cheng.ButtonTemplates;
+using Cheng.ButtonTemplates.UnityButtons;
+
+using UObj = UnityEngine.Object;
+using GObj = UnityEngine.GameObject;
+using Cheng.Algorithm;
+
+namespace Cheng.Unitys
 {
 
-    /// <summary>
-    /// unity摇杆类扩展
-    /// </summary>
-    public static class UnityJoystickExtend
+    unsafe static partial class UnityObjExtend
     {
 
-        #region 摇杆数据获取
+        #region 摇杆
 
         /// <summary>
         /// 获取摇杆的轴数据

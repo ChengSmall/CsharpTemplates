@@ -15,7 +15,7 @@ namespace Cheng.Algorithm
         public static class Vector3
         {
 
-            #region
+            #region 点绕直线
 
             /*
              new_x = (xx(1-c)+c) * old_x + (xy(1-c)-zs) * old_y + (xz(1-c)+ys) * old_z

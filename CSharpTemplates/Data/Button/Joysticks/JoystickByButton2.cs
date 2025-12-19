@@ -88,6 +88,23 @@ namespace Cheng.ButtonTemplates.Joysticks
             }
         }
 
+        public override bool CanDoubleValue
+        {
+            get => p_lr.CanDoubleValueIsPower || p_ud.CanDoubleValueIsPower;
+        }
+
+        public override double HorizontalD
+        {
+            get => base.HorizontalD;
+            set => base.HorizontalD = value;
+        }
+
+        public override double VerticalD 
+        {
+            get => base.VerticalD;
+            set => base.VerticalD = value;
+        }
+
         #endregion
 
         #region 参数访问
@@ -118,13 +135,11 @@ namespace Cheng.ButtonTemplates.Joysticks
             vertical = p_ud.Power;
         }
 
-
         public override void SetAxis(float horizontal, float vertical)
         {
             p_lr.Power = horizontal;
             p_ud.Power = vertical;
         }
-
 
         public override void GetVector(out float radian, out float length)
         {
@@ -134,13 +149,40 @@ namespace Cheng.ButtonTemplates.Joysticks
             GetVectorRadionAndLength(horizontal, vertical, out radian, out length);
         }
 
-
         public override void SetVector(float radian, float length)
         {
             BaseJoystick.GetVectorComponent(radian, length, out float x, out float y);
             p_lr.Power = x;
             p_ud.Power = y;
-        }   
+        }
+
+
+        public override void GetAxisD(out double horizontal, out double vertical)
+        {
+            horizontal = p_lr.PowerDouble;
+            vertical = p_ud.PowerDouble;
+        }
+
+        public override void SetAxisD(double horizontal, double vertical)
+        {
+            p_lr.PowerDouble = horizontal;
+            p_ud.PowerDouble = vertical;
+        }
+
+        public override void GetVectorD(out double radian, out double length)
+        {
+            var horizontal = p_lr.PowerDouble;
+            var vertical = p_ud.PowerDouble;
+
+            GetVectorRadionAndLength(horizontal, vertical, out radian, out length);
+        }
+
+        public override void SetVectorD(double radian, double length)
+        {
+            BaseJoystick.GetVectorComponent(radian, length, out double x, out double y);
+            p_lr.PowerDouble = x;
+            p_ud.PowerDouble = y;
+        }
 
         #endregion
 

@@ -17,6 +17,63 @@ namespace Cheng.ButtonTemplates.Joysticks
     public sealed class JoystickByButton4State : BaseJoystick
     {
 
+        #region 结构
+
+        /// <summary>
+        /// 8向摇杆方向类别
+        /// </summary>
+        public enum StateType : byte
+        {
+
+            /// <summary>
+            /// 无方向
+            /// </summary>
+            None,
+
+            /// <summary>
+            /// 右侧
+            /// </summary>
+            Right,
+
+            /// <summary>
+            /// 右上
+            /// </summary>
+            RigitUp,
+
+            /// <summary>
+            /// 上
+            /// </summary>
+            Up,
+
+            /// <summary>
+            /// 左上
+            /// </summary>
+            LeftUp,
+
+            /// <summary>
+            /// 左
+            /// </summary>
+            Left,
+
+            /// <summary>
+            /// 左下
+            /// </summary>
+            LeftDown,
+
+            /// <summary>
+            /// 下
+            /// </summary>
+            Down,
+
+            /// <summary>
+            /// 右下
+            /// </summary>
+            RightDown
+            
+        }
+
+        #endregion
+
         #region 构造
 
         /// <summary>
@@ -83,6 +140,148 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #region 功能
 
+        #region 通用
+
+        /// <summary>
+        /// 根据4个参数状态返回摇杆的方向
+        /// </summary>
+        /// <param name="left">左侧按钮按下状态</param>
+        /// <param name="right">右侧按钮按下状态</param>
+        /// <param name="up">上方按钮按下状态</param>
+        /// <param name="down">下方按钮按下状态</param>
+        /// <returns>根据4个按钮状态的摇杆综合朝向</returns>
+        public static StateType GetState(bool left, bool right, bool up, bool down)
+        {
+            if (left)
+            {
+                if (right)
+                {
+                    if (up)
+                    {
+                        if (down)
+                        {
+                            //全按
+                            return StateType.None;
+                        }
+                        else
+                        {
+                            //左右上
+                            return StateType.Up;
+                        }
+                    }
+                    else
+                    {
+                        if (down)
+                        {
+                            //左右下
+                            return StateType.Down;
+                        }
+                        else
+                        {
+                            //左右
+                            return StateType.None;
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (up)
+                    {
+                        if (down)
+                        {
+                            //左上下
+                            return StateType.Left;
+                        }
+                        else
+                        {
+
+                            //左上
+                            return StateType.LeftUp;
+                        }
+                    }
+                    else
+                    {
+                        if (down)
+                        {
+                            //左下
+                            return StateType.LeftDown;
+                        }
+                        else
+                        {
+                            //左
+                            return StateType.Left;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (right)
+                {
+
+                    if (up)
+                    {
+
+                        if (down)
+                        {
+                            //右上下
+                            return StateType.Right;
+                        }
+                        else
+                        {
+                            //右上
+                            return StateType.RigitUp;
+                        }
+                    }
+                    else
+                    {
+                        if (down)
+                        {
+                            //右下
+                            return StateType.RightDown;
+                        }
+                        else
+                        {
+                            //右
+                            return StateType.Right;
+                        }
+                    }
+                }
+                else
+                {
+                    if (up)
+                    {
+                        if (down)
+                        {
+                            //上下
+                            return StateType.None;
+                        }
+                        else
+                        {
+                            //上
+                            return StateType.Up;
+                        }
+                    }
+                    else
+                    {
+                        if (down)
+                        {
+                            //下
+                            return StateType.Down;
+                        }
+                        else
+                        {
+                            //无
+                            return StateType.None;
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         #region 派生
 
         #region 权限
@@ -138,10 +337,8 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         #endregion
 
-        public override void GetAxis(out float horizontal, out float vertical)
+        private void f_get4State(out bool left, out bool right, out bool up, out bool down)
         {
-            bool left, right, up, down;
-
             if (p_hRev)
             {
                 right = p_left.ButtonState;
@@ -163,360 +360,93 @@ namespace Cheng.ButtonTemplates.Joysticks
                 up = p_up.ButtonState;
                 down = p_down.ButtonState;
             }
+        }
 
-            //const double onceRadian = System.Math.PI / 180;
-
-            horizontal = 0;
-            vertical = 0;
-
-            if ((left && right && up && down) || ((!left) && (!right) && (!up) && (!down))) return;
-            
-
-            if (left)
+        public override void GetAxis(out float horizontal, out float vertical)
+        {
+            bool left, right, up, down;
+            f_get4State(out left, out right, out up, out down);
+            var state = GetState(left, right, up, down);
+            switch (state)
             {
-
-                if (right)
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-                            //全按
-                        }
-                        else
-                        {
-
-                            //左右上
-                            vertical = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-                            //左右下
-                            vertical = -1;
-                        }
-                        else
-                        {
-
-                            //左右
-                        }
-                    }
-
-                }
-                else
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //左上下
-                            horizontal = -1;
-                        }
-                        else
-                        {
-
-                            //左上
-                            horizontal = -Maths.FSqrt0p5;
-                            vertical = Maths.FSqrt0p5;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-
-                            //左下
-                            horizontal = -Maths.FSqrt0p5;
-                            vertical = horizontal;
-                        }
-                        else
-                        {
-
-                            //左
-                            horizontal = -1;
-                        }
-                    }
-                }
+                case StateType.Right:
+                    horizontal = 1;
+                    vertical = 0;
+                    break;
+                case StateType.Up:
+                    horizontal = 0;
+                    vertical = 1;
+                    break;
+                case StateType.Left:
+                    horizontal = -1;
+                    vertical = 0;
+                    break;
+                case StateType.Down:
+                    horizontal = 0;
+                    vertical = -1;
+                    break;
+                case StateType.RigitUp:
+                    horizontal = Maths.FSqrt0p5;
+                    vertical = Maths.FSqrt0p5;
+                    break;
+                case StateType.LeftUp:
+                    horizontal = -Maths.FSqrt0p5;
+                    vertical = Maths.FSqrt0p5;
+                    break;
+                case StateType.LeftDown:
+                    horizontal = -Maths.FSqrt0p5;
+                    vertical = -Maths.FSqrt0p5;
+                    break;
+                case StateType.RightDown:
+                    horizontal = Maths.FSqrt0p5;
+                    vertical = -Maths.FSqrt0p5;
+                    break;
+                default:
+                    horizontal = 0;
+                    vertical = 0;
+                    break;
             }
-            else
-            {
-                if (right)
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //右上下
-                            horizontal = 1;
-                        }
-                        else
-                        {
-
-                            //右上
-                            horizontal = Maths.FSqrt0p5;
-                            vertical = Maths.FSqrt0p5;
-                        }
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-
-                            //右下
-                            horizontal = Maths.FSqrt0p5;
-                            vertical = -Maths.FSqrt0p5;
-                        }
-                        else
-                        {
-
-                            //右
-                            horizontal = 1;
-                        }
-                    }
-
-                }
-                else
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //上下
-                        }
-                        else
-                        {
-
-                            //上
-                            vertical = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-                            //下
-                            vertical = -1;
-                        }
-                        else
-                        {
-                            //无
-                        }
-                    }
-                }
-            }
-
-            //GetVector(out float r, out float l);
-            //BaseJoystick.GetVectorComponent(r, l, out horizontal, out vertical);
         }
 
         public override void GetVector(out float radian, out float length)
         {
             bool left, right, up, down;
-
-            if (p_hRev)
-            {
-                right = p_left.ButtonState;
-                left = p_right.ButtonState;
-            }
-            else
-            {
-                left = p_left.ButtonState;
-                right = p_right.ButtonState;
-            }
-
-            if (p_vRev)
-            {
-                down = p_up.ButtonState;
-                up = p_down.ButtonState;
-            }
-            else
-            {
-                up = p_up.ButtonState;
-                down = p_down.ButtonState;
-            }
-
+            f_get4State(out left, out right, out up, out down);
             const double onceRadian = System.Math.PI / 180;
 
-            radian = 0;
-            length = 0;
+            length = 1;
 
-            if (left)
+            var state = GetState(left, right, up, down);
+            switch (state)
             {
-
-                if (right)
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-                            //全按
-                        }
-                        else
-                        {
-
-                            //左右上
-                            radian = (float)(onceRadian * (90));
-                            length = 1;
-                        }
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-                            //左右下
-                            radian = (float)(onceRadian * (90 * 3));
-                            length = 1;
-                        }
-                        else
-                        {
-                            //左右
-                        }
-                    }
-
-                }
-                else
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //左上下
-                            radian = (float)(onceRadian * (90 * 2));
-                            length = 1;
-                        }
-                        else
-                        {
-
-                            //左上
-                            radian = (float)(onceRadian * (135));
-                            length = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-
-                            //左下
-                            radian = (float)(onceRadian * (225));
-                            length = 1;
-                        }
-                        else
-                        {
-
-                            //左
-                            radian = (float)(onceRadian * (90 * 2));
-                            length = 1;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (right)
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //右上下
-                            radian = 0;
-                            length = 1;
-                        }
-                        else
-                        {
-
-                            //右上
-                            radian = (float)(onceRadian * (45));
-                            length = 1;
-                        }
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-
-                            //右下
-                            radian = (float)(onceRadian * (315));
-                            length = 1;
-                        }
-                        else
-                        {
-
-                            //右
-                            radian = 0;
-                            length = 1;
-                        }
-                    }
-
-                }
-                else
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //上下
-                        }
-                        else
-                        {
-
-                            //上
-                            radian = (float)(onceRadian * (90));
-                            length = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-                            //下
-                            radian = (float)(onceRadian * (270));
-                            length = 1;
-                        }
-                        else
-                        {
-                            //无
-                        }
-                    }
-                }
+                case StateType.Right:
+                    radian = 0;
+                    break;
+                case StateType.Up:
+                    radian = (float)(onceRadian * 90);
+                    break;
+                case StateType.Left:
+                    radian = (float)(onceRadian * 180);
+                    break;
+                case StateType.Down:
+                    radian = (float)(onceRadian * (90 * 3));
+                    break;
+                case StateType.RigitUp:
+                    radian = (float)(onceRadian * (45));
+                    break;
+                case StateType.LeftUp:
+                    radian = (float)(onceRadian * (45 + 90));
+                    break;
+                case StateType.LeftDown:
+                    radian = (float)(onceRadian * (180 + 45));
+                    break;
+                case StateType.RightDown:
+                    radian = (float)(onceRadian * (360 - 45));
+                    break;
+                default:
+                    radian = 0;
+                    length = 0;
+                    break;
             }
 
         }
@@ -524,190 +454,40 @@ namespace Cheng.ButtonTemplates.Joysticks
         public override void GetVectorAngle(out float angle, out float length)
         {
             bool left, right, up, down;
+            f_get4State(out left, out right, out up, out down);
 
-            if (p_hRev)
+            length = 1;
+            var state = GetState(left, right, up, down);
+            switch (state)
             {
-                right = p_left.ButtonState;
-                left = p_right.ButtonState;
-            }
-            else
-            {
-                left = p_left.ButtonState;
-                right = p_right.ButtonState;
-            }
-
-            if (p_vRev)
-            {
-                down = p_up.ButtonState;
-                up = p_down.ButtonState;
-            }
-            else
-            {
-                up = p_up.ButtonState;
-                down = p_down.ButtonState;
-            }
-
-            angle = 0;
-            length = 0;
-
-            if (left)
-            {
-
-                if (right)
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-                            //全按
-                        }
-                        else
-                        {
-
-                            //左右上
-                            angle = (float)(90);
-                            length = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-                            //左右下
-                            angle = (float)((90 * 3));
-                            length = 1;
-                        }
-                        else
-                        {
-                            //左右
-                        }
-                    }
-
-                }
-                else
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //左上下
-                            angle = (float)((90 * 2));
-                            length = 1;
-                        }
-                        else
-                        {
-
-                            //左上
-                            angle = (float)((135));
-                            length = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-
-                            //左下
-                            angle = (float)((225));
-                            length = 1;
-                        }
-                        else
-                        {
-
-                            //左
-                            angle = (float)((90 * 2));
-                            length = 1;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (right)
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //右上下
-                            angle = 0;
-                            length = 1;
-                        }
-                        else
-                        {
-
-                            //右上
-                            angle = (float)((45));
-                            length = 1;
-                        }
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-
-                            //右下
-                            angle = (float)((315));
-                            length = 1;
-                        }
-                        else
-                        {
-
-                            //右
-                            angle = 0;
-                            length = 1;
-                        }
-                    }
-
-                }
-                else
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //上下
-                        }
-                        else
-                        {
-
-                            //上
-                            angle = (float)((90));
-                            length = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-                            //下
-                            angle = (float)((270));
-                            length = 1;
-                        }
-                        else
-                        {
-                            //无
-                        }
-                    }
-                }
+                case StateType.Right:
+                    angle = 0;
+                    break;
+                case StateType.Up:
+                    angle = (float)(90);
+                    break;
+                case StateType.Left:
+                    angle = (float)(180);
+                    break;
+                case StateType.Down:
+                    angle = (float)((90 * 3));
+                    break;
+                case StateType.RigitUp:
+                    angle = (float)((45));
+                    break;
+                case StateType.LeftUp:
+                    angle = (float)((45 + 90));
+                    break;
+                case StateType.LeftDown:
+                    angle = (float)((180 + 45));
+                    break;
+                case StateType.RightDown:
+                    angle = (float)((360 - 45));
+                    break;
+                default:
+                    angle = 0;
+                    length = 0;
+                    break;
             }
 
         }
@@ -715,199 +495,95 @@ namespace Cheng.ButtonTemplates.Joysticks
         public override void GetAxisD(out double horizontal, out double vertical)
         {
             bool left, right, up, down;
-
-            if (p_hRev)
+            f_get4State(out left, out right, out up, out down);
+            var state = GetState(left, right, up, down);
+            switch (state)
             {
-                right = p_left.ButtonState;
-                left = p_right.ButtonState;
-            }
-            else
-            {
-                left = p_left.ButtonState;
-                right = p_right.ButtonState;
-            }
-
-            if (p_vRev)
-            {
-                down = p_up.ButtonState;
-                up = p_down.ButtonState;
-            }
-            else
-            {
-                up = p_up.ButtonState;
-                down = p_down.ButtonState;
-            }
-
-            //const double onceRadian = System.Math.PI / 180;
-
-            horizontal = 0;
-            vertical = 0;
-
-            if ((left && right && up && down) || ((!left) && (!right) && (!up) && (!down))) return;
-
-
-            if (left)
-            {
-
-                if (right)
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-                            //全按
-                        }
-                        else
-                        {
-
-                            //左右上
-                            vertical = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-                            //左右下
-                            vertical = -1;
-                        }
-                        else
-                        {
-
-                            //左右
-                        }
-                    }
-
-                }
-                else
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //左上下
-                            horizontal = -1;
-                        }
-                        else
-                        {
-
-                            //左上
-                            horizontal = -Maths.Sqrt0p5;
-                            vertical = Maths.Sqrt0p5;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-
-                            //左下
-                            horizontal = -Maths.Sqrt0p5;
-                            vertical = horizontal;
-                        }
-                        else
-                        {
-
-                            //左
-                            horizontal = -1;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (right)
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //右上下
-                            horizontal = 1;
-                        }
-                        else
-                        {
-
-                            //右上
-                            horizontal = Maths.Sqrt0p5;
-                            vertical = Maths.Sqrt0p5;
-                        }
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-
-                            //右下
-                            horizontal = Maths.Sqrt0p5;
-                            vertical = -Maths.Sqrt0p5;
-                        }
-                        else
-                        {
-
-                            //右
-                            horizontal = 1;
-                        }
-                    }
-
-                }
-                else
-                {
-
-                    if (up)
-                    {
-
-                        if (down)
-                        {
-
-                            //上下
-                        }
-                        else
-                        {
-
-                            //上
-                            vertical = 1;
-                        }
-
-
-                    }
-                    else
-                    {
-                        if (down)
-                        {
-                            //下
-                            vertical = -1;
-                        }
-                        else
-                        {
-                            //无
-                        }
-                    }
-                }
+                case StateType.Right:
+                    horizontal = 1;
+                    vertical = 0;
+                    break;
+                case StateType.Up:
+                    horizontal = 0;
+                    vertical = 1;
+                    break;
+                case StateType.Left:
+                    horizontal = -1;
+                    vertical = 0;
+                    break;
+                case StateType.Down:
+                    horizontal = 0;
+                    vertical = -1;
+                    break;
+                case StateType.RigitUp:
+                    horizontal = Maths.Sqrt0p5;
+                    vertical = Maths.Sqrt0p5;
+                    break;
+                case StateType.LeftUp:
+                    horizontal = -Maths.Sqrt0p5;
+                    vertical = Maths.Sqrt0p5;
+                    break;
+                case StateType.LeftDown:
+                    horizontal = -Maths.Sqrt0p5;
+                    vertical = -Maths.Sqrt0p5;
+                    break;
+                case StateType.RightDown:
+                    horizontal = Maths.Sqrt0p5;
+                    vertical = -Maths.Sqrt0p5;
+                    break;
+                default:
+                    horizontal = 0;
+                    vertical = 0;
+                    break;
             }
 
-            //GetVector(out float r, out float l);
-            //BaseJoystick.GetVectorComponent(r, l, out horizontal, out vertical);
         }
 
         public override void GetVectorD(out double radian, out double length)
         {
-            GetVector(out float r, out float l);
-            radian = r;
-            length = l;
+            bool left, right, up, down;
+            f_get4State(out left, out right, out up, out down);
+            const double onceRadian = System.Math.PI / 180;
+            length = 1;
+            var state = GetState(left, right, up, down);
+            switch (state)
+            {
+                case StateType.Right:
+                    radian = 0;
+                    break;
+                case StateType.Up:
+                    radian = (onceRadian * 90);
+                    break;
+                case StateType.Left:
+                    radian = (onceRadian * 180);
+                    break;
+                case StateType.Down:
+                    radian = (onceRadian * (90 * 3));
+                    break;
+                case StateType.RigitUp:
+                    radian = (onceRadian * (45));
+                    break;
+                case StateType.LeftUp:
+                    radian = (onceRadian * (45 + 90));
+                    break;
+                case StateType.LeftDown:
+                    radian = (onceRadian * (180 + 45));
+                    break;
+                case StateType.RightDown:
+                    radian = (onceRadian * (360 - 45));
+                    break;
+                default:
+                    radian = 0;
+                    length = 0;
+                    break;
+            }
+
+        }
+
+        public override void GetVectorAngleD(out double angle, out double length)
+        {
+            GetVectorAngle(out float a, out float l);
+            angle = a; length = l;
         }
 
         public override float Horizontal

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Cheng.Algorithm.DataStructure;
 using Cheng.DataStructure;
+using Cheng.DataStructure.Cherrsdinates;
 using Cheng.Memorys;
 
 namespace Cheng.Algorithm
@@ -60,8 +61,28 @@ namespace Cheng.Algorithm
                     return 0;
                 }
                 return f_IncludedAngle(L1.a, L2.a);
-                //var re = IncludedAngleTan(in L1, in L2);
-                //return Math.Atan(re);
+            }
+
+            /// <summary>
+            /// 根据弧度值计算对应的单位向量
+            /// </summary>
+            /// <param name="radian">表示在平面直角坐标系中的一个弧度值</param>
+            /// <param name="x">转化后的单位向量x轴水平分量值</param>
+            /// <param name="y">转化后的单位向量y轴垂直分量值</param>
+            public static void RadianToVector(double radian, out double x, out double y)
+            {
+                x = Math.Cos(radian);
+                y = Math.Sin(radian);
+            }
+
+            /// <summary>
+            /// 根据弧度值计算对应的单位向量
+            /// </summary>
+            /// <param name="radian">表示在平面直角坐标系中的一个弧度值</param>
+            /// <returns><paramref name="radian"/>对应的从原点出发的单位向量</returns>
+            public static Point2 RadianToVector(double radian)
+            {
+                return new Point2(Math.Cos(radian), Math.Sin(radian));
             }
 
         }

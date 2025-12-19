@@ -115,13 +115,13 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
             #region
 
             //虚拟按键名称字符串字段
-            var pro_name = property.FindPropertyRelative(UnityAxisButton.cp_EditorProperityFieldButtonName);
+            var pro_name = property.FindPropertyRelative(UnityAxisButton.FieldName_ButtonName);
 
             //虚拟轴Axis是否开启平滑布尔值字段
-            var pro_smooth = property.FindPropertyRelative(UnityAxisButton.cp_EditorProperityFieldAxisToolName);
+            var pro_smooth = property.FindPropertyRelative(UnityAxisButton.FieldName_axisSmooth);
 
             //力度值映射到状态值的中间锚点浮点值字段
-            var pro_mid = property.FindPropertyRelative(UnityAxisButton.cp_EditorMid_Name);
+            var pro_mid = property.FindPropertyRelative(UnityAxisButton.FieldName_mid);
 
             #endregion
 

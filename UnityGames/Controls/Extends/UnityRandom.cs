@@ -210,7 +210,6 @@ namespace Cheng.Algorithm.Randoms.Extends
         public static Color NextColorAlpha(this BaseRandom random, Color color, float min, float max)
         {
             if (random is null) throw new ArgumentNullException();
-            //color.a = (random.Next(0, 256) / 255f);
             color.a = Mathf.Clamp01(random.NextFloat(min, max + 1e-5f));
             return color;
         }

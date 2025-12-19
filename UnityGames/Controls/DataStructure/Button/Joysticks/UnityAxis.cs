@@ -107,32 +107,32 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
         /// <summary>
         /// 横轴字符串变量名称
         /// </summary>
-        public const string cp_UnityEditorHorizontalFieldName = nameof(p_horizontalName);
+        public const string FieldName_Horizontal = nameof(p_horizontalName);
 
         /// <summary>
         /// 纵轴字符串变量名称
         /// </summary>
-        public const string cp_UnityEditorVerticalFieldName = nameof(p_verticalName);
+        public const string FieldName_Vertical = nameof(p_verticalName);
 
         /// <summary>
         /// x轴平滑应用布尔值字段名称
         /// </summary>
-        public const string cp_UnityEditorXSmoothFieldName = nameof(p_isXSmooth);
+        public const string FieldName_XSmooth = nameof(p_isXSmooth);
 
         /// <summary>
         /// y轴平滑应用布尔值字段名称
         /// </summary>
-        public const string cp_UnityEditorYSmoothFieldName = nameof(p_isYSmooth);
+        public const string FieldName_YSmooth = nameof(p_isYSmooth);
 
         /// <summary>
         /// 反转x轴布尔值字段名称
         /// </summary>
-        public const string cp_UnityEditorIsXReversedName = nameof(p_isXReversed);
+        public const string FieldName_IsXReversed = nameof(p_isXReversed);
 
         /// <summary>
         /// 反转y轴布尔值字段名称
         /// </summary>
-        public const string cp_UnityEditorIsYReversedName = nameof(p_isYReversed);
+        public const string FieldName_IsYReversed = nameof(p_isYReversed);
 #endif
         #endregion
 

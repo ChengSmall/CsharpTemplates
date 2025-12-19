@@ -68,7 +68,7 @@ namespace Cheng.ButtonTemplates.UnityButtons.UnityEditors
         /// <param name="property">字段储存信息</param>
         public static void OnGUIDrawing(Rect position, SerializedProperty property)
         {
-            var keyProperty = property.FindPropertyRelative(KeyCodeButton.EditorProperityFieldName);
+            var keyProperty = property.FindPropertyRelative(KeyCodeButton.FieldName_ButtonKey);
 
             //var toolAt = Tooltip;
             //if (toolAt != null) label.tooltip = toolAt.tooltip;

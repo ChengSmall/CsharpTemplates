@@ -103,10 +103,12 @@ namespace Cheng.Texts
         private string p_newLine;
 
         private char[] p_charBuffer;
-        
+
+        #if DEBUG
         /// <summary>
         /// 当前长度
         /// </summary>
+        #endif
         private int p_length;
 
         #endregion
@@ -115,11 +117,13 @@ namespace Cheng.Texts
 
         #region 封装
 
+#if DEBUG
         /// <summary>
         /// 设置新容量并将旧容量按参数拷贝
         /// </summary>
         /// <param name="newCapacity">新的容器字符数</param>
         /// <param name="copyLen">旧容器拷贝长度</param>
+#endif
         private void f_setNewCapacity(int newCapacity, int copyLen)
         {
             if (newCapacity == 0)
@@ -134,10 +138,12 @@ namespace Cheng.Texts
             p_charBuffer = newBuf;
         }
 
+#if DEBUG
         /// <summary>
         /// 传入即将添加的字符数，判断是否需要扩充容量
         /// </summary>
         /// <param name="addCount">即将添加的字符数</param>
+#endif
         private void f_ifAddCapacity(int addCount)
         {
             //新长度
@@ -152,9 +158,11 @@ namespace Cheng.Texts
 
         }
 
+#if DEBUG
         /// <summary>
         /// 在保证容量足够的情况下添加一个换行文本
         /// </summary>
+#endif
         private void f_addnewLine()
         {
             fixed (char* bufPtr = p_charBuffer, newLinePtr = p_newLine)
@@ -399,8 +407,28 @@ namespace Cheng.Texts
         /// <param name="value">要追加的一个字符</param>
         public CMStringBuilder Append(char value)
         {
-            f_ifAddCapacity(p_length + 1);
+            f_ifAddCapacity(1);
             p_charBuffer[p_length++] = value;
+            return this;
+        }
+
+        /// <summary>
+        /// 追加多个相同字符
+        /// </summary>
+        /// <param name="value">要追加的字符</param>
+        /// <param name="count">要追加的字符数量</param>
+        /// <returns></returns>
+        public CMStringBuilder AppendMultChar(char value, int count)
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException();
+            if (count == 0) return this;
+            int end = p_length + count;
+            f_ifAddCapacity(count);
+            for (int i = p_length; i < end; i++)
+            {
+                p_charBuffer[i] = value;
+            }
+            p_length = end;
             return this;
         }
 
@@ -421,6 +449,19 @@ namespace Cheng.Texts
             f_ifAddCapacity(count);
 
             stringBuilder.CopyTo(index, p_charBuffer, 0, count);
+
+            p_length += count;
+            return this;
+        }
+
+        public CMStringBuilder Append(StringBuilder stringBuilder)
+        {
+            if (stringBuilder is null) throw new ArgumentNullException();
+            int count = stringBuilder.Length;
+            if (count == 0) return this;
+            f_ifAddCapacity(count);
+
+            stringBuilder.CopyTo(0, p_charBuffer, 0, count);
 
             p_length += count;
             return this;
@@ -639,6 +680,7 @@ namespace Cheng.Texts
         /// <summary>
         /// 清空内容
         /// </summary>
+        /// <returns>实例自身</returns>
         public CMStringBuilder Clear()
         {
             p_length = 0;
@@ -650,6 +692,7 @@ namespace Cheng.Texts
         /// </summary>
         /// <param name="startIndex">要删除的起始字符串</param>
         /// <param name="count">要删除的字符串数量</param>
+        /// <returns>实例自身</returns>
         public CMStringBuilder Remove(int startIndex, int count)
         {
             int leftIndex = startIndex + count;
@@ -659,6 +702,19 @@ namespace Cheng.Texts
 
             if(leftIndex < p_length) Array.Copy(p_charBuffer, leftIndex, p_charBuffer, startIndex, count);
 
+            p_length -= count;
+            return this;
+        }
+
+        /// <summary>
+        /// 从末尾开始向前删除指定数量的字符
+        /// </summary>
+        /// <param name="count">删除的字符数量</param>
+        /// <returns>实例自身</returns>
+        /// <exception cref="ArgumentOutOfRangeException">参数<paramref name="count"/>小于0或大于当前字符串长度</exception>
+        public CMStringBuilder RemoveEnd(int count)
+        {
+            if (count < 0 || (count) > p_length) throw new ArgumentOutOfRangeException();
             p_length -= count;
             return this;
         }
@@ -1037,3 +1093,5 @@ namespace Cheng.Texts
     }
 
 }
+#if DEBUG
+#endif

@@ -80,6 +80,12 @@ namespace Cheng.ButtonTemplates
             set => p_button.Power = Maths.Clamp(value, p_min, p_max); 
         }
 
+        public override float MinPower
+        {
+            get => p_min;
+            set => p_min = value;
+        }
+
         public override float MaxPower
         {
             get => p_max;
@@ -88,14 +94,14 @@ namespace Cheng.ButtonTemplates
 
         public override double MaxPowerDouble 
         {
-            get => p_button.MaxPowerDouble;
-            set => p_button.MaxPowerDouble = value; 
+            get => p_max;
+            set => p_max = (float)value; 
         }
 
         public override double MinPowerDouble
         {
-            get => p_button.MinPowerDouble; 
-            set => p_button.MinPowerDouble = value;
+            get => p_min; 
+            set => p_min = (float)value;
         }
 
         public override double PowerDouble 

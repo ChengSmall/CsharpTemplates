@@ -22,6 +22,11 @@ namespace Cheng.Algorithm
         /// </summary>
         public const double OneRadian = System.Math.PI / 180;
 
+        /// <summary>
+        /// π的单浮点值
+        /// </summary>
+        public const float FPI = 3.14159274f;
+
         #endregion
 
         #region 扩展
@@ -321,7 +326,6 @@ namespace Cheng.Algorithm
         }
 
         #endregion
-
 
     }
 

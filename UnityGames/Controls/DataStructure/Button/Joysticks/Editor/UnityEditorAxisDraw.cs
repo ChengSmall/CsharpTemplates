@@ -83,12 +83,12 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys.UnityEditors
         public static bool OnGUIDraw(Rect position, SerializedProperty property, GUIContent label, GUIContent herLabel, GUIContent verLabel, bool open)
         {
 
-            const string xname = UnityAxis.cp_UnityEditorHorizontalFieldName;
-            const string yname = UnityAxis.cp_UnityEditorVerticalFieldName;
-            const string x_smoothTook = UnityAxis.cp_UnityEditorXSmoothFieldName;
-            const string y_smoothTook = UnityAxis.cp_UnityEditorYSmoothFieldName;
-            const string isXRevTook = UnityAxis.cp_UnityEditorIsXReversedName;
-            const string isYRevTook = UnityAxis.cp_UnityEditorIsYReversedName;
+            const string xname = UnityAxis.FieldName_Horizontal;
+            const string yname = UnityAxis.FieldName_Vertical;
+            const string x_smoothTook = UnityAxis.FieldName_XSmooth;
+            const string y_smoothTook = UnityAxis.FieldName_YSmooth;
+            const string isXRevTook = UnityAxis.FieldName_IsXReversed;
+            const string isYRevTook = UnityAxis.FieldName_IsYReversed;
 
             //获取字段
             var xStrPro = property.FindPropertyRelative(xname);
