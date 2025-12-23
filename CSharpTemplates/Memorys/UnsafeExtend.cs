@@ -287,6 +287,54 @@ namespace Cheng.Memorys
             return Unsafe.As<T>(obj);
         }
 
+        /// <summary>
+        /// 从指定引用添加指定元素类型的偏移量
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">要添加偏移的引用</param>
+        /// <param name="elementOffset">类型偏移量，偏移块大小由类型大小决定</param>
+        /// <returns>添加偏移后的引用</returns>
+        public static ref T Add<T>(ref T source, int elementOffset)
+        {
+            return ref Unsafe.Add<T>(ref source, elementOffset);
+        }
+
+        /// <summary>
+        /// 从指定引用添加指定元素类型的偏移量
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">要添加偏移的引用</param>
+        /// <param name="elementOffset">类型偏移量，偏移块大小由类型大小决定</param>
+        /// <returns>添加偏移后的引用</returns>
+        public static ref T Add<T>(ref T source, IntPtr elementOffset)
+        {
+            return ref Unsafe.Add<T>(ref source, elementOffset);
+        }
+
+        /// <summary>
+        /// 从指定引用添加指定元素类型的偏移量
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">要添加偏移的引用</param>
+        /// <param name="elementOffset">类型偏移量，偏移块大小由类型大小决定</param>
+        /// <returns>添加偏移后的引用</returns>
+        public static ref T Add<T>(ref T source, void* elementOffset)
+        {
+            return ref Unsafe.Add<T>(ref source, new IntPtr(elementOffset));
+        }
+
+        /// <summary>
+        /// 从指定引用添加指定元素类型的偏移量
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">要添加偏移的引用</param>
+        /// <param name="elementOffset">类型偏移量，偏移块大小由类型大小决定</param>
+        /// <returns>添加偏移后的引用</returns>
+        public static ref T Add<T>(ref T source, CPtr elementOffset)
+        {
+            return ref Unsafe.Add<T>(ref source, new IntPtr(elementOffset.p_ptr));
+        }
+
         #endregion
 
     }

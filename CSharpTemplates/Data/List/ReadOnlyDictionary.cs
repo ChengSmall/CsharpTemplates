@@ -68,8 +68,19 @@ namespace Cheng.DataStructure.Collections
 
         #region 功能
 
+        /// <summary>
+        /// 只读字典封装的内部对象
+        /// </summary>
+        public IDictionary<TKey, TValue> BaseDictionary
+        {
+            get => p_dict;
+        }
+
         #region 派生
 
+        /// <summary>
+        /// 字典中的元素数
+        /// </summary>
         public int Count => p_dict.Count;
 
         /// <summary>

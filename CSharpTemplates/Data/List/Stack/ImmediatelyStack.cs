@@ -14,120 +14,6 @@ namespace Cheng.DataStructure.Collections
 
         #region 结构
 
-        /// <summary>
-        /// 用于循环访问元素的枚举器
-        /// </summary>
-        public struct Enumerator : IEnumerator<T>
-        {
-            internal Enumerator(ImmediatelyStack<T> stack)
-            {
-                p_stack = stack;
-                p_version = p_stack.p_version;
-                p_index = -2;
-                p_current = default(T);
-            }
-
-            private ImmediatelyStack<T> p_stack;
-
-            private int p_index;
-
-            private int p_version;
-
-            private T p_current;
-
-            /// <summary>
-            /// 获取集合中位于枚举数当前位置的元素
-            /// </summary>
-            public T Current
-            {
-                get
-                {
-                    //if (p_index == -2)
-                    //{
-                    //    throw new InvalidOperationException();
-                    //}
-
-                    //if (p_index == -1)
-                    //{
-                    //    throw new InvalidOperationException();
-                    //}
-
-                    return p_current;
-                }
-            }
-
-            /// <summary>
-            /// 将枚举数推进到集合的下一个元素
-            /// </summary>
-            /// <returns>返回true表示成功地推进到下一个元素；返回false则表示已经遍历到末尾</returns>
-            /// <exception cref="InvalidOperationException">在遍历时集合发生变动</exception>
-            public bool MoveNext()
-            {
-                if (p_version != p_stack.p_version)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                bool b;
-                if (p_index == -2)
-                {
-                    p_index = p_stack.p_size - 1;
-                    b = (p_index >= 0);
-                    if (b)
-                    {
-                        p_current = p_stack.p_arr[p_index];
-                    }
-
-                    return b;
-                }
-
-                if (p_index == -1)
-                {
-                    return false;
-                }
-
-                b = (--p_index >= 0);
-                if (b)
-                {
-                    p_current = p_stack.p_arr[p_index];
-                }
-                else
-                {
-                    p_current = default(T);
-                }
-
-                return b;
-            }
-
-            /// <summary>
-            /// 将枚举数重置为初始位置，该位置位于第一个元素之前
-            /// </summary>
-            public void Reset()
-            {
-                if (p_version != p_stack.p_version)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                p_index = -2;
-                p_current = default(T);
-            }
-
-            object IEnumerator.Current
-            {
-                get
-                {
-                    return this.Current;
-                }
-            }
-
-            void IDisposable.Dispose()
-            {
-                p_index = -1;
-            }
-
-        }
-
         #endregion
 
         #region 构造
@@ -210,7 +96,7 @@ namespace Cheng.DataStructure.Collections
 
         private int p_size;
 
-        private int p_version;
+        private uint p_version;
 
         #endregion
 
@@ -455,9 +341,9 @@ namespace Cheng.DataStructure.Collections
             }
 
             p_version++;
-            T result = p_arr[p_size];
             p_size--;
-            p_arr[p_size] = default(T);
+            T result = p_arr[p_size];
+            p_arr[p_size] = default;
             return result;
         }
 
@@ -475,9 +361,9 @@ namespace Cheng.DataStructure.Collections
             }
 
             p_version++;
-            popItem = p_arr[p_size];
             p_size--;
-            p_arr[p_size] = default(T);
+            popItem = p_arr[p_size];
+            p_arr[p_size] = default;
             return true;
 
         }
@@ -504,28 +390,27 @@ namespace Cheng.DataStructure.Collections
         /// 弹出指定数量个元素
         /// </summary>
         /// <param name="count">要弹出的元素数</param>
-        /// <exception cref="InvalidOperationException">弹出的元素数超出当前元素数量</exception>
-        /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数小于0或弹出的元素数超出当前元素数量</exception>
         public void PopCount(int count)
         {
             if (count == 0) return;
-            if (count < 0) throw new ArgumentOutOfRangeException();
-            if(count > p_size) throw new InvalidOperationException();
-
+            if (count < 0 || count > p_size) throw new ArgumentOutOfRangeException();
+            p_version++;
             int newCount = p_size - count;
             Array.Clear(p_arr, newCount, count);
             p_size -= count;
-            p_version++;
         }
 
         /// <summary>
         /// 推入指定数量个空元素
         /// </summary>
+        /// <remarks>新增的栈元素为<typeparamref name="T"/>类型对象的默认值</remarks>
         /// <param name="count">要推入的数量</param>
         public void PushCount(int count)
         {
             int length = p_arr.Length;
             int newSize = count + p_size;
+            p_version++;
             if (newSize >= length)
             {
                 int newLen = length == 0 ? cp_defaultCapacity : 2 * length;
@@ -539,7 +424,6 @@ namespace Cheng.DataStructure.Collections
                 p_arr = array;
             }
             p_size += count;
-            p_version++;
         }
 
         /// <summary>
@@ -579,14 +463,212 @@ namespace Cheng.DataStructure.Collections
             return (p_size - 1) - i;
         }
 
+        #region 枚举器
+
+        /// <summary>
+        /// 用于循环访问元素的枚举器
+        /// </summary>
+        public struct Enumerator : IEnumerator<T>
+        {
+            internal Enumerator(ImmediatelyStack<T> stack)
+            {
+                p_stack = stack;
+                p_version = p_stack.p_version;
+                p_index = -2;
+                p_current = default;
+            }
+
+            private ImmediatelyStack<T> p_stack;
+
+            private int p_index;
+
+            private uint p_version;
+
+            private T p_current;
+
+            /// <summary>
+            /// 获取集合中位于枚举数当前位置的元素
+            /// </summary>
+            public T Current
+            {
+                get
+                {
+                    return p_current;
+                }
+            }
+
+            /// <summary>
+            /// 将枚举数推进到集合的下一个元素
+            /// </summary>
+            /// <returns>返回true表示成功地推进到下一个元素；返回false则表示已经遍历到末尾</returns>
+            /// <exception cref="InvalidOperationException">在遍历时集合发生变动</exception>
+            public bool MoveNext()
+            {
+                if (p_version != p_stack.p_version)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                bool b;
+                if (p_index == -2)
+                {
+                    p_index = p_stack.p_size - 1;
+                    b = (p_index >= 0);
+                    if (b)
+                    {
+                        p_current = p_stack.p_arr[p_index];
+                    }
+
+                    return b;
+                }
+
+                if (p_index == -1)
+                {
+                    return false;
+                }
+
+                b = (--p_index >= 0);
+                if (b)
+                {
+                    p_current = p_stack.p_arr[p_index];
+                }
+                else
+                {
+                    p_current = default(T);
+                }
+
+                return b;
+            }
+
+            /// <summary>
+            /// 将枚举数重置为初始位置，该位置位于第一个元素之前
+            /// </summary>
+            public void Reset()
+            {
+                if (p_version != p_stack.p_version)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                p_index = -2;
+                p_current = default(T);
+            }
+
+            object IEnumerator.Current
+            {
+                get
+                {
+                    return this.Current;
+                }
+            }
+
+            void IDisposable.Dispose()
+            {
+                p_index = -1;
+            }
+
+        }
+
         /// <summary>
         /// 返回一个可循环访问的枚举器
         /// </summary>
-        /// <returns></returns>
+        /// <returns>从栈顶到栈底循环访问的枚举器</returns>
         public Enumerator GetEnumerator()
         {
             return new Enumerator(this);
         }
+
+        /// <summary>
+        /// 用于从栈底循环访问元素的枚举器
+        /// </summary>
+        public struct LastEnumerator : IEnumerator<T>
+        {
+            internal LastEnumerator(ImmediatelyStack<T> stack)
+            {
+                p_stack = stack;
+                p_version = p_stack.p_version;
+                p_index = -1;
+                p_current = default;
+            }
+
+            private ImmediatelyStack<T> p_stack;
+            private int p_index;
+            private uint p_version;
+            private T p_current;
+
+            /// <summary>
+            /// 获取集合中位于枚举数当前位置的元素
+            /// </summary>
+            public T Current
+            {
+                get
+                {
+                    return p_current;
+                }
+            }
+
+            /// <summary>
+            /// 将枚举数推进到集合的下一个元素
+            /// </summary>
+            /// <returns>返回true表示成功地推进到下一个元素；返回false则表示已经遍历到末尾</returns>
+            /// <exception cref="InvalidOperationException">在遍历时集合发生变动</exception>
+            public bool MoveNext()
+            {
+                if (p_version != p_stack.p_version)
+                {
+                    throw new InvalidOperationException();
+                }
+                var index = p_index + 1;
+                if(index >= p_stack.p_size)
+                {
+                    p_current = default;
+                    return false;
+                }
+                p_current = p_stack.p_arr[index];
+                p_index = index;
+                return true;
+            }
+
+            /// <summary>
+            /// 将枚举数重置为初始位置，该位置位于第一个元素之前
+            /// </summary>
+            public void Reset()
+            {
+                if (p_version != p_stack.p_version)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                p_index = -1;
+                p_current = default(T);
+            }
+
+            object IEnumerator.Current
+            {
+                get
+                {
+                    return this.Current;
+                }
+            }
+
+            void IDisposable.Dispose()
+            {
+                p_current = default(T);
+                p_index = p_stack.p_size;
+            }
+
+        }
+
+        /// <summary>
+        /// 返回一个可循环访问的枚举器
+        /// </summary>
+        /// <returns>从栈底到栈顶循环访问的枚举器</returns>
+        public LastEnumerator GetLastEnumerator()
+        {
+            return new LastEnumerator(this);
+        }
+
+        #endregion
 
         #endregion
 

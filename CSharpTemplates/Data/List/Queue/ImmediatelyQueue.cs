@@ -24,6 +24,10 @@ namespace Cheng.DataStructure.Collections
         public ImmediatelyQueue()
         {
             p_array = sp_emptyArray;
+            p_version = 0;
+            p_head = 0;
+            p_tail = 0;
+            p_size = 0;
         }
 
         /// <summary>
@@ -87,14 +91,14 @@ namespace Cheng.DataStructure.Collections
 
 #if DEBUG
         /// <summary>
-        /// 头索引
+        /// 索引头
         /// </summary>
 #endif
         private int p_head;
 
 #if DEBUG
         /// <summary>
-        /// 尾索引
+        /// 索引尾
         /// </summary>
 #endif
         private int p_tail;
@@ -111,7 +115,7 @@ namespace Cheng.DataStructure.Collections
         /// 变更参数
         /// </summary>
 #endif
-        [NonSerialized] private int p_version;
+        [NonSerialized] private uint p_version;
 
         #endregion
 
@@ -184,9 +188,9 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 使用索引从最前端向后访问已有元素
+        /// 使用索引从队列头向后访问已有元素
         /// </summary>
-        /// <param name="index">元素索引，0表示最前端</param>
+        /// <param name="index">从队列头开始的元素索引，0表示最前端</param>
         /// <returns>索引<paramref name="index"/>下的元素</returns>
         /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public T GetElement(int index)
@@ -196,9 +200,9 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 使用索引从最前端向后设置已有元素
+        /// 使用索引从队列头向后设置已有元素
         /// </summary>
-        /// <param name="index">元素索引，0表示最前端</param>
+        /// <param name="index">从队列头开始的元素索引，0表示最前端</param>
         /// <param name="item">要覆盖的新元素</param>
         /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public void SetElement(int index, T item)
@@ -208,9 +212,9 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 使用索引从最末尾向前访问已有元素
+        /// 使用索引从队尾向前访问已有元素
         /// </summary>
-        /// <param name="index">反向索引，0表示最末端元素</param>
+        /// <param name="index">反向索引，0表示队尾元素</param>
         /// <returns>索引<paramref name="index"/>下的元素</returns>
         /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public T LastGetElement(int index)
@@ -220,9 +224,9 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 使用索引从最末尾向前设置已有元素
+        /// 使用索引从队尾向前设置已有元素
         /// </summary>
-        /// <param name="index">反向索引，0表示最末端元素</param>
+        /// <param name="index">反向索引，0表示队尾元素</param>
         /// <param name="item">索引<paramref name="index"/>下的元素</param>
         /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public void LastSetElement(int index, T item)
@@ -240,6 +244,7 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         public void Clear()
         {
+            p_version++;
             if (p_head < p_tail)
             {
                 Array.Clear(p_array, p_head, p_size);
@@ -253,11 +258,33 @@ namespace Cheng.DataStructure.Collections
             p_head = 0;
             p_tail = 0;
             p_size = 0;
-            p_version++;
         }
 
         /// <summary>
-        /// 从队列清除并返回最前端的元素
+        /// 将元素推入队列
+        /// </summary>
+        /// <param name="item">要推入的元素</param>
+        public void Enqueue(T item)
+        {
+            if (p_size == p_array.Length)
+            {
+                int num = (int)((long)p_array.Length * 200L / 100);
+                if (num < p_array.Length + 4)
+                {
+                    num = p_array.Length + 4;
+                }
+
+                SetCapacity(num);
+            }
+            p_version++;
+
+            p_array[p_tail] = item;
+            p_tail = (p_tail + 1) % p_array.Length;
+            p_size++;
+        }
+
+        /// <summary>
+        /// 从队列清除并返回队尾的元素
         /// </summary>
         /// <returns>最前端元素</returns>
         /// <exception cref="InvalidOperationException">队列没有元素</exception>
@@ -267,13 +294,102 @@ namespace Cheng.DataStructure.Collections
             {
                 throw new InvalidOperationException();
             }
-
+            p_version++;
             T result = p_array[p_head];
-            p_array[p_head] = default(T);
+            p_array[p_head] = default;
             p_head = (p_head + 1) % p_array.Length;
             p_size--;
-            p_version++;
             return result;
+        }
+
+        /// <summary>
+        /// 从队列清除并返回队尾元素
+        /// </summary>
+        /// <param name="result">返回的队尾元素</param>
+        /// <returns>如果成功获取元素返回true，队列中不存在元素返回false</returns>
+        public bool TryDequeue(out T result)
+        {
+            if (p_size == 0)
+            {
+                result = default;
+                return false;
+            }
+            p_version++;
+            result = p_array[p_head];
+            p_array[p_head] = default;
+            p_head = (p_head + 1) % p_array.Length;
+            p_size--;
+            return true;
+        }
+
+        /// <summary>
+        /// 从队尾清除指定数量个元素
+        /// </summary>
+        /// <param name="count">要清除的元素数</param>
+        /// <exception cref="ArgumentOutOfRangeException">参数小于0或</exception>
+        public void DequeueCount(int count)
+        {
+            if (count < 0 || count > p_size)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            p_version++;
+
+            if(count == p_size)
+            {
+                Clear();
+                return;
+            }
+
+            if (p_head < p_tail)
+            {
+                Array.Clear(p_array, p_head, count);
+            }
+            else
+            {
+                var nextC = p_array.Length - p_head;
+                var c = Math.Min(count, nextC);
+                Array.Clear(p_array, p_head, c);
+                c = Math.Min(p_tail, count - c);
+                if(c != 0) Array.Clear(p_array, 0, c);
+            }
+
+            //for (int i = 0; i < count; i++)
+            //{
+            //    p_array[p_head] = default;
+            //    p_head = (p_head + 1) % p_array.Length;
+            //}
+            p_head = (p_head + count) % p_array.Length;
+            p_size -= count;
+        }
+
+        /// <summary>
+        /// 将指定数量个默认值的元素推入队列
+        /// </summary>
+        /// <param name="count">要推入的元素数</param>
+        /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
+        public void EnqueueCount(int count)
+        {
+            if(count < 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (count == 0) return;
+
+            var newsize = p_size + count;
+            if (newsize >= p_array.Length)
+            {
+                int num = (int)((long)p_array.Length * 200L / 100);
+                if (num < p_array.Length + 4)
+                {
+                    num = p_array.Length + 4;
+                }
+                SetCapacity(Math.Max(num, newsize));
+            }
+            p_version++;
+
+            p_tail = (p_tail + count) % p_array.Length;
+            p_size = newsize;
         }
 
         /// <summary>
@@ -337,29 +453,6 @@ namespace Cheng.DataStructure.Collections
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// 将元素推入队列
-        /// </summary>
-        /// <param name="item">要推入的元素</param>
-        public void Enqueue(T item)
-        {
-            if (p_size == p_array.Length)
-            {
-                int num = (int)((long)p_array.Length * 200L / 100);
-                if (num < p_array.Length + 4)
-                {
-                    num = p_array.Length + 4;
-                }
-
-                SetCapacity(num);
-            }
-
-            p_array[p_tail] = item;
-            p_tail = (p_tail + 1) % p_array.Length;
-            p_size++;
-            p_version++;
         }
 
         /// <summary>
@@ -514,6 +607,8 @@ namespace Cheng.DataStructure.Collections
 
         #region 派生
 
+        #region 枚举器
+
         /// <summary>
         /// 队列枚举器
         /// </summary>
@@ -531,7 +626,7 @@ namespace Cheng.DataStructure.Collections
 
             private int p_index;
 
-            private int p_version;
+            private uint p_version;
 
             private T p_cut;
 
@@ -605,6 +700,31 @@ namespace Cheng.DataStructure.Collections
 
         }
 
+        /// <summary>
+        /// 返回一个能够循环访问队列集合的枚举器
+        /// </summary>
+        /// <returns>用于循环访问的枚举器</returns>
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        #region 派生
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        #endregion
+
+        #endregion
+
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array is null)
@@ -631,25 +751,6 @@ namespace Cheng.DataStructure.Collections
                     Array.Copy(p_array, 0, array, arrayIndex + p_array.Length - p_head, size);
                 }
             }
-        }
-
-        /// <summary>
-        /// 返回一个能够循环访问队列集合的枚举器
-        /// </summary>
-        /// <returns>用于循环访问的枚举器</returns>
-        public Enumerator GetEnumerator()
-        {
-            return new Enumerator(this);
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return new Enumerator(this);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new Enumerator(this);
         }
 
         void ICollection<T>.Add(T item)

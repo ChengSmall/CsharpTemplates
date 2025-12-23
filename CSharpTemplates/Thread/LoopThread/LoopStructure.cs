@@ -151,11 +151,28 @@ namespace Cheng.LoopThreads
                 return flag;
             }
 
-            if (nextenr is null) return false;
+            if (enumator is IDisposable)
+            {
+                ((IDisposable)enumator).Dispose();
+            }
+
+            if (nextenr is null)
+            {
+                return false;
+            }
 
             enumator = nextenr;
             nextenr = null;
-            return enumator.MoveNext();
+            flag = enumator.MoveNext();
+            if (!flag)
+            {
+                if (enumator is IDisposable)
+                {
+                    ((IDisposable)enumator).Dispose();
+                }
+                return false;
+            }
+            return true;
         }
 
         public void Reset()

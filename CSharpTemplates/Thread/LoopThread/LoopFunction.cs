@@ -69,7 +69,7 @@ namespace Cheng.LoopThreads
 
             p_fixedUpdateTimeSpan = FixedUpdateTimeSpanDefault;
 
-            p_yieldAddBuffer = new Stack<IEnumerator>();
+            p_yieldAddBuffer = new Queue<IEnumerator>();
             p_yieldList = new List<YieldEnumator>();
 
             p_fps = 0;
@@ -210,14 +210,18 @@ namespace Cheng.LoopThreads
 
         #region 协程
 
+#if DEBUG
         /// <summary>
         /// 协程添加缓冲区
         /// </summary>
-        private Stack<IEnumerator> p_yieldAddBuffer;
+#endif
+        private Queue<IEnumerator> p_yieldAddBuffer;
 
+#if DEBUG
         /// <summary>
         /// 协程运作集合
         /// </summary>
+#endif
         private List<YieldEnumator> p_yieldList;
 
         #endregion
@@ -595,10 +599,9 @@ namespace Cheng.LoopThreads
             {
                 while (p_yieldAddBuffer.Count != 0)
                 {
-                    p_yieldList.Add(new YieldEnumator(p_yieldAddBuffer.Pop()));
+                    p_yieldList.Add(new YieldEnumator(p_yieldAddBuffer.Dequeue()));
                 }
             }
-           
         }
 
         private void f_enumator()
@@ -621,55 +624,58 @@ namespace Cheng.LoopThreads
                     //获取实例
                     ye = list[i];
 
-                        flag = ye.IsNextMove(this);
+                    flag = ye.IsNextMove(this);
 
-                        if (!flag)
-                        {
-                            //不需要
-                            i++;
-                            continue;
-                        }
-
-                        //开始推进
-                        flag = ye.MoveNext();
-
-                        if (!flag)
-                        {
-                            //推进完毕
-                            //删除
-                            list.RemoveAt(i);
-                            continue;
-                        }
-
-                        //获取元素
-                        obj = ye.Current;
-                        YieldEnumatorMoveNext(obj);
-                        p_yieldEnumatorMoveEvent?.Invoke(this, obj);
-
-                        if (obj is YieldWaitTime wait)
-                        {
-                            ye.SetNextTime(p_nowTime + wait.time, false);
-                        }
-                        else if (obj is YieldWaitScaleTime waits)
-                        {
-                            ye.SetNextTime(p_nowTime + waits.time, true);
-                        }
-                        else if (obj is YieldNestEnumator nest)
-                        {
-                            ye.enumator = new NestEnumator(nest.enumator, ye.enumator);
-                        }
-                        else
-                        {
-                            //其它返回值，按帧
-                            ye.SetNextTime();
-                        }
+                    if (!flag)
+                    {
+                        //不需要
                         i++;
-                    
-                        
+                        continue;
+                    }
+
+                    //开始推进
+                    flag = ye.MoveNext();
+
+                    if (!flag)
+                    {
+                        //推进完毕
+                        //删除
+                        if(ye.enumator is IDisposable yedp)
+                        {
+                            yedp.Dispose();
+                        }
+
+                        list.RemoveAt(i);
+                        continue;
+                    }
+
+                    //获取元素
+                    obj = ye.Current;
+                    YieldEnumatorMoveNext(obj);
+                    p_yieldEnumatorMoveEvent?.Invoke(this, obj);
+
+                    if (obj is YieldWaitTime wait)
+                    {
+                        ye.SetNextTime(p_nowTime + wait.time, false);
+                    }
+                    else if (obj is YieldWaitScaleTime waits)
+                    {
+                        ye.SetNextTime(p_nowTime + waits.time, true);
+                    }
+                    else if (obj is YieldNestEnumator nest)
+                    {
+                        ye.enumator = new NestEnumator(nest.enumator, ye.enumator);
+                    }
+                    else
+                    {
+                        //其它返回值，按帧
+                        ye.SetNextTime();
+                    }
+                    i++;
                 }
-                
+
             }
-            
+
         }
 
         /// <summary>
@@ -756,8 +762,6 @@ namespace Cheng.LoopThreads
                 {
                     //计算等待时间
                     var waitTime = TimeSpan.FromSeconds((1d / p_fps)) - this.p_nowFrameTime;
-
-                    //var sw = new System.Threading.SpinWait();
 
                     if (waitTime >= TimeSpan.Zero)
                     {
@@ -995,7 +999,7 @@ namespace Cheng.LoopThreads
             if (enumator is null) throw new ArgumentNullException(nameof(enumator));
             lock (p_yieldAddBuffer)
             {
-                p_yieldAddBuffer.Push(enumator);
+                p_yieldAddBuffer.Enqueue(enumator);
             }
         }
 
@@ -1039,3 +1043,5 @@ namespace Cheng.LoopThreads
     }
 
 }
+#if DEBUG
+#endif
