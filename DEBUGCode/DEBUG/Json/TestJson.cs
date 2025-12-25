@@ -75,7 +75,7 @@ namespace Cheng.DEBUG
         #endregion
 
         #region 功能
-        
+
         /// <summary>
         /// （DEBUG）将json对象转化为文本
         /// </summary>
@@ -174,6 +174,29 @@ namespace Cheng.DEBUG
             {
                 return ParserToJsonObj(sr);
             }
+        }
+
+        /// <summary>
+        /// 从文件路径读取json转换到对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filePath"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static T FileParserToObj<T>(this string filePath, Encoding encoding)
+        {
+            return Parser.JsonFileToObj<T>(filePath, encoding);
+        }
+
+        /// <summary>
+        /// 从文件路径读取json转换到对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static T FileParserToObj<T>(this string filePath)
+        {
+            return Parser.JsonFileToObj<T>(filePath);
         }
 
         #endregion

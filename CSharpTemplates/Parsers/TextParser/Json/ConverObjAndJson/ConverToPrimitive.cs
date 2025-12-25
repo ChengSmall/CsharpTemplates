@@ -146,7 +146,7 @@ namespace Cheng.Json.Convers
 
         public override string ToObj(JsonVariable json)
         {
-            if (json is null) throw new ArgumentNullException();
+            if (json is null || json.IsNull) return null;
             var jt = json.DataType;
             if (jt == JsonType.String) return json.String;
             throw new NotImplementedException();
@@ -253,6 +253,31 @@ namespace Cheng.Json.Convers
             var jt = json.DataType;
             if (jt == JsonType.Integer) return (sbyte)json.Integer;
             if (jt == JsonType.RealNum) return (sbyte)json.Number;
+            throw new NotImplementedException();
+        }
+    }
+
+    internal sealed class c_ConverTo_Char : ConverToJsonAndObj<char>
+    {
+        public override bool CanToObj => true;
+        public override bool CanToJson => true;
+
+        public override JsonVariable ToJsonVariable(char obj)
+        {
+            return JsonVariable.CreateString(new string(obj, 1));
+        }
+
+        public override char ToObj(JsonVariable json)
+        {
+            if (json.IsNullable()) throw new NotImplementedException();
+            if (json.DataType == JsonType.String)
+            {
+                if(json.String.Length > 0) return json.String[0];
+            }
+            if(json.DataType == JsonType.Integer)
+            {
+                return (char)json.Integer;
+            }
             throw new NotImplementedException();
         }
     }

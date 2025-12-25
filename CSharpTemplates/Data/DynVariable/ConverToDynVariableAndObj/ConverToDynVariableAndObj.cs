@@ -60,12 +60,14 @@ namespace Cheng.DataStructure.DynamicVariables
         /// </remarks>
         public static ConverToDynVariableAndObj<T> Default
         {
-            get => sp_defConver;
+            get => LazyObj.cp_def;
         }
 
         #region 封装
-
-        static ConverToDynVariableAndObj<T> sp_defConver = f_createDef();
+        private static class LazyObj
+        {
+            public readonly static ConverToDynVariableAndObj<T> cp_def = f_createDef();
+        }
 
         static ConverToDynVariableAndObj<T> f_createDef()
         {
@@ -83,6 +85,9 @@ namespace Cheng.DataStructure.DynamicVariables
                     re = f_createEnumObj();
                     if (re != null) return re;
                 }
+
+                re = f_createOther();
+                if (re != null) return re;
 
                 var isToDyn = typeof(IObjToDynVariable).IsAssignableFrom(type);
 
@@ -261,9 +266,30 @@ namespace Cheng.DataStructure.DynamicVariables
                 return new c_ConverTo_DateTime() as ConverToDynVariableAndObj<T>;
             }
 
+            if(typeof(decimal) == type)
+            {
+                return new c_ConverTo_Decimal() as ConverToDynVariableAndObj<T>;
+            }
+
             if (typeof(Cheng.Json.JsonVariable) == type)
             {
                 return new JsonConverToDynVariable() as ConverToDynVariableAndObj<T>;
+            }
+
+            return null;
+        }
+
+        static ConverToDynVariableAndObj<T> f_createOther()
+        {
+            var type = typeof(T);
+            if(type == typeof(DynVariable))
+            {
+                return new c_ConverTo_This() as ConverToDynVariableAndObj<T>;
+            }
+
+            if (type.IsArray)
+            {
+                return Activator.CreateInstance(typeof(c_ConverTo_Array<>).MakeGenericType(type.GetElementType())) as ConverToDynVariableAndObj<T>;
             }
 
             return null;

@@ -1,3 +1,4 @@
+using Cheng.Json.Convers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,7 +63,7 @@ namespace Cheng.Json
             if (parser is null || encoding is null) throw new ArgumentNullException();
 
             JsonVariable js;
-            
+
             using (StreamReader sr = new StreamReader(filePath, encoding, false, 1024 * 2))
             {
                 js = parser.ToJsonData(sr);
@@ -157,6 +158,93 @@ namespace Cheng.Json
         public static void WriterToFile(this IJsonParser parser, JsonVariable json, string filePath)
         {
             WriterToFile(parser, json, filePath, Encoding.UTF8, false);
+        }
+
+        /// <summary>
+        /// 将指定文件内的json文本转化为<typeparamref name="T"/>对象实例
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser">json解析器</param>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="encoding">从文件中读取文本时要使用的文本编码</param>
+        /// <returns>转换后的对象</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">无权限</exception>
+        /// <exception cref="NotImplementedException">无法解析json文本或无法将json对象转换到<typeparamref name="T"/>类型对象</exception>
+        /// <exception cref="FileNotFoundException">无法找到文件</exception>
+        /// <exception cref="DirectoryNotFoundException">无效的路径名称</exception>
+        /// <exception cref="Exception">其它异常</exception>
+        public static T JsonFileToObj<T>(this IJsonParser parser, string filePath, Encoding encoding)
+        {
+            if (parser is null || encoding is null) throw new ArgumentNullException();
+
+            JsonVariable js;
+            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            {
+                using (StreamReader sr = new StreamReader(file, encoding, false, 1024 * 2, true))
+                {
+                    js = parser.ToJsonData(sr);
+                }
+            }
+            return ConverToJsonAndObj<T>.Default.ToObj(js);
+        }
+
+        /// <summary>
+        /// 将指定文件内的json文本转化为<typeparamref name="T"/>对象实例
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser">json解析器</param>
+        /// <param name="filePath">文件路径</param>
+        /// <returns>转换后的对象</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotSupportedException">无权限</exception>
+        /// <exception cref="NotImplementedException">无法解析json文本或无法将json对象转换到<typeparamref name="T"/>类型对象</exception>
+        /// <exception cref="FileNotFoundException">无法找到文件</exception>
+        /// <exception cref="DirectoryNotFoundException">无效的路径名称</exception>
+        /// <exception cref="Exception">其它异常</exception>
+        public static T JsonFileToObj<T>(this IJsonParser parser, string filePath)
+        {
+            return JsonFileToObj<T>(parser, filePath, Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 将指定对象转化为json文本并写入到文本写入器
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser">json解析器</param>
+        /// <param name="obj">要转化为json文本的对象</param>
+        /// <param name="writer">要写入的文本写入器</param>
+        /// <exception cref="ArgumentNullException">解析器或写入器是null</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="ObjectDisposedException">写入器已释放</exception>
+        /// <exception cref="NotImplementedException">无法将json对象转换为<typeparamref name="T"/>对象</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public static void WriteTo<T>(this IJsonParser parser, T obj, TextWriter writer)
+        {
+            if (parser is null || writer is null) throw new ArgumentNullException();
+            var json = ConverToJsonAndObj<T>.Default.ToJsonVariable(obj);
+            parser.ParsingJson(json, writer);
+        }
+
+        /// <summary>
+        /// 将指定对象转化为json文本
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser">json解析器</param>
+        /// <param name="obj">要转化为json文本的对象</param>
+        /// <returns>json文本</returns>
+        /// <exception cref="ArgumentNullException">解析器或写入器是null</exception>
+        /// <exception cref="NotImplementedException">无法将json对象转换为<typeparamref name="T"/>对象</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public static string ObjToJsonText<T>(this IJsonParser parser, T obj)
+        {
+            using (StringWriter swr = new StringWriter())
+            {
+                WriteTo<T>(parser, obj, swr);
+                return swr.ToString();
+            }
         }
 
         #endregion
@@ -262,6 +350,20 @@ namespace Cheng.Json
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region 参数
+
+        /// <summary>
+        /// 判断json是否是null对象或者是表示null的json对象
+        /// </summary>
+        /// <param name="json">要判断的json对象</param>
+        /// <returns>当<paramref name="json"/>对象是null引用，或者json对象类型是null，返回true；否则返回false</returns>
+        public static bool IsNullable(this JsonVariable json)
+        {
+            return json is null || json.IsNull;
         }
 
         #endregion

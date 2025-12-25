@@ -5,7 +5,7 @@ using Cheng.Memorys;
 namespace Cheng.DataStructure.DynamicVariables
 {
 
-    #region 基元类型
+    #region 基本类型
 
     internal sealed class c_ConverTo_Int32 : ConverToDynVariableAndObj<int>
     {
@@ -199,6 +199,44 @@ namespace Cheng.DataStructure.DynamicVariables
             }
 
             throw new NotImplementedException();
+        }
+    }
+
+    internal sealed class c_ConverTo_Decimal : ConverToDynVariableAndObj<decimal>
+    {
+        public c_ConverTo_Decimal()
+        {
+            bits = new int[4];
+        }
+        private int[] bits;
+
+        public override DynVariable ToDynVariable(decimal obj)
+        {
+            var bits = decimal.GetBits(obj);
+            DynList dlist = new DynList(4);
+            for (int i = 0; i < 4; i++)
+            {
+                dlist.Add(bits[i]);
+            }
+            return dlist;
+        }
+
+        public override decimal ToObj(DynVariable dynVariable)
+        {
+            if (dynVariable is null) throw new NotImplementedException();
+            try
+            {
+                var dlist = dynVariable.DynamicList;
+                bits[0] = (int)(dlist[0]);
+                bits[1] = (int)(dlist[1]);
+                bits[2] = (int)(dlist[2]);
+                bits[3] = (int)(dlist[3]);
+                return new decimal(bits);
+            }
+            catch (Exception ex)
+            {
+                throw new NotImplementedException(ex.Message, ex);
+            }
         }
     }
 

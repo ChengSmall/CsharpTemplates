@@ -406,7 +406,8 @@ namespace Cheng.Json
         /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator long(JsonVariable jobj)
         {
-            var t = jobj?.DataType;
+            if (jobj is null) throw new InvalidCastException();
+            var t = jobj.DataType;
             if (t == JsonType.Integer)
             {
                 return jobj.Integer;
@@ -425,7 +426,8 @@ namespace Cheng.Json
         /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator double(JsonVariable jobj)
         {
-            var t = jobj?.DataType;
+            if (jobj is null) throw new InvalidCastException();
+            var t = jobj.DataType;
             if (t == JsonType.RealNum)
             {
                 return jobj.RealNum;
@@ -440,7 +442,8 @@ namespace Cheng.Json
         /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator int(JsonVariable jobj)
         {
-            var t = jobj?.DataType;
+            if(jobj is null) throw new InvalidCastException();
+            var t = jobj.DataType;
             if (t == JsonType.Integer)
             {
                 return (int)jobj.Integer;
@@ -459,7 +462,8 @@ namespace Cheng.Json
         /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator float(JsonVariable jobj)
         {
-            var t = jobj?.DataType;
+            if (jobj is null) throw new InvalidCastException();
+            var t = jobj.DataType;
             if (t == JsonType.RealNum)
             {
                 return (float)jobj.RealNum;
@@ -490,7 +494,8 @@ namespace Cheng.Json
         /// <exception cref="InvalidCastException">不是能转换的类型</exception>
         public static explicit operator bool(JsonVariable jobj)
         {
-            var t = jobj?.DataType;
+            if (jobj is null) throw new InvalidCastException();
+            var t = jobj.DataType;
             if (t == JsonType.Boolean)
             {
                 return jobj.Boolean;
@@ -688,7 +693,7 @@ namespace Cheng.Json
         /// <param name="value"></param>
         public static explicit operator JsonVariable(string value)
         {
-            return value is null ? null : new JsonString(value);
+            return value is null ? (JsonVariable)JsonNull.Nullable : new JsonString(value);
         }
 
         #endregion

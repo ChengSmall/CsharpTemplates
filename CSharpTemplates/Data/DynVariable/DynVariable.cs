@@ -359,6 +359,238 @@ namespace Cheng.DataStructure.DynamicVariables
 
         #endregion
 
+        #region 类型转换
+
+        public static explicit operator int(DynVariable dv)
+        {
+            if (dv is null) throw new InvalidCastException();
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (int)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (int)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (int)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator uint(DynVariable dv)
+        {
+            if (dv is null) throw new InvalidCastException();
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return (uint)dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (uint)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (uint)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (uint)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator long(DynVariable dv)
+        {
+            if (dv is null) throw new InvalidCastException();
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (long)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (long)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (long)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator ulong(DynVariable dv)
+        {
+            if (dv is null) throw new InvalidCastException();
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return (ulong)dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (ulong)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (ulong)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (ulong)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator float(DynVariable dv)
+        {
+            if (dv is null) throw new InvalidCastException();
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return (float)dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (float)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (float)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (float)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator double(DynVariable dv)
+        {
+            if (dv is null) throw new InvalidCastException();
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return (double)dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (double)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (double)dv.FloatValue;
+                case DynVariableType.Double:
+                    return dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator int?(DynVariable dv)
+        {
+            if (dv is null) return null;
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (int)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (int)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (int)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator uint?(DynVariable dv)
+        {
+            if (dv is null) return null;
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return (uint)dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (uint)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (uint)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (uint)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator long?(DynVariable dv)
+        {
+            if (dv is null) return null;
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (long)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (long)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (long)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator ulong?(DynVariable dv)
+        {
+            if (dv is null) return null;
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return (ulong)dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (ulong)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (ulong)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (ulong)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator float?(DynVariable dv)
+        {
+            if (dv is null) return null;
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return (float)dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (float)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (float)dv.FloatValue;
+                case DynVariableType.Double:
+                    return (float)dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        public static explicit operator double?(DynVariable dv)
+        {
+            if (dv is null) return null;
+            var t = dv.DynType;
+            switch (t)
+            {
+                case DynVariableType.Int32:
+                    return (double)dv.Int32Value;
+                case DynVariableType.Int64:
+                    return (double)dv.Int64Value;
+                case DynVariableType.Float:
+                    return (double)dv.FloatValue;
+                case DynVariableType.Double:
+                    return dv.DoubleValue;
+                default:
+                    throw new InvalidCastException();
+            }
+        }
+
+        #endregion
+
     }
 
     /// <summary>

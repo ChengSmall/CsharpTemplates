@@ -50,8 +50,6 @@ namespace Cheng.Algorithm.HashCodes
         /// <exception cref="ArgumentNullException">参数是null</exception>
         public abstract long GetHashCode64(T value);
 
-        private static BaseHashCode64<T> sp_default = f_createDefault();
-
         /// <summary>
         /// 获取 <typeparamref name="T"/> 类型的默认实现的64位HashCode
         /// </summary>
@@ -64,10 +62,14 @@ namespace Cheng.Algorithm.HashCodes
         /// </returns>
         public static BaseHashCode64<T> Default
         {
-            get
-            {
-                return sp_default;
-            }
+            get => LazyObj.cp_def;
+        }
+
+        #region 封装
+
+        private static class LazyObj
+        {
+            public readonly static BaseHashCode64<T> cp_def = f_createDefault();
         }
 
         private static BaseHashCode64<T> f_createDefault()
@@ -315,7 +317,9 @@ namespace Cheng.Algorithm.HashCodes
             return null;
 
         }
-        
+
+        #endregion
+
     }
 
 
