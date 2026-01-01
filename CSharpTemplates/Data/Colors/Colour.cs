@@ -693,10 +693,10 @@ namespace Cheng.DataStructure.Colors
                     return f_toStrDef(formatProvider);
                 case "hsl":
                     ToHSL(out H, out S, out L);
-                    return "(H:" + H.ToString() + ",S:" + S.ToString() + ",L:" + L.ToString() + ")";
+                    return "(H:" + H.ToString(formatProvider) + ",S:" + S.ToString(formatProvider) + ",L:" + L.ToString(formatProvider) + ")";
                 case "hsv":
                     ToHSV(out H, out S, out L);
-                    return "(H:" + H.ToString() + ",S:" + S.ToString() + ",V:" + L.ToString() + ")";
+                    return "(H:" + H.ToString(formatProvider) + ",S:" + S.ToString(formatProvider) + ",V:" + L.ToString(formatProvider) + ")";
                 case "value":
                     var re = ToInt32();
                     char* cp = stackalloc char[8];

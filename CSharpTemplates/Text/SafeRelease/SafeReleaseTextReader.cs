@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Cheng.DataStructure.Texts;
 using Cheng.Memorys;
 
 namespace Cheng.Texts
@@ -64,6 +65,8 @@ namespace Cheng.Texts
 
         #region api
 
+        #region 释放
+
         /// <summary>
         /// 重写该方法以释放非托管资源
         /// </summary>
@@ -111,6 +114,14 @@ namespace Cheng.Texts
         {
             if (p_isDispose) throw new ObjectDisposedException(objectName);
         }
+
+        #endregion
+
+        #region 扩展
+
+
+
+        #endregion
 
         #endregion
 

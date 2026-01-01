@@ -10,6 +10,9 @@ using Cheng.DataStructure;
 using Cheng.Algorithm;
 using Cheng.Memorys;
 
+using EnvDict = System.Collections.Generic.IReadOnlyDictionary<string, string>;
+using EnvDictCrFunc = Cheng.DataStructure.CreateDictionaryByPairs<string, string>;
+
 namespace Cheng.Systems
 {
 
@@ -380,6 +383,14 @@ namespace Cheng.Systems
             }
         }
 
+        /// <summary>
+        /// 获取一个64位整数，表示自操作系统启动后经过的毫秒数
+        /// </summary>
+        public static ulong TickCountU64
+        {
+            get => f_win_GetTickCount64();
+        }
+
         #endregion
 
         #region 环境变量
@@ -510,7 +521,7 @@ namespace Cheng.Systems
         /// <returns>存储当前进程所有环境变量的只读字典</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="NotImplementedException">无法获取环境变量</exception>
-        public static System.Collections.Generic.IReadOnlyDictionary<string, string> GetEnvironmentVariables(Cheng.DataStructure.CreateDictionaryByPairs<string,string> createDictionaryFunc)
+        public static EnvDict GetEnvironmentVariables(EnvDictCrFunc createDictionaryFunc)
         {
             if (createDictionaryFunc is null) throw new ArgumentNullException();
 
@@ -541,7 +552,7 @@ namespace Cheng.Systems
         /// </summary>
         /// <returns>存储当前进程所有环境变量的只读字典</returns>
         /// <exception cref="NotImplementedException">无法获取环境变量</exception>
-        public static System.Collections.Generic.IReadOnlyDictionary<string, string> GetEnvironmentVariables()
+        public static EnvDict GetEnvironmentVariables()
         {
             char* envstrptr = EnvAPI.fc_GetEnvironmentStrings();
             if (envstrptr == null)

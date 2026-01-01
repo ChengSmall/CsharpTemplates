@@ -12,7 +12,7 @@ namespace Cheng.DataStructure.Receptacles
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct ReceptacleInt64 : IEquatable<ReceptacleInt64>, IComparable<ReceptacleInt64>, IHashCode64
+    public readonly struct ReceptacleInt64 : IEquatable<ReceptacleInt64>, IComparable<ReceptacleInt64>, IHashCode64, IFormattable
     {
 
         #region 构造
@@ -322,6 +322,7 @@ namespace Cheng.DataStructure.Receptacles
         #endregion
 
         #region 派生
+
         /// <summary>
         /// 返回容器的字符串形式
         /// </summary>
@@ -330,6 +331,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             return value.ToString() + "/" + maxValue.ToString();
         }
+
         /// <summary>
         /// 返回容器的字符串形式
         /// </summary>
@@ -339,10 +341,23 @@ namespace Cheng.DataStructure.Receptacles
         {
             return value.ToString(format) + "/" + maxValue.ToString(format);
         }
+
+        /// <summary>
+        /// 返回容器的字符串形式
+        /// </summary>
+        /// <param name="format">数值的格式字符串，null表示使用默认设置</param>
+        /// <param name="formatProvider">区域性特定格式信息，null表示使用默认设置</param>
+        /// <returns>表示容器内值的字符串</returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            return value.ToString(format, formatProvider) + "/" + maxValue.ToString(format, formatProvider);
+        }
+
         public long GetHashCode64()
         {
             return value ^ maxValue;
         }
+
         #endregion
 
         #region 转化

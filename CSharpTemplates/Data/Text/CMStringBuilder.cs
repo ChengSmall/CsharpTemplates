@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using Cheng.Memorys;
+using Cheng.DataStructure;
+using Cheng.DataStructure.Texts;
 
 namespace Cheng.Texts
 {
@@ -413,6 +415,17 @@ namespace Cheng.Texts
         }
 
         /// <summary>
+        /// 追加一个字符
+        /// </summary>
+        /// <param name="value">要追加的字符</param>
+        /// <returns></returns>
+        public CMStringBuilder Append(Unichar value)
+        {
+            value.AppendString(this);
+            return this;
+        }
+
+        /// <summary>
         /// 追加多个相同字符
         /// </summary>
         /// <param name="value">要追加的字符</param>
@@ -454,6 +467,12 @@ namespace Cheng.Texts
             return this;
         }
 
+        /// <summary>
+        /// 追加一段字符串
+        /// </summary>
+        /// <param name="stringBuilder">待添加字符串缓冲区</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
         public CMStringBuilder Append(StringBuilder stringBuilder)
         {
             if (stringBuilder is null) throw new ArgumentNullException();
@@ -462,7 +481,6 @@ namespace Cheng.Texts
             f_ifAddCapacity(count);
 
             stringBuilder.CopyTo(0, p_charBuffer, 0, count);
-
             p_length += count;
             return this;
         }

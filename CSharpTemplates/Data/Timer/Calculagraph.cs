@@ -47,7 +47,7 @@ namespace Cheng.Timers
     public sealed class MilliSecondCalculagraph : TickTimeTimer
     {
 
-        #region
+        #region 构造
 
         /// <summary>
         /// 实例化一个计时器
@@ -67,13 +67,13 @@ namespace Cheng.Timers
 
         #endregion
 
-        #region
+        #region 派生
 
         protected override ulong NowTimeTick
         {
             get
             {
-                return (ulong)System.Environment.TickCount * (ulong)TimeSpan.TicksPerMillisecond;
+                return ((uint)System.Environment.TickCount) * (ulong)TimeSpan.TicksPerMillisecond;
             }
         }
 
@@ -81,7 +81,7 @@ namespace Cheng.Timers
         {
             get
             {
-                return new DateTime(System.Environment.TickCount * TimeSpan.TicksPerMillisecond);
+                return new DateTime((long)(((uint)System.Environment.TickCount) * (ulong)TimeSpan.TicksPerMillisecond));
             }
         }
 

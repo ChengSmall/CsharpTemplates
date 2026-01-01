@@ -43,7 +43,7 @@ namespace Cheng.Windows.Hooks
         /// <summary>
         /// 按键事件参数
         /// </summary>
-        public unsafe struct KeyHookArgs : IEquatable<KeyHookArgs>
+        public unsafe readonly struct KeyHookArgs : IEquatable<KeyHookArgs>
         {
 
             internal KeyHookArgs(ref KBDLLHOOKSTRUCT kb, KeyState state)
@@ -213,22 +213,6 @@ namespace Cheng.Windows.Hooks
         #endregion
 
         #region 功能
-
-        /// <summary>
-        /// 访问或设置挂钩事件在托管对象中的回调开关
-        /// </summary>
-        /// <value>
-        /// <para>设为true启用对象内的委托事件，设为false关闭对象的委托事件</para>
-        /// <para>注意，该参数仅用于管理托管对象内的委托事件是否被调用，并不会关闭挂钩回调句柄</para>
-        /// </value>
-        public bool Active
-        {
-            get => p_active;
-            set
-            {
-                p_active = value;
-            }
-        }
 
         protected override void HookCallBack(HookArgs args)
         {

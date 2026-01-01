@@ -12,7 +12,7 @@ namespace Cheng.DataStructure.Receptacles
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct ReceptacleUInt32 : IEquatable<ReceptacleUInt32>, IComparable<ReceptacleUInt32>, IHashCode64
+    public readonly struct ReceptacleUInt32 : IEquatable<ReceptacleUInt32>, IComparable<ReceptacleUInt32>, IHashCode64, IFormattable
     {
 
         #region 构造
@@ -324,6 +324,7 @@ namespace Cheng.DataStructure.Receptacles
         #endregion
 
         #region 派生
+
         /// <summary>
         /// 返回容器的字符串形式
         /// </summary>
@@ -332,6 +333,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             return value.ToString() + "/" + maxValue.ToString();
         }
+
         /// <summary>
         /// 返回容器的字符串形式
         /// </summary>
@@ -341,6 +343,22 @@ namespace Cheng.DataStructure.Receptacles
         {
             return value.ToString(format) + "/" + maxValue.ToString(format);
         }
+
+        /// <summary>
+        /// 返回容器的字符串形式
+        /// </summary>
+        /// <param name="format">数值的格式字符串，null表示使用默认设置</param>
+        /// <param name="formatProvider">区域性特定格式信息，null表示使用默认设置</param>
+        /// <returns>表示容器内值的字符串</returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            return value.ToString(format, formatProvider) + "/" + maxValue.ToString(format, formatProvider);
+        }
+
+        #endregion
+
+        #region 转化
+
         /// <summary>
         /// 显式转化为有符号整形容器
         /// </summary>
@@ -349,6 +367,7 @@ namespace Cheng.DataStructure.Receptacles
         {
             return new ReceptacleInt32((int)r.value, (int)r.maxValue);
         }
+
         /// <summary>
         /// 隐式转化为浮点型容器
         /// </summary>
@@ -357,13 +376,11 @@ namespace Cheng.DataStructure.Receptacles
         {
             return new ReceptacleFloat(r.value, r.maxValue);
         }
+
         public long GetHashCode64()
         {
             return ((long)value) | (((long)maxValue) << 32);
         }
-        #endregion
-
-        #region 转化
 
         #region 元组转化
 

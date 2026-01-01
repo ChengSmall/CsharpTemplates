@@ -59,7 +59,13 @@ namespace Cheng.Windows.Hooks
             {
                 if (WinHooks.UnhookWindowsHookEx(p_hookID)) p_hookID = null;
             }
-
+            try
+            {
+                p_fixedCallbackFuncGC.Free();
+            }
+            catch (Exception)
+            {
+            }
             p_callback = null;
         }
 
@@ -80,7 +86,7 @@ namespace Cheng.Windows.Hooks
         /// </summary>
         /// <param name="id">挂钩过程类型id</param>
         /// <exception cref="Win32Exception">引发win32错误</exception>
-        public Hook(HookID id) : this(id, 0)
+        public Hook(HookID id) : this(id, 0, IntPtr.Zero)
         {
         }
 
@@ -90,16 +96,8 @@ namespace Cheng.Windows.Hooks
         /// <param name="id">挂钩过程类型id</param>
         /// <param name="threadID">与之关联的挂钩过程的所在线程ID</param>
         /// <exception cref="Win32Exception">引发win32错误</exception>
-        public Hook(HookID id, int threadID)
+        public Hook(HookID id, int threadID) : this(id, threadID, IntPtr.Zero)
         {
-            p_callback = f_callBack;
-            p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, null, (uint)threadID);
-            if (p_hookID == null)
-            {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-            }
-            //p_threadSafe = new object();
-            p_active = true;
         }
 
         /// <summary>
@@ -112,12 +110,12 @@ namespace Cheng.Windows.Hooks
         public Hook(HookID id, int threadID, IntPtr handleMod)
         {
             p_callback = f_callBack;
+            p_fixedCallbackFuncGC = GCHandle.Alloc(p_callback, GCHandleType.Normal);
             p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, handleMod.ToPointer(), (uint)threadID);
             if (p_hookID == null)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
-            //p_threadSafe = new object();
             p_active = true;
         }
 
@@ -126,7 +124,6 @@ namespace Cheng.Windows.Hooks
         /// </summary>
         protected Hook()
         {
-            p_callback = f_callBack;
         }
 
         /// <summary>
@@ -139,6 +136,7 @@ namespace Cheng.Windows.Hooks
         protected void initCtor(HookID id, int threadID, IntPtr handleMod)
         {
             p_callback = f_callBack;
+            p_fixedCallbackFuncGC = GCHandle.Alloc(p_callback, GCHandleType.Normal);
             p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, handleMod.ToPointer(), (uint)threadID);
             if (p_hookID == null)
             {
@@ -157,6 +155,11 @@ namespace Cheng.Windows.Hooks
         protected ProcCallBack p_callback;
 
         /// <summary>
+        /// 对 指向挂钩过程的回调函数 显示固定内存的显式gc对象
+        /// </summary>
+        protected GCHandle p_fixedCallbackFuncGC;
+
+        /// <summary>
         /// 挂钩句柄
         /// </summary>
         protected void* p_hookID;
@@ -172,7 +175,6 @@ namespace Cheng.Windows.Hooks
 
         private void* f_callBack(int nCode, void* wParam, void* lParam)
         {
-            //IntPtr w = new IntPtr(wParam), l = new IntPtr(lParam);
             if(p_active) HookCallBack(new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam)));
             return WinHooks.CallNextHookEx(p_hookID, nCode, wParam, lParam);
         }
@@ -187,6 +189,22 @@ namespace Cheng.Windows.Hooks
         /// <remarks>在派生类重写以重新实现挂钩事件响应函数</remarks>
         /// <param name="args">call back回调函数中的参数</param>
         protected abstract void HookCallBack(HookArgs args);
+
+        /// <summary>
+        /// 访问或设置挂钩事件在托管对象中的回调开关
+        /// </summary>
+        /// <value>
+        /// <para>设为true启用对象内的委托事件，设为false关闭对象的委托事件</para>
+        /// <para>注意，该参数仅用于管理托管对象内的委托事件是否被调用，并不会关闭挂钩回调句柄</para>
+        /// </value>
+        public bool Active
+        {
+            get => p_active;
+            set
+            {
+                p_active = value;
+            }
+        }
 
         #region 静态函数
 

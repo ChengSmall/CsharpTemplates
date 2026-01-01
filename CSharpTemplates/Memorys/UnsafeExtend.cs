@@ -19,8 +19,17 @@ namespace Cheng.Memorys
 
         #region 封装
 
-        private class Lock_Obj
+        private sealed class Lock_Obj
         {
+
+            static Lock_Obj f_createAss()
+            {
+                var s = typeof(UnsafeExtend).Assembly.GetManifestResourceStream("Cheng.Resources.System.Runtime.CompilerServices.Unsafe.dll");
+                return new Lock_Obj(Assembly.Load(s.ReadAll()));
+            }
+
+            internal static readonly Lock_Obj p_obj = f_createAss();
+
             public Lock_Obj(Assembly @unsafe)
             {
                 p_unsafe = @unsafe;
@@ -41,14 +50,6 @@ namespace Cheng.Memorys
                 }
                 return null;
             }
-        }
-
-        static readonly Lock_Obj p_lock;
-
-        static UnsafeExtend()
-        {
-            var s = typeof(UnsafeExtend).Assembly.GetManifestResourceStream("Cheng.Resources.System.Runtime.CompilerServices.Unsafe.dll");
-            p_lock = new Lock_Obj(Assembly.Load(s.ReadAll()));
 
         }
 
@@ -67,14 +68,14 @@ namespace Cheng.Memorys
         /// <summary>
         /// Unsafe程序集对象
         /// </summary>
-        public static Assembly UnsafeAssembly => p_lock.p_unsafe;
+        public static Assembly UnsafeAssembly => Lock_Obj.p_obj.p_unsafe;
 
         /// <summary>
         /// 对程序域解析<see cref="UnsafeAssembly"/>的函数
         /// </summary>
         public static ResolveEventHandler UnsafeResolveEventHandler
         {
-            get => p_lock.p_event;
+            get => Lock_Obj.p_obj.p_event;
         }
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace Cheng.Memorys
         public static void CurrentDomainRegisterUnsafeResolveEvent()
         {
             var dom = AppDomain.CurrentDomain;
-            if(dom != null) dom.AssemblyResolve += p_lock.p_event;
+            if(dom != null) dom.AssemblyResolve += Lock_Obj.p_obj.p_event;
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace Cheng.Memorys
         public static void RegisterUnsafeResolveEvent(AppDomain dom)
         {
             if (dom is null) throw new ArgumentNullException();
-            dom.AssemblyResolve += p_lock.p_event;
+            dom.AssemblyResolve += Lock_Obj.p_obj.p_event;
         }
 
         /// <summary>
@@ -110,7 +111,7 @@ namespace Cheng.Memorys
         public static void UnRegisterUnsafeResolveEvent(AppDomain dom)
         {
             if (dom is null) throw new ArgumentNullException();
-            dom.AssemblyResolve -= p_lock.p_event;
+            dom.AssemblyResolve -= Lock_Obj.p_obj.p_event;
         }
 
         #endregion

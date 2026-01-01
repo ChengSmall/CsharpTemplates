@@ -87,8 +87,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Alg\RsaSSH\RsaSSH.cs" />
-    <Compile Include="Alg\RsaSSH\RsaSSH.Extend.cs" />
     <Compile Include="Assembly\AssemblyLoading.cs" />
     <Compile Include="CSharpCode\ChangyongFunc.cs" />
     <Compile Include="CSharpCode\ProcessStart.cs" />
@@ -122,6 +120,7 @@
     <Compile Include="CSharpCode\InitArgs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Alg\RsaSSH\" />
     <Folder Include="Compressions\" />
     <Folder Include="Resources\" />
     <Folder Include="structure\MindMap\" />
