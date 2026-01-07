@@ -7,114 +7,13 @@ namespace Cheng.Memorys
 {
 
     /// <summary>
-    /// 不安全代码的低级别内存操作口
+    /// 不安全代码的低级别内存操作扩展
     /// </summary>
     /// <remarks>
-    /// <para>使用 System.Runtime.CompilerServices.Unsafe 类进行更底层的操作，在调用相关函数之前请确保程序已正确解析<see cref="UnsafeExtend.UnsafeAssembly"/></para>
+    /// <para><see cref="System.Runtime.CompilerServices.Unsafe"/> 类的扩展操作，在使用该功能之前请确保程序已正确引用<see cref="System.Runtime.CompilerServices.Unsafe"/></para>
     /// </remarks>
     public static unsafe class UnsafeExtend
     {
-
-        #region 程序集
-
-        #region 封装
-
-        private sealed class Lock_Obj
-        {
-
-            static Lock_Obj f_createAss()
-            {
-                var s = typeof(UnsafeExtend).Assembly.GetManifestResourceStream("Cheng.Resources.System.Runtime.CompilerServices.Unsafe.dll");
-                return new Lock_Obj(Assembly.Load(s.ReadAll()));
-            }
-
-            internal static readonly Lock_Obj p_obj = f_createAss();
-
-            public Lock_Obj(Assembly @unsafe)
-            {
-                p_unsafe = @unsafe;
-                p_event = fe_AppDomain_AssResolve;
-            }
-
-            public Assembly p_unsafe;
-            public ResolveEventHandler p_event;
-
-            private Assembly fe_AppDomain_AssResolve(object sender, ResolveEventArgs args)
-            {
-                var assName = args?.Name;
-                if (string.IsNullOrEmpty(assName)) return null;
-                assName = getSimpleAssemblyName(assName);
-                if (assName == p_unsafe.GetName().Name)
-                {
-                    return p_unsafe;
-                }
-                return null;
-            }
-
-        }
-
-        static string getSimpleAssemblyName(string fullName)
-        {
-            int i;
-            for (i = 0; i < fullName.Length; i++)
-            {
-                if (fullName[i] == ',') return fullName.Substring(0, i);
-            }
-            return fullName;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Unsafe程序集对象
-        /// </summary>
-        public static Assembly UnsafeAssembly => Lock_Obj.p_obj.p_unsafe;
-
-        /// <summary>
-        /// 对程序域解析<see cref="UnsafeAssembly"/>的函数
-        /// </summary>
-        public static ResolveEventHandler UnsafeResolveEventHandler
-        {
-            get => Lock_Obj.p_obj.p_event;
-        }
-
-        /// <summary>
-        /// 向当前线程所在的程序域注册<see cref="UnsafeResolveEventHandler"/>事件
-        /// </summary>
-        public static void CurrentDomainRegisterUnsafeResolveEvent()
-        {
-            var dom = AppDomain.CurrentDomain;
-            if(dom != null) dom.AssemblyResolve += Lock_Obj.p_obj.p_event;
-        }
-
-        /// <summary>
-        /// 向指定程序域的<see cref="AppDomain.AssemblyResolve"/>注册<see cref="UnsafeResolveEventHandler"/>事件
-        /// </summary>
-        /// <remarks>
-        /// <para>在使用Unsafe相关方法之前请确保已对程序域注册该事件，或者已手动配置解析<see cref="UnsafeAssembly"/>对象的代码</para>
-        /// </remarks>
-        /// <param name="dom">要注册事件的程序集</param>
-        /// <exception cref="ArgumentNullException">参数是null</exception>
-        public static void RegisterUnsafeResolveEvent(AppDomain dom)
-        {
-            if (dom is null) throw new ArgumentNullException();
-            dom.AssemblyResolve += Lock_Obj.p_obj.p_event;
-        }
-
-        /// <summary>
-        /// 向指定程序域的<see cref="AppDomain.AssemblyResolve"/>注销<see cref="UnsafeResolveEventHandler"/>事件
-        /// </summary>
-        /// <remarks>
-        /// </remarks>
-        /// <param name="dom">要注销事件的程序集</param>
-        /// <exception cref="ArgumentNullException">参数是null</exception>
-        public static void UnRegisterUnsafeResolveEvent(AppDomain dom)
-        {
-            if (dom is null) throw new ArgumentNullException();
-            dom.AssemblyResolve -= Lock_Obj.p_obj.p_event;
-        }
-
-        #endregion
 
         #region Unsafe
 
@@ -256,22 +155,44 @@ namespace Cheng.Memorys
         /// 将类型为<typeparamref name="T"/>的值复制到指定位置
         /// </summary>
         /// <typeparam name="T">要复制的值的类型</typeparam>
-        /// <param name="destination">要复制的对象</param>
-        /// <param name="source">要复制到的目标位置</param>
-        public static void Copy<T>(ref T destination, void* source)
+        /// <param name="source">要复制的值</param>
+        /// <param name="copyTo">要复制到的目标位置</param>
+        public static void Copy<T>(void* source, ref T copyTo)
         {
-            Unsafe.Copy(ref destination, source);
+            Unsafe.Copy(ref copyTo, source);
         }
 
         /// <summary>
         /// 将指定地址指向的之以<typeparamref name="T"/>对象写入到指定目标
         /// </summary>
         /// <typeparam name="T">指针指向的内容要解释的类型</typeparam>
-        /// <param name="destination">指向要复制的内容</param>
-        /// <param name="source">要复制到的目标位置引用</param>
-        public static void Copy<T>(void* destination, ref T source)
+        /// <param name="source">要复制的值</param>
+        /// <param name="copyTo">要复制到的目标位置</param>
+        public static void Copy<T>(ref T source, void* copyTo)
         {
-            Unsafe.Copy(destination, ref source);
+            Unsafe.Copy(copyTo, ref source);
+        }
+
+        /// <summary>
+        /// 将一个内存块拷贝到另一个内存块中
+        /// </summary>
+        /// <param name="source">要拷贝的原内存地址</param>
+        /// <param name="copyTo">要拷贝到的位置</param>
+        /// <param name="size">要拷贝的内存块大小</param>
+        public static void CopyBlock(void* source, void* copyTo, uint size)
+        {
+            Unsafe.CopyBlock(copyTo, source, size);
+        }
+
+        /// <summary>
+        /// 将一个内存块拷贝到另一个内存块中
+        /// </summary>
+        /// <param name="source">要拷贝的原内存地址</param>
+        /// <param name="copyTo">要拷贝到的位置</param>
+        /// <param name="size">要拷贝的内存块大小</param>
+        public static void CopyBlock(IntPtr source, IntPtr copyTo, uint size)
+        {
+            CopyBlock(source.ToPointer(), copyTo.ToPointer(), size);
         }
 
         /// <summary>

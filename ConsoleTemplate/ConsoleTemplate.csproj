@@ -50,7 +50,8 @@
     <Compile Include="ConsoleEngine\ConsoleMenuUIList.cs" />
     <Compile Include="ConsoleEngine\ConsolePrint.cs" />
     <Compile Include="ConsoleEngine\IDrawObject.cs" />
-    <Compile Include="Consoles\ConsoleSystem.cs" />
+    <Compile Include="Consoles\ConsoleSystem\ConsoleSystem.cs" />
+    <Compile Include="Consoles\ConsoleSystem\ConsoleSystem.Structure.cs" />
     <Compile Include="Consoles\TextStyle\ConsoleTextStyle.cs" />
     <Compile Include="Consoles\Texts\ConsoleStyleTextWriter.cs" />
     <Compile Include="Consoles\XmlStandardItemConsole.cs" />

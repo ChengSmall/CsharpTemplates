@@ -116,6 +116,69 @@ namespace Cheng.Texts
             }
         }
 
+        /// <summary>
+        /// 从读取器读取文本并写入字符串缓冲区
+        /// </summary>
+        /// <param name="reader">要从中读取字符的读取器</param>
+        /// <param name="sb">要将读取的字符写入的字符串缓冲区</param>
+        /// <returns>成功读取的字符数量，0表示已到达末尾</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        public static int ReadToBuffer(this TextReader reader, CMStringBuilder sb)
+        {
+            if (reader is null || sb is null) throw new ArgumentNullException();
+
+            if (sb.Capacity == sb.Length)
+            {
+                sb.Capacity = sb.Capacity * 2;
+            }
+            var cbuf = sb.GetCharBuffer();
+            var buf = cbuf.Array;
+            var re = reader.Read(buf, cbuf.Count, buf.Length - cbuf.Count);
+            if (re == 0) return 0;
+            sb.OnlySetLength(sb.Length + re);
+            return re;
+        }
+
+        /// <summary>
+        /// 将字符串写入文本写入器
+        /// </summary>
+        /// <param name="writer">要写入文本的写入器对象</param>
+        /// <param name="sb">准备写入到<paramref name="writer"/>的字符串</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        public static void WriteByBuffer(this TextWriter writer, CMStringBuilder sb)
+        {
+            if (writer is null || sb is null) throw new ArgumentNullException();
+            var cbuf = sb.GetCharBuffer();
+            writer.Write(cbuf.Array, cbuf.Offset, cbuf.Count);
+        }
+
+        /// <summary>
+        /// 将字符串写入文本写入器
+        /// </summary>
+        /// <param name="writer">要写入文本的写入器对象</param>
+        /// <param name="sb">准备写入到<paramref name="writer"/>的字符串缓冲区</param>
+        /// <param name="index">指定<paramref name="sb"/>的起始位置</param>
+        /// <param name="count">要写入的长度</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        public static void WriteByBuffer(this TextWriter writer, CMStringBuilder sb, int index, int count)
+        {
+            if (writer is null || sb is null) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (index + count > sb.Length))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            var cbuf = sb.GetCharBuffer();
+            writer.Write(cbuf.Array, index, count);
+        }
+
         #endregion
 
         #endregion

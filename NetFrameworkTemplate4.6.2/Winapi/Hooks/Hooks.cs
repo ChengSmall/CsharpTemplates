@@ -45,20 +45,43 @@ namespace Cheng.Windows.Hooks
     /// <summary>
     /// 提供使用挂钩对应用程序截获消息、鼠标操作和击键等事件进行处理的基类
     /// </summary>
+    /// <remarks>不再使用挂钩对象后需要手动释放资源</remarks>
     public abstract unsafe class Hook : ReleaseDestructor
     {
 
         #region 释放
 
+        private sealed class HookHandle : SafeHandle
+        {
+            public HookHandle(void* hookID) : base(new IntPtr(hookID), true)
+            {
+                p_disposed = false;
+            }
+            private bool p_disposed;
+
+            public override bool IsInvalid
+            {
+                get => p_disposed;
+            }
+
+            protected override bool ReleaseHandle()
+            {
+                if (!WinHooks.UnhookWindowsHookEx(this.handle.ToPointer()))
+                {
+                    return false;
+                }
+                p_disposed = true;
+                return true;
+            }
+        }
+
         /// <summary>
         /// 在派生类重写此方法，需调用基实现
         /// </summary>
-        protected override void UnmanagedReleasources()
+        /// <param name="disposeing">是否释放托管资源</param>
+        /// <returns></returns>
+        protected override bool Disposeing(bool disposeing)
         {
-            if (p_hookID != null)
-            {
-                if (WinHooks.UnhookWindowsHookEx(p_hookID)) p_hookID = null;
-            }
             try
             {
                 p_fixedCallbackFuncGC.Free();
@@ -66,7 +89,14 @@ namespace Cheng.Windows.Hooks
             catch (Exception)
             {
             }
+            if (disposeing)
+            {
+                p_safeHandle?.Dispose();
+            }
+            p_safeHandle = null;
             p_callback = null;
+            p_hookID = null;
+            return true;
         }
 
         /// <summary>
@@ -116,6 +146,7 @@ namespace Cheng.Windows.Hooks
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
+            p_safeHandle = new HookHandle(p_hookID);
             p_active = true;
         }
 
@@ -142,6 +173,7 @@ namespace Cheng.Windows.Hooks
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
+            p_safeHandle = new HookHandle(p_hookID);
             p_active = true;
         }
 
@@ -159,6 +191,8 @@ namespace Cheng.Windows.Hooks
         /// </summary>
         protected GCHandle p_fixedCallbackFuncGC;
 
+        private HookHandle p_safeHandle;
+
         /// <summary>
         /// 挂钩句柄
         /// </summary>
@@ -175,7 +209,10 @@ namespace Cheng.Windows.Hooks
 
         private void* f_callBack(int nCode, void* wParam, void* lParam)
         {
-            if(p_active) HookCallBack(new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam)));
+            if (IsNotDispose)
+            {
+                if (p_active) HookCallBack(new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam)));
+            }
             return WinHooks.CallNextHookEx(p_hookID, nCode, wParam, lParam);
         }
 

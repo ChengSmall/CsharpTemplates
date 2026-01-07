@@ -302,19 +302,24 @@ namespace Cheng.Algorithm.Randoms
         public override void NextPtr(IntPtr ptr, int length)
         {
             if (length == 0) return;
-            int len = length / sizeof(ulong);
-            ulong* buffer = (ulong*)ptr;
+            int len = length / sizeof(uint);
+            ulong re;
+            uint* buffer = (uint*)ptr;
             int i;
             for (i = 0; i < len; i++)
             {
-                buffer[i] = this.Generate();
+                re = this.Generate();
+
+                buffer[i] = (uint)((re >> 32) ^ (re & uint.MaxValue));
             }
-            var mod = (length % sizeof(ulong));
+
+            var mod = (length % sizeof(uint));
             if (mod != 0)
             {
                 byte* mp = (byte*)(buffer + i);
-                ulong re = Generate();
-                byte* reb = (byte*)&re;
+                re = Generate();
+                len = (int)((re >> 32) ^ (re & uint.MaxValue));
+                byte* reb = (byte*)&len;
                 for (i = 0; i < mod; i++)
                 {
                     mp[i] = reb[i];

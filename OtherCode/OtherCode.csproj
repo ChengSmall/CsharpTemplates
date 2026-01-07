@@ -99,6 +99,7 @@
     <Compile Include="Webs\Bilibili\BilibiliPendant.cs" />
     <Compile Include="Webs\Bilibili\BilibiliSpaceInfo.cs" />
     <Compile Include="WinApi\EnvironmentVariables\EnvironmentVariable.cs" />
+    <Compile Include="WinApi\Libaray.cs" />
     <Compile Include="WinApi\Window\Window.cs" />
     <Compile Include="WinApi\Kernel32_Other.cs" />
     <Compile Include="WinApi\Memory.cs" />
@@ -126,6 +127,7 @@
     <Folder Include="structure\MindMap\" />
     <Folder Include="Systems\" />
     <Folder Include="Texter\" />
+    <Folder Include="WinApi\Consoles\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">

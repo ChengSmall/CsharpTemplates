@@ -334,6 +334,7 @@ namespace Cheng.Memorys
 
         private string f_toStrDef()
         {
+            if (p_ptr == null) return "null";
             if (sizeof(void*) == 4)
             {
                 char* cp = stackalloc char[8];
@@ -386,15 +387,19 @@ namespace Cheng.Memorys
         {
             if (format is null)
             {
-                format = "X";
+                if(formatProvider is null)
+                {
+                    return f_toStrDef();
+                }
+                //format = "X";
             }
-
-            if (format.Length > 0 && (format[0] == 'G' || format[0] == 'g'))
-            {
-                var cars = format.ToCharArray();
-                cars[0] = 'X';
-                format = new string(cars);
-            }
+            if (format != null)
+                if (format.Length > 0 && (format[0] == 'G' || format[0] == 'g'))
+                {
+                    var cars = format.ToCharArray();
+                    cars[0] = 'X';
+                    format = new string(cars);
+                }
 
             if (sizeof(void*) == 4)
             {

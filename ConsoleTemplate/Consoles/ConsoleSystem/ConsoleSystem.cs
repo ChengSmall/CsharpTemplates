@@ -10,6 +10,7 @@ using System.IO;
 
 using SCol = global::System.Console;
 using Cheng.Texts;
+using Cheng.Memorys;
 
 namespace Cheng.Consoles
 {
@@ -17,7 +18,7 @@ namespace Cheng.Consoles
     /// <summary>
     /// Windows 控制台系统
     /// </summary>
-    public static class ConsoleSystem
+    public static unsafe partial class ConsoleSystem
     {
 
         #region 虚拟终端
@@ -101,14 +102,14 @@ namespace Cheng.Consoles
         /// </summary>
         /// <returns>
         /// <para>返回值为指定设备的句柄</para>
-        /// <para>如果应用程序没有关联的标准句柄（例如在交互式桌面上运行的服务），并且尚未重定向这些句柄，则返回空值</para>
+        /// <para>如果应用程序没有关联标准句柄（例如在交互式桌面上运行的服务），并且尚未重定向这些句柄，则返回空值</para>
         /// </returns>
         /// <exception cref="Win32Exception">win32错误</exception>
         public static IntPtr GetSTDInputHandle()
         {
             var ptr = GetStdHandle(STD_Input_HandleID);
 
-            if (ptr == new IntPtr(-1))
+            if ((ptr == new IntPtr(-1)))
             {
                 throw new Win32Exception((int)GetLastError());
             }
@@ -121,7 +122,7 @@ namespace Cheng.Consoles
         /// </summary>
         /// <returns>
         /// <para>返回值为指定设备的句柄</para>
-        /// <para>如果应用程序没有关联的标准句柄（例如在交互式桌面上运行的服务），并且尚未重定向这些句柄，则返回空值</para>
+        /// <para>如果应用程序没有关联标准句柄（例如在交互式桌面上运行的服务），并且尚未重定向这些句柄，则返回空值</para>
         /// </returns>
         /// <exception cref="Win32Exception">win32错误</exception>
         public static IntPtr GetSTDOutputHandle()
@@ -141,7 +142,7 @@ namespace Cheng.Consoles
         /// </summary>
         /// <returns>
         /// <para>返回值为指定设备的句柄</para>
-        /// <para>如果应用程序没有关联的标准句柄（例如在交互式桌面上运行的服务），并且尚未重定向这些句柄，则返回空值</para>
+        /// <para>如果应用程序没有关联标准句柄（例如在交互式桌面上运行的服务），并且尚未重定向这些句柄，则返回空值</para>
         /// </returns>
         /// <exception cref="Win32Exception">win32错误</exception>
         public static IntPtr GetSTDErrorHandle()
@@ -173,6 +174,188 @@ namespace Cheng.Consoles
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
             return ShowWindow(handle, enable ? onEnable : onDisable);
+        }
+
+        /// <summary>
+        /// 从控制台输入缓冲区读取数据，并将其读取到的数据从缓冲区清除
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区操作句柄</param>
+        /// <param name="record">要从中读取的数据</param>
+        /// <returns>是否成功读取</returns>
+        public static bool ReadConsoleInput(IntPtr handle, out InputRecord record)
+        {
+            record = default;
+            if (handle == IntPtr.Zero) return false;
+
+            uint uc;
+            uint re;
+            fixed (InputRecord* ptr = &record)
+            {
+                re = winapi_ReadConsoleInput(handle, ptr, 1, &uc);
+            }
+            return (re != 0) && (uc > 0);
+        }
+
+        /// <summary>
+        /// 从控制台输入缓冲区读取数据，并将其读取到的数据从缓冲区清除
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区操作句柄</param>
+        /// <param name="lpBuffer">指向连续的<see cref="InputRecord"/>数组地址，表示要将数据读取到的位置</param>
+        /// <param name="length"><paramref name="lpBuffer"/>指向的数组的元素数量</param>
+        /// <param name="readCount">成功读取后，实际读取并填充到<paramref name="lpBuffer"/>指向区域的数量</param>
+        /// <returns>是否成功读取</returns>
+        public static bool ReadConsoleInput(IntPtr handle, CPtr<InputRecord> lpBuffer, int length, out int readCount)
+        {
+            readCount = 0;
+            if (lpBuffer.IsEmpty || handle == IntPtr.Zero) return false;
+            if (length < 0) return false;
+            if (handle == IntPtr.Zero) return false;
+
+            uint rec;
+            var rb = winapi_ReadConsoleInput(handle, (void*)lpBuffer, (uint)length, &rec);
+
+            if (rb == 0) return false;
+
+            readCount = (int)rec;
+            return true;
+        }
+
+        /// <summary>
+        /// 从控制台输入缓冲区读取数据，并将其读取到的数据从缓冲区清除
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区操作句柄</param>
+        /// <param name="buffer">要读取到的目标数组</param>
+        /// <param name="index">目标从指定索引开始填充</param>
+        /// <param name="count">要读取的数量</param>
+        /// <returns>实际成功读取的数量，如果无法成功读取返回0</returns>
+        /// <exception cref="ArgumentNullException">缓冲区数组或<paramref name="handle"/>是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
+        public static int ReadConsoleInput(IntPtr handle, InputRecord[] buffer, int index, int count)
+        {
+            if (buffer is null || handle == IntPtr.Zero) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (index + count) > buffer.Length) throw new ArgumentNullException();
+            uint re;
+            fixed (InputRecord* bufptr = buffer)
+            {
+                if(winapi_ReadConsoleInput(handle, bufptr + index, (uint)count, &re) == 0)
+                {
+                    return 0;
+                }
+            }
+            return (int)re;
+        }
+
+        /// <summary>
+        /// 从控制台输入缓冲区读取数据，但不会清除缓冲区数据
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区操作句柄</param>
+        /// <param name="record">要从中读取的数据</param>
+        /// <returns>是否成功读取</returns>
+        public static bool PeekConsoleInput(IntPtr handle, out InputRecord record)
+        {
+            record = default;
+            if (handle == IntPtr.Zero) return false;
+            uint uc;
+            uint re;
+            fixed (InputRecord* ptr = &record)
+            {
+                re = winapi_PeekConsoleInput(handle, ptr, 1, &uc);
+            }
+            return (re != 0) && (uc > 0);
+        }
+
+        /// <summary>
+        /// 从控制台输入缓冲区读取数据，但不会清除缓冲区数据
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区操作句柄</param>
+        /// <param name="lpBuffer">指向连续的<see cref="InputRecord"/>数组地址，表示要将数据读取到的位置</param>
+        /// <param name="length"><paramref name="lpBuffer"/>指向的数组的元素数量</param>
+        /// <param name="readCount">成功读取后，实际读取并填充到<paramref name="lpBuffer"/>指向区域的数量</param>
+        /// <returns>是否成功读取</returns>
+        public static bool PeekConsoleInput(IntPtr handle, CPtr<InputRecord> lpBuffer, int length, out int readCount)
+        {
+            readCount = 0;
+            if (lpBuffer.IsEmpty || handle == IntPtr.Zero) return false;
+            if (length < 0) return false;
+            if (handle == IntPtr.Zero) return false;
+
+            uint rec;
+            var rb = winapi_PeekConsoleInput(handle, lpBuffer, (uint)length, &rec);
+
+            if (rb == 0) return false;
+
+            readCount = (int)rec;
+            return true;
+        }
+
+        /// <summary>
+        /// 从控制台输入缓冲区读取数据，但不会清除缓冲区数据
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区操作句柄</param>
+        /// <param name="buffer">要读取到的目标数组</param>
+        /// <param name="index">目标从指定索引开始填充</param>
+        /// <param name="count">要读取的数量</param>
+        /// <returns>实际成功读取的数量，如果无法成功读取返回0</returns>
+        /// <exception cref="ArgumentNullException">缓冲区数组或<paramref name="handle"/>是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
+        public static int PeekConsoleInput(IntPtr handle, InputRecord[] buffer, int index, int count)
+        {
+            if (buffer is null || handle == IntPtr.Zero) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (index + count) > buffer.Length) throw new ArgumentNullException();
+            uint re;
+            fixed (InputRecord* bufptr = buffer)
+            {
+                if (winapi_ReadConsoleInput(handle, bufptr + index, (uint)count, &re) == 0)
+                {
+                    return 0;
+                }
+            }
+            return (int)re;
+        }
+
+        /// <summary>
+        /// 检索控制台输入缓冲区中未读输入记录的数量
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区的句柄</param>
+        /// <returns>控制台输入缓冲区中未读输入记录的数量</returns>
+        /// <exception cref="Win32Exception">win32错误</exception>
+        /// <exception cref="ArgumentNullException">句柄是null</exception>
+        public static int GetConsoleInputEventCount(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero) throw new ArgumentNullException();
+            uint rec = 0;
+            if(winapi_GetNumberOfConsoleInputEvents(handle, &rec) == 0)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            return (int)rec;
+        }
+
+        /// <summary>
+        /// 检索控制台输入缓冲区中未读输入记录的数量
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区的句柄</param>
+        /// <param name="count">控制台输入缓冲区中未读输入记录的数量</param>
+        /// <returns>是否成功获取</returns>
+        public static bool GetConsoleInputEventCount(IntPtr handle, out int count)
+        {
+            count = 0;
+            if (handle == IntPtr.Zero) return false;
+            uint rec;
+            bool rb = winapi_GetNumberOfConsoleInputEvents(handle, &rec) != 0;
+            count = (int)rec;
+            return rb;
+        }
+
+        /// <summary>
+        /// 刷新控制台输入缓冲区；当前在输入缓冲区中的所有输入记录都将被丢弃
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区的句柄</param>
+        /// <returns>是否成功</returns>
+        public static bool FlushConsoleInputBuffer(IntPtr handle)
+        {
+            return winapi_FlushConsoleInputBuffer(handle) != 0;
         }
 
         #endregion
@@ -226,6 +409,39 @@ namespace Cheng.Consoles
 
         [DllImport("kernel32.dll")]
         private static extern uint GetLastError();
+
+        #region
+#if DEBUG
+        /// <summary>
+        /// 从控制台输入缓冲区读取数据，并将其从缓冲区删除
+        /// </summary>
+        /// <remarks>
+        /// https://learn.microsoft.com/zh-cn/windows/console/readconsoleinput
+        /// </remarks>
+        /// <param name="hConsoleInput">控制台输入缓冲区的句柄；该句柄必须具有 GENERIC_READ 访问权限</param>
+        /// <param name="lpBuffer">指向接收输入缓冲区数据的 <see cref="InputRecord"/> 结构数组</param>
+        /// <param name="nLength"><paramref name="lpBuffer"/>指向的数组大小</param>
+        /// <param name="lpNumberOfEventsRead">指向接收所读取输入记录数量的变量</param>
+        /// <returns>该函数是否成功</returns>
+#endif
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "ReadConsoleInput")]
+        private static extern uint winapi_ReadConsoleInput(IntPtr hConsoleInput, void* lpBuffer,
+        uint nLength, uint* lpNumberOfEventsRead);
+
+
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "PeekConsoleInput")]
+        private static extern uint winapi_PeekConsoleInput(IntPtr hConsoleInput, void* lpBuffer,
+        uint nLength, uint* lpNumberOfEventsRead);
+
+
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetNumberOfConsoleInputEvents")]
+        extern static uint winapi_GetNumberOfConsoleInputEvents(IntPtr hConsoleInput, uint* lpcNumberOfEvents);
+
+
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "FlushConsoleInputBuffer")]
+        extern static uint winapi_FlushConsoleInputBuffer(IntPtr hConsoleInput);
+
+        #endregion
 
         #endregion
 

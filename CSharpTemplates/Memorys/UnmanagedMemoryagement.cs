@@ -14,6 +14,19 @@ namespace Cheng.Memorys
 
         #region 结构
 
+        private sealed class IntPtrEqual : EqualityComparer<IntPtr>
+        {
+            public override bool Equals(IntPtr x, IntPtr y)
+            {
+                return x == y;
+            }
+
+            public override int GetHashCode(IntPtr obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
+
         #endregion
 
         #region 构造
@@ -23,7 +36,7 @@ namespace Cheng.Memorys
         /// </summary>
         public UnmanagedMemoryagement()
         {
-            p_list = new Dictionary<IntPtr, int>();
+            p_list = new Dictionary<IntPtr, int>(new IntPtrEqual());
             p_byteSize = 0;
         }
 

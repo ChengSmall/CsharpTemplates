@@ -26,15 +26,19 @@ namespace Cheng.DataStructure.FiniteStateMachine
     /// 表示一个有限状态机的状态节点
     /// </summary>
     /// <typeparam name="T">表示状态的参数类型</typeparam>
-    public sealed class StateNode<T> : ReleaseDestructor, IComparable<StateNode<T>>
+    public sealed class StateNode<T> : SafreleaseUnmanagedResources, IComparable<StateNode<T>>
     {
 
         #region 释放
 
-        protected override void UnmanagedReleasources()
+        protected override bool Disposeing(bool disposeing)
         {
-            this.NodeAddEvent = null;
-            this.NodeRemoveEvent = null;
+            if (disposeing)
+            {
+                this.NodeAddEvent = null;
+                this.NodeRemoveEvent = null;
+            }
+            return true;
         }
 
         #endregion

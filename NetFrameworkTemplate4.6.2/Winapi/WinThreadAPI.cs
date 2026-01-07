@@ -17,6 +17,7 @@ namespace Cheng.Windows.Threads
 
         #region win
 
+#if DEBUG
         /// <summary>
         /// 检索创建指定窗口的线程的标识符，以及创建该窗口的进程（可选）的标识符
         /// </summary>
@@ -28,6 +29,7 @@ namespace Cheng.Windows.Threads
         /// <returns>
         /// <para>如果函数成功，则返回值是创建窗口的线程的标识符；如果窗口句柄无效，则返回0</para>
         /// </returns>
+#endif
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetWindowThreadProcessId")]
         private static extern uint win_GetWindowThreadProcessId(IntPtr hwnd, uint* processId);
 
@@ -88,3 +90,5 @@ namespace Cheng.Windows.Threads
 
     }
 }
+#if DEBUG
+#endif

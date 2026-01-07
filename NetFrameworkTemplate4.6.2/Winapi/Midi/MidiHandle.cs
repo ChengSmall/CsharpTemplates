@@ -7,6 +7,7 @@ using Cheng.Texts;
 using Cheng.DataStructure;
 using System.ComponentModel;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Cheng.Windows.MIDI
 {
@@ -14,27 +15,31 @@ namespace Cheng.Windows.MIDI
     /// <summary>
     /// 一个 MIDI 句柄
     /// </summary>
-    public unsafe class MidiHandle : SafeReleaseHandlePointer
+    public unsafe class MidiHandle : System.Runtime.InteropServices.SafeHandle
     {
 
         #region
 
+        #endregion
+
+        #region 构造
+
         /// <summary>
         /// 空构造
         /// </summary>
-        protected MidiHandle()
+        protected MidiHandle() : base(IntPtr.Zero, true)
         {
-            handlePtr = IntPtr.Zero;
+            SetHandle(IntPtr.Zero);
         }
 
         /// <summary>
         /// 实例化一个无回调的midi句柄
         /// </summary>
         /// <param name="deviceID">midi设备标识符</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
         /// <exception cref="NotMidiDeviceException">系统找不到MIDI输出设备</exception>
         /// <exception cref="MidiException">MIDI错误</exception>
-        public MidiHandle(int deviceID) : base()
+        public MidiHandle(int deviceID) : base(IntPtr.Zero, true)
         {
             if (deviceID < 0) throw new ArgumentOutOfRangeException();
             var devc = WinAPI.midiOutGetNumDevs();
@@ -50,8 +55,7 @@ namespace Cheng.Windows.MIDI
             {
                 throw new MidiException(err);
             }
-
-            handlePtr = handle;
+            SetHandle(handle);
         }
 
         #endregion
@@ -62,14 +66,28 @@ namespace Cheng.Windows.MIDI
 
         #region 释放
 
-        /// <summary>
-        /// 如果需要重写释放函数需调用基实现
-        /// </summary>
-        /// <param name="handle"></param>
-        /// <returns></returns>
-        protected override bool DisposeHandle(IntPtr handle)
+        public override bool IsInvalid => DangerousGetHandle() == IntPtr.Zero;
+
+        protected override bool ReleaseHandle()
         {
-            return WinAPI.midiOutClose(handle) == 0;
+            var ptr = DangerousGetHandle();
+            if (ptr == IntPtr.Zero) return true;
+            var b = WinAPI.midiOutClose(ptr) == 0;
+            SetHandle(IntPtr.Zero);
+            return b;
+        }
+
+        #endregion
+
+        #region 设备
+
+        /// <summary>
+        /// 返回系统中的midi设备数量
+        /// </summary>
+        /// <returns>系统中的midi设备数量，0表示系统中不存在midi设备驱动</returns>
+        public static int GetDeviceCount()
+        {
+            return (int)WinAPI.midiOutGetNumDevs();
         }
 
         #endregion
@@ -87,7 +105,7 @@ namespace Cheng.Windows.MIDI
         /// <exception cref="ObjectDisposedException">句柄已释放</exception>
         public MidiError MIDIOutShortMsg(byte state, ushort message)
         {
-            var hp = HandlePointer;
+            var hp = this.handle;
 
             //uint meg = ((uint)state) | ((uint)message << 8);
             return (MidiError)WinAPI.midiOutShortMsg(hp, ((uint)state) | ((uint)message << 8));
@@ -104,11 +122,8 @@ namespace Cheng.Windows.MIDI
         public MidiError MIDIOutShortMsg(byte state, byte lowMeg, byte hiMeg)
         {
             //if (handle is null) throw new ArgumentNullException();
-            var hp = HandlePointer;
-
-            uint meg = ((uint)state) | ((uint)lowMeg << 8) | ((uint)hiMeg << 16);
-
-            return (MidiError)WinAPI.midiOutShortMsg(hp, meg);
+            var hp = this.handle;
+            return (MidiError)WinAPI.midiOutShortMsg(hp, (((uint)state) | ((uint)lowMeg << 8) | ((uint)hiMeg << 16)));
         }
 
         /// <summary>
@@ -121,7 +136,7 @@ namespace Cheng.Windows.MIDI
         public MidiError MIDIOutShortMeg(byte channel, MidiMessageType messageType, ushort message)
         {
 
-            return (MidiError)WinAPI.midiOutShortMsg(HandlePointer, ((uint)((((byte)channel & 0xF) | (((byte)messageType & 0xF) << 4)))) | ((uint)message << 8));
+            return (MidiError)WinAPI.midiOutShortMsg(this.handle, ((uint)((((byte)channel & 0xF) | (((byte)messageType & 0xF) << 4)))) | ((uint)message << 8));
         }
 
         /// <summary>
@@ -135,8 +150,7 @@ namespace Cheng.Windows.MIDI
         /// <exception cref="ObjectDisposedException">句柄已释放</exception>
         public MidiError MIDIOutShortMeg(byte channel, MidiMessageType messageType, byte lowMeg, byte hiMeg)
         {
-            //if (handle is null) throw new ArgumentNullException();
-            var hp = HandlePointer;
+            var hp = this.handle;
 
             uint meg = (((uint)(channel & 0xF)) | ((uint)((byte)messageType & 0xF) << 4)) | ((uint)lowMeg << 8) | ((uint)hiMeg << 16);
 
@@ -250,6 +264,7 @@ namespace Cheng.Windows.MIDI
         {
             return MIDIOutShortMeg(channel, MidiMessageType.PolyPressure, value, power);
         }
+
 
         #endregion
 

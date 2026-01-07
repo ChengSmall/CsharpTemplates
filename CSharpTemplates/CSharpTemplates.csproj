@@ -26,12 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\System.Runtime.CompilerServices.Unsafe.dll" />
     <None Remove="Text\SafeRelease\SafeReleaseTextReader.cs~RF8f9b8c.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\System.Runtime.CompilerServices.Unsafe.dll" />
   </ItemGroup>
 
   <ItemGroup>

@@ -210,7 +210,7 @@ namespace Cheng.LoopThreads
         /// <summary>
         /// 下次时间间隔
         /// </summary>
-        internal TimeSpan time;
+        internal readonly TimeSpan time;
     }
 
     /// <summary>
@@ -239,7 +239,7 @@ namespace Cheng.LoopThreads
             time = TimeSpan.FromSeconds(seconds);
         }
 
-        internal TimeSpan time;
+        internal readonly TimeSpan time;
     }
 
     /// <summary>

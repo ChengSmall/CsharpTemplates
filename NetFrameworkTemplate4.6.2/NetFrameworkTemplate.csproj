@@ -101,6 +101,7 @@
     <Compile Include="Winapi\Hooks\Hooks.cs" />
     <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
     <Compile Include="Winapi\Hooks\WinHooks.cs" />
+    <Compile Include="Winapi\Libarays\Libarays.cs" />
     <Compile Include="Winapi\Midi\MidiException.cs" />
     <Compile Include="Winapi\Midi\MidiHandle.cs" />
     <Compile Include="Winapi\Midi\MidiData.cs" />
