@@ -10,6 +10,8 @@ namespace Cheng.Algorithm.Collections
     public static partial class ListExtend
     {
 
+        #region 转换另一个类型
+
         #region 结构
 
         private class Enumerable_ToOtherItems<T, O> : IEnumerable<O>
@@ -50,7 +52,7 @@ namespace Cheng.Algorithm.Collections
         {
             public Enumator_ToOtherItems(IEnumerable<T> collections, Func<T, O> convertFunc)
             {
-                p_enumator = collections.GetEnumerator();
+                p_enumator = collections.GetEnumerator() ?? throw new ArgumentNullException();
                 p_current = default;
                 p_convertFunc = convertFunc;
             }
@@ -61,17 +63,14 @@ namespace Cheng.Algorithm.Collections
 
             public O Current
             {
-                get
-                {
-                    return p_current;
-                }
+                get => p_current;
             }
 
             object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
-
+                if (p_enumator is null) throw new NotImplementedException();
                 var next = p_enumator.MoveNext();
 
                 if (!next)
@@ -86,13 +85,18 @@ namespace Cheng.Algorithm.Collections
 
             public void Reset()
             {
+                if (p_enumator is null) throw new NotImplementedException();
                 p_current = default;
                 p_enumator.Reset();
             }
 
             public void Dispose()
             {
+                if (p_enumator is null) return;
                 p_enumator.Dispose();
+                p_enumator = null;
+                p_current = default;
+                p_convertFunc = null;
             }
         }
 
@@ -100,7 +104,7 @@ namespace Cheng.Algorithm.Collections
         {
             public Enumator_ToOtherIfItems(IEnumerable<T> collections, ToOtherItemFunc<T, O> convertFunc)
             {
-                p_enumator = collections.GetEnumerator();
+                p_enumator = collections.GetEnumerator() ?? throw new ArgumentNullException();
                 p_current = default;
                 p_convertFunc = convertFunc;
             }
@@ -111,16 +115,15 @@ namespace Cheng.Algorithm.Collections
 
             public O Current
             {
-                get
-                {
-                    return p_current;
-                }
+                get => p_current;
             }
 
             object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
+                if (p_enumator is null) throw new NotImplementedException();
+
                 Loop:
                 var next = p_enumator.MoveNext();
 
@@ -141,19 +144,22 @@ namespace Cheng.Algorithm.Collections
 
             public void Reset()
             {
+                if (p_enumator is null) throw new NotImplementedException();
                 p_current = default;
                 p_enumator.Reset();
             }
 
             public void Dispose()
             {
+                if (p_enumator is null) return;
                 p_enumator.Dispose();
+                p_enumator = null;
+                p_convertFunc = null;
+                p_current = default;
             }
         }
 
         #endregion
-
-        #region
 
         /// <summary>
         /// 将一个对象转化到另一个对象
@@ -207,6 +213,8 @@ namespace Cheng.Algorithm.Collections
         }
 
         #endregion
+
+
 
     }
 

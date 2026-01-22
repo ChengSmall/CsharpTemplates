@@ -325,7 +325,19 @@ namespace Cheng.DEBUG
         public static string Foreach(this IEnumerable arr, int lineCount = 10, string fen = " ", Func<object, string> toStr = null, Predicate<object> isPrint = null)
         {
             if (arr is null) throw new ArgumentNullException();
-            return foreachEnumator(arr.GetEnumerator(), lineCount, fen, toStr ?? defToStr, isPrint);
+            var e = arr.GetEnumerator();
+            try
+            {
+                return foreachEnumator(e, lineCount, fen, toStr ?? defToStr, isPrint);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (e is IDisposable dis) dis.Dispose();
+            }
         }
 
         /// <summary>

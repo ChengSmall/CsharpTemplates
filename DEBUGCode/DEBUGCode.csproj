@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DEBUG\Button\Debutton.cs" />
+    <Compile Include="DEBUG\Console\Consoles.cs" />
     <Compile Include="DEBUG\DEBUGTEST.cs" />
     <Compile Include="DEBUG\Image\ImageExd.cs" />
     <Compile Include="DEBUG\Json\TestJson.cs" />

@@ -15,7 +15,7 @@ namespace Cheng.Windows.Hooks
     /// <typeparam name="T"></typeparam>
     /// <param name="hook">引发事件的实例</param>
     /// <param name="arg">事件参数</param>
-    public delegate void HookAction<T>(Hook hook, T arg);
+    public delegate void HookAction<in T>(Hook hook, T arg);
 
     /// <summary>
     /// 挂钩事件委托
@@ -26,7 +26,7 @@ namespace Cheng.Windows.Hooks
     /// <summary>
     /// 挂钩链回调参数
     /// </summary>
-    public struct HookArgs
+    public readonly struct HookArgs
     {
         public HookArgs(int code, IntPtr wParam, IntPtr lParam)
         {
@@ -144,6 +144,7 @@ namespace Cheng.Windows.Hooks
             p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, handleMod.ToPointer(), (uint)threadID);
             if (p_hookID == null)
             {
+                if (p_fixedCallbackFuncGC.IsAllocated) p_fixedCallbackFuncGC.Free();
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
             p_safeHandle = new HookHandle(p_hookID);
@@ -171,6 +172,7 @@ namespace Cheng.Windows.Hooks
             p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, handleMod.ToPointer(), (uint)threadID);
             if (p_hookID == null)
             {
+                if(p_fixedCallbackFuncGC.IsAllocated) p_fixedCallbackFuncGC.Free();
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
             p_safeHandle = new HookHandle(p_hookID);
@@ -209,10 +211,12 @@ namespace Cheng.Windows.Hooks
 
         private void* f_callBack(int nCode, void* wParam, void* lParam)
         {
+            var args = new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam));
             if (IsNotDispose)
             {
-                if (p_active) HookCallBack(new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam)));
+                if (p_active) HookCallBack(args);
             }
+
             return WinHooks.CallNextHookEx(p_hookID, nCode, wParam, lParam);
         }
 

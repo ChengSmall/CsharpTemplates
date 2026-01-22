@@ -133,7 +133,7 @@ namespace Cheng.Windows.Hooks
         /// <returns>
         /// 如果函数成功，则返回值是挂钩过程的句柄；如果函数失败，则返回值为null；要获得更多的错误信息，请调用<see cref="Marshal.GetLastWin32Error"/>
         /// </returns>
-        [DllImport(dllName, SetLastError = true)]
+        [DllImport(dllName, SetLastError = true, EntryPoint = "SetWindowsHookEx")]
         public static extern void* SetWindowsHookEx(HookID idHook, [MarshalAs(UnmanagedType.FunctionPtr)] ProcCallBack lpfn, void* hMod, uint dwThreadId);
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Cheng.Windows.Hooks
         /// 如果函数成功，则返回值是挂钩过程的句柄；如果函数失败，则返回值为null；要获得更多的错误信息，请调用<see cref="Marshal.GetLastWin32Error"/>
         /// </returns>
         [DllImport(dllName, SetLastError = true, EntryPoint = "SetWindowsHookEx")]
-        public static extern void* SetWindowsHookEx(int idHook, [MarshalAs(UnmanagedType.FunctionPtr)] ProcCallBack lpfn, void* hMod, uint dwThreadId);
+        public static extern void* SetWindowsHookEx_win(int idHook, [MarshalAs(UnmanagedType.FunctionPtr)] ProcCallBack lpfn, void* hMod, uint dwThreadId);
 
 
         /// <summary>

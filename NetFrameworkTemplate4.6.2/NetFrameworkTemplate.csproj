@@ -100,6 +100,7 @@
     <Compile Include="Threads\SingleThreadTask\SingleThreadTasks.cs" />
     <Compile Include="Winapi\Hooks\Hooks.cs" />
     <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
+    <Compile Include="Winapi\Hooks\MouseHooks\MouseHook.cs" />
     <Compile Include="Winapi\Hooks\WinHooks.cs" />
     <Compile Include="Winapi\Libarays\Libarays.cs" />
     <Compile Include="Winapi\Midi\MidiException.cs" />

@@ -11,7 +11,7 @@ namespace Cheng.Windows.Hooks
 {
 
     /// <summary>
-    /// 键码消息捕获挂钩
+    /// 键盘消息捕获挂钩
     /// </summary>
     public unsafe sealed class KeyHook : Hook
     {
@@ -187,7 +187,7 @@ namespace Cheng.Windows.Hooks
         #region 构造
 
         /// <summary>
-        /// 实例化并向系统申请一个键码消息捕获挂钩
+        /// 实例化一个全局键盘消息捕获挂钩
         /// </summary>
         public KeyHook() : base(HookID.KeyBoard_LL)
         {
@@ -195,7 +195,7 @@ namespace Cheng.Windows.Hooks
         }
 
         /// <summary>
-        /// 实例化并向系统申请一个键码消息捕获挂钩
+        /// 实例化一个全局键盘消息捕获挂钩
         /// </summary>
         /// <param name="handleMod">DLL的句柄，包含事件委托指向的挂钩过程</param>
         public KeyHook(IntPtr handleMod) : base(HookID.KeyBoard_LL, 0, handleMod)

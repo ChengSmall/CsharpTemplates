@@ -111,7 +111,7 @@ namespace Cheng.Consoles
 
             if ((ptr == new IntPtr(-1)))
             {
-                throw new Win32Exception((int)GetLastError());
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
             return ptr;
@@ -131,7 +131,7 @@ namespace Cheng.Consoles
 
             if (ptr == new IntPtr(-1))
             {
-                throw new Win32Exception((int)GetLastError());
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
             return ptr;
@@ -151,7 +151,7 @@ namespace Cheng.Consoles
 
             if (ptr == new IntPtr(-1))
             {
-                throw new Win32Exception((int)GetLastError());
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
             return ptr;
@@ -327,6 +327,22 @@ namespace Cheng.Consoles
             if(winapi_GetNumberOfConsoleInputEvents(handle, &rec) == 0)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            return (int)rec;
+        }
+
+        /// <summary>
+        /// 检索控制台输入缓冲区中未读输入记录的数量
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区的句柄</param>
+        /// <returns>控制台输入缓冲区中未读输入记录的数量，-1表示出现错误，可使用<see cref="Marshal.GetLastWin32Error"/>获取错误代码</returns>
+        public static int TryGetConsoleInputEventCount(IntPtr handle)
+        {
+            uint rec = 0;
+            if (winapi_GetNumberOfConsoleInputEvents(handle, &rec) == 0)
+            {
+                return -1;
             }
 
             return (int)rec;

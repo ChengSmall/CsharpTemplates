@@ -74,6 +74,7 @@ namespace Cheng.Algorithm.Randoms
         /// <param name="seed">初始化时使用的随机值</param>
         public MersenneTwisterRandom(long seed)
         {
+            mt = new ulong[N];
             f_init(seed);
         }
 
@@ -136,6 +137,40 @@ namespace Cheng.Algorithm.Randoms
             f_init(seed, size);
         }
 
+        /// <summary>
+        /// 使用随机器状态数据实例化随机器
+        /// </summary>
+        /// <param name="state">随机器的状态对象</param>
+        /// <exception cref="ArgumentException">参数错误，例如随机表数组元素数量不是<see cref="RandomState.MatrixLength"/></exception>
+        public MersenneTwisterRandom(RandomState state)
+        {
+            if(state.matrix is null || state.matrix.Length != N)
+            {
+                ThrowByRandomStateInit(); return;
+            }
+            this.mt = (ulong[])state.matrix;
+            this.mti = Maths.Clamp(state.index, 0, N);
+
+            void ThrowByRandomStateInit()
+            {
+                throw new ArgumentException(Cheng.Properties.Resources.Exception_FuncArgError, "state");
+            }
+        }
+
+        /// <summary>
+        /// 实例化随机器
+        /// </summary>
+        /// <remarks>如果<paramref name="init"/>是false，则在使用随机器前需要调用<see cref="InitRandom(long)"/>或其它重载函数进行初始化</remarks>
+        /// <param name="init">如果是true，则使用默认时间戳<see cref="Environment.TickCount"/>初始化随机器</param>
+        public MersenneTwisterRandom(bool init)
+        {
+            mt = new ulong[N];
+            if (init)
+            {
+                f_init(Environment.TickCount);
+            }
+        }
+
         private unsafe void f_init(byte* seed, int size)
         {
             var lenb8 = (size / 8);
@@ -152,10 +187,10 @@ namespace Cheng.Algorithm.Randoms
             {
                 mt[i] = LP[i];
             }
-            if(lenb8 < N)
+            if (lenb8 < N)
             {
                 //var mod8 = (size % 8);
-                if(mod8 != 0)
+                if (mod8 != 0)
                 {
                     int mtidex = i;
                     byte* bmp = (byte*)(LP + i);
@@ -167,7 +202,7 @@ namespace Cheng.Algorithm.Randoms
                     mt[mtidex] = temp;
                 }
             }
-            
+
             StartInit:
 
             for (i = overIndex; i < N; i++)
@@ -179,7 +214,6 @@ namespace Cheng.Algorithm.Randoms
 
         private void f_init(long seed)
         {
-            mt = new ulong[N];
             mt[0] = (ulong)seed;
 
             for (int i = 1; i < N; i++)
@@ -187,21 +221,6 @@ namespace Cheng.Algorithm.Randoms
                 mt[i] = (6364136223846793005 * (mt[i - 1] ^ (mt[i - 1] >> 62)) + (ulong)i);
             }
             f_twist();
-        }
-
-        /// <summary>
-        /// 使用随机器状态数据实例化随机器
-        /// </summary>
-        /// <param name="state">随机器的状态对象</param>
-        /// <exception cref="ArgumentException">参数错误，例如随机表数组元素数量不是<see cref="RandomState.MatrixLength"/></exception>
-        public MersenneTwisterRandom(RandomState state)
-        {
-            if(state.matrix is null || state.matrix.Length != N)
-            {
-                throw new ArgumentException(Cheng.Properties.Resources.Exception_FuncArgError, nameof(state));
-            }
-            this.mt = (ulong[])state.matrix;
-            this.mti = state.index;
         }
 
         #endregion
@@ -217,6 +236,70 @@ namespace Cheng.Algorithm.Randoms
         #endregion
 
         #region 功能
+
+        #region 初始化
+
+        /// <summary>
+        /// 使用64位整数初始化随机器
+        /// </summary>
+        /// <param name="seed">要进行初始化的64位整数值</param>
+        public void InitRandom(long seed)
+        {
+            Array.Clear(mt, 0, N);
+            f_init(seed);
+        }
+
+        /// <summary>
+        /// 使用随机字节初始化随机器
+        /// </summary>
+        /// <param name="seed">要初始化的字节数组</param>
+        /// <param name="offset">要从字节数组指定位置开始读取</param>
+        /// <param name="size">从字节数组读取的字节大小，有效最大字节大小是2496字节</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public void InitRandom(byte[] seed, int offset, int size)
+        {
+            if (seed is null) throw new ArgumentNullException();
+            if (offset < 0 || size < 0 || (offset + size > seed.Length))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            Array.Clear(mt, 0, N);
+            fixed (byte* buffer = seed)
+            {
+                f_init(buffer + offset, size);
+            }
+        }
+
+        /// <summary>
+        /// 使用随机字节初始化随机器
+        /// </summary>
+        /// <param name="seed">要初始化的字节数组</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public void InitRandom(byte[] seed)
+        {
+            if (seed is null) throw new ArgumentNullException();
+            Array.Clear(mt, 0, N);
+            fixed (byte* buffer = seed)
+            {
+                f_init(buffer, seed.Length);
+            }
+        }
+
+        /// <summary>
+        /// 使用随机字节初始化随机器
+        /// </summary>
+        /// <param name="seed">指向要初始化的字节值的首地址</param>
+        /// <param name="size"><paramref name="seed"/>指向的位置可用字节容量</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public void InitRandom(CPtr<byte> seed, int size)
+        {
+            if (seed.IsEmpty) throw new ArgumentNullException();
+            Array.Clear(mt, 0, N);
+            f_init(seed.p_ptr, size);
+        }
+
+        #endregion
 
         public override SeedType SeedValueType => SeedType.None;
 
@@ -309,7 +392,6 @@ namespace Cheng.Algorithm.Randoms
             for (i = 0; i < len; i++)
             {
                 re = this.Generate();
-
                 buffer[i] = (uint)((re >> 32) ^ (re & uint.MaxValue));
             }
 
@@ -329,7 +411,7 @@ namespace Cheng.Algorithm.Randoms
 
         public override float NextFloat()
         {
-            return ((int)(Generate() % 8388607)) / 8388607F;
+            return ((float)(Generate() % 8388607)) / 8388607F;
         }
 
         public override double NextDouble()
