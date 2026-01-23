@@ -9,7 +9,7 @@ namespace Cheng.LoopThreads
 {
 
     /// <summary>
-    /// 表示一个封装的循环执行函数
+    /// 表示一个循环执行的线程函数
     /// </summary>
     public unsafe class LoopFunction : SafreleaseUnmanagedResources
     {
@@ -679,7 +679,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 每次进行一个协程枚举器推进成功后调用此函数
+        /// 每次进行一个协程枚举器推进成功后调用此函数（此函数为空实现）
         /// </summary>
         /// <param name="current">此次推进后的值</param>
         protected virtual void YieldEnumatorMoveNext(object current) { }
@@ -694,7 +694,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 第一次循环前调用
+        /// 第一次循环前调用（此函数为空实现）
         /// </summary>
         protected virtual void LoopStartInvoke() { }
 
@@ -724,7 +724,6 @@ namespace Cheng.LoopThreads
         private void f_loopFirst()
         {
             DateTime now = new DateTime(GetNowTimeTick());
-            
             p_lastTime = p_nowTime;
             p_nowTime = now;
 
@@ -733,7 +732,6 @@ namespace Cheng.LoopThreads
             p_runTime += p_nowFrameTime;
 
             p_nowScaleFrameTime = new TimeSpan((long)(p_nowFrameTime.Ticks * p_timeScale));
-
 
             p_lastScaleTime = p_nowScaleTime;
 
@@ -747,7 +745,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 每次循环的调用一次，此函数总是在所有循环事件发生前调用
+        /// 每次循环时调用一次，此函数总是在所有循环事件发生前调用（此函数为空实现）
         /// </summary>
         protected virtual void LoopFirst() { }
 
@@ -804,12 +802,12 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 每次循环的调用一次，此函数总是在所有循环事件发生后调用
+        /// 每次循环时调用一次，此函数总是在所有循环事件发生后调用（此函数为空实现）
         /// </summary>
         protected virtual void LoopEnd() { }
 
         /// <summary>
-        /// 每次<see cref="UpdateEvent"/>事件发生前调用
+        /// 每次<see cref="UpdateEvent"/>事件发生前调用（此函数为空实现）
         /// </summary>
         protected virtual void Update() { }
 
@@ -827,7 +825,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 所有<see cref="UpdateEvent"/>事件发生后调用
+        /// 所有<see cref="UpdateEvent"/>事件发生后调用（此函数为空实现）
         /// </summary>
         protected virtual void LateUpdate() { }
 
@@ -845,7 +843,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 每次<see cref="FixedUpdateEvent"/>事件发生前调用
+        /// 每次<see cref="FixedUpdateEvent"/>事件发生前调用（此函数为空实现）
         /// </summary>
         protected virtual void FixedUpdate() { }
 
@@ -868,7 +866,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 每次<see cref="FixedUpdateScaleEvent"/>事件发生前调用
+        /// 每次<see cref="FixedUpdateScaleEvent"/>事件发生前调用（此函数为空实现）
         /// </summary>
         protected virtual void FixedScaleUpdate() { }
 
@@ -921,7 +919,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 在循环退出时调用一次
+        /// 在循环退出时调用一次（此函数为空实现）
         /// </summary>
         protected virtual void ExitLoop() { }
 

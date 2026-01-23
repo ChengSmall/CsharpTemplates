@@ -338,10 +338,10 @@ namespace Cheng.Consoles
 
             #endregion
 
-            #region 鼠标
+            #region 光标
 
             /// <summary>
-            /// 鼠标事件 - 光标位置的水平坐标，以控制台屏幕缓冲区的字符单元格坐标为单位
+            /// 光标事件 - 光标位置的水平坐标，以控制台屏幕缓冲区的字符单元格坐标为单位
             /// </summary>
             public int Mouse_PositionX
             {
@@ -349,7 +349,7 @@ namespace Cheng.Consoles
             }
 
             /// <summary>
-            /// 鼠标事件 - 光标位置的垂直坐标，以控制台屏幕缓冲区的字符单元格坐标为单位
+            /// 光标事件 - 光标位置的垂直坐标，以控制台屏幕缓冲区的字符单元格坐标为单位
             /// </summary>
             public int Mouse_PositionY
             {
@@ -357,7 +357,7 @@ namespace Cheng.Consoles
             }
 
             /// <summary>
-            /// 鼠标事件 - 光标位置坐标，以控制台屏幕缓冲区的字符单元格坐标为单位
+            /// 光标事件 - 光标位置坐标，以控制台屏幕缓冲区的字符单元格坐标为单位
             /// </summary>
             public Cheng.DataStructure.Cherrsdinates.PointInt2 Mouse_Position
             {
@@ -365,7 +365,7 @@ namespace Cheng.Consoles
             }
 
             /// <summary>
-            /// 鼠标事件 - 鼠标按钮状态
+            /// 光标事件 - 鼠标按钮状态
             /// </summary>
             public MouseButtonState Mouse_ButtonState
             {
@@ -373,7 +373,7 @@ namespace Cheng.Consoles
             }
 
             /// <summary>
-            /// 鼠标事件 - 鼠标事件下的控制键状态
+            /// 光标事件 - 鼠标事件下的控制键状态
             /// </summary>
             public ControlKeyState Mouse_ControlState
             {
@@ -381,7 +381,7 @@ namespace Cheng.Consoles
             }
 
             /// <summary>
-            /// 鼠标事件 - 鼠标事件类型
+            /// 光标事件 - 鼠标事件类型
             /// </summary>
             public MouseEventFlags Mouse_EventFlags
             {

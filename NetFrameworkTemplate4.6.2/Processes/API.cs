@@ -3,12 +3,10 @@ using System.Runtime.InteropServices;
 namespace Cheng.Windows.Processes
 {
 
-    /// <summary>
-    /// 提供winapi接口
-    /// </summary>
-    public unsafe static class WinAPI
+    internal unsafe static class WinAPI
     {
 
+#if DEBUG
         /// <summary>
         /// 将数据写入到指定进程中的内存区域
         /// </summary>
@@ -26,10 +24,12 @@ namespace Cheng.Windows.Processes
         /// <para>该值为null时，忽略此参数</para>
         /// </param>
         /// <returns>成功写入返回true，否则返回false</returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool WriteProcessMemory(void* hProcess, void* writeAddress, void* writeBuffer, uint size, void* realWriteSize);
 
+#if DEBUG
         /// <summary>
         /// 读取指定进程中的内存
         /// </summary>
@@ -43,10 +43,12 @@ namespace Cheng.Windows.Processes
         /// <para>该值为null时，忽略此参数</para>
         /// </param>
         /// <returns>成功读取返回true，否则返回false</returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ReadProcessMemory(void* hProcess, void* readAddress, void* readBuffer, uint size, void* realReadSize);
 
+#if DEBUG
         /// <summary>
         /// 打开现有的本地进程对象
         /// </summary>
@@ -54,62 +56,76 @@ namespace Cheng.Windows.Processes
         /// <param name="bInheritHandle">如果此值为true，则此进程创建的进程将继承句柄</param>
         /// <param name="processId">要打开的本地进程的标识符</param>
         /// <returns>返回打开的进程句柄；若失败则返回null</returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern void* OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int processId);
 
+#if DEBUG
         /// <summary>
         /// 当前调用堆栈所在进程的唯一标识符
         /// </summary>
         /// <returns>进程终止之前的唯一标识符</returns>
+#endif
         [DllImport("kernel32.dll")]
         public static extern int GetCurrentProcessId();
 
+#if DEBUG
         /// <summary>
         /// 关闭打开的对象句柄
         /// </summary>
         /// <param name="hObject">对象句柄</param>
         /// <returns>成功关闭返回true，否则返回false</returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseHandle(void* hObject);
 
+#if DEBUG
         /// <summary>
         /// 返回指定句柄的进程ID
         /// </summary>
         /// <param name="proHandle">进程句柄</param>
         /// <returns>成功返回进程句柄，否则返回0</returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern uint GetProcessId(void* proHandle);
 
+#if DEBUG
         /// <summary>
         /// 确定指定的进程是在 WOW64 还是 x64 处理器的 Intel64 下运行
         /// </summary>
         /// <param name="proHandle">进程的句柄</param>
         /// <param name="wow64Process">指向判断值的指针，0表示false；非0表示true</param>
         /// <returns>是否成功</returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWow64Process(void* proHandle, int* wow64Process);
 
+#if DEBUG
         /// <summary>
         /// 检索调用线程的线程本地存储槽中的值
         /// </summary>
         /// <remarks>进程中的每个线程都具有自己的针对每个 TLS 索引的槽</remarks>
         /// <param name="index">TlsAlloc 函数分配的 TLS 索引</param>
         /// <returns></returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern void* TlsGetValue(uint index);
 
+#if DEBUG
         /// <summary>
         /// 将值存储在调用线程的线程本地存储 (指定 TLS 索引的 TLS) 槽中
         /// </summary>
         /// <param name="index">TLS 索引</param>
         /// <param name="lpTlsValue">要存储在索引的调用线程的 TLS 槽中的值</param>
         /// <returns>成功返回true，否则为false；调用GetLastError获取错误信息</returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool TlsSetValue(uint index, void* lpTlsValue);
 
+#if DEBUG
         /// <summary>
         /// 分配线程本地存储 (TLS) 索引
         /// </summary>
@@ -120,14 +136,17 @@ namespace Cheng.Windows.Processes
         /// 如果函数成功，则返回值为 TLS 索引；索引的槽初始化为零
         /// <para>如果函数失败，则返回<see cref="uint.MaxValue"/>；要获得更多的错误信息，请调用GetLastError</para>
         /// </returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern uint TlsAlloc();
 
+#if DEBUG
         /// <summary>
         /// 释放线程本地存储 (TLS) 索引
         /// </summary>
         /// <param name="lpTlsIndex">TLS索引</param>
         /// <returns>是否成功；失败请调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
+#endif
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool TlsFree(uint lpTlsIndex);
@@ -135,3 +154,5 @@ namespace Cheng.Windows.Processes
     }
 
 }
+#if DEBUG
+#endif

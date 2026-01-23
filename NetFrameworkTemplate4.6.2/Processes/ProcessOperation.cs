@@ -130,13 +130,18 @@ namespace Cheng.Windows.Processes
         private Process p_process;
         private void* p_handle;
 
+#if DEBUG
         /// <summary>
         /// 是独立句柄
         /// </summary>
+#endif
         private bool p_independentHandle;
+
+#if DEBUG
         /// <summary>
         /// 是否释放Process
         /// </summary>
+#endif
         private bool p_isFreeProcess;
         #endregion
 
@@ -510,3 +515,5 @@ namespace Cheng.Windows.Processes
     }
 
 }
+#if DEBUG
+#endif

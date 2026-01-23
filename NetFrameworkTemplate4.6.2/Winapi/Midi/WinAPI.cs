@@ -107,7 +107,7 @@ namespace Cheng.Windows.MIDI
         /// <summary>
         /// 缓冲区仍在队列中
         /// </summary>
-        StillPlaying,
+        StillPlaying = 64 + 1,
     }
 
 
@@ -210,7 +210,7 @@ namespace Cheng.Windows.MIDI
         /// <returns>
         /// <para>返回 MIDI 输出设备的数量；返回值为零表示系统中没有设备（不代表没有错误）</para>
         /// </returns>
-        [DllImport(dllName)]
+        [DllImport(dllName, SetLastError = true)]
         public static extern uint midiOutGetNumDevs();
 
     }

@@ -233,7 +233,7 @@ namespace Cheng.Consoles
         public static int ReadConsoleInput(IntPtr handle, InputRecord[] buffer, int index, int count)
         {
             if (buffer is null || handle == IntPtr.Zero) throw new ArgumentNullException();
-            if (index < 0 || count < 0 || (index + count) > buffer.Length) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (index + count) > buffer.Length) throw new ArgumentOutOfRangeException();
             uint re;
             fixed (InputRecord* bufptr = buffer)
             {
@@ -301,7 +301,7 @@ namespace Cheng.Consoles
         public static int PeekConsoleInput(IntPtr handle, InputRecord[] buffer, int index, int count)
         {
             if (buffer is null || handle == IntPtr.Zero) throw new ArgumentNullException();
-            if (index < 0 || count < 0 || (index + count) > buffer.Length) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (index + count) > buffer.Length) throw new ArgumentOutOfRangeException();
             uint re;
             fixed (InputRecord* bufptr = buffer)
             {
@@ -346,22 +346,6 @@ namespace Cheng.Consoles
             }
 
             return (int)rec;
-        }
-
-        /// <summary>
-        /// 检索控制台输入缓冲区中未读输入记录的数量
-        /// </summary>
-        /// <param name="handle">控制台输入缓冲区的句柄</param>
-        /// <param name="count">控制台输入缓冲区中未读输入记录的数量</param>
-        /// <returns>是否成功获取</returns>
-        public static bool GetConsoleInputEventCount(IntPtr handle, out int count)
-        {
-            count = 0;
-            if (handle == IntPtr.Zero) return false;
-            uint rec;
-            bool rb = winapi_GetNumberOfConsoleInputEvents(handle, &rec) != 0;
-            count = (int)rec;
-            return rb;
         }
 
         /// <summary>
@@ -432,7 +416,7 @@ namespace Cheng.Consoles
         /// 从控制台输入缓冲区读取数据，并将其从缓冲区删除
         /// </summary>
         /// <remarks>
-        /// https://learn.microsoft.com/zh-cn/windows/console/readconsoleinput
+        /// <see href="https://learn.microsoft.com/zh-cn/windows/console/readconsoleinput"/>
         /// </remarks>
         /// <param name="hConsoleInput">控制台输入缓冲区的句柄；该句柄必须具有 GENERIC_READ 访问权限</param>
         /// <param name="lpBuffer">指向接收输入缓冲区数据的 <see cref="InputRecord"/> 结构数组</param>

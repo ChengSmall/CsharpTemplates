@@ -10,6 +10,7 @@ namespace Cheng.LoopThreads
     /// <summary>
     /// 循环线程的事件委托
     /// </summary>
+    /// <typeparam name="T">事件参数类型</typeparam>
     /// <param name="loop">引发此事件的实例</param>
     /// <param name="obj">事件对应的参数</param>
     public delegate void LoopThreadAction<in T>(LoopFunction loop, T obj);
@@ -19,6 +20,15 @@ namespace Cheng.LoopThreads
     /// </summary>
     /// <param name="loop">引发此事件的实例</param>
     public delegate void LoopThreadAction(LoopFunction loop);
+
+    /// <summary>
+    /// 循环线程的事件委托
+    /// </summary>
+    /// <typeparam name="T">事件参数类型</typeparam>
+    /// <typeparam name="TL">引发此事件实例的运行时类型</typeparam>
+    /// <param name="loop">引发此事件的实例</param>
+    /// <param name="args">事件对应的参数</param>
+    public delegate void LoopThreadAction<in T, in TL>(TL loop, T args) where TL : LoopFunction;
 
     #endregion
 
