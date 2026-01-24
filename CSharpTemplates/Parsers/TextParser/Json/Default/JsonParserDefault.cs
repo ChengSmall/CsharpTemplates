@@ -56,6 +56,7 @@ namespace Cheng.Json
         private CultureInfo p_cultureInfo;
 
         private char[] p_charArrayBuffer;
+
         private string p_newLine;
         private ConverDictionaryType p_converDictType;
 
@@ -1360,7 +1361,7 @@ namespace Cheng.Json
 
                 if (flag)
                 {
-                    json = new JsonBoolean(flag2);
+                    json = JsonVariable.GetBooleanValue(flag2);
                     return true;
                 }
                 return false;

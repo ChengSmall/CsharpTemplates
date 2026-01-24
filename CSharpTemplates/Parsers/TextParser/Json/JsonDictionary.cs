@@ -10,7 +10,7 @@ namespace Cheng.Json
     /// <summary>
     /// 表示一个键值对集合类型的json对象
     /// </summary>
-    public sealed class JsonDictionary : JsonVariable, IDictionary<string, JsonVariable>
+    public sealed class JsonDictionary : JsonVariable, IDictionary<string, JsonVariable>, IReadOnlyDictionary<string, JsonVariable>
     {
 
         #region 构造
@@ -202,7 +202,7 @@ namespace Cheng.Json
         /// <exception cref="ArgumentNullException">key为null</exception>
         public void Add(string key, bool value)
         {
-            p_dict.Add(key, new JsonBoolean(value));
+            p_dict.Add(key, JsonVariable.GetBooleanValue(value));
         }
 
         /// <summary>
@@ -343,6 +343,10 @@ namespace Cheng.Json
         public override bool IsNull => false;
 
         public override JsonDictionary JsonObject => this;
+
+        IEnumerable<string> IReadOnlyDictionary<string, JsonVariable>.Keys => p_dict.Keys;
+
+        IEnumerable<JsonVariable> IReadOnlyDictionary<string, JsonVariable>.Values => p_dict.Values;
 
         public override int GetHashCode()
         {

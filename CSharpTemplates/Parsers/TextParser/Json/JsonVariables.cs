@@ -63,33 +63,30 @@ namespace Cheng.Json
         const string NotDataTypeException = "不是此数据类型";
 
         /// <summary>
-        /// 访问或设置整数
+        /// 访问整数
         /// </summary>
         /// <exception cref="NotImplementedException">不是此类型数据</exception>
         public virtual long Integer
         {
             get => throw new NotImplementedException(NotDataTypeException);
-            set => throw new NotImplementedException(NotDataTypeException);
         }
 
         /// <summary>
-        /// 访问或设置实数
+        /// 访问实数
         /// </summary>
         /// <exception cref="NotImplementedException">不是此类型数据</exception>
         public virtual double RealNum
         {
             get => throw new NotImplementedException(NotDataTypeException);
-            set => throw new NotImplementedException(NotDataTypeException);
         }
 
         /// <summary>
-        /// 访问或设置布尔值
+        /// 访问布尔值
         /// </summary>
         /// <exception cref="NotImplementedException">不是此类型数据</exception>
         public virtual bool Boolean
         {
             get => throw new NotImplementedException(NotDataTypeException);
-            set => throw new NotImplementedException(NotDataTypeException);
         }
 
         /// <summary>
@@ -99,7 +96,6 @@ namespace Cheng.Json
         public virtual string String
         {
             get => throw new NotImplementedException(NotDataTypeException);
-            set => throw new NotImplementedException(NotDataTypeException);
         }
 
         /// <summary>
@@ -239,14 +235,6 @@ namespace Cheng.Json
         public static JsonVariable CreateString(string value)
         {
             return new JsonString(value);
-        }
-
-        /// <summary>
-        /// 表示null的json对象
-        /// </summary>
-        public static JsonVariable JsonNullValue
-        {
-            get => JsonNull.Nullable;
         }
 
         #endregion
@@ -709,6 +697,57 @@ namespace Cheng.Json
 
         #endregion
 
+        #region 常量
+
+        private sealed class c_ConstJson
+        {
+            public c_ConstJson()
+            {
+                btrue = new JsonBoolean(true);
+                bfalse = new JsonBoolean(false);
+            }
+            public JsonBoolean btrue;
+            public JsonBoolean bfalse;
+
+            public readonly static c_ConstJson cp_obj = new c_ConstJson();
+        }
+
+        /// <summary>
+        /// 表示null的json对象
+        /// </summary>
+        public static JsonVariable JsonNullValue
+        {
+            get => JsonNull.Nullable;
+        }
+
+        /// <summary>
+        /// 表示布尔值true的json对象
+        /// </summary>
+        public static JsonVariable JsonTrueValue
+        {
+            get => c_ConstJson.cp_obj.btrue;
+        }
+
+        /// <summary>
+        /// 表示布尔值false的json对象
+        /// </summary>
+        public static JsonVariable JsonFalseValue
+        {
+            get => c_ConstJson.cp_obj.bfalse;
+        }
+
+        /// <summary>
+        /// 根据布尔参数获取json布尔值常量
+        /// </summary>
+        /// <param name="value">判断参数</param>
+        /// <returns>布尔类型的json对象</returns>
+        public static JsonVariable GetBooleanValue(bool value)
+        {
+            return value ? JsonTrueValue : JsonFalseValue;
+        }
+
+        #endregion
+
         #endregion
 
     }
@@ -821,7 +860,7 @@ namespace Cheng.Json
         /// <summary>
         /// 数据
         /// </summary>
-        public long value;
+        public readonly long value;
         #endregion
 
         #region 派生
@@ -831,10 +870,6 @@ namespace Cheng.Json
         public override long Integer
         {
             get => value;
-            set
-            {
-                this.value = value;
-            }
         }
 
         public override bool IsNumberType => true;
@@ -999,7 +1034,7 @@ namespace Cheng.Json
         /// <summary>
         /// 数据
         /// </summary>
-        public double value;
+        public readonly double value;
 
         #endregion
 
@@ -1009,7 +1044,7 @@ namespace Cheng.Json
 
         public override double RealNum
         {
-            get => value; set => this.value = value;
+            get => value;
         }
 
         public override bool IsNull => false;
@@ -1172,7 +1207,7 @@ namespace Cheng.Json
         /// <summary>
         /// 数据
         /// </summary>
-        public bool value;
+        public readonly bool value;
 
         /// <summary>
         /// 值为true时的json文本
@@ -1183,6 +1218,7 @@ namespace Cheng.Json
         /// 值为false时的json文本
         /// </summary>
         public const string FalseJsonText = "false";
+
         #endregion
 
         #region 派生
@@ -1192,7 +1228,6 @@ namespace Cheng.Json
         public override bool Boolean
         {
             get => value;
-            set => this.value = value;
         }
 
         public override object Data => value;
@@ -1287,19 +1322,15 @@ namespace Cheng.Json
 
         #region 参数
 
-        private string value;
+        private readonly string value;
 
         /// <summary>
-        /// 访问或设置字符串数据
+        /// 访问字符串数据
         /// </summary>
         /// <value>设置为null则表示空字符串</value>
         public string Value
         {
             get => value;
-            set
-            {
-                this.value = (value is null) ? string.Empty : value;
-            }
         }
 
         #endregion
@@ -1314,7 +1345,6 @@ namespace Cheng.Json
         public override string String
         {
             get => value;
-            set => this.value = (value is null) ? string.Empty : value;
         }
 
         public override object Data => value;

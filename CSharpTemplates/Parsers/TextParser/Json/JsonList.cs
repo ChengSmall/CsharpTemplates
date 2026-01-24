@@ -192,7 +192,7 @@ namespace Cheng.Json
             }
             set
             {
-                p_list[index] = (value is null) ? JsonNull.Nullable : value;
+                p_list[index] = value ?? JsonNull.Nullable;
             }
         }
 
@@ -204,8 +204,6 @@ namespace Cheng.Json
         private void insert(int index, JsonVariable json)
         {
             p_list.Insert(index, json ?? JsonNull.Nullable);
-            //if (json is null) p_list.Insert(index, JsonNull.Nullable);
-            //else p_list.Insert(index, json ?? JsonNull.Nullable);
         }
 
         /// <summary>
@@ -241,7 +239,7 @@ namespace Cheng.Json
         /// <param name="value"></param>
         public void Add(bool value)
         {
-            p_list.Add(new JsonBoolean(value));
+            p_list.Add(JsonVariable.GetBooleanValue(value));
         }
 
         /// <summary>

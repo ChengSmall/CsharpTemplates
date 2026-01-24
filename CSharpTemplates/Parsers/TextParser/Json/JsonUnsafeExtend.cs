@@ -8,7 +8,7 @@ namespace Cheng.Json
 {
 
     /// <summary>
-    /// Json数据不安全扩展功能
+    /// Json数据不安全扩展
     /// </summary>
     public static class JsonUnsafeExtend
     {
