@@ -12,7 +12,7 @@ namespace Cheng.Json
     /// <summary>
     /// 表示一个集合类型的json对象
     /// </summary>
-    public sealed class JsonList : JsonVariable, IList<JsonVariable>
+    public sealed class JsonList : JsonVariable, IList<JsonVariable>, IReadOnlyList<JsonVariable>
     {
 
         #region 构造
