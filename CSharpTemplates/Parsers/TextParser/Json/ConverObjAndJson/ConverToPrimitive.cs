@@ -161,7 +161,7 @@ namespace Cheng.Json.Convers
 
         public override JsonVariable ToJsonVariable(bool obj)
         {
-            return JsonVariable.CreateBoolean(obj);
+            return JsonVariable.GetBooleanValue(obj);
         }
 
         public override bool ToObj(JsonVariable json)

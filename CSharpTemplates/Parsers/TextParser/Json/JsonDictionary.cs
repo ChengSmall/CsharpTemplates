@@ -20,7 +20,7 @@ namespace Cheng.Json
         /// </summary>
         public JsonDictionary()
         {
-            p_dict = new Dictionary<string, JsonVariable>(Cheng.DataStructure.Collections.BinaryStringEqualComparer.Default);
+            p_dict = new Dictionary<string, JsonVariable>(StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Cheng.Json
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/>小于0</exception>
         public JsonDictionary(int capacity)
         {
-            p_dict = new Dictionary<string, JsonVariable>(capacity, Cheng.DataStructure.Collections.BinaryStringEqualComparer.Default);
+            p_dict = new Dictionary<string, JsonVariable>(capacity, StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Cheng.Json
         /// <param name="comparer">指定key的比较器和哈希算法，null使用默认的值比较器</param>
         public JsonDictionary(IEqualityComparer<string> comparer)
         {
-            p_dict = new Dictionary<string, JsonVariable>(comparer ?? BinaryStringEqualComparer.Default);
+            p_dict = new Dictionary<string, JsonVariable>(comparer ?? StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Cheng.Json
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="comparer"/> 小于 0</exception>
         public JsonDictionary(int capacity, IEqualityComparer<string> comparer)
         {
-            p_dict = new Dictionary<string, JsonVariable>(capacity, comparer ?? BinaryStringEqualComparer.Default);
+            p_dict = new Dictionary<string, JsonVariable>(capacity, comparer ?? StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Cheng.Json
         public JsonDictionary(JsonDictionary json)
         {
             if (json is null) throw new ArgumentNullException();
-            p_dict = new Dictionary<string, JsonVariable>(json, json.p_dict.Comparer);
+            p_dict = new Dictionary<string, JsonVariable>(json.Count, json.p_dict.Comparer);
 
             foreach (var pair in json.p_dict)
             {
@@ -78,6 +78,7 @@ namespace Cheng.Json
         public JsonDictionary(IEnumerable<KeyValuePair<string, JsonVariable>> pairs, IEqualityComparer<string> comparer)
         {
             if (pairs is null) throw new ArgumentNullException();
+            if (comparer is null) comparer = StringComparer.Ordinal;
             int count;
             if(pairs is ICollection<KeyValuePair<string, JsonVariable>>)
             {
@@ -92,7 +93,7 @@ namespace Cheng.Json
                 count = 0;
             }
 
-            p_dict = new Dictionary<string, JsonVariable>(count, comparer ?? BinaryStringEqualComparer.Default);
+            p_dict = new Dictionary<string, JsonVariable>(count, comparer);
 
             foreach (var pair in pairs)
             {

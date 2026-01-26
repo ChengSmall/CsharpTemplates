@@ -86,22 +86,25 @@ namespace Cheng.Texts
 
         public override void WriteLine()
         {
-            p_buf.AppendLine();
+            p_buf.Append(CoreNewLine);
         }
 
         public override void WriteLine(char[] buffer, int index, int count)
         {
-            p_buf.AppendLine(buffer, index, count);
+            p_buf.Append(buffer, index, count);
+            p_buf.Append(CoreNewLine);
         }
 
         public override void WriteLine(char[] buffer)
         {
             p_buf.Append(buffer);
+            p_buf.Append(CoreNewLine);
         }
 
         public override void WriteLine(string value)
         {
-            p_buf.AppendLine(value);
+            p_buf.Append(value);
+            p_buf.Append(CoreNewLine);
         }
 
         #endregion

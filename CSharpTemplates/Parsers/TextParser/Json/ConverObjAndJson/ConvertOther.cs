@@ -221,7 +221,8 @@ namespace Cheng.Json.Convers
 
         public override JsonVariable ToJsonVariable(T obj)
         {
-            return obj?.Clone();
+            if (obj is null) return JsonVariable.JsonNullValue;
+            return obj.Clone();
         }
 
         public override T ToObj(JsonVariable json)

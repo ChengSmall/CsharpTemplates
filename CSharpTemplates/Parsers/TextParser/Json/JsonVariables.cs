@@ -337,7 +337,10 @@ namespace Cheng.Json
         /// 创建一个与当前对象内容相同的新对象
         /// </summary>
         /// <returns>与当前对象内容相同的新对象</returns>
-        public abstract JsonVariable Clone();
+        public virtual JsonVariable Clone()
+        {
+            return this;
+        }
 
         #region 运算符重载
 
@@ -901,10 +904,7 @@ namespace Cheng.Json
 
         public override bool IsNull => false;
 
-        public override JsonVariable Clone()
-        {
-            return new JsonInteger(value);
-        }
+        public override JsonVariable Clone() => this;
 
         public override string ToString()
         {
@@ -1092,10 +1092,7 @@ namespace Cheng.Json
             return value.GetHashCode64();
         }
 
-        public override JsonVariable Clone()
-        {
-            return new JsonRealNumber(value);
-        }
+        public override JsonVariable Clone() => this;
 
         public override bool Equals(JsonVariable other)
         {
@@ -1253,10 +1250,7 @@ namespace Cheng.Json
             return value.GetHashCode64();
         }
 
-        public override JsonVariable Clone()
-        {
-            return new JsonBoolean(value);
-        }
+        public override JsonVariable Clone() => this;
 
         public override string ToString()
         {
@@ -1327,7 +1321,6 @@ namespace Cheng.Json
         /// <summary>
         /// 访问字符串数据
         /// </summary>
-        /// <value>设置为null则表示空字符串</value>
         public string Value
         {
             get => value;
@@ -1370,10 +1363,7 @@ namespace Cheng.Json
             return value.GetHashCode64();
         }
 
-        public override JsonVariable Clone()
-        {
-            return new JsonString(value);
-        }
+        public override JsonVariable Clone() => this;
 
         public static implicit operator JsonString(string value)
         {

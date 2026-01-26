@@ -69,14 +69,18 @@ namespace Cheng.Texts
 
         private char[] p_charBuffer;
 
+#if DEBUG
         /// <summary>
         /// 缓冲区当前推进索引
         /// </summary>
+#endif
         private int p_bufferPos;
 
+#if DEBUG
         /// <summary>
         /// 缓冲区可用长度
         /// </summary>
+#endif
         private int p_bufferLength;
 
         private bool p_isDisposeBaseReader;

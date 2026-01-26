@@ -19,17 +19,13 @@ namespace Cheng.Unitys
 
         static GameParameters p_par;
 
-        //[RuntimeInitializeOnLoadMethod]
-
         /// <summary>
         /// 初始化参数配置
         /// </summary>
+        [RuntimeInitializeOnLoadMethod]
         public static void InitUnityGame()
         {
-            if (p_par is null)
-            {
-                p_par = new GameParameters();
-            }
+            p_par = new GameParameters();
         }
 
         /// <summary>

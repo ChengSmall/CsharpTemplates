@@ -72,9 +72,11 @@ namespace Cheng.Texts
 
         private char[] p_charBuffer;
 
+#if DEBUG
         /// <summary>
         /// 缓冲区写入字符数量
         /// </summary>
+#endif
         private int p_bufferLen;
 
         private bool p_isDosposeBaseWriter;
