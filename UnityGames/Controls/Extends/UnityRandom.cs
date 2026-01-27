@@ -11,7 +11,7 @@ namespace Cheng.Algorithm.Randoms.Extends
     /// <summary>
     /// 随机数生成器Unity扩展方法
     /// </summary>
-    public static class UnityRandom
+    public static class UnityRandomExtend
     {
 
         #region 

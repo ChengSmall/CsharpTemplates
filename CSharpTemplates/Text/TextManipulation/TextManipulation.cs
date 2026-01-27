@@ -649,6 +649,233 @@ namespace Cheng.Texts
 
         #endregion
 
+        #region 换行符
+
+        /// <summary>
+        /// 检索指定字符串内的换行符并将所有可能的换行符转换为当前系统指定的换行符
+        /// </summary>
+        /// <param name="charBuffer">指向字符串的指针</param>
+        /// <param name="length">字符串的字符数量</param>
+        /// <param name="newLine">将换行符替换的目标字符串</param>
+        /// <param name="append">转换后要添加到的字符串缓冲区</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static void ToStdNewLineByAddress(char* charBuffer, int length, string newLine, StringBuilder append)
+        {
+            if (append is null || charBuffer == null) throw new ArgumentNullException();
+            if (length == 0) return;
+            int i;
+            char c;
+            for (i = 0; i < length; i++)
+            {
+                c = charBuffer[i];
+                if (c == '\n' || c == '\r')
+                {
+                    goto IsNewLine;
+                }
+            }
+            append.Append(charBuffer, length);
+            return;
+
+            IsNewLine:
+            //存在可能的换行符
+
+            if (i != 0)
+            {
+                //添加之前的已遍历字符串
+                append.Append(charBuffer, i);
+            }
+
+            while (i < length)
+            {
+                c = charBuffer[i];
+
+                if (c == '\n')
+                {
+                    //是标准\n换行符
+                    append.Append(newLine);
+                    i++;
+                    continue;
+                }
+
+                if (c == '\r')
+                {
+                    i++;
+                    if (i == length)
+                    {
+                        //到达结尾
+                        //添加换行符
+                        append.Append(newLine);
+                        break;
+                    }
+                    //获取下一个字符
+                    var n = charBuffer[i];
+                    if (n == '\n')
+                    {
+                        //属于微软换行符\r\n
+                        append.Append(newLine);
+                        i++;
+                        continue;
+                    }
+
+                    //只有一个\r照常
+                    append.Append(c);
+                    continue;
+                }
+
+                //添加
+                append.Append(c);
+                //推进
+                i++;
+            }
+
+        }
+
+        /// <summary>
+        /// 检索指定字符串内的换行符并将所有可能的换行符转换为当前系统指定的换行符
+        /// </summary>
+        /// <param name="value">字符串</param>
+        /// <returns>转换后的新字符串实例，如果没有找到换行符返回字符串本身</returns>
+        public static string ToStdNewLine(this string value)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            return ToStdNewLine(value, Environment.NewLine);
+        }
+
+        /// <summary>
+        /// 检索指定字符串内的换行符并将所有可能的换行符转换为当前系统指定的换行符
+        /// </summary>
+        /// <param name="value">字符串</param>
+        /// <param name="newLine">将换行符替换的目标字符串</param>
+        /// <returns>转换后的新字符串实例，如果没有找到换行符返回字符串本身</returns>
+        public static string ToStdNewLine(this string value, string newLine)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+
+            fixed (char* charBuffer = value)
+            {
+                int i;
+                char c;
+                var length = value.Length;
+                for (i = 0; i < length; i++)
+                {
+                    c = charBuffer[i];
+                    if (c == '\n' || c == '\r')
+                    {
+                        goto IsNewLine;
+                    }
+                }
+                return value;
+
+                IsNewLine:
+                //存在可能的换行符
+
+                StringBuilder sb;
+                if (length < 4)
+                {
+                    sb = new StringBuilder();
+                }
+                else
+                {
+                    sb = new StringBuilder(length);
+                }
+
+                if (i != 0)
+                {
+                    //添加之前的已遍历字符串
+                    sb.Append(charBuffer, i);
+                }
+
+                while (i < length)
+                {
+                    c = charBuffer[i];
+
+                    if (c == '\n')
+                    {
+                        //是标准\n换行符
+                        sb.Append(newLine);
+                        i++;
+                        continue;
+                    }
+
+                    if (c == '\r')
+                    {
+                        i++;
+                        if (i == length)
+                        {
+                            //到达结尾
+                            //添加换行符
+                            sb.Append(newLine);
+                            break;
+                        }
+                        //获取下一个字符
+                        var n = charBuffer[i];
+                        if (n == '\n')
+                        {
+                            //属于微软换行符\r\n
+                            sb.Append(newLine);
+                            i++;
+                            continue;
+                        }
+
+                        //只有一个\r照常
+                        sb.Append(c);
+                        continue;
+                    }
+
+                    //添加
+                    sb.Append(c);
+                    //推进
+                    i++;
+                }
+
+                return sb.ToString();
+            }
+        }
+
+        /// <summary>
+        /// 检索指定字符串范围内的换行符并将所有可能的换行符转换为当前系统指定的换行符
+        /// </summary>
+        /// <param name="value">字符串</param>
+        /// <param name="startIndex">要检索起始位置</param>
+        /// <param name="count">转换的字符数量</param>
+        /// <returns>转换后的新字符串实例</returns>
+        /// <exception cref="ArgumentOutOfRangeException">索引参数超出范围</exception>
+        public static string ToStdNewLine(this string value, int startIndex, int count)
+        {
+            return ToStdNewLine(value, startIndex, count, Environment.NewLine);
+        }
+
+        /// <summary>
+        /// 检索指定字符串范围内的换行符并将所有可能的换行符转换为指定的换行符
+        /// </summary>
+        /// <param name="value">字符串</param>
+        /// <param name="startIndex">要检索起始位置</param>
+        /// <param name="count">转换的字符数量</param>
+        /// <param name="newLine">将换行符替换的目标字符串</param>
+        /// <returns>转换后的新字符串实例</returns>
+        /// <exception cref="ArgumentOutOfRangeException">索引参数超出范围</exception>
+        public static string ToStdNewLine(this string value, int startIndex, int count, string newLine)
+        {
+            if (value is null) throw new ArgumentNullException();
+            if (startIndex < 0 || count < 0 || (startIndex + count > value.Length)) throw new ArgumentNullException();
+            if (count == 0) return string.Empty;
+            fixed (char* charBuffer = value)
+            {
+                StringBuilder sb;
+                if(count < 4)
+                {
+                    sb = new StringBuilder();
+                }
+                else
+                {
+                    sb = new StringBuilder(count);
+                }
+                ToStdNewLineByAddress(charBuffer + startIndex, count, newLine, sb);
+                return sb.ToString();
+            }
+        }
+
+        #endregion
 
     }
 

@@ -49,6 +49,9 @@ namespace Cheng.DataStructure.Texts
         private readonly int p_count;
         private readonly int p_uniCount;
 
+        /// <summary>
+        /// 当前循环枚举器可访问多少字符
+        /// </summary>
         public int Count => p_count - p_uniCount;
 
         /// <summary>
@@ -72,6 +75,9 @@ namespace Cheng.DataStructure.Texts
 
         #region 结构
 
+        /// <summary>
+        /// 循环访问字符的枚举器
+        /// </summary>
         public struct UnicharEnumator : IEnumerator<Unichar>
         {
             internal UnicharEnumator(string value, int index, int count)
@@ -126,7 +132,7 @@ namespace Cheng.DataStructure.Texts
 
             object IEnumerator.Current => Current;
 
-            public void Dispose()
+            void IDisposable.Dispose()
             {
                 p_char = default;
                 p_index = p_end + 1;
@@ -227,9 +233,67 @@ namespace Cheng.DataStructure.Texts
     }
 
     /// <summary>
+    /// 快速可循环访问<see cref="Unichar"/>的枚举器
+    /// </summary>
+    public readonly ref struct UnicharEnumeratorSpan
+    {
+
+        /// <summary>
+        /// 初始化一个枚举器，使用指定字符串
+        /// </summary>
+        /// <param name="value">要循环访问的字符串</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public UnicharEnumeratorSpan(string value)
+        {
+            p_str = value ?? throw new ArgumentNullException();
+            p_index = 0;
+            p_count = value.Length;
+
+            p_uniCount = UnicharEnumerator.f_getUnicharCount(value, 0, p_count);
+        }
+
+        /// <summary>
+        /// 初始化一个枚举器，使用指定字符串范围
+        /// </summary>
+        /// <param name="value">要循环访问的字符串</param>
+        /// <param name="index">指定初始索引</param>
+        /// <param name="count">指定<see cref="char"/>字符数</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定索引超出字符串范围</exception>
+        public UnicharEnumeratorSpan(string value, int index, int count)
+        {
+            p_str = value ?? throw new ArgumentNullException();
+            if (index < 0 || index + count > value.Length) throw new ArgumentOutOfRangeException();
+            p_index = index;
+            p_count = count;
+
+            p_uniCount = UnicharEnumerator.f_getUnicharCount(value, index, count);
+        }
+
+        private readonly string p_str;
+        private readonly int p_index;
+        private readonly int p_count;
+        private readonly int p_uniCount;
+
+        /// <summary>
+        /// 当前循环枚举器可访问多少字符
+        /// </summary>
+        public int Count => p_count - p_uniCount;
+
+        /// <summary>
+        /// 返回一个循环访问字符的枚举器
+        /// </summary>
+        /// <returns></returns>
+        public UnicharEnumerator.UnicharEnumator GetEnumerator()
+        {
+            return new UnicharEnumerator.UnicharEnumator(p_str, p_index, p_count);
+        }
+    }
+
+    /// <summary>
     /// 代理项字符扩展方法
     /// </summary>
-    public static class UnicharExtend
+    public static unsafe class UnicharExtend
     {
 
         #region
