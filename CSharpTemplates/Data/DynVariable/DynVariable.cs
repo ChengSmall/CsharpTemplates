@@ -323,33 +323,41 @@ namespace Cheng.DataStructure.DynamicVariables
         /// <summary>
         /// 表示空值的对象
         /// </summary>
-        public static DynVariable EmptyValue => sp_constVar.p_empty;
+        public static DynVariable EmptyValue => c_constVar.sp_constVar.p_empty;
 
         /// <summary>
         /// 值为true的布尔值
         /// </summary>
-        public static DynVariable BooleanTrue => sp_constVar.p_true;
+        public static DynVariable BooleanTrue => c_constVar.sp_constVar.p_true;
 
         /// <summary>
         /// 值为false的布尔值
         /// </summary>
-        public static DynVariable BooleanFalse => sp_constVar.p_false;
+        public static DynVariable BooleanFalse => c_constVar.sp_constVar.p_false;
+
+        /// <summary>
+        /// 根据布尔值获取布尔数据对象
+        /// </summary>
+        /// <param name="value">要获取的值</param>
+        /// <returns>按<paramref name="value"/>判断返回<see cref="BooleanTrue"/>或<see cref="BooleanFalse"/></returns>
+        public static DynVariable GetBooleanValue(bool value)
+        {
+            return value ? c_constVar.sp_constVar.p_true : c_constVar.sp_constVar.p_false;
+        }
 
         #region
 
-        private static readonly c_constVar sp_constVar = f_createConstVar();
-
-        static c_constVar f_createConstVar()
+        private sealed class c_constVar
         {
-            c_constVar var;
-            var.p_empty = CreateEmpty();
-            var.p_true = CreateBoolean(true);
-            var.p_false = CreateBoolean(false);
-            return var;
-        }
+            private c_constVar()
+            {
+                p_empty = CreateEmpty();
+                p_true = new DynBoolean(true);
+                p_false = new DynBoolean(false);
+            }
 
-        private struct c_constVar
-        {
+            public static readonly c_constVar sp_constVar = new c_constVar();
+
             public DynVariable p_true;
             public DynVariable p_false;
             public DynVariable p_empty;

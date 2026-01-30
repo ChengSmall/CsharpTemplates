@@ -58,9 +58,12 @@ namespace Cheng.Json
         private char[] p_charArrayBuffer;
 
         private string p_newLine;
-        private ConverDictionaryType p_converDictType;
+
+        private IEqualityComparer<string> p_dictKeyEqual;
 
         private NumberStyles p_numStyles;
+
+        private ConverDictionaryType p_converDictType;
 
         private bool p_toJsonTextNewLine;
         private bool p_JsonNotConverNumToString;
@@ -1382,7 +1385,7 @@ namespace Cheng.Json
             if (type == JsonType.Dictionary)
             {
                 //键值对
-                json = new JsonDictionary();
+                json = new JsonDictionary(p_dictKeyEqual);
                 flag = ConverDict(reader, json.JsonObject);
                 if (flag)
                 {
@@ -1843,7 +1846,15 @@ namespace Cheng.Json
             p_numStyles = TextParserNumStylesDefault;
             p_jsonEscapeCharacterSingleQuotation = true;
             p_jsonWriterCharacterSingleQuotation = false;
-            p_cultureInfo = CultureInfo.InvariantCulture;
+            try
+            {
+                p_cultureInfo = CultureInfo.InvariantCulture;
+            }
+            catch (Exception)
+            {
+                p_cultureInfo = null;
+            }
+            p_dictKeyEqual = null;
         }
         #endregion
 
@@ -2027,6 +2038,16 @@ namespace Cheng.Json
             {                
                 p_cultureInfo = value;
             }
+        }
+
+        /// <summary>
+        /// 解析器在构造<see cref="JsonDictionary"/>对象时使用的key比较器
+        /// </summary>
+        /// <value>设置为null时使用默认构造提供的比较器；该参数默认为null</value>
+        public IEqualityComparer<string> DictionaryComparer
+        {
+            get => p_dictKeyEqual;
+            set => p_dictKeyEqual = value;
         }
 
         #endregion

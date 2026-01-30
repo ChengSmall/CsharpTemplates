@@ -127,12 +127,26 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// </summary>
         /// <param name="bufferSize">指定打包时使用的缓冲区长度</param>
         /// <exception cref="ArgumentOutOfRangeException">缓冲区没有大于0</exception>
-        public CStreamPackOperation(int bufferSize)
+        public CStreamPackOperation(int bufferSize) : this(bufferSize, CSPackEncType.CSPack)
+        {}
+
+        /// <summary>
+        /// 初始化CSPACK包打包器
+        /// </summary>
+        /// <param name="bufferSize">指定打包时使用的缓冲区长度</param>
+        /// <param name="type">指定打包类型</param>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区没有大于0；类型参数错误</exception>
+        public CStreamPackOperation(int bufferSize, CSPackEncType type)
         {
             if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
 
-            p_packs = new Dictionary<string, IGettingStream>(new EqualityStrNotPathSeparator(false, true));
+            if(type <= 0 || type > CSPackEncType.U8CSPack)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
 
+            p_packs = new Dictionary<string, IGettingStream>(new EqualityStrNotPathSeparator(false, true));
+            this.p_encType = type;
             var pathNot = Path.GetInvalidPathChars();
             var fileNameNot = Path.GetInvalidFileNameChars();
 
@@ -153,6 +167,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
             p_buf8 = new byte[8];
             p_buffer = new byte[bufferSize];
 
+            p_utf8enc = new UTF8Encoding(true);
         }
 
         #endregion
@@ -167,6 +182,10 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
         private HashSet<char> p_notPathChars;
 
+        private UTF8Encoding p_utf8enc;
+
+        private CSPackEncType p_encType;
+
         private bool p_packaging;
 
         #endregion
@@ -180,15 +199,40 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// </summary>
         public const string StandardExtensionName = ".csp";
 
+        /// <summary>
+        /// U8CSPACK包的文件标准后缀名
+        /// </summary>
+        public const string U8StandardExtensionName = ".ucsp";
+
+        /// <summary>
+        /// 访问或设置打包类型
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">设置的参数不正确</exception>
+        public CSPackEncType PackEncodingType
+        {
+            get => p_encType;
+            set
+            {
+                if (value <= 0 || value > CSPackEncType.U8CSPack) throw new ArgumentOutOfRangeException();
+                p_encType = value;
+            }
+        }
+
         #endregion
 
         #region 打包功能
 
         #region 打包封装
 
-        static void f_writeHeader(Stream stream)
+        static void f_writeHeader(Stream stream, CSPackEncType type)
         {
             //0x43, 0x53, 0x50, 0x41, 0x43, 0x4B
+            if(type == CSPackEncType.U8CSPack)
+            {
+                // 0x55, 0x38
+                stream.WriteByte(0x55);
+                stream.WriteByte(0x38);
+            }
             stream.WriteByte(0x43);
             stream.WriteByte(0x53);
             stream.WriteByte(0x50);
@@ -209,15 +253,45 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
 #if DEBUG
         /// <summary>
+        /// 写入u8格式的key长度和key
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="u8KeyBuf"></param>
+        /// <returns></returns>
+#endif
+        static bool f_writerU8StrKey(Stream stream, byte[] u8KeyBuf)
+        {
+            //keybuf字节长度
+            var bufLen = u8KeyBuf.Length;
+            if (bufLen == 0 || bufLen > short.MaxValue)
+            {
+                return false;
+            }
+
+            //写入key长度
+            const ushort wrHavValue = (0x1 << 15);
+
+            ushort slen = (ushort)(((ushort)bufLen) | wrHavValue);
+
+            stream.WriteByte((byte)((slen >> 8) & byte.MaxValue));
+            stream.WriteByte((byte)((slen) & byte.MaxValue));
+
+            stream.Write(u8KeyBuf, 0, u8KeyBuf.Length);
+            return true;
+        }
+
+#if DEBUG
+        /// <summary>
         /// 打包到流数据
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="buffer"></param>
+        /// <param name="encType"></param>
         /// <returns>
         /// <para>打包过程枚举器：返回 int 或 long 表示正在拷贝数据，值表示此次拷贝的数据字节量；返回PackItem表示成功打包完成一个项数据，值表示项数据的路径</para>
         /// </returns>
 #endif
-        private IEnumerable f_topackEnumator(Stream stream, byte[] buffer)
+        private IEnumerable f_topackEnumator(Stream stream, byte[] buffer, CSPackEncType encType)
         {
             //yield return null;
             //var pcount = p_packs.Count;
@@ -228,22 +302,38 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
                 var data = pair.Value;
 
-                try
+                //写入数据素银
+                if (encType == CSPackEncType.CSPack)
                 {
-                    //路径长度
-                    var keyLen = pair.Key.Length;
-                    //写入长度
-                    stream.WriteByte((byte)keyLen);
-                    //写入字符串
-                    f_writerToStr(stream, pair.Key, keyLen);
+                    try
+                    {
+                        //路径长度
+                        var keyLen = pair.Key.Length;
+                        //写入长度
+                        stream.WriteByte((byte)keyLen);
+                        //写入字符串
+                        f_writerToStr(stream, pair.Key, keyLen);
+
+                    }
+                    catch (Exception)
+                    {
+                        p_packaging = false;
+                        throw;
+                    }
 
                 }
-                catch (Exception)
+                else
                 {
-                    p_packaging = false;
-                    throw;
+                    //U8格式
+                    var keyBuf = p_utf8enc.GetBytes(pair.Key);
+                    //写入长度
+                    if (!f_writerU8StrKey(stream, keyBuf))
+                    {
+                        break;
+                    }
+
                 }
-                
+
                 //写入数据长度
                 var dataLen = data.StreamLength;
                 using (var open = data.OpenStream())
@@ -297,6 +387,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                             p_packaging = false;
                             throw;
                         }
+                        //获取拷贝器
                         IEnumerator<int> copyEnumator = null;
                         try
                         {
@@ -308,7 +399,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                             copyEnumator.Dispose();
                             throw;
                         }
-
+                        //开始迭代拷贝器
                         Loop:
                         bool next;
                         try
@@ -330,6 +421,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                         }
                         copyEnumator.Dispose();
                     }
+
                     if (!p_packaging) yield break;
                     pitem = new PackItem(pair.Key, dataLen);
                     try
@@ -357,7 +449,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
             p_packaging = true;
             try
             {
-                if(wrHeader) f_writeHeader(stream);
+                if(wrHeader) f_writeHeader(stream, p_encType);
             }
             catch (Exception)
             {
@@ -365,7 +457,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
                 throw;
             }
             
-            foreach (var ret in f_topackEnumator(stream, p_buffer))
+            foreach (var ret in f_topackEnumator(stream, p_buffer, p_encType))
             {
             }
         }
@@ -388,7 +480,22 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// <exception cref="IOException">IO错误</exception>
         public static void WriteHeader(Stream stream)
         {
-            f_writeHeader(stream ?? throw new ArgumentNullException(nameof(stream)));
+            f_writeHeader(stream ?? throw new ArgumentNullException(nameof(stream)), CSPackEncType.CSPack);
+        }
+
+        /// <summary>
+        /// 写入CSPACK包标准头数据
+        /// </summary>
+        /// <param name="stream">要写入的流</param>
+        /// <param name="type">要写入的头类型</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="NotSupportedException">没有写入权限</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        public static void WriteHeader(Stream stream, CSPackEncType type)
+        {
+            if (type <= 0 || type > CSPackEncType.U8CSPack) throw new ArgumentException();
+            f_writeHeader(stream ?? throw new ArgumentNullException(nameof(stream)), type);
         }
 
         /// <summary>
@@ -411,7 +518,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
             if (!stream.CanWrite) throw new NotSupportedException();
             if (p_packaging) throw new NotImplementedException();
             p_packaging = true;
-            return f_topackEnumator(stream, buffer);
+            return f_topackEnumator(stream, buffer, p_encType);
         }
 
         /// <summary>

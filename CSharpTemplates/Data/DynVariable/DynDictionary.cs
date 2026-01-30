@@ -23,7 +23,7 @@ namespace Cheng.DataStructure.DynamicVariables
         /// </summary>
         public DynDictionary()
         {
-            p_dict = new Dictionary<string, DynVariable>(BinaryStringEqualComparer.Default);
+            p_dict = new Dictionary<string, DynVariable>(StringComparer.Ordinal);
             p_open = true;
         }
 
@@ -44,7 +44,7 @@ namespace Cheng.DataStructure.DynamicVariables
         /// <exception cref="ArgumentOutOfRangeException">容量参数小于0</exception>
         public DynDictionary(int capacity, IEqualityComparer<string> comparer)
         {
-            p_dict = new Dictionary<string, DynVariable>(capacity, comparer ?? BinaryStringEqualComparer.Default);
+            p_dict = new Dictionary<string, DynVariable>(capacity, comparer ?? StringComparer.Ordinal);
             p_open = true;
         }
 
@@ -69,10 +69,11 @@ namespace Cheng.DataStructure.DynamicVariables
                 count = 4;
             }
 
-            p_dict = new Dictionary<string, DynVariable>(count, comparer ?? BinaryStringEqualComparer.Default);
+            p_dict = new Dictionary<string, DynVariable>(count, comparer ?? StringComparer.Ordinal);
 
             foreach (var item in pairs)
             {
+                if (item.Key is null || item.Key.Length > ushort.MaxValue) continue;
                 p_dict[item.Key] = item.Value ?? EmptyValue;
             }
         }

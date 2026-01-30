@@ -117,6 +117,7 @@
     <Compile Include="WinForms\Controls\Slider\DragSlider.Designer.cs">
       <DependentUpon>DragSlider.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinForms\Message\MessageBoxException.cs" />
     <Compile Include="WinForms\Forms\InputValueDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,6 +131,7 @@
     <Folder Include="Algorithm\" />
     <Folder Include="IO\FileSysInfo\" />
     <Folder Include="Text\" />
+    <Folder Include="WinForms\Exception\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

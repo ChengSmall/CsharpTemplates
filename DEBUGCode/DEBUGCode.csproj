@@ -119,6 +119,7 @@
     <Compile Include="DEBUG\Stream\DEBUGStream.cs" />
     <Compile Include="DEBUG\Stream\DEBUGStreamExd.cs" />
     <Compile Include="DEBUG\Stream\RandomReadCountStream.cs" />
+    <Compile Include="DEBUG\TestStructure.cs" />
     <Compile Include="DEBUG\Text\DEBUGText.cs" />
     <Compile Include="DEBUG\Text\TextMultWriter.cs" />
     <Compile Include="DEBUG\WebNet\BilibiliNet.cs" />

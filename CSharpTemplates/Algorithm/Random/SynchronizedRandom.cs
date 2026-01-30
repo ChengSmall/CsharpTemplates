@@ -2,6 +2,7 @@ using System;
 
 namespace Cheng.Algorithm.Randoms
 {
+
     /// <summary>
     /// 对一个随机数生成器进行线程安全同步封装
     /// </summary>
@@ -146,6 +147,16 @@ namespace Cheng.Algorithm.Randoms
         public override bool NextDouble(double probability)
         {
             lock (random) return random.NextDouble(probability);
+        }
+
+        public override void NextPtr(IntPtr ptr, int length)
+        {
+            lock (random) random.NextPtr(ptr, length);
+        }
+
+        public override bool NextFloat(float probability)
+        {
+            lock(random) return random.NextFloat(probability);
         }
 
         #endregion

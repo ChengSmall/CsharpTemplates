@@ -731,6 +731,44 @@ namespace Cheng.Texts
         }
 
         /// <summary>
+        /// 检索指定字数组内的换行符并将所有可能的换行符转换为当前系统指定的换行符
+        /// </summary>
+        /// <param name="charBuffer">字符数组</param>
+        /// <param name="append">转换后要添加到的字符串缓冲区</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static void ToStdNewLineToArray(char[] charBuffer, StringBuilder append)
+        {
+            if (charBuffer is null || append is null) throw new ArgumentNullException();
+            int count = charBuffer.Length;
+            if (count == 0) return;
+            fixed (char* cptr = charBuffer)
+            {
+                ToStdNewLineByAddress(cptr, count, Environment.NewLine, append);
+            }
+        }
+
+        /// <summary>
+        /// 检索指定字数组内的换行符并将所有可能的换行符转换为当前系统指定的换行符
+        /// </summary>
+        /// <param name="charBuffer">字符数组</param>
+        /// <param name="startIndex">要检索的数组起始位置</param>
+        /// <param name="count">要检索的字符数量</param>
+        /// <param name="newLine">将换行符替换的目标字符串</param>
+        /// <param name="append">转换后要添加到的字符串缓冲区</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public static void ToStdNewLineToArray(char[] charBuffer, int startIndex, int count, string newLine, StringBuilder append)
+        {
+            if (charBuffer is null || append is null) throw new ArgumentNullException();
+            if (startIndex < 0 || count < 0 || (startIndex + count > charBuffer.Length)) throw new ArgumentOutOfRangeException();
+            if (count == 0) return;
+            fixed (char* cptr = charBuffer)
+            {
+                ToStdNewLineByAddress(cptr + startIndex, count, newLine, append);
+            }
+        }
+
+        /// <summary>
         /// 检索指定字符串内的换行符并将所有可能的换行符转换为当前系统指定的换行符
         /// </summary>
         /// <param name="value">字符串</param>
@@ -857,7 +895,7 @@ namespace Cheng.Texts
         public static string ToStdNewLine(this string value, int startIndex, int count, string newLine)
         {
             if (value is null) throw new ArgumentNullException();
-            if (startIndex < 0 || count < 0 || (startIndex + count > value.Length)) throw new ArgumentNullException();
+            if (startIndex < 0 || count < 0 || (startIndex + count > value.Length)) throw new ArgumentOutOfRangeException();
             if (count == 0) return string.Empty;
             fixed (char* charBuffer = value)
             {
