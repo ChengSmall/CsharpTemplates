@@ -2077,7 +2077,7 @@ namespace Cheng.Json
 
             ParsToJson(json, writer, 0);
         }
-    
+
         public override JsonVariable ToJsonData(TextReader reader)
         {
             if (reader is null) throw new ArgumentNullException();

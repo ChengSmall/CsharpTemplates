@@ -1,14 +1,16 @@
 using Cheng.Memorys;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Cheng.Streams
 {
 
     /// <summary>
-    /// 二次抽象封装的流
+    /// 二次封装的流
     /// </summary>
-    public unsafe abstract class HEStream : Stream, IIsDisposed
+    public abstract class HEStream : Stream, IIsDisposed
     {
 
         #region 释放
@@ -121,7 +123,7 @@ namespace Cheng.Streams
         /// <exception cref="NotSupportedException">无读取权限</exception>
         /// <exception cref="ObjectDisposedException">流已释放</exception>
         /// <exception cref="Exception">其它错误</exception>
-        public virtual int ReadToAddress(byte* buffer, int count)
+        public unsafe virtual int ReadToAddress(byte* buffer, int count)
         {
             ThrowIsDispose();
             int c = 0;
@@ -148,7 +150,7 @@ namespace Cheng.Streams
         /// <exception cref="NotSupportedException">无写入权限</exception>
         /// <exception cref="ObjectDisposedException">流已释放</exception>
         /// <exception cref="Exception">其它错误</exception>
-        public virtual void WriteToAddress(byte* buffer, int count)
+        public unsafe virtual void WriteToAddress(byte* buffer, int count)
         {
             ThrowIsDispose();
 
@@ -157,6 +159,16 @@ namespace Cheng.Streams
                 this.WriteByte(buffer[i]);
             }
         }
+
+        /// <summary>
+        /// 当前流是否属于对<see cref="Stream"/>对象的外部封装操作
+        /// </summary>
+        public virtual bool CanInternalStream => InternalBaseStream != null;
+
+        /// <summary>
+        /// 内部封装的流对象，不存在为null；若对象已释放，也返回null
+        /// </summary>
+        public virtual Stream InternalBaseStream => null;
 
         #endregion
 

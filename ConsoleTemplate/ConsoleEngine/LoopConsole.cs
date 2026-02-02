@@ -83,9 +83,16 @@ namespace Cheng.Consoles
             if (mei > 0)
             {
                 mei = ConsoleSystem.ReadConsoleInput(p_handle, p_inputBuf, 0, p_inputBuf.Length);
-                for (int i = 0; i < mei; i++)
+                lock (p_megList)
                 {
-                    p_megList.Enqueue(p_inputBuf[i]);
+                    for (int i = 0; i < mei; i++)
+                    {
+                        var meg = p_inputBuf[i];
+                        if (InputMessageFilter(in meg))
+                        {
+                            p_megList.Enqueue(meg);
+                        }
+                    }
                 }
             }
         }
@@ -93,12 +100,17 @@ namespace Cheng.Consoles
         private void f_megListAction()
         {
             p_nowCharValue = -1;
+
             if (p_megList.Count == 0)
             {
                 p_nowFrameMeg = null;
                 return;
             }
-            var meg = p_megList.Dequeue();
+            InMeg meg;
+            lock (p_megList)
+            {
+                meg = p_megList.Dequeue();
+            }
             p_nowFrameMeg = meg;
             var etype = meg.RecordEventType;
 
@@ -246,6 +258,16 @@ namespace Cheng.Consoles
         #endregion
 
         #region 派生
+
+        /// <summary>
+        /// 获取消息时进行预筛选，然后再添加到消息处理队列
+        /// </summary>
+        /// <param name="meg">要筛选的消息</param>
+        /// <returns>返回true表示允许添加到消息处理队列，false表示不添加此消息</returns>
+        protected virtual bool InputMessageFilter(in InMeg meg)
+        {
+            return true;
+        }
 
         /// <summary>
         /// 首次循环前调用

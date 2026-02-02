@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using System.IO;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Cheng.Streams
 {
@@ -14,7 +16,7 @@ namespace Cheng.Streams
     /// <para>封装指定的流对象，将其截断其中一部分数据作为只读流；封装的流必须要有读取和查找功能</para>
     /// <para>对封装的同一个内部<see cref="System.IO.Stream"/>线程安全（类型本身并不是线程安全的）</para>
     /// </remarks>
-    public unsafe class TruncateStream : HEStream
+    public class TruncateStream : HEStream
     {
 
         #region 释放
@@ -312,7 +314,7 @@ namespace Cheng.Streams
             return rc;
         }
 
-        private int f_readPtr(byte* buffer, int count)
+        private unsafe int f_readPtr(byte* buffer, int count)
         {
             int bufCount = p_bufPosEnd - p_bufPos + 1;
 
@@ -340,7 +342,7 @@ namespace Cheng.Streams
             return rc;
         }
 
-        private int f_readOnce(byte* buffer, int count)
+        private unsafe int f_readOnce(byte* buffer, int count)
         {
             int bufCount;
             int re;
@@ -614,7 +616,7 @@ namespace Cheng.Streams
             //p_bufPos++;
             return b;
         }
-       
+
         #region 无实现
         public override void Write(byte[] buffer, int offset, int count)
         {
@@ -928,7 +930,7 @@ namespace Cheng.Streams
                     p_stream.Position = p_nowPos;
                 }
                 reCount = p_stream.Read(buffer, offset, reCount);
-            }            
+            }
 
             p_nowPos += reCount;
 

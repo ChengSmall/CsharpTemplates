@@ -585,6 +585,8 @@ namespace Cheng.Streams
 
         public override bool CanSeek => true;
 
+        public override bool CanInternalStream => true;
+
         #endregion
 
         #region 参数访问

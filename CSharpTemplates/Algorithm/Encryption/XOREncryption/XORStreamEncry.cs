@@ -188,7 +188,7 @@ namespace Cheng.Algorithm.Encryptions
         /// </summary>
         public void Reset()
         {
-            p_xor.Reset();
+            p_xor?.Reset();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -251,9 +251,11 @@ namespace Cheng.Algorithm.Encryptions
             }
             p_xor.Reset();
             p_stream = null;
-
+            p_xor = null;
             return true;
         }
+
+        public override Stream InternalBaseStream => p_stream;
 
         #endregion
 

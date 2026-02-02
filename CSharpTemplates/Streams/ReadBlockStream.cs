@@ -100,6 +100,10 @@ namespace Cheng.Streams
             }
         }
 
+        public override bool CanInternalStream => true;
+
+        public override Stream InternalBaseStream => p_stream;
+
         public override void Flush()
         {
             p_stream?.Flush();

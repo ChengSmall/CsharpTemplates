@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Cheng.Streams
 {
@@ -174,10 +175,8 @@ namespace Cheng.Streams
         public static IEnumerable<int> CopyToStreamEnumator(this Stream stream, Stream toStream, byte[] buffer)
         {
             if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
-
-            if (buffer.Length == 0) throw new ArgumentException("给定缓冲区长度为0");
-
-            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException("流不支持读取或写入");
+            if (buffer.Length == 0) throw new ArgumentException();
+            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException();
 
             return copyToStreamEnr(stream, toStream, buffer, 0);
         }
@@ -195,12 +194,50 @@ namespace Cheng.Streams
         public static void CopyToStream(this Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
         {
             if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
-
             if (buffer.Length == 0) throw new ArgumentException("给定缓冲区长度为0");
-
-            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException("流不支持读取或写入");
+            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException();
 
             copyToStream(stream, toStream, buffer, maxBytes);
+        }
+
+        /// <summary>
+        /// 将流数据读取并拷贝到另一个流当中并返回拷贝数据量
+        /// </summary>
+        /// <param name="stream">要读取的流</param>
+        /// <param name="toStream">写入的流</param>
+        /// <param name="buffer">流数据一次读写的缓冲区</param>
+        /// <param name="maxBytes">指定最大拷贝字节量，0表示不指定最大字节量</param>
+        /// <returns>此次实际拷贝的字节数</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentException">缓冲区长度为0</exception>
+        /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
+        public static long CopyToStreamRC(this Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
+        {
+            if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
+            if (buffer.Length == 0) throw new ArgumentException();
+            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException();
+
+            return copyToStream(stream, toStream, buffer, maxBytes);
+        }
+
+        /// <summary>
+        /// 将流数据读取并拷贝到另一个流当中并返回拷贝数据量
+        /// </summary>
+        /// <param name="stream">要读取的流</param>
+        /// <param name="toStream">写入的流</param>
+        /// <param name="buffer">流数据一次读写的缓冲区</param>
+        /// <returns>此次实际拷贝的字节数</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        /// <exception cref="ArgumentException">缓冲区长度为0</exception>
+        /// <exception cref="NotSupportedException">流数据没有指定权限</exception>
+        public static long CopyToStreamRC(this Stream stream, Stream toStream, byte[] buffer)
+        {
+            if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
+
+            if (buffer.Length == 0) throw new ArgumentException();
+            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException();
+
+            return copyToStream(stream, toStream, buffer);
         }
 
         /// <summary>
@@ -217,30 +254,27 @@ namespace Cheng.Streams
         public static IEnumerable<int> CopyToStreamEnumator(this Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
         {
             if (stream is null || toStream is null || buffer is null) throw new ArgumentNullException();
-
-            if (buffer.Length == 0) throw new ArgumentException("给定缓冲区长度为0");
-
-            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException("流不支持读取或写入");
+            if (buffer.Length == 0) throw new ArgumentException();
+            if ((!stream.CanRead) || (!toStream.CanWrite)) throw new NotSupportedException();
 
             return copyToStreamEnr(stream, toStream, buffer, maxBytes);
         }
 
-        internal static void copyToStream(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
+        internal static long copyToStream(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
         {
             int length = buffer.Length;
             int rsize;
             int reas;
             ulong isReadSize;
-
+            long cre = 0;
             if (maxBytes == 0)
             {
                 BeginLoop:
                 rsize = stream.Read(buffer, 0, length);
-
-                if (rsize == 0) return;
-
+                if (rsize == 0) return cre;
+                
                 toStream.Write(buffer, 0, rsize);
-
+                cre += rsize;
                 goto BeginLoop;
             }
 
@@ -248,7 +282,7 @@ namespace Cheng.Streams
 
             nBeginLoop:
 
-            if (isReadSize == maxBytes) return;
+            if (isReadSize == maxBytes) return cre;
 
             if ((isReadSize + (ulong)length) > maxBytes)
             {
@@ -258,31 +292,28 @@ namespace Cheng.Streams
 
             rsize = stream.Read(buffer, 0, reas);
 
-            if (rsize == 0) return;
+            if (rsize == 0) return cre;
 
             isReadSize += (ulong)rsize;
             toStream.Write(buffer, 0, rsize);
-
+            cre += rsize;
             goto nBeginLoop;
 
         }
 
-        internal static void copyToStream(Stream stream, Stream toStream, byte[] buffer)
+        internal static long copyToStream(Stream stream, Stream toStream, byte[] buffer)
         {
             int length = buffer.Length;
             int rsize;
-            //int reas;
-            //ulong isReadSize;
+            long cre = 0;
 
-            BeginLoop:
+            Loop:
             rsize = stream.Read(buffer, 0, length);
-
-            if (rsize == 0) return;
+            if (rsize == 0) return cre;
 
             toStream.Write(buffer, 0, rsize);
-
-            goto BeginLoop;
-
+            cre += rsize;
+            goto Loop;
         }
 
         internal static IEnumerable<int> copyToStreamEnr(Stream stream, Stream toStream, byte[] buffer, ulong maxBytes)
