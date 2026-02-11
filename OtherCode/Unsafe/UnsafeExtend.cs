@@ -79,7 +79,7 @@ namespace Cheng.Memorys
         /// <returns><paramref name="ptr"/>指向的变量引用</returns>
         public static ref T AsRef<T>(CPtr ptr)
         {
-            return ref Unsafe.AsRef<T>(ptr.p_ptr);
+            return ref Unsafe.AsRef<T>(ptr.ToPointer());
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Cheng.Memorys
         /// <returns>添加偏移后的引用</returns>
         public static ref T Add<T>(ref T source, CPtr elementOffset)
         {
-            return ref Unsafe.Add<T>(ref source, new IntPtr(elementOffset.p_ptr));
+            return ref Unsafe.Add<T>(ref source, new IntPtr(elementOffset.ToPointer()));
         }
 
         #endregion

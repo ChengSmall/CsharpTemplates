@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Cheng.DataStructure;
+
 namespace Cheng.Algorithm.Collections
 {
 
@@ -17,7 +19,7 @@ namespace Cheng.Algorithm.Collections
         private class Enumerable_ToOtherItems<T, O> : IEnumerable<O>
         {
 
-            public Enumerable_ToOtherItems(IEnumerable<T> collections, Func<T, O> convertFunc, ToOtherItemFunc<T,O> convertIfunc, bool funcIf)
+            public Enumerable_ToOtherItems(IEnumerable<T> collections, Converter<T, O> convertFunc, ConvertByCondition<T,O> convertIfunc, bool funcIf)
             {
                 p_collections = collections;
                 p_func = convertFunc;
@@ -25,8 +27,8 @@ namespace Cheng.Algorithm.Collections
                 p_convertIfunc = convertIfunc;
             }
             private IEnumerable<T> p_collections;
-            private Func<T, O> p_func;
-            private ToOtherItemFunc<T, O> p_convertIfunc;
+            private Converter<T, O> p_func;
+            private ConvertByCondition<T, O> p_convertIfunc;
             private bool p_if;
 
             public IEnumerator<O> GetEnumerator()
@@ -50,7 +52,7 @@ namespace Cheng.Algorithm.Collections
 
         private class Enumator_ToOtherItems<T, O> : IEnumerator<O>
         {
-            public Enumator_ToOtherItems(IEnumerable<T> collections, Func<T, O> convertFunc)
+            public Enumator_ToOtherItems(IEnumerable<T> collections, Converter<T, O> convertFunc)
             {
                 p_enumator = collections.GetEnumerator() ?? throw new ArgumentNullException();
                 p_current = default;
@@ -58,7 +60,7 @@ namespace Cheng.Algorithm.Collections
             }
 
             private IEnumerator<T> p_enumator;
-            private Func<T, O> p_convertFunc;
+            private Converter<T, O> p_convertFunc;
             private O p_current;
 
             public O Current
@@ -102,7 +104,7 @@ namespace Cheng.Algorithm.Collections
 
         private class Enumator_ToOtherIfItems<T, O> : IEnumerator<O>
         {
-            public Enumator_ToOtherIfItems(IEnumerable<T> collections, ToOtherItemFunc<T, O> convertFunc)
+            public Enumator_ToOtherIfItems(IEnumerable<T> collections, ConvertByCondition<T, O> convertFunc)
             {
                 p_enumator = collections.GetEnumerator() ?? throw new ArgumentNullException();
                 p_current = default;
@@ -110,7 +112,7 @@ namespace Cheng.Algorithm.Collections
             }
 
             private IEnumerator<T> p_enumator;
-            private ToOtherItemFunc<T, O> p_convertFunc;
+            private ConvertByCondition<T, O> p_convertFunc;
             private O p_current;
 
             public O Current
@@ -162,19 +164,6 @@ namespace Cheng.Algorithm.Collections
         #endregion
 
         /// <summary>
-        /// 将一个对象转化到另一个对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="O"></typeparam>
-        /// <param name="item">原对象</param>
-        /// <param name="convertItem">用于获取转化后的另一个对象的引用</param>
-        /// <returns>
-        /// <para>如果返回true，表示转化成功</para>
-        /// <para>返回false，表示对象<paramref name="item"/>无法转化为另一个类型</para>
-        /// </returns>
-        public delegate bool ToOtherItemFunc<in T,O>(T item, out O convertItem);
-
-        /// <summary>
         /// 将集合元素转化为另一种类型
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -183,7 +172,7 @@ namespace Cheng.Algorithm.Collections
         /// <param name="convertFunc">转化方法</param>
         /// <returns>另一种类型的集合</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static IEnumerable<O> ToOtherItems<T,O>(this IEnumerable<T> collections, Func<T, O> convertFunc)
+        public static IEnumerable<O> ToOtherItems<T,O>(this IEnumerable<T> collections, Converter<T, O> convertFunc)
         {
             if(collections is null || convertFunc is null)
             {
@@ -202,7 +191,7 @@ namespace Cheng.Algorithm.Collections
         /// <param name="convertFunc">条件选择转化器</param>
         /// <returns>另一种类型的集合</returns>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static IEnumerable<O> ToOtherItemsByCondition<T, O>(this IEnumerable<T> collections, ToOtherItemFunc<T,O> convertFunc)
+        public static IEnumerable<O> ToOtherItemsByCondition<T, O>(this IEnumerable<T> collections, ConvertByCondition<T,O> convertFunc)
         {
             if (collections is null || convertFunc is null)
             {
@@ -213,8 +202,6 @@ namespace Cheng.Algorithm.Collections
         }
 
         #endregion
-
-
 
     }
 

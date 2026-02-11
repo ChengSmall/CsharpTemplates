@@ -96,8 +96,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Systems\SystemEnvironment.cs" />
-    <Compile Include="Threads\SingleThreadTask\SingleTask.cs" />
-    <Compile Include="Threads\SingleThreadTask\SingleThreadTasks.cs" />
     <Compile Include="Winapi\Hooks\Hooks.cs" />
     <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
     <Compile Include="Winapi\Hooks\MouseHooks\MouseHook.cs" />
@@ -131,6 +129,7 @@
     <Folder Include="Algorithm\" />
     <Folder Include="IO\FileSysInfo\" />
     <Folder Include="Text\" />
+    <Folder Include="Threads\" />
     <Folder Include="WinForms\Exception\" />
   </ItemGroup>
   <ItemGroup>

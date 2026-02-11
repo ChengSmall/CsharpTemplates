@@ -337,43 +337,18 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
         public sealed override void GetVector(out float radian, out float length)
         {
             bool left, right, up, down;
-
             f_getState(out left, out right, out up, out down);
-
             const double onceRadian = Maths.OneRadian;
-            length = 1;
+
             var state = JoystickByButton4State.GetState(left, right, up, down);
-            switch (state)
+            if (state == StateType.None)
             {
-                case StateType.Right:
-                    radian = 0;
-                    break;
-                case StateType.Up:
-                    radian = (float)(onceRadian * 90);
-                    break;
-                case StateType.Left:
-                    radian = (float)(onceRadian * 180);
-                    break;
-                case StateType.Down:
-                    radian = (float)(onceRadian * (90 * 3));
-                    break;
-                case StateType.RigitUp:
-                    radian = (float)(onceRadian * (45));
-                    break;
-                case StateType.LeftUp:
-                    radian = (float)(onceRadian * (45 + 90));
-                    break;
-                case StateType.LeftDown:
-                    radian = (float)(onceRadian * (180 + 45));
-                    break;
-                case StateType.RightDown:
-                    radian = (float)(onceRadian * (360 - 45));
-                    break;
-                default:
-                    radian = 0;
-                    length = 0;
-                    break;
+                radian = 0;
+                length = 0;
+                return;
             }
+            length = 1;
+            radian = (float)((((int)state - 1) * 45) * onceRadian);
 
         }
 
@@ -381,39 +356,15 @@ namespace Cheng.ButtonTemplates.Joysticks.Unitys
         {
             f_getState(out var left, out var right, out var up, out var down);
 
-            length = 1;
             var state = JoystickByButton4State.GetState(left, right, up, down);
-            switch (state)
+            if (state == StateType.None)
             {
-                case StateType.Right:
-                    angle = 0;
-                    break;
-                case StateType.Up:
-                    angle = (float)(90);
-                    break;
-                case StateType.Left:
-                    angle = (float)(180);
-                    break;
-                case StateType.Down:
-                    angle = (float)((90 * 3));
-                    break;
-                case StateType.RigitUp:
-                    angle = (float)((45));
-                    break;
-                case StateType.LeftUp:
-                    angle = (float)((45 + 90));
-                    break;
-                case StateType.LeftDown:
-                    angle = (float)((180 + 45));
-                    break;
-                case StateType.RightDown:
-                    angle = (float)((360 - 45));
-                    break;
-                default:
-                    angle = 0;
-                    length = 0;
-                    break;
+                angle = 0;
+                length = 0;
+                return;
             }
+            length = 1;
+            angle = (float)((((int)state - 1) * 45));
 
         }
 

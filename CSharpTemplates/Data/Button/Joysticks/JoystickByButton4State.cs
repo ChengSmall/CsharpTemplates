@@ -28,12 +28,12 @@ namespace Cheng.ButtonTemplates.Joysticks
             /// <summary>
             /// 无方向
             /// </summary>
-            None,
+            None = 0,
 
             /// <summary>
             /// 右侧
             /// </summary>
-            Right,
+            Right = 1,
 
             /// <summary>
             /// 右上
@@ -280,6 +280,104 @@ namespace Cheng.ButtonTemplates.Joysticks
             }
         }
 
+        /// <summary>
+        /// 根据摇杆方向状态获取摇杆轴分量
+        /// </summary>
+        /// <param name="type">摇杆状态</param>
+        /// <param name="horizontal">要获取的水平方向上的轴</param>
+        /// <param name="vertical">要获取的垂直方向上的轴</param>
+        public static void GetAxisHV(StateType type, out float horizontal, out float vertical)
+        {
+            switch (type)
+            {
+                case StateType.Right:
+                    horizontal = 1;
+                    vertical = 0;
+                    break;
+                case StateType.Up:
+                    horizontal = 0;
+                    vertical = 1;
+                    break;
+                case StateType.Left:
+                    horizontal = -1;
+                    vertical = 0;
+                    break;
+                case StateType.Down:
+                    horizontal = 0;
+                    vertical = -1;
+                    break;
+                case StateType.RigitUp:
+                    horizontal = Maths.FSqrt0p5;
+                    vertical = Maths.FSqrt0p5;
+                    break;
+                case StateType.LeftUp:
+                    horizontal = -Maths.FSqrt0p5;
+                    vertical = Maths.FSqrt0p5;
+                    break;
+                case StateType.LeftDown:
+                    horizontal = -Maths.FSqrt0p5;
+                    vertical = -Maths.FSqrt0p5;
+                    break;
+                case StateType.RightDown:
+                    horizontal = Maths.FSqrt0p5;
+                    vertical = -Maths.FSqrt0p5;
+                    break;
+                default:
+                    horizontal = 0;
+                    vertical = 0;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 根据摇杆方向状态获取摇杆轴分量
+        /// </summary>
+        /// <param name="type">摇杆状态</param>
+        /// <param name="horizontal">要获取的水平方向上的轴</param>
+        /// <param name="vertical">要获取的垂直方向上的轴</param>
+        public static void GetAxisHV(StateType type, out double horizontal, out double vertical)
+        {
+            switch (type)
+            {
+                case StateType.Right:
+                    horizontal = 1;
+                    vertical = 0;
+                    break;
+                case StateType.Up:
+                    horizontal = 0;
+                    vertical = 1;
+                    break;
+                case StateType.Left:
+                    horizontal = -1;
+                    vertical = 0;
+                    break;
+                case StateType.Down:
+                    horizontal = 0;
+                    vertical = -1;
+                    break;
+                case StateType.RigitUp:
+                    horizontal = Maths.Sqrt0p5;
+                    vertical = Maths.Sqrt0p5;
+                    break;
+                case StateType.LeftUp:
+                    horizontal = -Maths.Sqrt0p5;
+                    vertical = Maths.Sqrt0p5;
+                    break;
+                case StateType.LeftDown:
+                    horizontal = -Maths.Sqrt0p5;
+                    vertical = -Maths.Sqrt0p5;
+                    break;
+                case StateType.RightDown:
+                    horizontal = Maths.Sqrt0p5;
+                    vertical = -Maths.Sqrt0p5;
+                    break;
+                default:
+                    horizontal = 0;
+                    vertical = 0;
+                    break;
+            }
+        }
+
         #endregion
 
         #region 派生
@@ -414,82 +512,30 @@ namespace Cheng.ButtonTemplates.Joysticks
             f_get4State(out left, out right, out up, out down);
             const double onceRadian = System.Math.PI / 180;
 
-            length = 1;
-
             var state = GetState(left, right, up, down);
-            switch (state)
+            if(state == StateType.None)
             {
-                case StateType.Right:
-                    radian = 0;
-                    break;
-                case StateType.Up:
-                    radian = (float)(onceRadian * 90);
-                    break;
-                case StateType.Left:
-                    radian = (float)(onceRadian * 180);
-                    break;
-                case StateType.Down:
-                    radian = (float)(onceRadian * (90 * 3));
-                    break;
-                case StateType.RigitUp:
-                    radian = (float)(onceRadian * (45));
-                    break;
-                case StateType.LeftUp:
-                    radian = (float)(onceRadian * (45 + 90));
-                    break;
-                case StateType.LeftDown:
-                    radian = (float)(onceRadian * (180 + 45));
-                    break;
-                case StateType.RightDown:
-                    radian = (float)(onceRadian * (360 - 45));
-                    break;
-                default:
-                    radian = 0;
-                    length = 0;
-                    break;
+                radian = 0;
+                length = 0;
+                return;
             }
-
+            length = 1;
+            radian = (float)((((int)state - 1) * 45) * onceRadian);
         }
 
         public override void GetVectorAngle(out float angle, out float length)
         {
             bool left, right, up, down;
             f_get4State(out left, out right, out up, out down);
-
-            length = 1;
             var state = GetState(left, right, up, down);
-            switch (state)
+            if (state == StateType.None)
             {
-                case StateType.Right:
-                    angle = 0;
-                    break;
-                case StateType.Up:
-                    angle = (float)(90);
-                    break;
-                case StateType.Left:
-                    angle = (float)(180);
-                    break;
-                case StateType.Down:
-                    angle = (float)((90 * 3));
-                    break;
-                case StateType.RigitUp:
-                    angle = (float)((45));
-                    break;
-                case StateType.LeftUp:
-                    angle = (float)((45 + 90));
-                    break;
-                case StateType.LeftDown:
-                    angle = (float)((180 + 45));
-                    break;
-                case StateType.RightDown:
-                    angle = (float)((360 - 45));
-                    break;
-                default:
-                    angle = 0;
-                    length = 0;
-                    break;
+                angle = 0;
+                length = 0;
+                return;
             }
-
+            length = 1;
+            angle = (float)((((int)state - 1) * 45));
         }
 
         public override void GetAxisD(out double horizontal, out double vertical)
@@ -541,43 +587,8 @@ namespace Cheng.ButtonTemplates.Joysticks
 
         public override void GetVectorD(out double radian, out double length)
         {
-            bool left, right, up, down;
-            f_get4State(out left, out right, out up, out down);
-            const double onceRadian = System.Math.PI / 180;
-            length = 1;
-            var state = GetState(left, right, up, down);
-            switch (state)
-            {
-                case StateType.Right:
-                    radian = 0;
-                    break;
-                case StateType.Up:
-                    radian = (onceRadian * 90);
-                    break;
-                case StateType.Left:
-                    radian = (onceRadian * 180);
-                    break;
-                case StateType.Down:
-                    radian = (onceRadian * (90 * 3));
-                    break;
-                case StateType.RigitUp:
-                    radian = (onceRadian * (45));
-                    break;
-                case StateType.LeftUp:
-                    radian = (onceRadian * (45 + 90));
-                    break;
-                case StateType.LeftDown:
-                    radian = (onceRadian * (180 + 45));
-                    break;
-                case StateType.RightDown:
-                    radian = (onceRadian * (360 - 45));
-                    break;
-                default:
-                    radian = 0;
-                    length = 0;
-                    break;
-            }
-
+            GetVector(out float a, out float l);
+            radian = a; length = l;
         }
 
         public override void GetVectorAngleD(out double angle, out double length)

@@ -52,6 +52,7 @@
     <Compile Include="ConsoleEngine\IDrawObject.cs" />
     <Compile Include="ConsoleEngine\LoopConsole.cs" />
     <Compile Include="Consoles\ConsoleSystem\ConsoleSystem.cs" />
+    <Compile Include="Consoles\ConsoleSystem\ConsoleSystem.Input.cs" />
     <Compile Include="Consoles\ConsoleSystem\ConsoleSystem.Structure.cs" />
     <Compile Include="Consoles\TextStyle\ConsoleTextStyle.cs" />
     <Compile Include="Consoles\Texts\ConsoleStyleTextWriter.cs" />

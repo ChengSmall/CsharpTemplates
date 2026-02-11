@@ -2,48 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
+using System.Threading.Tasks;
+
+using Cheng.DataStructure.Collections;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Cheng.Threads
 {
 
     /// <summary>
-    /// 单线程队列事件委托
+    /// 单线程后台任务循环
     /// </summary>
-    /// <param name="pool">引发事件的单线程池实例</param>
-    public delegate void SingleThreadAction(SingleThreadTasks pool);
-
-    /// <summary>
-    /// 单线程队列事件委托
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="pool">引发事件的单线程池实例</param>
-    /// <param name="args">事件参数</param>
-    public delegate void SingleThreadAction<in T>(SingleThreadTasks pool, T args);
-
-    /// <summary>
-    /// 循环单线程任务队列引发的异常
-    /// </summary>
-    public class SingleThreadException : Exception
-    {
-
-        public SingleThreadException() : base("单线程任务队列异常")
-        {
-        }
-
-        public SingleThreadException(string message) : base(message)
-        {
-        }
-
-        public SingleThreadException(string message, Exception exception) : base(message, exception)
-        {
-        }
-
-    }
-
-    /// <summary>
-    /// 循环单线程任务队列
-    /// </summary>
-    public sealed class SingleThreadTasks
+    public sealed class SingleThreadTasks : TaskScheduler
     {
 
         #region 初始化
@@ -69,19 +40,25 @@ namespace Cheng.Threads
             f_initPar();
         }
 
+        public SingleThreadTasks(bool isBackground, ApartmentState state, ThreadPriority priority)
+        {
+            f_init(isBackground, priority, 0, state, null);
+            f_initPar();
+        }
+
         /// <summary>
         /// 实例化循环单线程任务队列
         /// </summary>
         /// <param name="isBackground">指示是否为后台线程</param>
-        /// <param name="priority">指定线程调度优先级</param>
         /// <param name="state">指定线程单元状态</param>
+        /// <param name="priority">指定线程调度优先级</param>
         /// <param name="maxStackSize">
         /// <para>线程要使用的最大堆栈大小（以字节为单位）</para>
         /// <para>如果为0，则使用可执行文件的文件头中指定的默认最大堆栈大小</para>
         /// <para>重要事项：对于部分受信任的代码，如果 maxStackSize大于默认堆栈大小，则将其忽略不引发异常</para>
         /// </param>
         /// <exception cref="Exception">异常</exception>
-        public SingleThreadTasks(bool isBackground, ThreadPriority priority, ApartmentState state, int maxStackSize)
+        public SingleThreadTasks(bool isBackground, ApartmentState state, ThreadPriority priority, int maxStackSize)
         {
             f_init(isBackground, priority, maxStackSize, state, null);
             f_initPar();
@@ -91,8 +68,8 @@ namespace Cheng.Threads
         /// 实例化循环单线程任务队列
         /// </summary>
         /// <param name="isBackground">指示是否为后台线程</param>
-        /// <param name="priority">指定线程调度优先级</param>
         /// <param name="state">指定线程单元状态</param>
+        /// <param name="priority">指定线程调度优先级</param>
         /// <param name="maxStackSize">
         /// <para>线程要使用的最大堆栈大小（以字节为单位）</para>
         /// <para>如果为0，则使用可执行文件的文件头中指定的默认最大堆栈大小</para>
@@ -100,7 +77,7 @@ namespace Cheng.Threads
         /// </param>
         /// <param name="name">设置线程名称</param>
         /// <exception cref="Exception">异常</exception>
-        public SingleThreadTasks(bool isBackground, ThreadPriority priority, ApartmentState state, int maxStackSize, string name)
+        public SingleThreadTasks(bool isBackground, ApartmentState state, ThreadPriority priority, int maxStackSize, string name)
         {
             f_init(isBackground, priority, maxStackSize, state, name);
             f_initPar();
@@ -118,12 +95,12 @@ namespace Cheng.Threads
 
         private void f_initPar()
         {
-            p_tasks = new List<SingleTask>();
-            p_buffer = new List<SingleTask>();
+            p_tasks = new ImmediatelyQueue<Task>();
+            p_buffer = new ImmediatelyQueue<Task>();
             p_start = false;
             p_close = false;
             p_running = false;
-            p_vacantTime = new TimeSpan(20 * TimeSpan.TicksPerMillisecond);
+            p_vacantTime = new TimeSpan(50 * TimeSpan.TicksPerMillisecond);
         }
 
         #endregion
@@ -134,15 +111,19 @@ namespace Cheng.Threads
 
         private Thread p_thread;
 
+#if DEBUG
         /// <summary>
         /// 任务队列
         /// </summary>
-        private List<SingleTask> p_tasks;
+#endif
+        private ImmediatelyQueue<Task> p_tasks;
 
+#if DEBUG
         /// <summary>
         /// 任务等待缓存
         /// </summary>
-        private List<SingleTask> p_buffer;
+#endif
+        private ImmediatelyQueue<Task> p_buffer;
 
         #endregion
 
@@ -182,18 +163,12 @@ namespace Cheng.Threads
 
         private void f_addBufferTask()
         {
-            //
             lock (p_buffer)
             {
-                int count = p_buffer.Count;
-                if (count == 0) return;
-
-                for (int i = 0; i < count; i++)
+                while (p_buffer.TryDequeue(out var st))
                 {
-                    p_tasks.Add(p_buffer[i]);
+                    p_tasks.Enqueue(st);
                 }
-
-                p_buffer.Clear();
             }
 
         }
@@ -204,48 +179,54 @@ namespace Cheng.Threads
 
             if (count == 0) return false;
 
-            int i;
+            Task task;
 
-            SingleTask task;
-
-            for (i = 0; i < count; i++)
+            while (p_tasks.TryDequeue(out task))
             {
-
-                task = p_tasks[i];
-                task.p_start = true;
-                
                 try
                 {
-
-                    task.f_invokeStartEvent();
-                    task.f_invokeTask();
-                    task.f_invokeOverTaskEvent();
-                    
+                    if (!TryExecuteTask(task))
+                    {
+                        p_tasks.Enqueue(task);
+                        break;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    task.p_abnormalOver = true;
+                    //task.p_abnormalOver = true;
                     this.TaskThrowExceptionEvent?.Invoke(this, ex);
                 }
-
-                task.p_over = true;
-
-                p_tasks[i] = null;
-
-                task.p_onList = false;
-                
+                Thread.Sleep(0);
             }
 
-            p_tasks.Clear();
+            //int i;
+            //for (i = 0; i < count; i++)
+            //{
+            //    task = p_tasks[i];
+            //    //task.p_start = true;
+            //    try
+            //    {
+            //        TryExecuteTask(task);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        //task.p_abnormalOver = true;
+            //        this.TaskThrowExceptionEvent?.Invoke(this, ex);
+            //    }
+            //    //task.p_over = true;
+            //    p_tasks[i] = null;
+            //    //task.p_onList = false;
+            //}
+
+            //p_tasks.Clear();
             return true;
         }
 
         private void f_loopThreadFunc()
         {
-
             p_start = true;
             bool b = true;
-            
+
             while (p_running || b)
             {
                 f_addBufferTask();
@@ -267,12 +248,56 @@ namespace Cheng.Threads
                         Thread.Sleep(0);
                     }
                 }
+                else
+                {
+                    Thread.Sleep(0);
+                }
 
             }
 
             TaskOverEvent?.Invoke(this);
             p_close = true;
-            
+        }
+
+        protected override IEnumerable<Task> GetScheduledTasks()
+        {
+            if (Debugger.IsAttached)
+            {
+                lock (p_buffer)
+                {
+                    return p_buffer.ToArray();
+                }
+            }
+            throw new NotSupportedException();
+        }
+
+        protected override void QueueTask(Task task)
+        {
+            if (p_start && (!p_running))
+            {
+                throw new TaskSchedulerException(new SingleThreadException("线程正处于关闭状态"));
+            }
+            if (p_close)
+            {
+                throw new TaskSchedulerException(new SingleThreadException());
+            }
+            if (task is null) throw new ArgumentNullException();
+
+            lock (p_buffer)
+            {
+                p_buffer.Enqueue(task);
+                //task.p_onList = true;
+            }
+        }
+
+        protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+        {
+            return false;
+        }
+
+        protected override bool TryDequeue(Task task)
+        {
+            return false;
         }
 
         #endregion
@@ -317,7 +342,7 @@ namespace Cheng.Threads
         /// <summary>
         /// 实际运行的线程状态
         /// </summary>
-        public ThreadState ThreadState
+        public System.Threading.ThreadState ThreadState
         {
             get => p_thread.ThreadState;
         }
@@ -363,7 +388,7 @@ namespace Cheng.Threads
         }
 
         /// <summary>
-        /// 在无任务列表时线程进行一次休眠的时间；该值默认20毫秒
+        /// 在无任务列表时线程进行一次休眠的时间；该值默认50毫秒
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
         public TimeSpan VacantTime
@@ -379,6 +404,8 @@ namespace Cheng.Threads
                 p_vacantTime = value;
             }
         }
+
+        public override int MaximumConcurrencyLevel => 1;
 
         #endregion
 
@@ -416,33 +443,7 @@ namespace Cheng.Threads
         }
 
         /// <summary>
-        /// 添加一个待执行任务到任务队列
-        /// </summary>
-        /// <param name="task">要添加的任务</param>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        /// <exception cref="SingleThreadException">线程已结束</exception>
-        public void AddTask(SingleTask task)
-        {
-            if (p_start && (!p_running))
-            {
-                throw new SingleThreadException("线程正处于关闭状态");
-            }
-            if (p_close)
-            {
-                throw new SingleThreadException("线程已结束");
-            }
-            if (task is null) throw new ArgumentNullException();
-            
-            lock (p_buffer)
-            {
-                p_buffer.Add(task);
-                task.p_onList = true;
-            }
-
-        }
-
-        /// <summary>
-        /// 停止当前线程并等待该线程结束
+        /// 停止当前调用线程并等待该线程结束
         /// </summary>
         /// <returns>
         /// <para>返回true表示线程已结束；false表示线程并未关闭，无法等待</para>
@@ -464,6 +465,106 @@ namespace Cheng.Threads
             return true;
         }
 
+        /// <summary>
+        /// 向任务队列添加一个新任务等待运行
+        /// </summary>
+        /// <param name="action">要执行的任务委托</param>
+        /// <returns>准备执行的任务</returns>
+        /// <exception cref="SingleThreadException">线程循环未运行或已关闭</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="InvalidOperationException">非有效状态</exception>
+        /// <exception cref="TaskSchedulerException">无法将此任务排入队列</exception>
+        public Task AddTask(Action action)
+        {
+            if (p_start && (!p_running))
+            {
+                throw new SingleThreadException();
+            }
+            if (p_close)
+            {
+                throw new SingleThreadException();
+            }
+            Task task = new Task(action);
+            task.Start(this);
+            return task;
+        }
+
+        /// <summary>
+        /// 向任务队列添加一个新任务等待运行
+        /// </summary>
+        /// <param name="action">要执行的任务委托</param>
+        /// <param name="state">执行的参数</param>
+        /// <returns>准备执行的任务</returns>
+        /// <exception cref="SingleThreadException">线程循环未运行或已关闭</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="InvalidOperationException">非有效状态</exception>
+        /// <exception cref="TaskSchedulerException">无法将此任务排入队列</exception>
+        public Task AddTask(Action<object> action, object state)
+        {
+            if (p_start && (!p_running))
+            {
+                throw new SingleThreadException();
+            }
+            if (p_close)
+            {
+                throw new SingleThreadException();
+            }
+            Task task = new Task(action, state);
+            task.Start(this);
+            return task;
+        }
+
+        /// <summary>
+        /// 向任务队列添加一个新任务等待运行
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func">要执行的任务委托</param>
+        /// <returns>准备执行的任务</returns>
+        /// <exception cref="SingleThreadException">线程循环未运行或已关闭</exception>
+        /// <exception cref="ArgumentException">参数是null</exception>
+        /// <exception cref="InvalidOperationException">非有效状态</exception>
+        /// <exception cref="TaskSchedulerException">无法将此任务排入队列</exception>
+        public Task<T> AddTask<T>(Func<T> func)
+        {
+            if (p_start && (!p_running))
+            {
+                throw new SingleThreadException();
+            }
+            if (p_close)
+            {
+                throw new SingleThreadException();
+            }
+            var task = new Task<T>(func);
+            task.Start(this);
+            return task;
+        }
+
+        /// <summary>
+        /// 向任务队列添加一个新任务等待运行
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func">要执行的任务委托</param>
+        /// <param name="state">执行的参数</param>
+        /// <returns>准备执行的任务</returns>
+        /// <exception cref="SingleThreadException">线程循环未运行或已关闭</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="InvalidOperationException">非有效状态</exception>
+        /// <exception cref="TaskSchedulerException">无法将此任务排入队列</exception>
+        public Task<T> AddTask<T>(Func<object, T> func, object state)
+        {
+            if (p_start && (!p_running))
+            {
+                throw new SingleThreadException();
+            }
+            if (p_close)
+            {
+                throw new SingleThreadException();
+            }
+            var task = new Task<T>(func, state);
+            task.Start(this);
+            return task;
+        }
+
         #endregion
 
         #region 派生
@@ -475,3 +576,5 @@ namespace Cheng.Threads
     }
 
 }
+#if DEBUG
+#endif
