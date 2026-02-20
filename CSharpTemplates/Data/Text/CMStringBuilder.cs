@@ -5,6 +5,7 @@ using System.Text;
 using Cheng.Memorys;
 using Cheng.DataStructure;
 using Cheng.DataStructure.Texts;
+using System.ComponentModel;
 
 namespace Cheng.Texts
 {
@@ -94,6 +95,7 @@ namespace Cheng.Texts
             if (capacity == 0) p_charBuffer = cp_emptyChar;
             else p_charBuffer = new char[capacity];
             p_newLine = Environment.NewLine;
+            p_emptyChar = '\0';
         }
 
         #endregion
@@ -112,6 +114,8 @@ namespace Cheng.Texts
         /// </summary>
         #endif
         private int p_length;
+
+        private char p_emptyChar;
 
         #endregion
 
@@ -292,6 +296,23 @@ namespace Cheng.Texts
         public void OnlySetLength(int length)
         {
             p_length = length;
+        }
+
+        /// <summary>
+        /// 辅助fixed语句块获取缓冲区首地址的函数
+        /// </summary>
+        /// <remarks>
+        /// <para>在C#7.3+的版本，.NET 编译器会根据该函数支持fixed语句块，用于获取该对象内的缓冲区首地址</para>
+        /// <para>此函数旨在支持 fixed 语句块，不应直接调用该函数</para>
+        /// </remarks>
+        /// <returns>使用fixed返回一个指向当前缓冲区首地址的指针，字符数量由<see cref="Capacity"/>决定；如果当前缓冲区长度是0，则返回的引用是一个指向值为'\0'的指针，该指针是无效的占位符，不应该修改</returns>
+        public ref char GetPinnableReference()
+        {
+            if (p_charBuffer.Length == 0)
+            {
+                return ref p_emptyChar;
+            }
+            return ref p_charBuffer[0];
         }
 
         #endregion

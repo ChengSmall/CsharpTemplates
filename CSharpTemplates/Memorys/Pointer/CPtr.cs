@@ -92,6 +92,68 @@ namespace Cheng.Memorys
             return ref *((T*)p_ptr);
         }
 
+        /// <summary>
+        /// 从指针指向的内存获取值
+        /// </summary>
+        /// <returns>指针指向的地址所对应的值</returns>
+        public T RefGet<T>() where T : unmanaged
+        {
+            return *((T*)p_ptr);
+        }
+
+        /// <summary>
+        /// 将指定变量设置到指针指向的内存
+        /// </summary>
+        /// <param name="value">要设置的值</param>
+        public void RefSet<T>(T value) where T : unmanaged
+        {
+            *((T*)p_ptr) = value;
+        }
+
+        /// <summary>
+        /// 从指针指向的地址并添加指定单位偏移后所在的内存获取值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="offset">要添加的偏移量，以<typeparamref name="T"/>类型的大小为单位</param>
+        /// <returns>指定地址所对应的值</returns>
+        public T RefGet<T>(int offset) where T : unmanaged
+        {
+            return *(((T*)p_ptr) + offset);
+        }
+
+        /// <summary>
+        /// 将指定变量设置到指针指向的地址并添加指定单位偏移后所在的内存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">要设置的变量</param>
+        /// <param name="offset">要添加的偏移量，以<typeparamref name="T"/>类型的大小为单位</param>
+        public void RefSet<T>(T value, int offset) where T : unmanaged
+        {
+            *(((T*)p_ptr) + offset) = value;
+        }
+
+        /// <summary>
+        /// 从指针指向的地址并添加指定单位偏移后所在的内存获取值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="offset">要添加的偏移量，以<typeparamref name="T"/>类型的大小为单位</param>
+        /// <returns>指定地址所对应的值</returns>
+        public T RefGet<T>(long offset) where T : unmanaged
+        {
+            return *(((T*)p_ptr) + offset);
+        }
+
+        /// <summary>
+        /// 将指定变量设置到指针指向的地址并添加指定单位偏移后所在的内存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">要设置的变量</param>
+        /// <param name="offset">要添加的偏移量，以<typeparamref name="T"/>类型的大小为单位</param>
+        public void RefSet<T>(T value, long offset) where T : unmanaged
+        {
+            *(((T*)p_ptr) + offset) = value;
+        }
+
         #endregion
 
         #region 运算符重载

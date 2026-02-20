@@ -116,6 +116,64 @@ namespace Cheng.Memorys
             return ref p_ptr[index];
         }
 
+        /// <summary>
+        /// 从指针指向的内存获取值
+        /// </summary>
+        /// <returns>指针指向的地址所对应的值</returns>
+        public T RefGet()
+        {
+            return *p_ptr;
+        }
+
+        /// <summary>
+        /// 将指定变量设置到指针指向的内存
+        /// </summary>
+        /// <param name="value">要设置的值</param>
+        public void RefSet(T value)
+        {
+            *p_ptr = value;
+        }
+
+        /// <summary>
+        /// 从指针指向的地址并添加指定单位偏移后所在的内存获取值
+        /// </summary>
+        /// <param name="offset">要添加的偏移量，以<typeparamref name="T"/>类型的大小为单位</param>
+        /// <returns>指定地址所对应的值</returns>
+        public T RefGet(int offset)
+        {
+            return *(p_ptr + offset);
+        }
+
+        /// <summary>
+        /// 将指定变量设置到指针指向的地址并添加指定单位偏移后所在的内存
+        /// </summary>
+        /// <param name="value">要设置的变量</param>
+        /// <param name="offset">要添加的偏移量，以<typeparamref name="T"/>类型的大小为单位</param>
+        public void RefSet(T value, int offset)
+        {
+            *(p_ptr + offset) = value;
+        }
+
+        /// <summary>
+        /// 从指针指向的地址并添加指定单位偏移后所在的内存获取值
+        /// </summary>
+        /// <param name="offset">要添加的偏移量，以<typeparamref name="T"/>类型的大小为单位</param>
+        /// <returns>指定地址所对应的值</returns>
+        public T RefGet(long offset)
+        {
+            return *(p_ptr + offset);
+        }
+
+        /// <summary>
+        /// 将指定变量设置到指针指向的地址并添加指定单位偏移后所在的内存
+        /// </summary>
+        /// <param name="value">要设置的变量</param>
+        /// <param name="offset">要添加的偏移量，以<typeparamref name="T"/>类型的大小为单位</param>
+        public void RefSet(T value, long offset)
+        {
+            *(p_ptr + offset) = value;
+        }
+
         #endregion
 
         #region 运算符重载

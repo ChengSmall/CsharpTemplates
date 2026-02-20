@@ -8,7 +8,7 @@ namespace Cheng.Memorys
 {
 
     /// <summary>
-    /// 内存和流的扩展功能
+    /// 内存的扩展功能
     /// </summary>
     public unsafe static partial class MemoryOperation
     {
@@ -29,14 +29,15 @@ namespace Cheng.Memorys
         /// </returns>
         public static R ToValue<T, R>(this T value) where T : unmanaged where R : unmanaged
         {
+            T vac = value;
             if (sizeof(T) < sizeof(R))
             {
                 R r = default;
-                MemoryCopy(&value, &r, sizeof(T));
+                MemoryCopy(&vac, &r, sizeof(T));
                 return r;
             }
 
-            return *(R*)&value;
+            return *(R*)&vac;
         }
 
         /// <summary>
@@ -498,53 +499,6 @@ namespace Cheng.Memorys
             {
                 re[i] = ConversionStorageBit(bytes[i]);
             }
-        }
-
-        /// <summary>
-        /// 进行大小端转化
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value">要转化的数据</param>
-        /// <returns>转化后的数据</returns>
-        public static T StorageConversionByte<T>(this T value) where T : unmanaged
-        {
-            T temp;
-            int length = sizeof(T);
-            int end = sizeof(T) - 1;
-            byte* firstp = (byte*)&value;
-            byte* endp = (((byte*)&temp) + end);
-            int i;
-
-            for (i = 0; i < length; i++)
-            {
-                endp[end - i] = firstp[i];
-            }
-
-            return temp;
-        }
-
-        /// <summary>
-        /// 进行大小端和位域转化
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value">要转化的数据</param>
-        /// <returns>转化后的数据</returns>
-        public static T StorageConversionAll<T>(this T value) where T : unmanaged
-        {
-
-            T temp;
-            int length = sizeof(T);
-            int end = sizeof(T) - 1;
-            byte* firstp = (byte*)&value;
-            byte* endp = (((byte*)&temp) + end);
-            int i;
-            for (i = 0; i < length; i++)
-            {
-                endp[end - i] = ConversionStorageBit(firstp[i]);
-            }
-
-            return temp;
-
         }
 
         #endregion
