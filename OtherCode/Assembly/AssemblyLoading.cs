@@ -23,22 +23,31 @@ namespace Cheng.Systems
 
             public S_Obj()
             {
-                p_dict = new Dictionary<string, Assembly>(new StrEquals());
+                p_dict = new Dictionary<string, Assembly>(StringComparer.Ordinal);
+                p_registerFunc = Dom_AssemblyResolve;
+                p_registerOtherFunc = null;
             }
 
             public Dictionary<string, Assembly> p_dict;
-        }
 
-        public sealed class StrEquals : EqualityComparer<string>
-        {
-            public override bool Equals(string x, string y)
-            {
-                return x == y;
-            }
+            public ResolveEventHandler p_registerFunc;
 
-            public override int GetHashCode(string obj)
+            public ResolveEventHandler p_registerOtherFunc;
+
+            private Assembly Dom_AssemblyResolve(object sender, ResolveEventArgs args)
             {
-                return obj is null ? 0 : obj.GetHashCode();
+                var assName = args.Name;
+                assName = getSimpleAssemblyName(assName);
+                Assembly asses = null;
+                lock (this)
+                {
+                    if (p_dict.TryGetValue(assName, out asses))
+                    {
+                        return asses;
+                    }
+                    asses = p_registerOtherFunc?.Invoke(sender, args);
+                }
+                return asses;
             }
         }
 
@@ -53,20 +62,6 @@ namespace Cheng.Systems
             }
             return fullName;
             //return fullName.Substring(0, i + 1);
-        }
-
-        private static Assembly Dom_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            var assName = args.Name;
-            assName = getSimpleAssemblyName(assName);
-            lock (p_lock)
-            {
-                if (p_lock.p_dict.TryGetValue(assName, out var asses))
-                {
-                    return asses;
-                }
-            }
-            return null;
         }
 
         static void f_addAss(Assembly ass, bool cover)
@@ -131,7 +126,7 @@ namespace Cheng.Systems
         /// </summary>
         public static void InitLoading()
         {
-            if(p_lock is null) p_lock = new S_Obj();
+            p_lock = new S_Obj();
         }
 
         /// <summary>
@@ -142,7 +137,7 @@ namespace Cheng.Systems
         public static void RegisterEvent(AppDomain dom)
         {
             if (dom is null || p_lock is null) throw new ArgumentNullException();
-            dom.AssemblyResolve += Dom_AssemblyResolve;
+            lock(p_lock) dom.AssemblyResolve += p_lock.p_registerFunc;
         }
 
         /// <summary>
@@ -153,7 +148,7 @@ namespace Cheng.Systems
         public static void UnregisterEvent(AppDomain dom)
         {
             if (dom is null || p_lock is null) throw new ArgumentNullException();
-            dom.AssemblyResolve -= Dom_AssemblyResolve;
+            lock (p_lock) dom.AssemblyResolve -= p_lock.p_registerFunc;
         }
 
         /// <summary>
@@ -165,7 +160,7 @@ namespace Cheng.Systems
         /// </returns>
         public static Dictionary<string, Assembly> Assemblys
         {
-            get => p_lock.p_dict;
+            get => p_lock?.p_dict;
         }
 
         /// <summary>
@@ -242,6 +237,7 @@ namespace Cheng.Systems
                 byte[] raw;
                 if (stream.CanSeek)
                 {
+                    if (stream.Length > int.MaxValue) throw new OutOfMemoryException("要加载的数据量超出int类型大小");
                     raw = new byte[stream.Length];
                     ReadBlock(stream, raw, 0, raw.Length);
                 }
@@ -392,6 +388,30 @@ namespace Cheng.Systems
         public static void AddAssemblysByPath(string path)
         {
             AddAssemblysByPath(path, true, SearchOption.TopDirectoryOnly);
+        }
+
+        /// <summary>
+        /// 外部解析程序集方法，在未查找到程序集时调用该函数解析程序集
+        /// </summary>
+        /// <value>null表示不使用外部解析，默认为null</value>
+        public static ResolveEventHandler OtherResolveFunc
+        {
+            get
+            {
+                if (p_lock is null) throw new ArgumentNullException();
+                lock (p_lock)
+                {
+                    return p_lock.p_registerOtherFunc;
+                }
+            }
+            set
+            {
+                if (p_lock is null) throw new ArgumentNullException();
+                lock (p_lock)
+                {
+                    p_lock.p_registerOtherFunc = value;
+                }
+            }
         }
 
         #endregion

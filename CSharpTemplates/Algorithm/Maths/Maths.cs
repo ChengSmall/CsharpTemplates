@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
+using System.Numerics;
 
 namespace Cheng.Algorithm
 {
@@ -1243,6 +1244,31 @@ namespace Cheng.Algorithm
                 gcd = (int)GreatCommonDivisor((ulong)a, (ulong)b);
             }
             return (((a) / gcd) * (b));
+        }
+
+        /// <summary>
+        /// 求两值的最小公倍数
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns><paramref name="a"/>和<paramref name="b"/>的最小公倍数；如果其中一个等于0，返回值是0</returns>
+        /// <exception cref="ArgumentOutOfRangeException">存在小于0的值</exception>
+        public static BigInteger LeastCommonMultiple(BigInteger a, BigInteger b)
+        {
+            if (a.IsZero || b.IsZero)
+            {
+                return BigInteger.Zero;
+            }
+            BigInteger gcd;
+            if (a.IsOne || b.IsOne)
+            {
+                gcd = BigInteger.One;
+            }
+            else
+            {
+                gcd = BigInteger.GreatestCommonDivisor(a, b);
+            }
+            return (a / gcd) * b;
         }
 
         #endregion

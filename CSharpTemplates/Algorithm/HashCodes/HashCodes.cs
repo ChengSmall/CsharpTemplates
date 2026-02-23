@@ -1,3 +1,4 @@
+using Cheng.Memorys;
 using System;
 
 namespace Cheng.Algorithm.HashCodes
@@ -503,6 +504,8 @@ namespace Cheng.Algorithm.HashCodes
         }
         #endregion
 
+        #region 字符串
+
         /// <summary>
         /// 获取字符串的默认64位哈希值
         /// </summary>
@@ -542,6 +545,11 @@ namespace Cheng.Algorithm.HashCodes
 
         #endregion
 
+        #endregion
+
     }
+
+
+    
 
 }
