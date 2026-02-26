@@ -1,18 +1,20 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using Cheng.Algorithm.HashCodes;
 
-using tv = System.Double;
-using TP = Cheng.DataStructure.Cherrsdinates.Point2;
+using tv = System.Single;
+using TP = Cheng.DataStructure.Cherrsdinates.Point2F;
+
 
 namespace Cheng.DataStructure.Cherrsdinates
 {
+
 
     /// <summary>
     /// 平面坐标或向量结构
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Point2 : IEquatable<Point2>, IHashCode64, IFormattable
+    public readonly struct Point2F : IEquatable<TP>, IHashCode64, IFormattable
     {
 
         #region 构造
@@ -22,7 +24,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public Point2(tv x, tv y)
+        public Point2F(tv x, tv y)
         {
             this.x = x; this.y = y;
         }
@@ -101,7 +103,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns></returns>
         public static TP operator +(TP p1, TP p2)
         {
-            return new Point2(p1.x + p2.x, p1.y + p2.y);
+            return new TP(p1.x + p2.x, p1.y + p2.y);
         }
 
         /// <summary>
@@ -112,7 +114,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns></returns>
         public static TP operator -(TP p1, TP p2)
         {
-            return new Point2(p1.x - p2.x, p1.y - p2.y);
+            return new TP(p1.x - p2.x, p1.y - p2.y);
         }
 
         /// <summary>
@@ -123,7 +125,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns></returns>
         public static TP operator *(TP p, tv num)
         {
-            return new Point2(p.x * num, p.y * num);
+            return new TP(p.x * num, p.y * num);
         }
 
         /// <summary>
@@ -134,17 +136,27 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns></returns>
         public static TP operator /(TP p, tv num)
         {
-            return new Point2(p.x / num, p.y / num);
+            return new TP(p.x / num, p.y / num);
         }
 
         public static explicit operator TP(PointInt2 p)
         {
+            return new TP(p.x, p.y);
+        }
+
+        public static explicit operator PointInt2(TP p)
+        {
+            return new PointInt2((int)p.x, (int)p.y);
+        }
+
+        public static implicit operator Point2(Point2F p)
+        {
             return new Point2(p.x, p.y);
         }
 
-        public static implicit operator PointInt2(TP p)
+        public static explicit operator Point2F(Point2 p)
         {
-            return new PointInt2((int)p.x, (int)p.y);
+            return new TP((tv)p.x, (tv)p.y);
         }
 
         #endregion
@@ -153,7 +165,7 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         public override bool Equals(object obj)
         {
-            if (obj is Point2 p)
+            if (obj is TP p)
             {
                 return this == p;
             }
@@ -189,15 +201,15 @@ namespace Cheng.DataStructure.Cherrsdinates
             return "(" + x.ToString(format) + "," + y.ToString(format) + ")";
         }
 
-
         public string ToString(string format, IFormatProvider formatProvider)
         {
             return "(" + x.ToString(format, formatProvider) + "," + y.ToString(format, formatProvider) + ")";
         }
 
-        public long GetHashCode64()
+        public unsafe long GetHashCode64()
         {
-            return x.GetHashCode64() ^ y.GetHashCode64();
+            tv tx = x, ty = y;
+            return (long)((*(uint*)&tx) | (((ulong)(*(uint*)&ty)) << 32));
         }
 
         #endregion
@@ -214,7 +226,7 @@ namespace Cheng.DataStructure.Cherrsdinates
             var xn = other.x - x;
             var yn = other.y - y;
 
-            return System.Math.Sqrt(xn * xn + yn * yn);
+            return (tv)System.Math.Sqrt(xn * xn + yn * yn);
         }
 
         /// <summary>
@@ -225,7 +237,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             get
             {
-                return System.Math.Sqrt(x * x + y * y);
+                return (tv)System.Math.Sqrt(x * x + y * y);
             }
         }
 
@@ -237,7 +249,8 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             get
             {
-                return this / System.Math.Sqrt(x * x + y * y);
+                var num = System.Math.Sqrt(x * x + y * y);
+                return new TP((tv)(x / num), (tv)(y / num));
             }
         }
 
@@ -258,7 +271,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns>表示二维向量的结构</returns>
         public TP Vector(TP other)
         {
-            return new Point2(other.x - x, other.y - y);
+            return new TP(other.x - x, other.y - y);
         }
 
         /// <summary>
@@ -276,5 +289,6 @@ namespace Cheng.DataStructure.Cherrsdinates
         #endregion
 
     }
+
 
 }

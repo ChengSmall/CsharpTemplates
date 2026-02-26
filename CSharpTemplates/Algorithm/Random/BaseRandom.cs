@@ -211,7 +211,7 @@ namespace Cheng.Algorithm.Randoms
             if (buffer is null) throw new ArgumentNullException();
             fixed (byte* ptr = buffer)
             {
-                NextPtr(new IntPtr(ptr), buffer.Length);
+                NextPtr(new CPtr<byte>(ptr), buffer.Length);
             }
         }
 
@@ -228,7 +228,7 @@ namespace Cheng.Algorithm.Randoms
             if (offset < 0 || count < 0 || (count + offset > buffer.Length)) throw new ArgumentOutOfRangeException();
             fixed (byte* ptr = buffer)
             {
-                NextPtr(new IntPtr(ptr + offset), count);
+                NextPtr(new CPtr<byte>(ptr + offset), count);
             }
         }
 
@@ -267,6 +267,16 @@ namespace Cheng.Algorithm.Randoms
         /// <param name="length">要填充的字节长度</param>
         public virtual unsafe void NextPtr(IntPtr ptr, int length)
         {
+            NextPtr((CPtr<byte>)ptr, length);
+        }
+
+        /// <summary>
+        /// 用随机数填充指定内存中的每一个字节
+        /// </summary>
+        /// <param name="ptr">指向字节数据的指针</param>
+        /// <param name="length">要填充的字节长度</param>
+        public virtual unsafe void NextPtr(CPtr<byte> ptr, int length)
+        {
             if (length == 0) return;
             int len = length / 2;
             ushort* buffer = (ushort*)ptr;
@@ -275,7 +285,7 @@ namespace Cheng.Algorithm.Randoms
             {
                 buffer[i] = (ushort)Next(0, ushort.MaxValue + 1);
             }
-            if((length % 2) != 0)
+            if ((length % 2) != 0)
             {
                 *((byte*)(buffer + i)) = (byte)Next(0, byte.MaxValue + 1);
             }

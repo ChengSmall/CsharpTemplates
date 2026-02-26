@@ -1,10 +1,10 @@
-using System;
-using Cheng.Algorithm.HashCodes;
+﻿using System;
 using System.Runtime.InteropServices;
+using Cheng.Algorithm.HashCodes;
 using Cheng.Algorithm;
 
-using tv = System.Double;
-using TP = Cheng.DataStructure.Cherrsdinates.Point3;
+using tv = System.Single;
+using TP = Cheng.DataStructure.Cherrsdinates.Point3F;
 
 namespace Cheng.DataStructure.Cherrsdinates
 {
@@ -13,7 +13,7 @@ namespace Cheng.DataStructure.Cherrsdinates
     /// 可表示空间坐标或向量的结构
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Point3 : IEquatable<TP>, IHashCode64, IFormattable
+    public readonly struct Point3F : IEquatable<TP>, IHashCode64, IFormattable
     {
 
         #region 构造
@@ -24,11 +24,9 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        public Point3(tv x, tv y, tv z)
+        public Point3F(tv x, tv y, tv z)
         {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            this.x = x; this.y = y; this.z = z;
         }
 
         /// <summary>
@@ -36,11 +34,9 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public Point3(tv x, tv y)
+        public Point3F(tv x, tv y)
         {
-            this.x = x;
-            this.y = y;
-            z = 0;
+            this.x = x; this.y = y; z = 0;
         }
 
         #endregion
@@ -147,7 +143,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return new TP(p1.x / num, p1.y / num, p1.z / num);
         }
-        
+
         #endregion
 
         #region 比较
@@ -178,14 +174,24 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         #region 转换
 
-        public static explicit operator Point2(Point3 point)
+        public static explicit operator Point2F(Point3F point)
         {
-            return new Point2(point.x, point.y);
+            return new Point2F(point.x, point.y);
         }
 
-        public static explicit operator Point3(Point2 point)
+        public static explicit operator Point3F(Point2F point)
         {
-            return new Point3(point.x, point.y);
+            return new Point3F(point.x, point.y);
+        }
+
+        public static implicit operator Point3(Point3F p)
+        {
+            return new Point3(p.x, p.y);
+        }
+
+        public static explicit operator Point3F(Point3 p)
+        {
+            return new Point3F((tv)p.x, (tv)p.y);
         }
 
         #endregion
@@ -236,7 +242,7 @@ namespace Cheng.DataStructure.Cherrsdinates
             get
             {
                 var re = System.Math.Sqrt(x * x + y * y + z * z);
-                return new TP(this.x / re, this.y / re, this.z / re);
+                return new TP((float)(this.x / re), (float)(this.y / re), (float)(this.z / re));
             }
         }
 
@@ -278,7 +284,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         public double Angle(TP other)
         {
             var num = Maths.Clamp(this.DotPro(other) / Math.Sqrt(this.SqrMagnitude * other.SqrMagnitude), -1f, 1f);
-            
+
             return Math.Acos(num) / (Math.PI / 180d);
         }
 
@@ -303,7 +309,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// 根据参数<paramref name="t"/>从此坐标到另一个坐标的插值；
         /// <para>当t等于0时返回原坐标，t等于1时返回<paramref name="other"/>，0.5则返回两坐标的中间点</para>
         /// </returns>
-        public TP Lerp(TP other, double t)
+        public TP Lerp(TP other, tv t)
         {
             return new TP(this.x + (other.x - this.x) * t, this.y + (other.y - this.y) * t, this.z + (other.z - this.z) * t);
         }
@@ -328,9 +334,10 @@ namespace Cheng.DataStructure.Cherrsdinates
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
         }
 
-        public long GetHashCode64()
+        public unsafe long GetHashCode64()
         {
-            return x.GetHashCode64() ^ y.GetHashCode64() ^ z.GetHashCode64();
+            tv tx = x, ty = y, tz = z;
+            return (long)(((*(uint*)&tx) | (((ulong)(*(uint*)&ty)) << 32)) ^ (((ulong)(*(uint*)&tz)) << 16));
         }
 
         /// <summary>
@@ -362,5 +369,6 @@ namespace Cheng.DataStructure.Cherrsdinates
         #endregion
 
     }
+
 
 }

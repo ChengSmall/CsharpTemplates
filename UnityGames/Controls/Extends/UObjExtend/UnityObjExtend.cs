@@ -37,7 +37,7 @@ namespace Cheng.Unitys
         }
 
         /// <summary>
-        /// 销毁对象实例
+        /// 销毁或删除游戏对象、组件实例或资源
         /// </summary>
         /// <param name="obj"></param>
         public static void Destroy(this UObj obj)

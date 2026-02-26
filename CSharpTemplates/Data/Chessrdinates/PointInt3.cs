@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using Cheng.Algorithm.HashCodes;
 using System.Runtime.InteropServices;
 using Cheng.Algorithm;
 
-using tv = System.Double;
-using TP = Cheng.DataStructure.Cherrsdinates.Point3;
+using tv = System.Int32;
+using TP = Cheng.DataStructure.Cherrsdinates.PointInt3;
 
 namespace Cheng.DataStructure.Cherrsdinates
 {
@@ -13,7 +13,7 @@ namespace Cheng.DataStructure.Cherrsdinates
     /// 可表示空间坐标或向量的结构
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Point3 : IEquatable<TP>, IHashCode64, IFormattable
+    public readonly struct PointInt3 : IEquatable<TP>, IHashCode64, IFormattable
     {
 
         #region 构造
@@ -24,7 +24,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        public Point3(tv x, tv y, tv z)
+        public PointInt3(tv x, tv y, tv z)
         {
             this.x = x;
             this.y = y;
@@ -36,7 +36,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public Point3(tv x, tv y)
+        public PointInt3(tv x, tv y)
         {
             this.x = x;
             this.y = y;
@@ -147,7 +147,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         {
             return new TP(p1.x / num, p1.y / num, p1.z / num);
         }
-        
+
         #endregion
 
         #region 比较
@@ -178,14 +178,34 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         #region 转换
 
-        public static explicit operator Point2(Point3 point)
+        public static explicit operator PointInt2(PointInt3 point)
         {
-            return new Point2(point.x, point.y);
+            return new PointInt2(point.x, point.y);
         }
 
-        public static explicit operator Point3(Point2 point)
+        public static explicit operator PointInt3(PointInt2 point)
         {
-            return new Point3(point.x, point.y);
+            return new PointInt3(point.x, point.y);
+        }
+
+        public static explicit operator Point3(PointInt3 point)
+        {
+            return new Point3(point.x, point.y, point.z);
+        }
+
+        public static explicit operator PointInt3(Point3 point)
+        {
+            return new PointInt3((tv)point.x, (tv)point.y, (tv)point.z);
+        }
+
+        public static explicit operator Point3F(PointInt3 point)
+        {
+            return new Point3F(point.x, point.y, point.z);
+        }
+
+        public static explicit operator PointInt3(Point3F point)
+        {
+            return new PointInt3((tv)point.x, (tv)point.y, (tv)point.z);
         }
 
         #endregion
@@ -210,7 +230,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <summary>
         /// 计算从原点(0,0,0)到此坐标的距离的平方
         /// </summary>
-        public double SqrMagnitude
+        public tv SqrMagnitude
         {
             get => x * x + y * y + z * z;
         }
@@ -236,7 +256,7 @@ namespace Cheng.DataStructure.Cherrsdinates
             get
             {
                 var re = System.Math.Sqrt(x * x + y * y + z * z);
-                return new TP(this.x / re, this.y / re, this.z / re);
+                return new TP((int)(this.x / re), (int)(this.y / re), (int)(this.z / re));
             }
         }
 
@@ -270,44 +290,6 @@ namespace Cheng.DataStructure.Cherrsdinates
             return new TP(y * other.z - other.y * z, -(x * other.z - other.x * z), x * other.y - other.x * y);
         }
 
-        /// <summary>
-        /// 返回此向量与另一个向量之间的角度
-        /// </summary>
-        /// <param name="other">另一个向量</param>
-        /// <returns>返回的角度为两个向量之间的无符号角度，角度不超过180</returns>
-        public double Angle(TP other)
-        {
-            var num = Maths.Clamp(this.DotPro(other) / Math.Sqrt(this.SqrMagnitude * other.SqrMagnitude), -1f, 1f);
-            
-            return Math.Acos(num) / (Math.PI / 180d);
-        }
-
-        /// <summary>
-        /// 返回此向量与另一个向量之间的弧度
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns>返回的角度为两个向量之间的无符号弧度，弧度不超过<see cref="System.Math.PI"/></returns>
-        public double Radian(TP other)
-        {
-            var num = Maths.Clamp(this.DotPro(other) / System.Math.Sqrt(this.SqrMagnitude * other.SqrMagnitude), -1f, 1f);
-
-            return System.Math.Acos(num);
-        }
-
-        /// <summary>
-        /// 将此坐标点与另一个坐标点计算线性插值
-        /// </summary>
-        /// <param name="other">另一个坐标</param>
-        /// <param name="t">插值</param>
-        /// <returns>
-        /// 根据参数<paramref name="t"/>从此坐标到另一个坐标的插值；
-        /// <para>当t等于0时返回原坐标，t等于1时返回<paramref name="other"/>，0.5则返回两坐标的中间点</para>
-        /// </returns>
-        public TP Lerp(TP other, double t)
-        {
-            return new TP(this.x + (other.x - this.x) * t, this.y + (other.y - this.y) * t, this.z + (other.z - this.z) * t);
-        }
-
         #endregion
 
         #region 派生
@@ -325,12 +307,12 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         public override int GetHashCode()
         {
-            return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
+            return x ^ y ^ z;
         }
 
         public long GetHashCode64()
         {
-            return x.GetHashCode64() ^ y.GetHashCode64() ^ z.GetHashCode64();
+            return (long)(((uint)x | (((ulong)y) << 32)) ^ ((ulong)z << 16));
         }
 
         /// <summary>
@@ -362,5 +344,6 @@ namespace Cheng.DataStructure.Cherrsdinates
         #endregion
 
     }
+
 
 }

@@ -334,7 +334,7 @@ namespace Cheng.Memorys
 
         #endregion
 
-        #region 转换
+        #region 类型转换
 
         public static implicit operator T*(CPtr<T> cp)
         {
@@ -445,6 +445,17 @@ namespace Cheng.Memorys
         {
             return new CPtr(cp.p_ptr);
         }
+
+        /// <summary>
+        /// 将指针类型转换到另一个类型
+        /// </summary>
+        /// <typeparam name="O">要转换的另一个非托管类型</typeparam>
+        /// <returns>转换后的指针</returns>
+        public CPtr<O> ConverTo<O>() where O : unmanaged
+        {
+            return new CPtr<O>((O*)p_ptr);
+        }
+
         #endregion
 
         #region 派生

@@ -59,9 +59,49 @@ namespace Cheng.Unitys
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static Point3 ToPoint2(this Vector3 vector)
+        public static Point3 ToPoint3(this Vector3 vector)
         {
             return new Point3(vector.x, vector.y);
+        }
+
+        /// <summary>
+        /// 转化为<see cref="Vector2"/>
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static Vector2 ToVector2(this Point2F point)
+        {
+            return new Vector2((float)point.x, (float)point.y);
+        }
+
+        /// <summary>
+        /// 转化为<see cref="Point2"/>
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static Point2F ToPoint2F(this Vector2 vector)
+        {
+            return new Point2F(vector.x, vector.y);
+        }
+
+        /// <summary>
+        /// 转化为<see cref="Vector3"/>
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static Vector3 ToVector2(this Point3F point)
+        {
+            return new Vector3((float)point.x, (float)point.y);
+        }
+
+        /// <summary>
+        /// 转化为<see cref="Point3"/>
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static Point3F ToPoint3F(this Vector3 vector)
+        {
+            return new Point3F(vector.x, vector.y);
         }
 
         #endregion
