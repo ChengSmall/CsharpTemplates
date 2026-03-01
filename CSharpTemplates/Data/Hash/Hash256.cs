@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.InteropServices;
+
 using Cheng.Texts;
 using Cheng.Algorithm.HashCodes;
 using Cheng.IO;
+using Cheng.Memorys;
 
 namespace Cheng.DataStructure.Hashs
 {
@@ -12,6 +15,7 @@ namespace Cheng.DataStructure.Hashs
     /// 一个256位的哈希结构
     /// </summary>
     [Serializable]
+    [StructLayout(LayoutKind.Sequential)]
     public unsafe struct Hash256 : IEquatable<Hash256>, IComparable<Hash256>, IHashCode64
     {
 
@@ -284,9 +288,26 @@ namespace Cheng.DataStructure.Hashs
         }
 
         /// <summary>
+        /// 将字节数组转化为<see cref="Hash256"/>
+        /// </summary>
+        /// <param name="buffer">字节数组</param>
+        /// <returns>转化后的实例</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">字节数组长度不足32字节</exception>
+        public static Hash256 BytesToHash256(byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (buffer.Length < 32) throw new ArgumentOutOfRangeException();
+            fixed (byte* bp = buffer)
+            {
+                return BytesToHash256(bp);
+            }
+        }
+
+        /// <summary>
         /// 将字节序列转化为<see cref="Hash256"/>
         /// </summary>
-        /// <param name="buffer">字节序列首地址，请保证地址指向的内存拥有至少32个字节</param>
+        /// <param name="buffer">字节序列首地址，请保证指针指向的内存拥有至少32个字节</param>
         /// <returns>转化后的实例</returns>
         public static Hash256 BytesToHash256(byte* buffer)
         {
@@ -294,6 +315,78 @@ namespace Cheng.DataStructure.Hashs
                 IOoperations.OrderToUInt64(new IntPtr(buffer + 8)),
                 IOoperations.OrderToUInt64(new IntPtr(buffer + 16)),
                 IOoperations.OrderToUInt64(new IntPtr(buffer + 24)));
+        }
+
+        /// <summary>
+        /// 将字节序列转化为<see cref="Hash256"/>
+        /// </summary>
+        /// <param name="buffer">字节序列首地址，请保证指针指向的内存拥有至少32个字节</param>
+        /// <returns>转化后的实例</returns>
+        public static Hash256 BytesToHash256(CPtr<byte> buffer)
+        {
+            return new Hash256(IOoperations.OrderToUInt64(buffer),
+                IOoperations.OrderToUInt64((buffer + 8)),
+                IOoperations.OrderToUInt64((buffer + 16)),
+                IOoperations.OrderToUInt64((buffer + 24)));
+        }
+
+        /// <summary>
+        /// 将<see cref="Hash256"/>写入字节序列
+        /// </summary>
+        /// <param name="buffer">要写入的字节序列首地址，请保证指针指向的内存拥有至少32个字节</param>
+        public void ToBytes(CPtr<byte> buffer)
+        {
+            s1.OrderToBytes(buffer);
+            s2.OrderToBytes(buffer + (8));
+            s3.OrderToBytes(buffer + (8 * 2));
+            s4.OrderToBytes(buffer + (8 * 3));
+        }
+
+        /// <summary>
+        /// 将<see cref="Hash256"/>写入字节序列
+        /// </summary>
+        /// <param name="buffer">要写入的字节序列</param>
+        /// <param name="offset">指定开始写入的字节位置</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
+        public void ToBytes(byte[] buffer, int offset)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (offset < 0 || offset + 32 > buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            fixed (byte* bp = buffer)
+            {
+                ToBytes(new CPtr<byte>(bp + offset));
+            }
+        }
+
+        /// <summary>
+        /// 将<see cref="Hash256"/>写入字节序列
+        /// </summary>
+        /// <param name="buffer">要写入的字节序列</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
+        public void ToBytes(byte[] buffer)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (buffer.Length < 32) throw new ArgumentOutOfRangeException();
+            fixed (byte* bp = buffer)
+            {
+                ToBytes(new CPtr<byte>(bp));
+            }
+        }
+
+        /// <summary>
+        /// 将<see cref="Hash256"/>转化位字节序列返回
+        /// </summary>
+        /// <returns>转化后的字节序列</returns>
+        public byte[] ToBytes()
+        {
+            byte[] buf = new byte[32];
+            ToBytes(buf);
+            return buf;
         }
 
         #endregion

@@ -113,7 +113,8 @@ namespace Cheng.IO
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
         public static void OrderToBytes(this float value, byte* buffer)
         {
-            OrderToBytes(*(uint*)&value, buffer);
+            var t = value;
+            OrderToBytes(*(uint*)&t, buffer);
         }
 
         /// <summary>
@@ -123,7 +124,99 @@ namespace Cheng.IO
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
         public static void OrderToBytes(this double value, byte* buffer)
         {
-            OrderToBytes(*(ulong*)&value, buffer);
+            var t = value;
+            OrderToBytes(*(ulong*)&t, buffer);
+        }
+
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this uint value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this int value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this long value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this ulong value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this ushort value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this char value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this short value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this float value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将值顺序转化到指定内存序列
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
+        public static void OrderToBytes(this double value, CPtr<byte> buffer)
+        {
+            OrderToBytes(value, buffer.p_ptr);
         }
 
         #endregion
@@ -465,6 +558,94 @@ namespace Cheng.IO
         public static short OrderToInt16(this IntPtr buffer)
         {
             byte* bptr = (byte*)buffer;
+            return (short)(bptr[0] | ((bptr[1]) << 8));
+        }
+
+
+        /// <summary>
+        /// 将内存顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
+        /// <returns>转化后的值</returns>
+        public static uint OrderToUInt32(this CPtr<byte> buffer)
+        {
+            byte* bptr = (byte*)buffer;
+            return ((uint)bptr[0] | ((uint)bptr[1] << 8) | (((uint)bptr[2]) << (16)) | (((uint)bptr[3]) << (24)));
+        }
+
+        /// <summary>
+        /// 将内存顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
+        /// <returns>转化后的值</returns>
+        public static ulong OrderToUInt64(this CPtr<byte> buffer)
+        {
+            byte* bptr = buffer.p_ptr;
+
+            return (((ulong)bptr[0]) | ((ulong)bptr[1] << 8) | (((ulong)bptr[2]) << (8 * 2)) | (((ulong)bptr[3]) << (8 * 3)) | (((ulong)bptr[4]) << (8 * 4)) | ((ulong)bptr[5] << (8 * 5)) | (((ulong)bptr[6]) << (8 * 6)) | (((ulong)bptr[7]) << (8 * 7)));
+        }
+
+        /// <summary>
+        /// 将内存顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
+        /// <returns>转化后的值</returns>
+        public static int OrderToInt32(this CPtr<byte> buffer)
+        {
+            return (int)OrderToUInt32(buffer);
+        }
+
+        /// <summary>
+        /// 将内存顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
+        /// <returns>转化后的值</returns>
+        public static long OrderToInt64(this CPtr<byte> buffer)
+        {
+            return (long)OrderToUInt64(buffer);
+        }
+
+        /// <summary>
+        /// 将内存顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
+        /// <returns>转化后的值</returns>
+        public static float OrderToFloat(this CPtr<byte> buffer)
+        {
+            var t = OrderToUInt32(buffer);
+            return *(float*)&t;
+        }
+
+        /// <summary>
+        /// 将内存顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
+        /// <returns>转化后的值</returns>
+        public static double OrderToDouble(this CPtr<byte> buffer)
+        {
+            var t = OrderToUInt64(buffer);
+            return *(double*)&t;
+        }
+
+        /// <summary>
+        /// 将内存顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要2字节</param>
+        /// <returns>转化后的值</returns>
+        public static ushort OrderToUInt16(this CPtr<byte> buffer)
+        {
+            byte* bptr = buffer.p_ptr;
+            return (ushort)(bptr[0] | ((bptr[1]) << 8));
+        }
+
+        /// <summary>
+        /// 将内存顺序序列转化为值
+        /// </summary>
+        /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要2字节</param>
+        /// <returns>转化后的值</returns>
+        public static short OrderToInt16(this CPtr<byte> buffer)
+        {
+            byte* bptr = buffer.p_ptr;
             return (short)(bptr[0] | ((bptr[1]) << 8));
         }
 
@@ -854,7 +1035,6 @@ namespace Cheng.IO
         #endregion
 
         #endregion
-
 
     }
 

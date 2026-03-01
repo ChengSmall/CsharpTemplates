@@ -318,7 +318,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>根据本地时间和计算机启动时间生成的值</returns>
         public static long GetSeedByTickXORNowTime()
         {
-            return (long)(((ulong)DateTime.Now.Ticks) ^ (((ulong)Environment.TickCount) << 31));
+            return (long)(((ulong)DateTime.Now.Ticks) ^ (((ulong)(uint)Environment.TickCount) << 31));
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>根据本地时间和计算机启动时间生成的值</returns>
         public static long GetSeedByTickXORUtcNowTime()
         {
-            return (long)(((ulong)DateTime.UtcNow.Ticks) ^ (((ulong)Environment.TickCount) << 31));
+            return (long)(((ulong)DateTime.UtcNow.Ticks) ^ (((ulong)(uint)Environment.TickCount) << 31));
         }
 
         #endregion

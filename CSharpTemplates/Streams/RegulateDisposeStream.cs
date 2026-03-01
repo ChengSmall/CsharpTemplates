@@ -11,8 +11,7 @@ namespace Cheng.Streams
     /// 封装一个流并控制是否对非托管资源释放
     /// </summary>
     /// <remarks>
-    /// 该类仅用于控制封装的流是否释放非托管资源；
-    /// <para>针对某些第三方库，使用<see cref="Stream"/>类型真的是一塌糊涂！竟然将自身api的句柄或资源释放和流封装对象绑定到一起，不释放会导致句柄残留在进程内，释放则必定会调用内部封装的<see cref="Stream.Close"/>，完全没有提供不做内部释放的开关，作为一个C#代码库简直太过分！！！这个类专门给这些离谱的库擦屁股，以控制流对象无法被内部释放</para>
+    /// 该类仅用于控制封装的流是否释放非托管资源
     /// </remarks>
     public class RegulateDisposeStream : HEStream
     {

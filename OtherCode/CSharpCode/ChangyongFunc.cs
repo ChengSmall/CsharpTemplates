@@ -5,10 +5,11 @@ using System.Text;
 
 namespace Cheng.OtherCode
 {
+
     /// <summary>
     /// 常用方法
     /// </summary>
-    public static unsafe class ChangyongFunc
+    internal static unsafe class ChangyongFunc
     {
 
         /// <summary>
@@ -101,7 +102,6 @@ namespace Cheng.OtherCode
             goto BeginLoop;
 
         }
-
 
 
     }

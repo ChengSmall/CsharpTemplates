@@ -6,6 +6,8 @@ using System.Security;
 
 using Cheng.Streams;
 using Cheng.Memorys;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Cheng.IO
 {
@@ -333,18 +335,22 @@ namespace Cheng.IO
             throw new NotSupportedException();
         }
 
-
         public override void EndWrite(IAsyncResult asyncResult)
         {
             ThrowIsDispose();
             p_partFile.EndWrite(asyncResult);
         }
 
-
         public override int EndRead(IAsyncResult asyncResult)
         {
             ThrowIsDispose();
             return p_partFile.EndRead(asyncResult);
+        }
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            ThrowIsDispose();
+            return p_partFile.ReadAsync(buffer, offset, count, cancellationToken);
         }
 
         #endregion
