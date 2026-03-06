@@ -168,27 +168,43 @@ namespace Cheng.Json
         }
 
         /// <summary>
-        /// 返回此实例的数值
+        /// 访问此实例的数值
         /// </summary>
-        /// <returns>如果该实例是<see cref="JsonType.RealNum"/>则返回值，如果是<see cref="JsonType.Integer"/>则转化并返回双浮点值</returns>
+        /// <value>如果该实例是数值类型则可以访问或设置值，整数会强制转换到浮点数</value>
         /// <exception cref="NotImplementedException">不是数值类型</exception>
         public virtual double Number
         {
-            get
-            {
-                throw new NotImplementedException(NotDataTypeException);
-            }
+            get => throw new NotImplementedException(NotDataTypeException);
+        }
+
+        /// <summary>
+        /// 访问此实例的整数数值
+        /// </summary>
+        /// <value>如果该实例是数值类型则可以访问此实例的值，浮点值到整数则会舍去小数位</value>
+        /// <exception cref="NotImplementedException">不是数值类型</exception>
+        public virtual long NumberInt
+        {
+            get => throw new NotImplementedException(NotDataTypeException);
         }
 
         /// <summary>
         /// 获取此实例的数值
         /// </summary>
-        /// <param name="number">获取</param>
-        /// <returns>如果<see cref="DataType"/>属于<see cref="JsonType.RealNum"/>或<see cref="JsonType.Integer"/>则返回true并将值写入<paramref name="number"/>；否则返回false，并且<paramref name="number"/>参数无效</returns>
+        /// <param name="number">获取到的值</param>
+        /// <returns>如果是数值类型则返回true并将值写入<paramref name="number"/>；否则返回false，并且<paramref name="number"/>参数无效</returns>
         public virtual bool TryGetNumber(out double number)
         {
-            number = default;
-            return false;
+            number = default; return false;
+        }
+
+        /// <summary>
+        /// 获取此实例的数值
+        /// </summary>
+        /// <param name="number">获取到的值</param>
+        /// <returns>如果是数值类型则返回true并将值写入<paramref name="number"/>；否则返回false，并且<paramref name="number"/>参数无效</returns>
+        public virtual bool TryGetNumber(out long number)
+        {
+            number = default; return false;
         }
 
         #endregion
@@ -704,13 +720,13 @@ namespace Cheng.Json
 
         private sealed class c_ConstJson
         {
-            public c_ConstJson()
+            private c_ConstJson()
             {
                 btrue = new JsonBoolean(true);
                 bfalse = new JsonBoolean(false);
             }
-            public JsonBoolean btrue;
-            public JsonBoolean bfalse;
+            public readonly JsonBoolean btrue;
+            public readonly JsonBoolean bfalse;
 
             public readonly static c_ConstJson cp_obj = new c_ConstJson();
         }
@@ -860,10 +876,12 @@ namespace Cheng.Json
         #endregion
 
         #region 参数
+
         /// <summary>
         /// 数据
         /// </summary>
         public readonly long value;
+
         #endregion
 
         #region 派生
@@ -877,12 +895,21 @@ namespace Cheng.Json
 
         public override bool IsNumberType => true;
 
-        public override double Number => value;
+        public override double Number
+        {
+            get => value;
+        }
+
+        public override long NumberInt => value;
 
         public override bool TryGetNumber(out double number)
         {
-            number = value;
-            return true;
+            number = value; return true;
+        }
+
+        public override bool TryGetNumber(out long number)
+        {
+            number = value; return true;
         }
 
         public override int GetHashCode()
@@ -1059,6 +1086,13 @@ namespace Cheng.Json
         {
             number = value;
             return true;
+        }
+
+        public override long NumberInt => (long)value;
+
+        public override bool TryGetNumber(out long number)
+        {
+            number = (long)value; return true;
         }
 
         public override string ToString()
