@@ -1,10 +1,11 @@
+using Cheng.Memorys;
 using System;
 
 namespace Cheng.Algorithm.Randoms
 {
 
     /// <summary>
-    /// 对一个随机数生成器进行线程安全同步封装
+    /// 对一个随机数生成器进行线程安全封装
     /// </summary>
     public sealed class SynchronizedRandom : BaseRandom
     {
@@ -12,7 +13,7 @@ namespace Cheng.Algorithm.Randoms
         #region 构造
 
         /// <summary>
-        /// 在指定随机数生成器周围建立线程安全（同步）封装
+        /// 在指定随机数生成器周围建立线程安全封装
         /// </summary>
         /// <param name="random">要封装的随机器</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
@@ -157,6 +158,11 @@ namespace Cheng.Algorithm.Randoms
         public override bool NextFloat(float probability)
         {
             lock(random) return random.NextFloat(probability);
+        }
+
+        public override void NextPtr(CPtr<byte> ptr, int length)
+        {
+            lock (random) random.NextPtr(ptr, length);
         }
 
         #endregion

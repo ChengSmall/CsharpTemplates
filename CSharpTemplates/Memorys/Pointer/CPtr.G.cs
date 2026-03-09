@@ -386,7 +386,7 @@ namespace Cheng.Memorys
             return new CPtr<T>((T*)cp.p_ptr);
         }
 
-        public static implicit operator Pointer64(CPtr<T> cp)
+        public static explicit operator Pointer64(CPtr<T> cp)
         {
             return new Pointer64(cp.p_ptr);
         }
@@ -491,13 +491,20 @@ namespace Cheng.Memorys
         public override bool Equals(object obj)
         {
             if (obj is CPtr<T> cp) return p_ptr == cp.p_ptr;
+            if (obj is CPtr scp) return p_ptr == scp.p_ptr;
             return false;
         }
 
         public override int GetHashCode()
         {
-            if (sizeof(void*) == 4) return (int)p_ptr;
-            return ((ulong)p_ptr).GetHashCode();
+            switch (sizeof(void*))
+            {
+                case 8:
+                    return ((ulong)p_ptr).GetHashCode();
+                case 4:
+                default:
+                    return (int)p_ptr;
+            }
         }
 
         public long GetHashCode64()
@@ -512,16 +519,9 @@ namespace Cheng.Memorys
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if(format is null)
+            if(string.IsNullOrEmpty(format))
             {
                 format = "X";
-            }
-
-            if(format.Length > 0 && (format[0] == 'G' || format[0] == 'g'))
-            {
-                var cars = format.ToCharArray();
-                cars[0] = 'X';
-                format = new string(cars);
             }
 
             if (sizeof(void*) == 4)

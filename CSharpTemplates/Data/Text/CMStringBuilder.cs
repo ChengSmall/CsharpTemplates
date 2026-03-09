@@ -315,6 +315,31 @@ namespace Cheng.Texts
             return ref p_charBuffer[0];
         }
 
+        /// <summary>
+        /// 将缓冲区返回为字符数组
+        /// </summary>
+        /// <remarks>
+        /// <para>用于快速获取包含当前缓冲区所有内容的字符数组，但返回的字符数组不一定是新实例，也可能是源缓冲区对象，因此修改此函数返回的数组，可能会导致该缓冲区内容出现异常</para>
+        /// <para>如果要安全访问当前缓冲区的内容到字符数组，建议用<see cref="ToCharArray"/>，或者仅以读取模式访问</para>
+        /// </remarks>
+        /// <returns>包含缓冲区内容的字符数组</returns>
+        public char[] ToCharArrayUnsafe()
+        {
+            if(p_length == p_charBuffer.Length)
+            {
+                return p_charBuffer;
+            }
+            return ToCharArray();
+        }
+
+        /// <summary>
+        /// 强制将当前缓冲区内的对象替换为新实例
+        /// </summary>
+        public void FlushNewBuffer()
+        {
+            f_setNewCapacity(p_length, p_length);
+        }
+
         #endregion
 
         #region 字符串添加
@@ -950,6 +975,18 @@ namespace Cheng.Texts
         {
             if (p_length == 0) return string.Empty;
             return new string(p_charBuffer, 0, p_length);
+        }
+
+        /// <summary>
+        /// 将缓冲区返回为新的字符数组
+        /// </summary>
+        /// <returns>包含缓冲区内容的字符数组新实例</returns>
+        public char[] ToCharArray()
+        {
+            if (p_length == 0) return Array.Empty<char>();
+            char[] cs = new char[p_length];
+            Array.Copy(p_charBuffer, 0, cs, 0, p_length);
+            return cs;
         }
 
         /// <summary>

@@ -102,7 +102,7 @@ namespace Cheng.DataStructure.Texts
                 }
             }
             high = hi;
-            this.low = default;
+            this.low = '\0';
         }
 
         #endregion
@@ -157,7 +157,7 @@ namespace Cheng.DataStructure.Texts
         public int ToChar()
         {
             if (char.IsSurrogatePair(high, low)) return toCode(high, low);
-            return (int)((uint)high | (((uint)low) << 16));
+            return (int)(((uint)high) | (((uint)low) << 16));
         }
 
         /// <summary>
@@ -265,9 +265,12 @@ namespace Cheng.DataStructure.Texts
         /// <param name="str">要读取的字符串</param>
         /// <param name="startIndex">要从中读取的第一个索引</param>
         /// <returns>读取的字符</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">给定参数不存在有效范围</exception>
         public static Unichar GetUnichar(string str, int startIndex)
         {
             if (str is null) throw new ArgumentNullException();
+            if (str.Length == 0) throw new ArgumentException();
             fixed (char* cp = str)
             {
                 return new Unichar(new CPtr<char>((cp + startIndex)), str.Length - startIndex);
@@ -278,10 +281,13 @@ namespace Cheng.DataStructure.Texts
         /// 从指定字符串起始位置中读取一个字符
         /// </summary>
         /// <param name="str">要从中读取的字符</param>
-        /// <returns></returns>
+        /// <returns>读取的字符</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">给定参数不存在有效范围</exception>
         public static Unichar GetUnichar(string str)
         {
             if (str is null) throw new ArgumentNullException();
+            if (str.Length == 0) throw new ArgumentException();
             fixed (char* cp = str)
             {
                 return new Unichar(new CPtr<char>(cp), str.Length);

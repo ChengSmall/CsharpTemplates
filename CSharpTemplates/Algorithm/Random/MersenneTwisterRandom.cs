@@ -389,7 +389,7 @@ namespace Cheng.Algorithm.Randoms
 
         public override void NextPtr(CPtr<byte> ptr, int length)
         {
-            if (length == 0) return;
+            if (length <= 0) return;
             int len = length / sizeof(uint);
             ulong re;
             uint* buffer = (uint*)ptr.p_ptr;

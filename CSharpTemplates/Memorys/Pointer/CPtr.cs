@@ -30,7 +30,7 @@ namespace Cheng.Memorys
         /// <summary>
         /// 表示空值的指针
         /// </summary>
-        public static CPtr Null => default;
+        public static CPtr Null => new CPtr(null);
 
         /// <summary>
         /// 获取当前进程内指针对象占用的字节大小
@@ -340,7 +340,7 @@ namespace Cheng.Memorys
             return new CPtr((void*)cp.p_ptr);
         }
 
-        public static implicit operator Pointer64(CPtr cp)
+        public static explicit operator Pointer64(CPtr cp)
         {
             return new Pointer64(cp.p_ptr);
         }
@@ -431,8 +431,14 @@ namespace Cheng.Memorys
 
         public override int GetHashCode()
         {
-            if (sizeof(void*) == 4) return (int)p_ptr;
-            return ((ulong)p_ptr).GetHashCode();
+            switch (sizeof(void*))
+            {
+                case 8:
+                    return ((ulong)p_ptr).GetHashCode();
+                case 4:
+                default:
+                    return (int)p_ptr;
+            }
         }
 
         public long GetHashCode64()
@@ -453,15 +459,8 @@ namespace Cheng.Memorys
                 {
                     return f_toStrDef();
                 }
-                //format = "X";
+                format = "X";
             }
-            if (format != null)
-                if (format.Length > 0 && (format[0] == 'G' || format[0] == 'g'))
-                {
-                    var cars = format.ToCharArray();
-                    cars[0] = 'X';
-                    format = new string(cars);
-                }
 
             if (sizeof(void*) == 4)
             {

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Cheng.Memorys;
+
 namespace Cheng.Algorithm.Randoms
 {
 
@@ -93,10 +95,10 @@ namespace Cheng.Algorithm.Randoms
         }
 
         /// <summary>
-        /// Xorshift128+核心算法
+        /// 生成一个随机的64位无符号整数
         /// </summary>
         /// <returns></returns>
-        private ulong f_generate()
+        public ulong Generate()
         {
             ulong s1 = p_state0;
             ulong s0 = p_state1;
@@ -106,11 +108,7 @@ namespace Cheng.Algorithm.Randoms
             return p_state1 + s0;
         }
 
-        /// <summary>
-        /// SplitMix64种子扩展算法
-        /// </summary>
-        /// <param name="x"></param>
-        /// <returns></returns>
+
         private static ulong f_splitMix64(ref ulong x)
         {
             ulong re = (x += 0x9E3779B97F4A7C15UL);
@@ -152,28 +150,55 @@ namespace Cheng.Algorithm.Randoms
 
         public override int Next()
         {
-            return (int)(f_generate() % int.MaxValue);
+            return (int)(Generate() % int.MaxValue);
         }
 
         public override long NextLong()
         {
-            return (long)(f_generate() % long.MaxValue);
+            return (long)(Generate() % long.MaxValue);
         }
 
         public override int Next(int min, int max)
         {
             if (min >= max) throw new ArgumentOutOfRangeException();
-            return (int)((ulong)min + ((f_generate()) % (ulong)((long)max - min)));
+            return (int)((ulong)min + ((Generate()) % (ulong)((long)max - min)));
         }
 
         public override float NextFloat()
         {
-            return (f_generate() % 8388607) / 8388607F;
+            return (Generate() % 8388607) / 8388607F;
         }
 
         public override double NextDouble()
         {
-            return (f_generate() % int.MaxValue) / 2147483647D;
+            return (Generate() % int.MaxValue) / 2147483647D;
+        }
+
+        public override void NextPtr(CPtr<byte> ptr, int length)
+        {
+            if (length <= 0) return;
+            int len = length / sizeof(uint);
+            ulong re;
+            uint* buffer = (uint*)ptr.p_ptr;
+            int i;
+            for (i = 0; i < len; i++)
+            {
+                re = this.Generate();
+                buffer[i] = (uint)((re >> 32) ^ (re & uint.MaxValue));
+            }
+
+            var mod = (length % sizeof(uint));
+            if (mod != 0)
+            {
+                byte* mp = (byte*)(buffer + i);
+                re = Generate();
+                len = (int)((re >> 32) ^ (re & uint.MaxValue));
+                byte* reb = (byte*)&len;
+                for (i = 0; i < mod; i++)
+                {
+                    mp[i] = reb[i];
+                }
+            }
         }
 
         #endregion
