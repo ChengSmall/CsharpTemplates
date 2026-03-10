@@ -35,7 +35,7 @@ namespace Cheng.Algorithm.Randoms
             }
 
             /// <summary>
-            /// 存放循环枚举值的随机表
+            /// 存放随机值的随机列表
             /// </summary>
             public readonly ulong[] matrix;
 
@@ -161,13 +161,17 @@ namespace Cheng.Algorithm.Randoms
         /// 实例化随机器
         /// </summary>
         /// <remarks>如果<paramref name="init"/>是false，则在使用随机器前需要调用<see cref="InitRandom(long)"/>或其它重载函数进行初始化</remarks>
-        /// <param name="init">如果是true，则使用默认时间戳<see cref="Environment.TickCount"/>初始化随机器</param>
+        /// <param name="init">如果是true，则使用默认时间戳<see cref="Environment.TickCount"/>初始化随机器；false则不进行任何额外的初始化操作</param>
         public MersenneTwisterRandom(bool init)
         {
             mt = new ulong[N];
             if (init)
             {
                 f_init(Environment.TickCount);
+            }
+            else
+            {
+                mti = 0;
             }
         }
 
@@ -301,6 +305,32 @@ namespace Cheng.Algorithm.Randoms
 
         #endregion
 
+        #region 内部数据操作
+
+        /// <summary>
+        /// 获取随机器内的随机列表
+        /// </summary>
+        /// <remarks>
+        /// <para>修改该参数会影响随机器的生成结果，如果仅需获取内部列表，可使用更安全的<see cref="GetNowState"/></para>
+        /// </remarks>
+        /// <value>随机器对象内部的随机列表数组</value>
+        public ulong[] MTArray => mt;
+
+        /// <summary>
+        /// 随机器对象内部指向表当前位置的索引
+        /// </summary>
+        /// <remarks>
+        /// <para>修改该参数会影响随机器的生成结果，如果仅需获取内部列表，可使用更安全的<see cref="GetNowState"/></para>
+        /// </remarks>
+        /// <value>指向表当前随机列表位置的索引，值不得小于0，若设置的值大于或等于<see cref="RandomState.MatrixLength"/>，下一次生成随机值时会直接刷新下一轮随机列表</value>
+        public int MTIndex
+        {
+            get => mti;
+            set => mti = value < 0 ? 0 : value;
+        }
+
+        #endregion
+
         public override SeedType SeedValueType => SeedType.None;
 
         private void f_twist()
@@ -362,9 +392,9 @@ namespace Cheng.Algorithm.Randoms
         }
 
         /// <summary>
-        /// 获取随机器当前状态
+        /// 获取随机器当前状态副本
         /// </summary>
-        /// <returns>表示随机器当前状态的副本数据</returns>
+        /// <returns>表示随机器当前状态的数据副本</returns>
         public RandomState GetNowState()
         {
             return new RandomState((ulong[])this.mt.Clone(), this.mti);
