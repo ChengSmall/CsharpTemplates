@@ -5,10 +5,13 @@ using System.Text;
 
 namespace Cheng.Memorys
 {
-    
+
     /// <summary>
     /// 安全管理非托管内存的内存分配器
     /// </summary>
+    /// <remarks>
+    /// <para>使用<see cref="Marshal.AllocHGlobal(int)"/>和<see cref="Marshal.FreeHGlobal(IntPtr)"/>申请与释放内存的安全封装对象</para>
+    /// </remarks>
     public sealed unsafe class UnmanagedMemoryagement : ReleaseDestructor
     {
 

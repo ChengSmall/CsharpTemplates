@@ -105,6 +105,7 @@
     <Compile Include="Webs\Bilibili\BilibiliPendant.cs" />
     <Compile Include="Webs\Bilibili\BilibiliSpaceInfo.cs" />
     <Compile Include="WinApi\EnvironmentVariables\EnvironmentVariable.cs" />
+    <Compile Include="WinApi\Heap.cs" />
     <Compile Include="WinApi\Libaray.cs" />
     <Compile Include="WinApi\Window\Window.cs" />
     <Compile Include="WinApi\Kernel32_Other.cs" />
