@@ -10,6 +10,8 @@ using Cheng.DataStructure.Cherrsdinates;
 using Cheng.DataStructure;
 using Cheng.Algorithm;
 
+using XIn = Cheng.Unitys.Windows.XInput.WindowsXInput;
+
 namespace Cheng.Unitys.Windows.XInput
 {
 
@@ -225,9 +227,42 @@ namespace Cheng.Unitys.Windows.XInput
     public readonly struct XInputGamePad
     {
 
-        #region
+        #region 参数
 
-        private readonly WindowsXInput.Win32api.XINPUT_GamePad p;
+        /// <summary>
+        /// 手柄按钮状态（16位整数值）
+        /// </summary>
+        public readonly ushort buttons;
+
+        /// <summary>
+        /// 左扳机（LT）力度值原始数据，范围[0,255]
+        /// </summary>
+        public readonly byte leftTrigger;
+
+        /// <summary>
+        /// 右扳机（RT）力度值原始数据，范围[0,255]
+        /// </summary>
+        public readonly byte rightTrigger;
+
+        /// <summary>
+        /// 左摇杆X轴原始数据，范围在[-32768,32767]
+        /// </summary>
+        public readonly short thumbLX;
+
+        /// <summary>
+        /// 左摇杆Y轴原始数据，范围在[-32768,32767]
+        /// </summary>
+        public readonly short thumbLY;
+
+        /// <summary>
+        /// 右摇杆X轴原始数据，范围在[-32768,32767]
+        /// </summary>
+        public readonly short thumbRX;
+
+        /// <summary>
+        /// 右摇杆Y轴原始数据，范围在[-32768,32767]
+        /// </summary>
+        public readonly short thumbRY;
 
         #endregion
 
@@ -238,15 +273,7 @@ namespace Cheng.Unitys.Windows.XInput
         /// </summary>
         public GamePadButtons Buttons
         {
-            get => (GamePadButtons)p.wButtons;
-        }
-
-        /// <summary>
-        /// 手柄按钮状态（16位整数值）
-        /// </summary>
-        public ushort ButtonsInt
-        {
-            get => p.wButtons;
+            get => (GamePadButtons)buttons;
         }
 
         /// <summary>
@@ -256,7 +283,7 @@ namespace Cheng.Unitys.Windows.XInput
         /// <returns>状态是1返回true，0返回false</returns>
         public bool IsButton(GamePadButtons button)
         {
-            return ((GamePadButtons)p.wButtons & button) == (button);
+            return ((GamePadButtons)buttons & button) == (button);
         }
 
         static float GetJoystickF(short value)
@@ -282,19 +309,19 @@ namespace Cheng.Unitys.Windows.XInput
         /// <summary>
         /// 左扳机（LT）力度，范围[0,1]
         /// </summary>
-        public float LeftTrigger => p.bLeftTrigger / 255f;
+        public float LeftTrigger => leftTrigger / 255f;
 
         /// <summary>
         /// 右扳机（RT）力度，范围[0,1]
         /// </summary>
-        public float RightTrigger => p.bRightTrigger / 255f;
+        public float RightTrigger => rightTrigger / 255f;
 
         /// <summary>
         /// 左摇杆的x和y轴归一化值
         /// </summary>
         public Point2F LeftJoystick
         {
-            get => new Point2F(GetJoystickF(p.sThumbLX), GetJoystickF(p.sThumbLY));
+            get => new Point2F(GetJoystickF(thumbLX), GetJoystickF(thumbLY));
         }
 
         /// <summary>
@@ -303,7 +330,7 @@ namespace Cheng.Unitys.Windows.XInput
         /// <value>范围区间在[0,1]的左摇杆值</value>
         public Point2 LeftJoystickD
         {
-            get => new Point2(GetJoystickD(p.sThumbLX), GetJoystickD(p.sThumbLY));
+            get => new Point2(GetJoystickD(thumbLX), GetJoystickD(thumbLY));
         }
 
         /// <summary>
@@ -312,7 +339,7 @@ namespace Cheng.Unitys.Windows.XInput
         /// <value>范围区间在[0,1]的右摇杆值</value>
         public Point2F RightJoystick
         {
-            get => new Point2F(GetJoystickF(p.sThumbRX), GetJoystickF(p.sThumbRY));
+            get => new Point2F(GetJoystickF(thumbRX), GetJoystickF(thumbRY));
         }
 
         /// <summary>
@@ -320,25 +347,15 @@ namespace Cheng.Unitys.Windows.XInput
         /// </summary>
         public Point2 RightJoystickD
         {
-            get => new Point2(GetJoystickD(p.sThumbRX), GetJoystickD(p.sThumbRY));
+            get => new Point2(GetJoystickD(thumbRX), GetJoystickD(thumbRY));
         }
-
-        /// <summary>
-        /// 左扳机（LT）力度值原始数据，范围[0,255]
-        /// </summary>
-        public byte LeftTriggerInt => p.bLeftTrigger;
-
-        /// <summary>
-        /// 右扳机（RT）力度值原始数据，范围[0,255]
-        /// </summary>
-        public byte RightTriggerInt => p.bRightTrigger;
 
         /// <summary>
         /// 左摇杆原始数据，每个轴的范围在[-32768,32767]
         /// </summary>
         public PointInt2 LeftJoystickInt
         {
-            get => new PointInt2(p.sThumbLX, p.sThumbLY);
+            get => new PointInt2(thumbLX, thumbLY);
         }
 
         /// <summary>
@@ -346,28 +363,8 @@ namespace Cheng.Unitys.Windows.XInput
         /// </summary>
         public PointInt2 RightJoystickInt
         {
-            get => new PointInt2(p.sThumbRX, p.sThumbRY);
+            get => new PointInt2(thumbRX, thumbRY);
         }
-
-        /// <summary>
-        /// 左摇杆X轴原始数据，范围在[-32768,32767]
-        /// </summary>
-        public short ThumbLXInt => p.sThumbLX;
-
-        /// <summary>
-        /// 左摇杆Y轴原始数据，范围在[-32768,32767]
-        /// </summary>
-        public short ThumbLYInt => p.sThumbLY;
-
-        /// <summary>
-        /// 右摇杆X轴原始数据，范围在[-32768,32767]
-        /// </summary>
-        public short ThumbRXInt => p.sThumbRX;
-
-        /// <summary>
-        /// 右摇杆Y轴原始数据，范围在[-32768,32767]
-        /// </summary>
-        public short ThumbRYInt => p.sThumbRY;
 
         #endregion
 
@@ -484,31 +481,13 @@ namespace Cheng.Unitys.Windows.XInput
     }
 
     /// <summary>
-    /// 访问 windows XInput 控制器
+    /// 访问 win32 XInput 控制器
     /// </summary>
     public static unsafe class WindowsXInput
     {
 
         internal static class Win32api
         {
-
-            [StructLayout(LayoutKind.Sequential)]
-            public struct XINPUT_GamePad
-            {
-                public ushort wButtons;
-
-                public byte bLeftTrigger;
-
-                public byte bRightTrigger;
-
-                public short sThumbLX;
-
-                public short sThumbLY;
-
-                public short sThumbRX;
-
-                public short sThumbRY;
-            }
 
             [DllImport("xinput1_4.dll", EntryPoint = "XInputGetState")]
             public static extern uint winapi_XInputGetState(int index, void* pState);
@@ -523,6 +502,8 @@ namespace Cheng.Unitys.Windows.XInput
             public static extern uint winapi_XInputGetBatteryInformation(int index, byte devType, void* pBatteryInformation);
 
         }
+
+        #region 功能
 
         /// <summary>
         /// 获取控制器状态
@@ -580,6 +561,58 @@ namespace Cheng.Unitys.Windows.XInput
             if (index < 0 || index > 3) throw new ArgumentOutOfRangeException();
             var re = Win32api.winapi_XInputSetState(index, &vibration);
             if (re != 0) throw new Win32Exception((int)re);
+        }
+
+        /// <summary>
+        /// 设置控制器状态
+        /// </summary>
+        /// <param name="index">控制器索引[0,3]，对应第1到第4个手柄</param>
+        /// <param name="leftMotorSpeed">左电机（低频）的速度，范围在[0,1]</param>
+        /// <param name="rightMotorSpeed">右电机（低频）的速度，范围在[0,1]</param>
+        /// <returns>返回0表示成功，其他值代表错误代码</returns>
+        public static int TrySetState(int index, float leftMotorSpeed, float rightMotorSpeed)
+        {
+            XInputVibration v = new XInputVibration(leftMotorSpeed, rightMotorSpeed);
+            return (int)Win32api.winapi_XInputSetState(index, &v);
+        }
+
+        /// <summary>
+        /// 设置控制器状态
+        /// </summary>
+        /// <param name="index">控制器索引[0,3]，对应第1到第4个手柄</param>
+        /// <param name="leftMotorSpeed">左电机（低频）的速度，范围在[0,1]</param>
+        /// <param name="rightMotorSpeed">右电机（低频）的速度，范围在[0,1]</param>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        /// <exception cref="Win32Exception">控制器未连接或出现其它无法获取控制器状态的错误</exception>
+        public static void SetState(int index, float leftMotorSpeed, float rightMotorSpeed)
+        {
+            if (index < 0 || index > 3) throw new ArgumentOutOfRangeException();
+            var re = TrySetState(index, leftMotorSpeed, rightMotorSpeed);
+            if (re != 0) throw new Win32Exception(re);
+        }
+
+        /// <summary>
+        /// 将控制器状态设为停止震动
+        /// </summary>
+        /// <param name="index">控制器索引[0,3]，对应第1到第4个手柄</param>
+        /// <returns>返回0表示成功，其他值代表错误代码</returns>
+        public static int TrySetStateStop(int index)
+        {
+            XInputVibration v = new XInputVibration(0, 0);
+            return (int)Win32api.winapi_XInputSetState(index, &v);
+        }
+
+        /// <summary>
+        /// 将控制器状态设为停止震动
+        /// </summary>
+        /// <param name="index">控制器索引[0,3]，对应第1到第4个手柄</param>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        /// <exception cref="Win32Exception">控制器未连接或出现其它无法获取控制器状态的错误</exception>
+        public static void SetStateStop(int index)
+        {
+            if (index < 0 || index > 3) throw new ArgumentOutOfRangeException();
+            var re = TrySetStateStop(index);
+            if (re != 0) throw new Win32Exception(re);
         }
 
         /// <summary>
@@ -691,7 +724,10 @@ namespace Cheng.Unitys.Windows.XInput
             return b;
         }
 
+        #endregion
+
     }
+
 }
 
 #endif
