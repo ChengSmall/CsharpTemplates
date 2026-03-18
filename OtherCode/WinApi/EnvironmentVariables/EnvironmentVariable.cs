@@ -8,7 +8,9 @@ using System.Runtime.InteropServices;
 namespace Cheng.OtherCode.Winapi
 {
 
-
+    /// <summary>
+    /// 环境变量
+    /// </summary>
     public static unsafe class EnvironmentVariable
     {
 
