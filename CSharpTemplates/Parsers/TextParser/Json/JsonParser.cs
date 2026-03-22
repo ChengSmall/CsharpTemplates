@@ -39,7 +39,7 @@ namespace Cheng.Json
     /// <summary>
     /// json解析器的公共基类，可派生此类以自定义json解析器
     /// </summary>
-    public abstract class JsonParser : IJsonParser, IJsonParserToText
+    public abstract class JsonParser : IJsonParser
     {
         /// <summary>
         /// 将json对象转化为json文本并写入到指定的字符序列编写器中

@@ -55,8 +55,9 @@
     <Compile Include="Consoles\ConsoleSystem\ConsoleSystem.Input.cs" />
     <Compile Include="Consoles\ConsoleSystem\ConsoleSystem.Structure.cs" />
     <Compile Include="Consoles\TextStyle\ConsoleTextStyle.cs" />
+    <Compile Include="Consoles\TextStyle\ESTDJsonParserTextConsoleStyle.cs" />
     <Compile Include="Consoles\Texts\ConsoleStyleTextWriter.cs" />
-    <Compile Include="Consoles\XmlStandardItemConsole.cs" />
+    <Compile Include="Consoles\TextStyle\XmlStandardItemConsole.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="简介.xml" />

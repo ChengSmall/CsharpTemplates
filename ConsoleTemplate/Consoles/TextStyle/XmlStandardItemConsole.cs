@@ -39,11 +39,11 @@ namespace Cheng.Xmls.StandardItemText
         /// <param name="append">待添加缓冲区</param>
         /// <param name="color">文本颜色</param>
         /// <param name="node">标准项文本包装节点</param>
-        protected override void ToColorText(StringBuilder append, Colour color, XmlNode node)
+        protected override void ToColorText(TextWriter append, Colour color, XmlNode node)
         {
-            append.AppendANSIColorText(color.r, color.g, color.b, false);
+            append.WriteANSIColorText(color, false);
             ToSTDText(node, append);
-            append.AppendANSIStyleResetText();
+            append.WriteANSIStyleResetText();
         }
 
         #endregion

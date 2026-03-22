@@ -1,4 +1,5 @@
 using Cheng.Algorithm.HashCodes;
+using Cheng.DataStructure.NumGenerators;
 using Cheng.Memorys;
 using System;
 
@@ -205,6 +206,16 @@ namespace Cheng.Json
         public virtual bool TryGetNumber(out long number)
         {
             number = default; return false;
+        }
+
+        /// <summary>
+        /// 获取此实例的值
+        /// </summary>
+        /// <returns>此实例的整数或浮点值</returns>
+        /// <exception cref="NotImplementedException">不是数值类型</exception>
+        public virtual DynamicNumber GetNumber()
+        {
+            throw new NotSupportedException();
         }
 
         #endregion
@@ -912,6 +923,11 @@ namespace Cheng.Json
             number = value; return true;
         }
 
+        public override DynamicNumber GetNumber()
+        {
+            return new DynamicNumber(value);
+        }
+
         public override int GetHashCode()
         {
             return value.GetHashCode();
@@ -1093,6 +1109,11 @@ namespace Cheng.Json
         public override bool TryGetNumber(out long number)
         {
             number = (long)value; return true;
+        }
+
+        public override DynamicNumber GetNumber()
+        {
+            return new DynamicNumber(value);
         }
 
         public override string ToString()

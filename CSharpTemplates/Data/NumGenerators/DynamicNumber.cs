@@ -33,7 +33,7 @@ namespace Cheng.DataStructure.NumGenerators
     /// 一个整数或浮点数类型的值
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    public unsafe struct DynamicNumber : IEquatable<DynamicNumber>, IHashCode64, IFormattable, IComparable<DynamicNumber>
+    public unsafe readonly struct DynamicNumber : IEquatable<DynamicNumber>, IHashCode64, IFormattable, IComparable<DynamicNumber>
     {
 
         #region 构造

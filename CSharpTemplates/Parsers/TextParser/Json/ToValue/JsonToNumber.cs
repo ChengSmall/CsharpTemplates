@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using Cheng.DataStructure.NumGenerators;
 using Cheng.Algorithm.Randoms;
+using Cheng.Algorithm.Randoms.Extends;
 
 namespace Cheng.Json.GeneratorNumbers
 {
@@ -44,7 +45,7 @@ namespace Cheng.Json.GeneratorNumbers
         /// <returns>一个新的随机数生成器</returns>
         protected virtual BaseRandom CreateRandom()
         {
-            return new XorshiftRandom((((long)Environment.TickCount) << 16) ^ DateTime.UtcNow.Ticks);
+            return new XorshiftRandom(RandomExtends.GetSeedByTickXORNowTime());
         }
 
         private NumGenerator f_fixedValue(JsonDictionary json)

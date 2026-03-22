@@ -27,7 +27,6 @@ namespace Cheng.Xmls.StandardItemText
         public XmlStandardItemText()
         {
             p_buffer = new StringBuilder();
-            //p_newLine = Environment.NewLine;
         }
 
         #endregion
@@ -98,7 +97,7 @@ namespace Cheng.Xmls.StandardItemText
         /// <param name="append"></param>
         /// <param name="node">向后解析并添加的子项</param>
 #endif
-        private void f_parItem(StringBuilder append, XmlNode node)
+        private void f_parItem(TextWriter append, XmlNode node)
         {
             string value;
             var nodeType = node.NodeType;
@@ -120,7 +119,7 @@ namespace Cheng.Xmls.StandardItemText
                 if (nohavCh && (nodeName == "p" || nodeName == "P"))
                 {
                     //属于换行符号
-                    append.Append(NewLine);
+                    append.Write(NewLine);
                     return;
                 }
                 else if(nodeName == "color")
@@ -210,7 +209,7 @@ namespace Cheng.Xmls.StandardItemText
                     }
 
                     //语法完备
-                    StringBuilder mathBuf = new StringBuilder();
+                    StringWriter mathBuf = new StringWriter();
                     ToSTDText(nodeE, mathBuf);
                     AppendMathTypeToString(append, at.Value, atv?.Value, mathBuf.ToString());
 
@@ -247,7 +246,7 @@ namespace Cheng.Xmls.StandardItemText
         /// <param name="mathType">数学运算类型</param>
         /// <param name="value">第二个属性参数，null则无</param>
         /// <param name="text">要运算的文本</param>
-        protected virtual void AppendMathTypeToString(StringBuilder append, string mathType, string value, string text)
+        protected virtual void AppendMathTypeToString(TextWriter append, string mathType, string value, string text)
         {
 
             try
@@ -453,7 +452,7 @@ namespace Cheng.Xmls.StandardItemText
         /// <param name="append">待添加到的缓冲区</param>
         /// <param name="encoding">要以指定的编码解析</param>
         /// <param name="binaryString">表示二进制的文本形式</param>
-        protected virtual void AppendBinaryTextToString(StringBuilder append, Encoding encoding, string binaryString)
+        protected virtual void AppendBinaryTextToString(TextWriter append, Encoding encoding, string binaryString)
         {
             MemoryStream ms = new MemoryStream(32);
 
@@ -517,7 +516,7 @@ namespace Cheng.Xmls.StandardItemText
         /// </summary>
         /// <param name="append">添加到的缓冲区</param>
         /// <param name="value">待添加文本</param>
-        protected void AppendStringBulider(StringBuilder append, string value)
+        protected void AppendStringBulider(TextWriter append, string value)
         {
             if (value is null) return;
             int length = value.Length;
@@ -527,7 +526,7 @@ namespace Cheng.Xmls.StandardItemText
                 char c = value[i];
                 if (CanAppendChar(c))
                 {
-                    append.Append(c);
+                    append.Write(c);
                 }
             }
         }
@@ -537,11 +536,11 @@ namespace Cheng.Xmls.StandardItemText
         /// </summary>
         /// <param name="append">添加到的缓冲区</param>
         /// <param name="value">待添加字符</param>
-        protected void AppendStringBulider(StringBuilder append, char value)
+        protected void AppendStringBulider(TextWriter append, char value)
         {
             if (CanAppendChar(value))
             {
-                append.Append(value);
+                append.Write(value);
             }
         }
 
@@ -563,7 +562,7 @@ namespace Cheng.Xmls.StandardItemText
         /// <param name="append">将输出文本添加于此的缓冲区</param>
         /// <param name="color">该文本颜色</param>
         /// <param name="node">一个标准文本项包装节点</param>
-        protected virtual void ToColorText(StringBuilder append, Colour color, XmlNode node)
+        protected virtual void ToColorText(TextWriter append, Colour color, XmlNode node)
         {
             //f_append(append, );
             //AppendStringBulider(append, node.InnerText);
@@ -579,7 +578,7 @@ namespace Cheng.Xmls.StandardItemText
         /// <param name="append">将输出文本添加于此的缓冲区</param>
         /// <param name="node">一个处于STDText节点内的语法子节点，解析为文本后将添加到<paramref name="append"/></param>
         /// <returns>成功解析返回true，无法解析返回false</returns>
-        protected virtual bool DIYParserSTDText(StringBuilder append, XmlNode node)
+        protected virtual bool DIYParserSTDText(TextWriter append, XmlNode node)
         {
             return false;
         }
@@ -593,7 +592,7 @@ namespace Cheng.Xmls.StandardItemText
         /// </remarks>
         /// <param name="node">一个标准文本项包装节点</param>
         /// <param name="append">要添加到的文本缓冲区</param>
-        protected void ToSTDText(XmlNode node, StringBuilder append)
+        protected void ToSTDText(XmlNode node, TextWriter append)
         {
             var chs = node.ChildNodes;
             int length = chs.Count;
@@ -622,16 +621,46 @@ namespace Cheng.Xmls.StandardItemText
         #region 派生
 
         /// <summary>
-        /// 将给定的xml节点以标准项数据文本解析并输出到字符串缓冲区
+        /// 将给定的xml节点以标准项数据文本解析并输出到写入器
         /// </summary>
         /// <param name="node">要解析的一个标准文本项包装节点</param>
-        /// <param name="append">待输出缓冲区</param>
+        /// <param name="writer">文本写入器</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public void XmlToStandardItemText(XmlNode node, TextWriter writer)
+        {
+            if (node is null || writer is null) throw new ArgumentNullException();
+
+            ToSTDText(node, writer);
+        }
+
+        /// <summary>
+        /// 将给定的xml节点以标准项数据文本解析并输出到缓冲区
+        /// </summary>
+        /// <param name="node">要解析的一个标准文本项包装节点</param>
+        /// <param name="append">要写入的缓冲区</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         public void XmlToStandardItemText(XmlNode node, StringBuilder append)
         {
             if (node is null || append is null) throw new ArgumentNullException();
+            using (StringWriter strwr = new StringWriter(append))
+            {
+                ToSTDText(node, strwr);
+            }
+        }
 
-            ToSTDText(node, append);
+        /// <summary>
+        /// 将给定的xml节点以标准项数据文本解析并输出到缓冲区
+        /// </summary>
+        /// <param name="node">要解析的一个标准文本项包装节点</param>
+        /// <param name="append">要写入的缓冲区</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public void XmlToStandardItemText(XmlNode node, CMStringBuilder append)
+        {
+            if (node is null || append is null) throw new ArgumentNullException();
+            using (var strwr = new CMStringBuilderWriter(append))
+            {
+                ToSTDText(node, strwr);
+            }
         }
 
         /// <summary>
@@ -652,7 +681,7 @@ namespace Cheng.Xmls.StandardItemText
         public override object XmlParserToObject(XmlNode node)
         {
             if (node is null) throw new ArgumentNullException();
-            StringBuilder sb = new StringBuilder(32);
+            var sb = new StringWriter(new StringBuilder(32));
             ToSTDText(node, sb);
             return sb.ToString();
         }

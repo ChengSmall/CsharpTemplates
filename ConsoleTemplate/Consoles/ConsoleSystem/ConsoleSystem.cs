@@ -24,7 +24,7 @@ namespace Cheng.Consoles
         #region 虚拟终端
 
         /// <summary>
-        /// 启用虚拟终端
+        /// 启用虚拟输出终端
         /// </summary>
         /// <returns>0表示成功启动，否则返回错误参数</returns>
         public static uint TryEnableVirtualTerminalProcessingOnWindows()
@@ -46,7 +46,7 @@ namespace Cheng.Consoles
         }
 
         /// <summary>
-        /// 启用虚拟终端
+        /// 启用虚拟输出终端
         /// </summary>
         /// <exception cref="Win32Exception">出现win32错误</exception>
         public static void EnableVirtualTerminalProcessingOnWindows()
@@ -59,7 +59,7 @@ namespace Cheng.Consoles
         }
 
         /// <summary>
-        /// 关闭虚拟终端
+        /// 关闭虚拟输出终端
         /// </summary>
         /// <returns>0表示成功关闭，否则返回错误参数</returns>
         public static uint TryDisableVirtualTerminalProcessingOnWindows()
@@ -79,7 +79,7 @@ namespace Cheng.Consoles
         }
 
         /// <summary>
-        /// 关闭虚拟终端
+        /// 关闭虚拟输出终端
         /// </summary>
         /// <exception cref="Win32Exception">出现win32错误</exception>
         public static void DisableVirtualTerminalProcessingOnWindows()
