@@ -30,10 +30,10 @@ namespace Cheng.DataStructure.Hashs
         /// <param name="s4">第四个64位值</param>
         public Hash256(ulong s1, ulong s2, ulong s3, ulong s4)
         {
-            this.s1 = s1;
-            this.s2 = s2;
-            this.s3 = s3;
-            this.s4 = s4;
+            this.p1 = s1;
+            this.p2 = s2;
+            this.p3 = s3;
+            this.p4 = s4;
         }
 
         #endregion
@@ -43,22 +43,22 @@ namespace Cheng.DataStructure.Hashs
         /// <summary>
         /// 第一个64位值
         /// </summary>
-        public ulong s1;
+        public ulong p1;
 
         /// <summary>
         /// 第二个64位值
         /// </summary>
-        public ulong s2;
+        public ulong p2;
 
         /// <summary>
         /// 第三个64位值
         /// </summary>
-        public ulong s3;
+        public ulong p3;
 
         /// <summary>
         /// 第四个64位值
         /// </summary>
-        public ulong s4;
+        public ulong p4;
 
         /// <summary>
         /// 该结构的字节大小
@@ -76,33 +76,54 @@ namespace Cheng.DataStructure.Hashs
         /// </summary>
         /// <param name="upper">字母是否大写</param>
         /// <param name="link">每个64位值之间的分隔符，默认分隔符是 - </param>
-        /// <param name="strBuffer">要转化到的字符串缓冲区，该指针指向的位置至少有68个字符大小的可用空间</param>
-        public void ValueToString(bool upper, char link, char* strBuffer)
+        /// <param name="strBuffer">要转化到的字符串缓冲区，该指针指向的位置至少有67个字符大小的可用空间</param>
+        public void ValueToString(bool upper, char link, CPtr<char> strBuffer)
         {
-            int index = 0;
-            s1.ValueToFixedX16Text(upper, strBuffer);
-            index += 16;
-            strBuffer[index] = link;
-            index++;
-            s2.ValueToFixedX16Text(upper, strBuffer + index);
-            index += 16;
-            strBuffer[index] = link;
-            index++;
-            s3.ValueToFixedX16Text(upper, strBuffer + index);
-            index += 16;
-            strBuffer[index] = link;
-            index++;
-            s4.ValueToFixedX16Text(upper, strBuffer + index);
+            ValueToString(upper, link, strBuffer.p_ptr);
         }
 
         /// <summary>
         /// 将Hash256转化为字符串
         /// </summary>
         /// <param name="upper">字母是否大写</param>
-        /// <param name="strBuffer">要转化到的字符串缓冲区，该指针指向的位置至少有68个字符大小的可用空间</param>
+        /// <param name="strBuffer">要转化到的字符串缓冲区，该指针指向的位置至少有67个字符大小的可用空间</param>
+        public void ValueToString(bool upper, CPtr<char> strBuffer)
+        {
+            ValueToString(upper, strBuffer.p_ptr);
+        }
+
+        /// <summary>
+        /// 将Hash256转化为字符串
+        /// </summary>
+        /// <param name="upper">字母是否大写</param>
+        /// <param name="link">每个64位值之间的分隔符</param>
+        /// <param name="strBuffer">要转化到的字符串缓冲区，该指针指向的位置至少有67个字符大小的可用空间</param>
+        public void ValueToString(bool upper, char link, char* strBuffer)
+        {
+            int index = 0;
+            p1.ValueToFixedX16Text(upper, strBuffer);
+            index += 16;
+            strBuffer[index] = link;
+            index++;
+            p2.ValueToFixedX16Text(upper, strBuffer + index);
+            index += 16;
+            strBuffer[index] = link;
+            index++;
+            p3.ValueToFixedX16Text(upper, strBuffer + index);
+            index += 16;
+            strBuffer[index] = link;
+            index++;
+            p4.ValueToFixedX16Text(upper, strBuffer + index);
+        }
+
+        /// <summary>
+        /// 将Hash256转化为字符串
+        /// </summary>
+        /// <param name="upper">字母是否大写</param>
+        /// <param name="strBuffer">要转化到的字符串缓冲区，该指针指向的位置至少有67个字符大小的可用空间</param>
         public void ValueToString(bool upper, char* strBuffer)
         {
-            ValueToString(upper, '-', strBuffer);
+            ValueToString(upper, Hash128.DefaultLinkChar, strBuffer);
         }
 
         /// <summary>
@@ -117,7 +138,7 @@ namespace Cheng.DataStructure.Hashs
         public void ValueToString(bool upper, char link, char[] buffer, int index)
         {
             if (buffer is null) throw new ArgumentNullException();
-            if (index < 0 || index + 68 > buffer.Length) throw new ArgumentOutOfRangeException();
+            if (index < 0 || index + 67 > buffer.Length) throw new ArgumentOutOfRangeException();
 
             fixed (char* cp = buffer)
             {
@@ -128,20 +149,20 @@ namespace Cheng.DataStructure.Hashs
         /// <summary>
         /// 将表示Hash256的文本转化为Hash256
         /// </summary>
-        /// <param name="buffer68">指向表示Hash256文本的指针，至少要有68个可用字符</param>
+        /// <param name="buffer67">指向表示Hash256文本的指针，至少要有67个可用字符</param>
         /// <param name="hash">转化后的实例</param>
         /// <returns>是否成功转化</returns>
-        public static bool ToHash256(char* buffer68, out Hash256 hash)
+        public static bool ToHash256(char* buffer67, out Hash256 hash)
         {
             hash = default;
 
-            if (!TextManipulation.X16ToValue(buffer68, 16, out hash.s1)) return false;
+            if (!TextManipulation.X16ToValue(buffer67, 16, out hash.p1)) return false;
 
-            if (!TextManipulation.X16ToValue(buffer68 + (16 + 1), 16, out hash.s2)) return false;
+            if (!TextManipulation.X16ToValue(buffer67 + (16 + 1), 16, out hash.p2)) return false;
 
-            if (!TextManipulation.X16ToValue(buffer68 + (16 * 2 + 2), 16, out hash.s3)) return false;
+            if (!TextManipulation.X16ToValue(buffer67 + (16 * 2 + 2), 16, out hash.p3)) return false;
 
-            if (!TextManipulation.X16ToValue(buffer68 + (16 * 3 + 3), 16, out hash.s4)) return false;
+            if (!TextManipulation.X16ToValue(buffer67 + (16 * 3 + 3), 16, out hash.p4)) return false;
 
             return true;
         }
@@ -149,20 +170,39 @@ namespace Cheng.DataStructure.Hashs
         /// <summary>
         /// 将表示Hash256的文本转化为Hash256
         /// </summary>
-        /// <param name="buffer68">指向表示Hash256文本的指针，至少要有68个可用字符</param>
+        /// <param name="buffer67">指向表示Hash256文本的指针，至少要有67个可用字符</param>
         /// <returns>转化后的实例</returns>
         /// <exception cref="NotImplementedException">文本不是Hash256格式</exception>
-        public static Hash256 ToHash256(char* buffer68)
+        public static Hash256 ToHash256(char* buffer67)
         {
             Hash256 h;
-            if(!TextManipulation.X16ToValue(buffer68, 16, out h.s1)) throw new NotImplementedException();
+            if(ToHash256(buffer67, out h))
+            {
+                return h;
+            }
+            throw new NotImplementedException();
+        }
 
-            if (!TextManipulation.X16ToValue(buffer68 + (16 + 1), 16, out h.s2)) throw new NotImplementedException();
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="buffer67">指向表示Hash256文本的指针，至少要有67个可用字符</param>
+        /// <param name="hash">转化后的实例</param>
+        /// <returns>是否成功转化</returns>
+        public static bool ToHash256(CPtr<char> buffer67, out Hash256 hash)
+        {
+            return ToHash256(buffer67.p_ptr, out hash);
+        }
 
-            if(!TextManipulation.X16ToValue(buffer68 + (16 * 2 + 2), 16, out h.s3)) throw new NotImplementedException();
-
-            if(!TextManipulation.X16ToValue(buffer68 + (16 * 3 + 3), 16, out h.s4)) throw new NotImplementedException();
-            return h;
+        /// <summary>
+        /// 将表示Hash256的文本转化为Hash256
+        /// </summary>
+        /// <param name="buffer67">指向表示Hash256文本的指针，至少要有67个可用字符</param>
+        /// <returns>转化后的实例</returns>
+        /// <exception cref="NotImplementedException">文本不是Hash256格式</exception>
+        public static Hash256 ToHash256(CPtr<char> buffer67)
+        {
+            return ToHash256(buffer67.p_ptr);
         }
 
         /// <summary>
@@ -177,7 +217,7 @@ namespace Cheng.DataStructure.Hashs
         public static Hash256 ToHash256(char[] buffer, int index)
         {
             if (buffer is null) throw new ArgumentNullException();
-            if (index + 68 > buffer.Length) throw new ArgumentOutOfRangeException();
+            if (index + 67 > buffer.Length) throw new ArgumentOutOfRangeException();
 
             fixed (char* p = buffer)
             {
@@ -197,7 +237,7 @@ namespace Cheng.DataStructure.Hashs
         public static Hash256 ToHash256(string text, int index)
         {
             if (text is null) throw new ArgumentNullException();
-            if (index + 68 > text.Length) throw new ArgumentOutOfRangeException();
+            if (index + 67 > text.Length) throw new ArgumentOutOfRangeException();
 
             fixed (char* p = text)
             {
@@ -216,7 +256,7 @@ namespace Cheng.DataStructure.Hashs
         {
             hash = default;
             if (buffer is null) return false;
-            if (index + 68 > buffer.Length) return false;
+            if (index + 67 > buffer.Length) return false;
 
             fixed (char* p = buffer)
             {
@@ -235,7 +275,7 @@ namespace Cheng.DataStructure.Hashs
         {
             hash = default;
             if (text is null) return false;
-            if (index + 68 > text.Length) return false;
+            if (index + 67 > text.Length) return false;
 
             fixed (char* p = text)
             {
@@ -254,7 +294,7 @@ namespace Cheng.DataStructure.Hashs
         public static Hash256 ToHash256(string text)
         {
             if (text is null) throw new ArgumentNullException();
-            if (68 > text.Length) throw new ArgumentOutOfRangeException();
+            if (67 > text.Length) throw new ArgumentOutOfRangeException();
 
             fixed (char* p = text)
             {
@@ -336,10 +376,10 @@ namespace Cheng.DataStructure.Hashs
         /// <param name="buffer">要写入的字节序列首地址，请保证指针指向的内存拥有至少32个字节</param>
         public void ToBytes(CPtr<byte> buffer)
         {
-            s1.OrderToBytes(buffer);
-            s2.OrderToBytes(buffer + (8));
-            s3.OrderToBytes(buffer + (8 * 2));
-            s4.OrderToBytes(buffer + (8 * 3));
+            p1.OrderToBytes(buffer);
+            p2.OrderToBytes(buffer + (8));
+            p3.OrderToBytes(buffer + (8 * 2));
+            p4.OrderToBytes(buffer + (8 * 3));
         }
 
         /// <summary>
@@ -391,6 +431,29 @@ namespace Cheng.DataStructure.Hashs
 
         #endregion
 
+        #region 类型转换
+
+        /// <summary>
+        /// 将Hash值压缩到<see cref="Hash128"/>
+        /// </summary>
+        /// <returns>转换后的Hash128</returns>
+        public Hash128 ToHash128()
+        {
+            Hash128 re;
+            var n1 = (p1 ^ p2);
+            var n2 = (p3 ^ p4);
+
+            re.p1 = (uint)(n1 & uint.MaxValue);
+            re.p2 = (uint)((n1 >> 32) & uint.MaxValue);
+
+            re.p3 = (uint)(n2 & uint.MaxValue);
+            re.p4 = (uint)((n2 >> 32) & uint.MaxValue);
+
+            return re;
+        }
+
+        #endregion
+
         #region 运算符
 
         /// <summary>
@@ -401,7 +464,7 @@ namespace Cheng.DataStructure.Hashs
         /// <returns></returns>
         public static bool operator ==(Hash256 h1, Hash256 h2)
         {
-            return h1.s1 == h2.s1 && h1.s2 == h2.s2 && h1.s3 == h2.s3 && h1.s4 == h2.s4;
+            return h1.p1 == h2.p1 && h1.p2 == h2.p2 && h1.p3 == h2.p3 && h1.p4 == h2.p4;
         }
 
         /// <summary>
@@ -412,7 +475,7 @@ namespace Cheng.DataStructure.Hashs
         /// <returns></returns>
         public static bool operator !=(Hash256 h1, Hash256 h2)
         {
-            return h1.s1 != h2.s1 || h1.s2 != h2.s2 || h1.s3 != h2.s3 || h1.s4 != h2.s4;
+            return h1.p1 != h2.p1 || h1.p2 != h2.p2 || h1.p3 != h2.p3 || h1.p4 != h2.p4;
         }
 
         #endregion
@@ -425,9 +488,7 @@ namespace Cheng.DataStructure.Hashs
         /// <returns></returns>
         public override string ToString()
         {
-            char* cp = stackalloc char[68];
-            ValueToString(false, cp);
-            return new string(cp, 0, 68);
+            return ToString(true, Hash128.DefaultLinkChar);
         }
 
         /// <summary>
@@ -437,9 +498,7 @@ namespace Cheng.DataStructure.Hashs
         /// <returns></returns>
         public string ToString(bool upper)
         {
-            char* cp = stackalloc char[68];
-            ValueToString(upper, cp);
-            return new string(cp, 0, 68);
+            return ToString(upper, Hash128.DefaultLinkChar);
         }
 
         /// <summary>
@@ -450,14 +509,14 @@ namespace Cheng.DataStructure.Hashs
         /// <returns></returns>
         public string ToString(bool upper, char link)
         {
-            char* cp = stackalloc char[68];
+            char* cp = stackalloc char[67];
             ValueToString(upper, link, cp);
-            return new string(cp, 0, 68);
+            return new string(cp, 0, 67);
         }
 
         public override int GetHashCode()
         {
-            return (s1 ^ s2 ^ s3 ^ s4).GetHashCode();
+            return (p1 ^ p2 ^ p3 ^ p4).GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -476,12 +535,12 @@ namespace Cheng.DataStructure.Hashs
         /// <returns></returns>
         public bool Equals(Hash256 other)
         {
-            return this.s1 == other.s1 && this.s2 == other.s2 && this.s3 == other.s3 && this.s4 == other.s4;
+            return this.p1 == other.p1 && this.p2 == other.p2 && this.p3 == other.p3 && this.p4 == other.p4;
         }
 
         public long GetHashCode64()
         {
-            return (long)(s1 ^ s2 ^ s3 ^ s4);
+            return (long)(p1 ^ p2 ^ p3 ^ p4);
         }
 
         /// <summary>
@@ -491,13 +550,13 @@ namespace Cheng.DataStructure.Hashs
         /// <returns></returns>
         public int CompareTo(Hash256 other)
         {
-            var re = s1.CompareTo(other.s1);
+            var re = p1.CompareTo(other.p1);
             if (re != 0) return re;
-            re = s2.CompareTo(other.s2);
+            re = p2.CompareTo(other.p2);
             if (re != 0) return re;
-            re = s3.CompareTo(other.s3);
+            re = p3.CompareTo(other.p3);
             if (re != 0) return re;
-            return s4.CompareTo(other.s4);
+            return p4.CompareTo(other.p4);
         }
 
         #endregion

@@ -482,7 +482,7 @@ namespace Cheng.IO
         public static uint OrderToUInt32(this IntPtr buffer)
         {
             byte* bptr = (byte*)buffer;
-            return ((uint)bptr[0] | ((uint)bptr[1] << 8) | (((uint)bptr[2]) << (16)) | (((uint)bptr[3]) << (24)));
+            return ((uint)bptr[0] | (((uint)bptr[1]) << 8) | (((uint)bptr[2]) << (16)) | (((uint)bptr[3]) << (24)));
         }
 
         /// <summary>

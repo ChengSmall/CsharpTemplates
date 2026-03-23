@@ -145,7 +145,15 @@ namespace Cheng.DEBUG
         {
             using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             {
-                return file.ToHash256();
+                return file.ToHash256(new byte[800]);
+            }
+        }
+
+        public static Hash128 ToHash128ByFile(this string filePath)
+        {
+            using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            {
+                return file.ToHash256(new byte[800]).ToHash128();
             }
         }
 
