@@ -63,6 +63,9 @@ namespace Cheng.Json
 
         private NumberStyles p_numStyles;
 
+        private int p_layCount;
+        private int p_layMaxCount;
+        private int p_setMaxLay;
         private ConverDictionaryType p_converDictType;
 
         private bool p_toJsonTextNewLine;
@@ -694,8 +697,7 @@ namespace Cheng.Json
                 return false;
             }
 
-            //ref char clate = ref *((char*)&late);
-            ref char cnext = ref *((char*)&next);
+            char cnext;
 
             sb.Clear();
 
@@ -705,7 +707,7 @@ namespace Cheng.Json
                 //late = next;
                 next = reader.Read();
                 if (next == -1) return false;
-
+                cnext = ((char)next);
 
                 if (p_toObjEscapeChar)
                 {
@@ -717,7 +719,6 @@ namespace Cheng.Json
                         continue;
                     }
                 }
-
 
                 if (cnext == '\"')
                 {
@@ -950,7 +951,12 @@ namespace Cheng.Json
         private bool ConverList(TextReader reader, JsonList json)
         {
             // [, , ,]
-            
+            p_layMaxCount = Math.Max(p_layCount, p_layMaxCount);
+            if (p_setMaxLay > 0 && p_layMaxCount > p_setMaxLay)
+            {
+                p_layCount = -1;
+                return false;
+            }
             bool flag;
             const char end = ']';
             const char fen = ',';
@@ -1038,32 +1044,6 @@ namespace Cheng.Json
                 }
                 return false;
 
-                ////跳过忽略文本
-                //flag = f_jumpIngoringText(reader);
-                //if (!flag) return false;
-
-                //flag = read(reader, out c);
-                //if (!flag) return false;
-
-                ////终结符
-                //if (c == end)
-                //{
-                //    return true;
-                //}
-                ////不是分隔符
-                //if(c != fen) return false;
-
-                ////跳过忽略文本
-                //flag = f_jumpIngoringText(reader);
-                //if (!flag) return false;
-
-                //flag = peek(reader, out c);
-                //if(flag && c == end)
-                //{
-                //    //是空分隔符
-                //    return true;
-                //}
-
             }
 
         }
@@ -1139,6 +1119,13 @@ namespace Cheng.Json
 #endif
         private bool ConverDict(TextReader reader, JsonDictionary json)
         {
+            p_layMaxCount = Math.Max(p_layCount, p_layMaxCount);
+            if (p_setMaxLay > 0 && p_layMaxCount > p_setMaxLay)
+            {
+                p_layCount = -1;
+                return false;
+            }
+
             const char fen = ',';
             const char end = '}';
             const char kf = ':';
@@ -1385,8 +1372,15 @@ namespace Cheng.Json
             if (type == JsonType.Dictionary)
             {
                 //键值对
+                if (p_setMaxLay > 0 && p_layMaxCount > p_setMaxLay)
+                {
+                    p_layCount = -1;
+                    return false;
+                }
+                p_layCount++;
                 json = new JsonDictionary(p_dictKeyEqual);
                 flag = ConverDict(reader, json.JsonObject);
+                p_layCount--;
                 if (flag)
                 {
                     return true;
@@ -1397,9 +1391,15 @@ namespace Cheng.Json
             if (type == JsonType.List)
             {
                 //集合
+                if (p_setMaxLay > 0 && p_layMaxCount > p_setMaxLay)
+                {
+                    p_layCount = -1;
+                    return false;
+                }
                 json = new JsonList();
-
+                p_layCount++;
                 flag = ConverList(reader, json.Array);
+                p_layCount--;
                 if (flag)
                 {
                     return true;
@@ -1420,11 +1420,25 @@ namespace Cheng.Json
 
             if (type == JsonType.List)
             {
+                if (p_setMaxLay > 0 && p_layMaxCount > p_setMaxLay)
+                {
+                    p_layCount = -1;
+                    return;
+                }
+                p_layCount++;
                 ArrayToText((JsonList)json, writer, lay);
+                p_layCount--;
             }
             else if (type == JsonType.Dictionary)
             {
+                if (p_setMaxLay > 0 && p_layMaxCount > p_setMaxLay)
+                {
+                    p_layCount = -1;
+                    return;
+                }
+                p_layCount++;
                 DictToText((JsonDictionary)json, writer, lay);
+                p_layCount--;
             }
             else
             {
@@ -1652,6 +1666,13 @@ namespace Cheng.Json
 
         private void ArrayToText(JsonList json, TextWriter wr, int lay)
         {
+            p_layMaxCount = Math.Max(p_layMaxCount, p_layCount);
+            if (p_setMaxLay > 0 && p_layMaxCount > p_setMaxLay)
+            {
+                p_layCount = -1;
+                return;
+            }
+
             const char startArray = '[';
             const char endArray = ']';
             const char separator = ',';
@@ -1693,7 +1714,7 @@ namespace Cheng.Json
                             wr.Write(tab);
                         }
                     }
-                }             
+                }
 
                 //写入一个
                 ParsToJson(temp, wr, lay + 1);
@@ -1729,6 +1750,13 @@ namespace Cheng.Json
 
         private void DictToText(JsonDictionary json, TextWriter wr, int lay)
         {
+            p_layMaxCount = Math.Max(p_layMaxCount, p_layCount);
+            if (p_setMaxLay > 0 && p_layMaxCount > p_setMaxLay)
+            {
+                p_layCount = -1;
+                return;
+            }
+
             #region 变量
             const char start = '{';
             const char end = '}';
@@ -1811,7 +1839,7 @@ namespace Cheng.Json
                 {
                     wr.Write(tab);
                 }
-            }           
+            }
 
             wr.Write(end);
 
@@ -1855,6 +1883,7 @@ namespace Cheng.Json
                 p_cultureInfo = null;
             }
             p_dictKeyEqual = null;
+            p_setMaxLay = 0;
         }
         #endregion
 
@@ -2029,7 +2058,7 @@ namespace Cheng.Json
         /// <para>
         /// 若该值设置为null，则不使用区域信息；将对象转化为文本或写入json文本时，采用写入器默认的方案
         /// </para>
-        /// <para>参数时默认为<see cref="CultureInfo.InvariantCulture"/></para>
+        /// <para>该参数默认为<see cref="CultureInfo.InvariantCulture"/></para>
         /// </value>
         public CultureInfo ParserCultureInfo
         {
@@ -2048,6 +2077,24 @@ namespace Cheng.Json
         {
             get => p_dictKeyEqual;
             set => p_dictKeyEqual = value;
+        }
+
+        /// <summary>
+        /// 解析器分析json对象时的最大递归深度
+        /// </summary>
+        /// <value>
+        /// <para>在解析json对象或字符串时，每一层键值对<see cref="JsonType.Dictionary"/>或<see cref="JsonType.List"/>都会增加一次深度计数，当解析超出指定的深度时，会终止解析并返回错误；0表示没有最大深度</para>
+        /// <para>该参数默认为0</para>
+        /// </value>
+        /// <exception cref="ArgumentOutOfRangeException">设置的参数小于0</exception>
+        public int ParserMaxDepth
+        {
+            get => p_setMaxLay;
+            set
+            {
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+                p_setMaxLay = value;
+            }
         }
 
         #endregion
@@ -2071,28 +2118,64 @@ namespace Cheng.Json
             return reader.Peek() != -1;
         }
 
+        /// <summary>
+        /// 将json对象以json文本格式写入到文本写入器，并返回解析的最大深度
+        /// </summary>
+        /// <param name="json">要写入的json对象</param>
+        /// <param name="writer">文本写入器</param>
+        /// <returns>解析json对象时的最大递归深度；-1 表示超出递归深度最大值</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public int ParsingJsonGetDepthCount(JsonVariable json, TextWriter writer)
+        {
+            //Depth
+            if (json is null || writer is null) throw new ArgumentNullException();
+            p_layCount = 0;
+            p_layMaxCount = 0;
+            ParsToJson(json, writer, 0);
+            return (p_layCount < 0) ? -1 : p_layMaxCount;
+        }
+
         public override void ParsingJson(JsonVariable json, TextWriter writer)
         {
             if (json is null || writer is null) throw new ArgumentNullException();
+            ParsingJsonGetDepthCount(json, writer);
+        }
 
-            ParsToJson(json, writer, 0);
+        /// <summary>
+        /// 将json文本转化为json对象，并返回解析的最大深度
+        /// </summary>
+        /// <param name="reader">要读取的文本</param>
+        /// <param name="json">要转化后的json对象</param>
+        /// <returns>解析json对象时的最大递归深度；-1 表示超出递归深度最大值，-2 表示无法解析json对象</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public int ToJsonDataGetDepthCount(TextReader reader, out JsonVariable json)
+        {
+            if (reader is null) throw new ArgumentNullException();
+            p_layCount = 0;
+            p_layMaxCount = 0;
+            if (ConverJsonText(reader, out json))
+            {
+                return (p_layCount < 0) ? -1 : p_layMaxCount;
+            }
+            return (p_layCount < 0) ? -1 : -2;
         }
 
         public override JsonVariable ToJsonData(TextReader reader)
         {
             if (reader is null) throw new ArgumentNullException();
             JsonVariable json;
-            if (ConverJsonText(reader, out json))
+            var re = ToJsonDataGetDepthCount(reader, out json);
+            if(re < 0)
             {
-                return json;
+                throw new NotImplementedException(Cheng.Properties.Resources.Exception_NotParserJsonText);
             }
-            throw new NotImplementedException(Cheng.Properties.Resources.Exception_NotParserJsonText);
+            return json;
         }
 
         public override bool ToJsonData(TextReader reader, out JsonVariable json)
         {
-            if (reader is null) throw new ArgumentNullException();
-            return ConverJsonText(reader, out json);
+            var re = ToJsonDataGetDepthCount(reader, out json);
+            return re < 0;
         }
 
         #endregion

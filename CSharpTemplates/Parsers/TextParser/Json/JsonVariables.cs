@@ -49,7 +49,7 @@ namespace Cheng.Json
     }
 
     /// <summary>
-    /// json数据对象的基类
+    /// json数据对象
     /// </summary>
     public abstract class JsonVariable : IEquatable<JsonVariable>, IHashCode64, ICloneable
     {
