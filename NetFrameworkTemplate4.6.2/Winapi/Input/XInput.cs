@@ -81,9 +81,9 @@ namespace Cheng.Windows.XInput
         DPadRight = 0x0008,
 
         /// <summary>
-        /// 开始键（Start）
+        /// 菜单\开始键
         /// </summary>
-        Start = 0x0010,
+        Menu = 0x0010,
 
         /// <summary>
         /// 返回键（Back）
