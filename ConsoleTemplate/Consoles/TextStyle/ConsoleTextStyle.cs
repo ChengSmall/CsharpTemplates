@@ -9,11 +9,13 @@ namespace Cheng.Consoles
 {
 
     /// <summary>
-    /// 控制台更改文本样式的ASNI转移序列
+    /// 控制台的ASNI转移序列
     /// </summary>
     /// <remarks>使用前需要开启控制台虚拟终端；使用<see cref="ConsoleSystem.EnableVirtualTerminalProcessingOnWindows"/>开启虚拟终端</remarks>
-    public unsafe static class ConsoleTextStyle
+    public unsafe static class ConsoleASNIText
     {
+
+        #region ASNI
 
         #region 样式字符
 
@@ -28,7 +30,7 @@ namespace Cheng.Consoles
         public const char ASNIStyle_End = 'm';
 
         /// <summary>
-        /// 将文本样式重置为默认的ASNI转义序列
+        /// 将文本样式重置为默认样式
         /// </summary>
         public const string ResetStyleText = "\u001B[0m";
 
@@ -40,27 +42,63 @@ namespace Cheng.Consoles
         /// <summary>
         /// 添加粗体，高亮
         /// </summary>
-        public const string Bold = "\u001B[1m";
+        public const string StyleBold = "\u001B[1m";
 
         /// <summary>
         /// 添加下划线样式
         /// </summary>
-        public const string UnderLine = "\u001B[4m";
+        public const string StyleUnderLine = "\u001B[4m";
 
         /// <summary>
         /// 添加闪烁样式
         /// </summary>
-        public const string Blink = "\u001B[5m";
+        public const string StyleBlink = "\u001B[5m";
 
         /// <summary>
         /// 添加反显逆色效果
         /// </summary>
-        public const string Reverse = "\u001B[7m";
+        public const string StyleReverse = "\u001B[7m";
 
         /// <summary>
         /// 添加隐藏字符样式
         /// </summary>
-        public const string Hidden = "\u001B[8m";
+        public const string StyleHidden = "\u001B[8m";
+
+        #endregion
+
+        #region 屏幕
+
+        /// <summary>
+        /// 清除整个屏幕文本
+        /// </summary>
+        public const string ClearViewText = "\x1b[2J";
+
+        /// <summary>
+        /// 清除滚动缓冲区的文本
+        /// </summary>
+        public const string ClearScrollbackBuffer = "\x1b[3J";
+
+        /// <summary>
+        /// 清除控制台窗口所有文本和缓冲区内容
+        /// </summary>
+        public const string ClearAllView = ClearViewText + ClearScrollbackBuffer;
+
+        /// <summary>
+        /// 清除从行首到光标的内容
+        /// </summary>
+        public const string ClearLineFirstToCursorText = "\x1b[1K";
+
+        /// <summary>
+        /// 清除从光标到行尾的内容
+        /// </summary>
+        public const string ClearLineCursorToEndText = "\x1b[K";
+
+        /// <summary>
+        /// 清除光标所在行的内容
+        /// </summary>
+        public const string ClearLineText = "\x1b[2K";
+
+        #endregion
 
         #region 颜色
 

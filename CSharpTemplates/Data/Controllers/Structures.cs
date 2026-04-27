@@ -6,7 +6,7 @@ namespace Cheng.Controllers
 {
 
     /// <summary>
-    /// 手柄拥有的轴状态位或枚举
+    /// 控制器拥有的轴状态位或枚举
     /// </summary>
     [Flags]
     public enum HavingJoystick : byte
@@ -29,6 +29,11 @@ namespace Cheng.Controllers
         Joystick8 = 0b10000000,
 
         /// <summary>
+        /// 表示拥有编号为1-2的摇杆
+        /// </summary>
+        Top2 = 0b11,
+
+        /// <summary>
         /// 表示拥有编号为1-3的摇杆
         /// </summary>
         Top3 = 0b111,
@@ -41,7 +46,7 @@ namespace Cheng.Controllers
     }
 
     /// <summary>
-    /// 手柄拥有的按钮状态位或枚举
+    /// 控制器拥有的按钮状态位或枚举
     /// </summary>
     [Flags]
     public enum HavingButton : uint
@@ -109,9 +114,45 @@ namespace Cheng.Controllers
         Top13 = 0b00011111_11111111,
 
         /// <summary>
+        /// 拥有编号为1-16的按钮
+        /// </summary>
+        Top16 = 0b11111111_11111111,
+
+        /// <summary>
         /// 拥有全部32个按钮
         /// </summary>
         All = uint.MaxValue,
+    }
+
+    /// <summary>
+    /// 控制器拥有振动电机编号
+    /// </summary>
+    [Flags]
+    public enum HavingVibration: byte
+    {
+        None = 0,
+
+        Vibration1 = 0b00000001,
+
+        Vibration2 = 0b00000010,
+
+        Vibration3 = 0b00000100,
+
+        Vibration4 = 0b00001000,
+
+        Vibration5 = 0b00010000,
+
+        Vibration6 = 0b00100000,
+
+        Vibration7 = 0b01000000,
+
+        Vibration8 = 0b10000000,
+
+        /// <summary>
+        /// 拥有1号2号两个电机
+        /// </summary>
+        TwoVibration = 0b11,
+
     }
 
 }

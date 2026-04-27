@@ -72,7 +72,7 @@ namespace Cheng.Consoles.ConsoleUI
         /// <summary>
         /// 是否开启按钮颜色显示
         /// </summary>
-        /// <value>该参数为true则会使用<see cref="ConsoleTextStyle"/>设置文本颜色以控制按钮的边框颜色和文本颜色，false则忽略颜色数据；默认为false</value>
+        /// <value>该参数为true则会使用<see cref="ConsoleASNIText"/>设置文本颜色以控制按钮的边框颜色和文本颜色，false则忽略颜色数据；默认为false</value>
         public bool StartButtonColor
         {
             get => p_startColor;

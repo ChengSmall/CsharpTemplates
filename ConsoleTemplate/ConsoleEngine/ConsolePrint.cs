@@ -131,7 +131,7 @@ namespace Cheng.Consoles
                     {
                         char cs = sb[i];
 
-                        if (cs == ConsoleTextStyle.ASNIStyle_Begin)
+                        if (cs == ConsoleASNIText.ASNIStyle_Begin)
                         {
                             //起始索引
                             int beginS = i;
@@ -145,7 +145,7 @@ namespace Cheng.Consoles
                             for ( ; style_index < length; style_index++)
                             {
                                 cs = sb[style_index];
-                                if(cs == ConsoleTextStyle.ASNIStyle_End)
+                                if(cs == ConsoleASNIText.ASNIStyle_End)
                                 {
                                     //到达样式转义终止符
                                     //后一位索引
@@ -153,7 +153,7 @@ namespace Cheng.Consoles
 
                                     if (i < length)
                                     {
-                                        if (sb[i] == ConsoleTextStyle.ASNIStyle_Begin)
+                                        if (sb[i] == ConsoleASNIText.ASNIStyle_Begin)
                                         {
                                             goto BeginStyle; //属于相邻转义，回去重新数
                                         }
@@ -222,7 +222,7 @@ namespace Cheng.Consoles
                 {
                     char cs = sb[i];
 
-                    if (ignoreStyleText && cs == ConsoleTextStyle.ASNIStyle_Begin)
+                    if (ignoreStyleText && cs == ConsoleASNIText.ASNIStyle_Begin)
                     {
                         //起始索引
                         int beginS = i;
@@ -236,7 +236,7 @@ namespace Cheng.Consoles
                         for (; style_index < length; style_index++)
                         {
                             cs = sb[style_index];
-                            if (cs == ConsoleTextStyle.ASNIStyle_End)
+                            if (cs == ConsoleASNIText.ASNIStyle_End)
                             {
                                 //到达样式转义终止符
                                 //后一位索引
@@ -244,7 +244,7 @@ namespace Cheng.Consoles
 
                                 if (i < length)
                                 {
-                                    if (sb[i] == ConsoleTextStyle.ASNIStyle_Begin)
+                                    if (sb[i] == ConsoleASNIText.ASNIStyle_Begin)
                                     {
                                         goto BeginStyle; //属于相邻转义，回去重新数
                                     }

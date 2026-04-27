@@ -10,9 +10,9 @@ using Cheng.DataStructure.Cherrsdinates;
 using Cheng.DataStructure;
 using Cheng.Algorithm;
 
-using XIn = Cheng.Unitys.Windows.XInput.WindowsXInput;
+using XIn = Cheng.Unitys.Windows.XInput.Win32API.WindowsXInput;
 
-namespace Cheng.Unitys.Windows.XInput
+namespace Cheng.Unitys.Windows.XInput.Win32API
 {
 
     /// <summary>
@@ -137,6 +137,11 @@ namespace Cheng.Unitys.Windows.XInput
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct XInputState
     {
+
+        public XInputState(uint updateNum, XInputGamePad gamepad)
+        {
+            UpdateNumber = updateNum; Gamepad = gamepad;
+        }
 
         #region 参数
 
@@ -286,7 +291,12 @@ namespace Cheng.Unitys.Windows.XInput
             return ((GamePadButtons)buttons & button) == (button);
         }
 
-        static float GetJoystickF(short value)
+        /// <summary>
+        /// 将原始摇杆数据归一化
+        /// </summary>
+        /// <param name="value">摇杆轴数据</param>
+        /// <returns>摇杆数据归一化为[-1,1]</returns>
+        public static float GetJoystickF(short value)
         {
             if (value == 0) return 0f;
             if (value < 0)
@@ -296,7 +306,12 @@ namespace Cheng.Unitys.Windows.XInput
             return value / 32767f;
         }
 
-        static double GetJoystickD(short value)
+        /// <summary>
+        /// 将原始摇杆数据归一化
+        /// </summary>
+        /// <param name="value">摇杆轴数据</param>
+        /// <returns>摇杆数据归一化为[-1,1]</returns>
+        public static double GetJoystickD(short value)
         {
             if (value == 0) return 0D;
             if (value < 0)

@@ -1,3 +1,4 @@
+using Cheng.DataStructure.Texts;
 using Cheng.Texts;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,11 @@ namespace Cheng.Json
 
         private CultureInfo p_cultureInfo;
 
+#if DEBUG
+        /// <summary>
+        /// 初始8字符数的缓冲区
+        /// </summary>
+#endif
         private char[] p_charArrayBuffer;
 
         private string p_newLine;
@@ -109,7 +115,7 @@ namespace Cheng.Json
 
 #if DEBUG
         /// <summary>
-        /// 读取字符到缓冲区charArrayBuffer
+        /// 读取字符到缓冲区charArrayBuffer (自动扩容)
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="count">读取的字符数</param>
@@ -491,107 +497,6 @@ namespace Cheng.Json
 
 #if DEBUG
         /// <summary>
-        /// 将4个代表16位的16进制字符转化为一个16位值
-        /// </summary>
-        /// <param name="c4">第4位16进制数</param>
-        /// <param name="c3">第3位16进制数</param>
-        /// <param name="c2">第2位16进制数</param>
-        /// <param name="c1">第1位16进制数</param>
-        /// <param name="reValue">转化后的值</param>
-        /// <returns>是否符合格式</returns>
-#endif
-        static bool f_charToX16(char c4, char c3, char c2, char c1, out ushort reValue)
-        {
-            //const ushort ToLopper = 0b00000000_00000000;
-
-            const ushort ToUpper = 0b11111111_11011111;
-            //ushort uv;
-
-            char ct;
-
-            int de;
-
-
-            ct = c1;
-
-            if (ct >= '0' && ct <= '9')
-            {
-                de = (ct - '0');
-            }
-            else if ((ct >= 'A' && ct <= 'F') || (ct >= 'a' && ct <= 'f'))
-            {
-                de = (((ushort)ct & ToUpper) - 'A') + 10;
-            }
-            else
-            {
-                //不是指定格式
-                reValue = 0;
-                return false;
-            }
-
-            reValue = (ushort)(de);
-
-            ct = c2;
-
-            if (ct >= '0' && ct <= '9')
-            {
-                de = (ct - '0');
-            }
-            else if ((ct >= 'A' && ct <= 'F') || (ct >= 'a' && ct <= 'f'))
-            {
-                de = (((ushort)ct & ToUpper) - 'A') + 10;
-            }
-            else
-            {
-                //不是指定格式
-                return false;
-            }
-
-
-            reValue |= (ushort)(de << 4);
-
-
-            ct = c3;
-
-            if (ct >= '0' && ct <= '9')
-            {
-                de = (ct - '0');
-            }
-            else if ((ct >= 'A' && ct <= 'F') || (ct >= 'a' && ct <= 'f'))
-            {
-                de = (((ushort)ct & ToUpper) - 'A') + 10;
-            }
-            else
-            {
-                //不是指定格式
-                return false;
-            }
-
-            reValue |= (ushort)(de << 8);
-
-            ct = c4;
-
-            if (ct >= '0' && ct <= '9')
-            {
-                de = (ct - '0');
-            }
-            else if ((ct >= 'A' && ct <= 'F') || (ct >= 'a' && ct <= 'f'))
-            {
-                de = (((ushort)ct & ToUpper) - 'A') + 10;
-            }
-            else
-            {
-                //不是指定格式
-                return false;
-            }
-
-            reValue |= (ushort)(de << 12);
-
-            return true;
-        }
-
-#if DEBUG
-        /// <summary>
         /// 转义字符推进
         /// </summary>
         /// <param name="reader"></param>
@@ -667,13 +572,30 @@ namespace Cheng.Json
 
                 //读取完毕4位字符
                 ushort rec;
-                if(!f_charToX16(p_charArrayBuffer[3], p_charArrayBuffer[2], p_charArrayBuffer[1], p_charArrayBuffer[0], out rec))
+                if(!Cheng.Texts.TextManipulation.X16ToValue(p_charArrayBuffer, 0, 4, out rec))
                 {
-                    //错误格式
                     return false;
                 }
 
                 sb.Append(((char)rec));
+                return true;
+            }
+
+            if (ic == 'U')
+            {
+                //32位代理项对字符码
+                if (!read(reader, 8, ref p_charArrayBuffer))
+                {
+                    return false;
+                }
+
+                uint rec;
+                if (!Cheng.Texts.TextManipulation.X16ToValue(p_charArrayBuffer, 0, 8, out rec))
+                {
+                    return false;
+                }
+                var uc = new Unichar((int)rec);
+                sb.Append(uc.high).Append(uc.low);
                 return true;
             }
 
@@ -1864,7 +1786,7 @@ namespace Cheng.Json
         {
             p_converDictType = ConverDictionaryType.Cover;
             p_JsonNotConverNumToString = false;
-            p_charArrayBuffer = new char[4];
+            p_charArrayBuffer = new char[8];
             p_newLine = Environment.NewLine;
             p_toJsonTextNewLine = false;
             p_toObjEscapeChar = true;
@@ -2174,8 +2096,7 @@ namespace Cheng.Json
 
         public override bool ToJsonData(TextReader reader, out JsonVariable json)
         {
-            var re = ToJsonDataGetDepthCount(reader, out json);
-            return re < 0;
+            return ToJsonDataGetDepthCount(reader, out json) < 0;
         }
 
         #endregion

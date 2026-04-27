@@ -30,7 +30,7 @@ namespace Cheng.Unitys
         /// </summary>
         /// <param name="joystick">摇杆</param>
         /// <returns>使用<see cref="Vector2"/>获取摇杆的<see cref="BaseJoystick.GetAxis(out float, out float)"/>数据</returns>
-        public static Vector2 GetAxis(this BaseJoystick joystick)
+        public static Vector2 GetAxisVector(this BaseJoystick joystick)
         {
             if (joystick is null) throw new ArgumentNullException();
             Vector2 v;

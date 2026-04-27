@@ -138,6 +138,11 @@ namespace Cheng.Windows.XInput
     public readonly struct XInputState
     {
 
+        public XInputState(uint updateNum, XInputGamePad gamepad)
+        {
+            UpdateNumber = updateNum; Gamepad = gamepad;
+        }
+
         #region 参数
 
         /// <summary>
@@ -286,17 +291,29 @@ namespace Cheng.Windows.XInput
             return ((GamePadButtons)buttons & button) == (button);
         }
 
-        static float GetJoystickF(short value)
+        /// <summary>
+        /// 将原始摇杆数据归一化
+        /// </summary>
+        /// <param name="value">摇杆轴数据</param>
+        /// <returns>摇杆数据归一化为[-1,1]</returns>
+        public static float GetJoystickF(short value)
         {
             if (value == 0) return 0f;
             if (value < 0)
             {
+                if (value == short.MinValue) return -1;
                 return value / 32768f;
             }
+            if (value == short.MaxValue) return 1;
             return value / 32767f;
         }
 
-        static double GetJoystickD(short value)
+        /// <summary>
+        /// 将原始摇杆数据归一化
+        /// </summary>
+        /// <param name="value">摇杆轴数据</param>
+        /// <returns>摇杆数据归一化为[-1,1]</returns>
+        public static double GetJoystickD(short value)
         {
             if (value == 0) return 0D;
             if (value < 0)
@@ -379,11 +396,11 @@ namespace Cheng.Windows.XInput
 
         #region 参数
 
-        private readonly byte Type;
+        public readonly byte Type;
 
-        private readonly byte SubType;
+        public readonly byte SubType;
 
-        private readonly ushort Flags;
+        public readonly ushort Flags;
 
         /// <summary>
         /// 控制器按键参数

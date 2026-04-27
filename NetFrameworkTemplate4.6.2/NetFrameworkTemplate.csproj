@@ -85,6 +85,8 @@
   <ItemGroup>
     <Compile Include="Compressions\ResourcePackageWinForm\CompressionParserListView.cs" />
     <Compile Include="Data\Colour\ColourExtend.cs" />
+    <Compile Include="Data\Controllers\XInputButtons.cs" />
+    <Compile Include="Data\Controllers\XInputXBox360GameController.cs" />
     <Compile Include="Data\Timer\PerformanceCounterTimer.cs" />
     <Compile Include="Processes\API.cs" />
     <Compile Include="Processes\ProcessAccessFlags.cs" />
@@ -95,6 +97,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Systems\Data.cs" />
     <Compile Include="Systems\SystemEnvironment.cs" />
     <Compile Include="Winapi\Hooks\Hooks.cs" />
     <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
@@ -128,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Algorithm\" />
+    <Folder Include="Data\Button\" />
     <Folder Include="IO\FileSysInfo\" />
     <Folder Include="Text\" />
     <Folder Include="Threads\" />

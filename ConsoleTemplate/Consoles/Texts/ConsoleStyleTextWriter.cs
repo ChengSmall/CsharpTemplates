@@ -99,7 +99,7 @@ namespace Cheng.Texts.Consoles
             if (p_style_color.HasValue)
             {
                 var c = p_style_color.Value;
-                ConsoleTextStyle.ColorToText(c.r, c.g, c.b, false, p_writer);
+                ConsoleASNIText.ColorToText(c.r, c.g, c.b, false, p_writer);
             }
         }
 
@@ -110,7 +110,7 @@ namespace Cheng.Texts.Consoles
             if (index < 0 || count < 0 || (index + count > buffer.Length)) throw new ArgumentOutOfRangeException();
             f_writerHeader();
             p_writer.Write(buffer, index, count);
-            p_writer.Write(ConsoleTextStyle.ResetStyleText);
+            p_writer.Write(ConsoleASNIText.ResetStyleText);
         }
 
         public override void Write(char[] buffer)
@@ -119,7 +119,7 @@ namespace Cheng.Texts.Consoles
             if (buffer is null) throw new ArgumentNullException();
             f_writerHeader();
             p_writer.Write(buffer);
-            p_writer.Write(ConsoleTextStyle.ResetStyleText);
+            p_writer.Write(ConsoleASNIText.ResetStyleText);
         }
 
         public override void Write(char value)
@@ -127,7 +127,7 @@ namespace Cheng.Texts.Consoles
             ThrowObjectDisposed();
             f_writerHeader();
             p_writer.Write(value);
-            p_writer.Write(ConsoleTextStyle.ResetStyleText);
+            p_writer.Write(ConsoleASNIText.ResetStyleText);
         }
 
         public override void Write(string value)
@@ -136,7 +136,7 @@ namespace Cheng.Texts.Consoles
             if (value is null) return;
             f_writerHeader();
             p_writer.Write(value);
-            p_writer.Write(ConsoleTextStyle.ResetStyleText);
+            p_writer.Write(ConsoleASNIText.ResetStyleText);
         }
 
         public override void WriteLine()
@@ -150,7 +150,7 @@ namespace Cheng.Texts.Consoles
             ThrowObjectDisposed();
             f_writerHeader();
             p_writer.WriteLine(value);
-            p_writer.Write(ConsoleTextStyle.ResetStyleText);
+            p_writer.Write(ConsoleASNIText.ResetStyleText);
         }
 
         public override void WriteLine(char[] buffer, int index, int count)
@@ -160,7 +160,7 @@ namespace Cheng.Texts.Consoles
             if (index < 0 || count < 0 || (index + count > buffer.Length)) throw new ArgumentOutOfRangeException();
             f_writerHeader();
             p_writer.WriteLine(buffer, index, count);
-            p_writer.Write(ConsoleTextStyle.ResetStyleText);
+            p_writer.Write(ConsoleASNIText.ResetStyleText);
         }
 
         public override void WriteLine(char[] buffer)
@@ -168,7 +168,7 @@ namespace Cheng.Texts.Consoles
             ThrowObjectDisposed();
             f_writerHeader();
             p_writer.WriteLine(buffer);
-            p_writer.Write(ConsoleTextStyle.ResetStyleText);
+            p_writer.Write(ConsoleASNIText.ResetStyleText);
         }
 
         public override void WriteLine(string value)
@@ -181,7 +181,7 @@ namespace Cheng.Texts.Consoles
             }
             f_writerHeader();
             p_writer.WriteLine(value);
-            p_writer.Write(ConsoleTextStyle.ResetStyleText);
+            p_writer.Write(ConsoleASNIText.ResetStyleText);
         }
 
         public override string NewLine 

@@ -390,11 +390,12 @@ namespace Cheng.DataStructure.Texts
         /// <returns></returns>
         public override unsafe string ToString()
         {
-            if (this.IsSurrogatePair())
+            if (IsSurrogatePair())
             {
-                return char.ConvertFromUtf32(toCode(high, low));
+                char* cp = stackalloc char[2] { high, low };
+                return new string(cp, 0, 2);
             }
-            return Value.ToString();
+            return new string(high, 1);
         }
 
         public bool Equals(Unichar other)

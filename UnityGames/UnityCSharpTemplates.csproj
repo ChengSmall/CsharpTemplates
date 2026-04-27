@@ -13,7 +13,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <DocumentationFile>bin\UnityEditor\UnityCSharpTemplates.xml</DocumentationFile>
-    <DefineConstants>DEBUG;TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,HAVE_MOUSE</DefineConstants>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,HAVE_MOUSE</DefineConstants>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>

@@ -4,15 +4,24 @@ using UnityEngine;
 namespace Cheng.ButtonTemplates.UnityButtons
 {
 
+    #if UNITY_EDITOR
     /// <summary>
     /// 使用Unity的 <see cref="UnityEngine.KeyCode"/> 虚拟键码映射按钮
     /// </summary>
     /// <remarks>
     /// 该按钮封装一个 <see cref="UnityEngine.KeyCode"/> Unity虚拟键码，并使用 <see cref="Input"/> 类实现按钮状态；
     /// <para>
-    /// 允许作为脚本参数在 Inspector 中设置；
+    /// 允许作为脚本参数在 Inspector 中设置
     /// </para>
     /// </remarks>
+    #else
+    /// <summary>
+    /// 使用Unity的 <see cref="UnityEngine.KeyCode"/> 虚拟键码映射按钮
+    /// </summary>
+    /// <remarks>
+    /// 该按钮封装一个 <see cref="UnityEngine.KeyCode"/> Unity虚拟键码，并使用 <see cref="Input"/> 类实现按钮状态
+    /// </remarks>
+    #endif
     [Serializable]
     public sealed class KeyCodeButton : UnityButton
     {

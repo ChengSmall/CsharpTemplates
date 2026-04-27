@@ -89,5 +89,27 @@ namespace Cheng.OtherCode.Winapi
         [DllImport("kernel32.dll")]
         public static extern ulong GetTickCount64();
 
+        /// <summary>
+        /// 标记指定句柄的任何未完成的 I/O 操作
+        /// </summary>
+        /// <remarks>
+        /// <para>让指定句柄上所有正在等待的 I/O 操作立即返回失败，并由系统将错误码设置为 ERROR_OPERATION_ABORTED (0x3E3)</para>
+        /// <para>函数仅取消当前进程中的 I/O 操作</para>
+        /// </remarks>
+        /// <param name="hFile">IO操作句柄</param>
+        /// <param name="lpOverlapped">
+        /// <para>指向包含用于异步 I/O 的数据的 OVERLAPPED 数据结构的指针</para>
+        /// <para>如果此参数为 null，则会取消<paramref name="hFile"/>句柄相关的所有 I/O 请求</para>
+        /// <para>如果此参数非 null，则只有为具有指定 <paramref name="lpOverlapped"/> 重叠结构的文件发出的特定 I/O 请求被标记为已取消，这意味着可以取消一个或多个请求</para>
+        /// </param>
+        /// <returns>
+        /// <para>若该函数成功，返回值为非零值</para>
+        /// <para>若函数失败，返回值为 0；若要获得更多的错误信息，请调用 GetLastError 函数</para>
+        /// <para>当函数找不到取消请求，返回值为 0，GetLastError 返回 ERROR_NOT_FOUND (0x490)</para>
+        /// </returns>
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern uint CancelIoEx(IntPtr hFile, void* lpOverlapped);
+
     }
+
 }

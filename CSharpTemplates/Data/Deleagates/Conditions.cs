@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 namespace Cheng.DataStructure
 {
 
-
     /// <summary>
     /// 条件判断委托
     /// </summary>
@@ -26,5 +25,23 @@ namespace Cheng.DataStructure
     /// <param name="obj">使用的判断参数</param>
     /// <returns>判断结果</returns>
     public delegate bool CostomCondition<in T, in P>(T t, P obj);
+
+    /// <summary>
+    /// 只读引用参数的谓词过滤器
+    /// </summary>
+    /// <typeparam name="T">参数类型</typeparam>
+    /// <param name="t">要判断的对象</param>
+    /// <returns>判断结果</returns>
+    public delegate bool PredicateIn<T>(in T t);
+
+    /// <summary>
+    /// 只读引用参数的谓词过滤器（附带条件参数）
+    /// </summary>
+    /// <typeparam name="T">类型参数</typeparam>
+    /// <typeparam name="P">判断参数</typeparam>
+    /// <param name="t">要判断的对象</param>
+    /// <param name="obj">使用的判断参数</param>
+    /// <returns>判断结果</returns>
+    public delegate bool PredicateIn<T, P>(in T t, in P obj);
 
 }

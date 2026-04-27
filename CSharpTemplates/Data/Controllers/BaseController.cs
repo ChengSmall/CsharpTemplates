@@ -30,9 +30,14 @@ namespace Cheng.Controllers
         public virtual HavingButton HavingButtons => 0;
 
         /// <summary>
+        /// 手柄拥有的震动电机
+        /// </summary>
+        public virtual HavingVibration HavingVibrations => 0;
+
+        /// <summary>
         /// 该手柄是否允许有震动功能
         /// </summary>
-        public virtual bool CanVibration => false;
+        public virtual bool CanVibration => HavingVibrations != 0;
 
         /// <summary>
         /// 判断该手柄是否拥有指定编号的摇杆
@@ -379,6 +384,55 @@ namespace Cheng.Controllers
         }
 
         #endregion
+
+        #endregion
+
+        #region 振动
+
+        /// <summary>
+        /// 设置指定电机强度
+        /// </summary>
+        /// <param name="index">电机索引，范围[0,7]</param>
+        /// <param name="power">要设置的电机运作强度，0表示没有运行</param>
+        /// <returns>是否成功设置</returns>
+        public virtual bool SetVibration(int index, float power)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// 获取指定电机状态
+        /// </summary>
+        /// <param name="index">电机索引，范围[0,7]</param>
+        /// <returns>电机运作强度，0表示没有运行或不存在，从<see cref="HavingVibrations"/>获取拥有的电机编号</returns>
+        public virtual float GetVibration(int index)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// 停止所有电机运行
+        /// </summary>
+        public virtual void StopAllVibration()
+        {
+        }
+
+        /// <summary>
+        /// 控制器拥有的电机数量
+        /// </summary>
+        public virtual int VibrationCount
+        {
+            get
+            {
+                int c = 0;
+                var v = (byte)HavingVibrations;
+                for (int i = 0; i < 8; i++)
+                {
+                    if(((v >> i) & 1) == 1) c++;
+                }
+                return c;
+            }
+        }
 
         #endregion
 

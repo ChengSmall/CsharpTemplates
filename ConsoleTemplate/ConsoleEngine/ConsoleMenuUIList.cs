@@ -74,7 +74,7 @@ namespace Cheng.Consoles.ConsoleUI
         }
 
         /// <summary>
-        /// 选择标识是否使用<see cref="ConsoleTextStyle"/>的颜色文本，默认为false
+        /// 选择标识是否使用<see cref="ConsoleASNIText"/>的颜色文本，默认为false
         /// </summary>
         public bool BeginSelectColor
         {
@@ -238,14 +238,14 @@ namespace Cheng.Consoles.ConsoleUI
                 if (but.StartButtonColor)
                 {
                     var color = but.TextColor;
-                    ConsoleTextStyle.ColorToText(color.r, color.g, color.b, false, append);
+                    ConsoleASNIText.ColorToText(color.r, color.g, color.b, false, append);
                 }
 
                 append.Write(but.Text);
 
                 if (but.StartButtonColor)
                 {
-                    append.Write(ConsoleTextStyle.ResetStyleText);
+                    append.Write(ConsoleASNIText.ResetStyleText);
                 }
 
                 ButtonOver:
@@ -319,14 +319,14 @@ namespace Cheng.Consoles.ConsoleUI
                 if (but.StartButtonColor)
                 {
                     var color = but.TextColor;
-                    ConsoleTextStyle.ColorToText(color.r, color.g, color.b, false, append);
+                    ConsoleASNIText.ColorToText(color.r, color.g, color.b, false, append);
                 }
 
                 append.Append(but.Text);
 
                 if (but.StartButtonColor)
                 {
-                    append.Append(ConsoleTextStyle.ResetStyleText);
+                    append.Append(ConsoleASNIText.ResetStyleText);
                 }
 
                 ButtonOver:

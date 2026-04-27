@@ -393,9 +393,9 @@ namespace Cheng.DataStructure.Collections
         }
 
         /// <summary>
-        /// 获取队列最前端元素但不删除
+        /// 获取队尾元素但不删除
         /// </summary>
-        /// <returns>最前端元素</returns>
+        /// <returns>队尾元素</returns>
         /// <exception cref="InvalidOperationException">队列没有元素</exception>
         public T Peek()
         {
@@ -405,6 +405,22 @@ namespace Cheng.DataStructure.Collections
             }
 
             return p_array[p_head];
+        }
+
+        /// <summary>
+        /// 获取队尾元素但不删除
+        /// </summary>
+        /// <param name="result">获取的队尾元素</param>
+        /// <returns>成功获取true，队列不存在元素返回false</returns>
+        public bool TryPeek(out T result)
+        {
+            if (p_size == 0)
+            {
+                result = default;
+                return false;
+            }
+            result = p_array[p_head];
+            return true;
         }
 
         /// <summary>

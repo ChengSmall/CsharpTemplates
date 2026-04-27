@@ -15,7 +15,7 @@ namespace Cheng.Xmls.StandardItemText
     /// 对Xml标准项数据文本的解析器基本实现的控制台颜色输出实现
     /// </summary>
     /// <remarks>
-    /// 使用<see cref="ConsoleTextStyle"/>中控制台颜色实现颜色输出
+    /// 使用<see cref="ConsoleASNIText"/>中控制台颜色实现颜色输出
     /// </remarks>
     public class XmlStandardItemConsole : XmlStandardItemText
     {
@@ -34,7 +34,7 @@ namespace Cheng.Xmls.StandardItemText
         #region 派生
 
         /// <summary>
-        /// 使用控制台文本样式<see cref="ConsoleTextStyle"/>实现颜色输出
+        /// 使用控制台文本样式<see cref="ConsoleASNIText"/>实现颜色输出
         /// </summary>
         /// <param name="append">待添加缓冲区</param>
         /// <param name="color">文本颜色</param>

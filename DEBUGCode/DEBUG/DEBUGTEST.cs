@@ -574,17 +574,17 @@ namespace Cheng.DEBUG
 
             if (value < mb)
             {
-                return ((double)value / kb).ToString("0.######") + "KB";
+                return ((double)value / kb).ToString("0.###") + "KB";
             }
-            if (highSize == 1) return ((double)value / kb).ToString("0.#######") + "KB";
+            if (highSize == 1) return ((double)value / kb).ToString("0.####") + "KB";
 
             if (value < gb * 2)
             {
-                return ((double)value / mb).ToString("0.######") + "MB";
+                return ((double)value / mb).ToString("0.####") + "MB";
             }
-            if (highSize == 2) return ((double)value / mb).ToString("0.########") + "MB";
+            if (highSize == 2) return ((double)value / mb).ToString("0.#####") + "MB";
 
-            return ((double)value / gb).ToString() + "GB";
+            return ((double)value / gb).ToString("0.######") + "GB";
         }
 
         /// <summary>
@@ -609,17 +609,17 @@ namespace Cheng.DEBUG
 
             if (value < mb)
             {
-                return ((double)value / kb).ToString("0.######") + "KB";
+                return ((double)value / kb).ToString("0.###") + "KB";
             }
-            if (highSize == 1) return ((double)value / kb).ToString("0.#######") + "KB";
+            if (highSize == 1) return ((double)value / kb).ToString("0.###") + "KB";
 
             if (value < gb * 2)
             {
-                return ((double)value / mb).ToString("0.######") + "MB";
+                return ((double)value / mb).ToString("0.####") + "MB";
             }
-            if (highSize == 2) return ((double)value / mb).ToString("0.########") + "MB";
+            if (highSize == 2) return ((double)value / mb).ToString("0.#####") + "MB";
 
-            return ((double)value / gb).ToString() + "GB";
+            return ((double)value / gb).ToString("0.######") + "GB";
         }
 
         /// <summary>

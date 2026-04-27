@@ -181,7 +181,7 @@ namespace Cheng.Consoles
         /// </summary>
         /// <param name="handle">控制台输入缓冲区操作句柄</param>
         /// <param name="record">要从中读取的数据</param>
-        /// <returns>是否成功读取</returns>
+        /// <returns>是否成功读取；返回false可调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
         public static bool ReadConsoleInput(IntPtr handle, out InputRecord record)
         {
             record = default;
@@ -203,7 +203,7 @@ namespace Cheng.Consoles
         /// <param name="lpBuffer">指向连续的<see cref="InputRecord"/>数组地址，表示要将数据读取到的位置</param>
         /// <param name="length"><paramref name="lpBuffer"/>指向的数组的元素数量</param>
         /// <param name="readCount">成功读取后，实际读取并填充到<paramref name="lpBuffer"/>指向区域的数量</param>
-        /// <returns>是否成功读取</returns>
+        /// <returns>是否成功读取；返回false可调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
         public static bool ReadConsoleInput(IntPtr handle, CPtr<InputRecord> lpBuffer, int length, out int readCount)
         {
             readCount = 0;
@@ -227,7 +227,7 @@ namespace Cheng.Consoles
         /// <param name="buffer">要读取到的目标数组</param>
         /// <param name="index">目标从指定索引开始填充</param>
         /// <param name="count">要读取的数量</param>
-        /// <returns>实际成功读取的数量，如果无法成功读取返回0</returns>
+        /// <returns>实际成功读取的数量，如果无法成功读取返回0；返回0可调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
         /// <exception cref="ArgumentNullException">缓冲区数组或<paramref name="handle"/>是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
         public static int ReadConsoleInput(IntPtr handle, InputRecord[] buffer, int index, int count)
@@ -250,7 +250,7 @@ namespace Cheng.Consoles
         /// </summary>
         /// <param name="handle">控制台输入缓冲区操作句柄</param>
         /// <param name="record">要从中读取的数据</param>
-        /// <returns>是否成功读取</returns>
+        /// <returns>是否成功读取；返回false可调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
         public static bool PeekConsoleInput(IntPtr handle, out InputRecord record)
         {
             record = default;
@@ -271,7 +271,7 @@ namespace Cheng.Consoles
         /// <param name="lpBuffer">指向连续的<see cref="InputRecord"/>数组地址，表示要将数据读取到的位置</param>
         /// <param name="length"><paramref name="lpBuffer"/>指向的数组的元素数量</param>
         /// <param name="readCount">成功读取后，实际读取并填充到<paramref name="lpBuffer"/>指向区域的数量</param>
-        /// <returns>是否成功读取</returns>
+        /// <returns>是否成功读取；返回false可调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
         public static bool PeekConsoleInput(IntPtr handle, CPtr<InputRecord> lpBuffer, int length, out int readCount)
         {
             readCount = 0;
@@ -295,7 +295,7 @@ namespace Cheng.Consoles
         /// <param name="buffer">要读取到的目标数组</param>
         /// <param name="index">目标从指定索引开始填充</param>
         /// <param name="count">要读取的数量</param>
-        /// <returns>实际成功读取的数量，如果无法成功读取返回0</returns>
+        /// <returns>实际成功读取的数量，如果无法成功读取返回0；返回0可调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
         /// <exception cref="ArgumentNullException">缓冲区数组或<paramref name="handle"/>是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">指定索引超出范围</exception>
         public static int PeekConsoleInput(IntPtr handle, InputRecord[] buffer, int index, int count)
@@ -349,13 +349,62 @@ namespace Cheng.Consoles
         }
 
         /// <summary>
+        /// 检索控制台输入缓冲区中未读输入记录的数量
+        /// </summary>
+        /// <param name="handle">控制台输入缓冲区的句柄</param>
+        /// <param name="count">控制台输入缓冲区中未读输入记录的数量</param>
+        /// <returns>函数是否成功；返回false可调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
+        public static bool Win32TryGetConsoleInputEventCount(IntPtr handle, out int count)
+        {
+            uint rec;
+            var re = winapi_GetNumberOfConsoleInputEvents(handle, &rec);
+            count = (int)rec;
+            return re != 0;
+        }
+
+        /// <summary>
         /// 刷新控制台输入缓冲区；当前在输入缓冲区中的所有输入记录都将被丢弃
         /// </summary>
         /// <param name="handle">控制台输入缓冲区的句柄</param>
-        /// <returns>是否成功</returns>
+        /// <returns>是否成功；返回false可调用<see cref="Marshal.GetLastWin32Error"/>获取错误信息</returns>
         public static bool FlushConsoleInputBuffer(IntPtr handle)
         {
             return winapi_FlushConsoleInputBuffer(handle) != 0;
+        }
+
+        /// <summary>
+        /// 让指定句柄上所有正在等待的 I/O 操作立即返回失败，并由系统将错误码设置为 0x3E3
+        /// </summary>
+        /// <param name="handle">控制台句柄</param>
+        /// <returns>
+        /// <para>返回0表示成功，否则返回错误码；当错误码是 0x490 时表示没有要取消的请求</para>
+        /// </returns>
+        public static int CancelConsoleIO(IntPtr handle)
+        {
+            var re = winapi_CancelIoEx(handle, null);
+            if(re == 0)
+            {
+                return Marshal.GetLastWin32Error();
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// 让指定句柄上正在等待的 I/O 操作立即返回失败，并由系统将错误码设置为 0x3E3
+        /// </summary>
+        /// <param name="handle">控制台句柄</param>
+        /// <param name="lpOverlapped">
+        /// <para>指向包含用于异步 I/O 的数据的 OVERLAPPED 数据结构的指针；如果参数为 null，则会取消句柄相关的所有 I/O 请求</para>
+        /// </param>
+        /// <returns>返回0表示成功，否则返回错误码；当错误码是 0x490 时表示没有要取消的请求</returns>
+        public static int CancelConsoleIO(IntPtr handle, void* lpOverlapped)
+        {
+            var re = winapi_CancelIoEx(handle, lpOverlapped);
+            if (re == 0)
+            {
+                return Marshal.GetLastWin32Error();
+            }
+            return 0;
         }
 
         #endregion
@@ -424,12 +473,12 @@ namespace Cheng.Consoles
         /// <param name="lpNumberOfEventsRead">指向接收所读取输入记录数量的变量</param>
         /// <returns>该函数是否成功</returns>
 #endif
-        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "ReadConsoleInput")]
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "ReadConsoleInput", CharSet = CharSet.Unicode)]
         private static extern uint winapi_ReadConsoleInput(IntPtr hConsoleInput, void* lpBuffer,
         uint nLength, uint* lpNumberOfEventsRead);
 
 
-        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "PeekConsoleInput")]
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "PeekConsoleInput", CharSet = CharSet.Unicode)]
         private static extern uint winapi_PeekConsoleInput(IntPtr hConsoleInput, void* lpBuffer,
         uint nLength, uint* lpNumberOfEventsRead);
 
@@ -440,6 +489,11 @@ namespace Cheng.Consoles
 
         [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "FlushConsoleInputBuffer")]
         extern static uint winapi_FlushConsoleInputBuffer(IntPtr hConsoleInput);
+
+
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "CancelIoEx")]
+        private static extern uint winapi_CancelIoEx(IntPtr hFile, void* lpOverlapped);
+
 
         #endregion
 

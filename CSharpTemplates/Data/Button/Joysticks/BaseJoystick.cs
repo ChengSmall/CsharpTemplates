@@ -303,6 +303,17 @@ namespace Cheng.ButtonTemplates.Joysticks
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// 获取摇杆数据
+        /// </summary>
+        /// <returns>x和y分别代表摇杆的水平和垂直方向参数</returns>
+        /// <exception cref="NotSupportedException">没有访问权限</exception>
+        public virtual Point2F GetAxis()
+        {
+            GetAxis(out var x, out var y);
+            return new Point2F(x, y);
+        }
+
         #endregion
 
         #region d
@@ -384,6 +395,17 @@ namespace Cheng.ButtonTemplates.Joysticks
             GetAxis(out h, out v);
             horizontal = h;
             vertical = v;
+        }
+
+        /// <summary>
+        /// 获取摇杆数据
+        /// </summary>
+        /// <returns>x和y分别代表摇杆的水平和垂直方向参数</returns>
+        /// <exception cref="NotSupportedException">没有访问权限</exception>
+        public virtual Point2 GetAxisD()
+        {
+            GetAxisD(out var x, out var y);
+            return new Point2(x, y);
         }
 
         #endregion
