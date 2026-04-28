@@ -88,7 +88,7 @@ namespace Cheng.Controllers.XInput
             //扳机
             const byte deftrb = (byte)(255d * (0.4));
             arr[10] = new XInputTriggerButton(this, false, deftrb);
-            arr[11] = new XInputTriggerButton(this, false, deftrb);
+            arr[11] = new XInputTriggerButton(this, true, deftrb);
 
             return arr;
         }
