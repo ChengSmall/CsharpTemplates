@@ -454,5 +454,65 @@ namespace Cheng.Consoles
 
         #endregion
 
+        #region SetConsoleMode
+
+        /// <summary>
+        /// 控制台输出缓冲区的输出模式参数
+        /// </summary>
+        [Flags]
+        public enum OutputConsoleMode : uint
+        {
+
+            /// <summary>
+            /// 控制台显示进行分析 ASCII 控制序列，并执行正确的操作
+            /// </summary>
+            EnableProcessedOutput = 0x0001,
+
+            /// <summary>
+            /// 当光标到达当前行的末尾时，它将移到下一行的开头
+            /// </summary>
+            /// <remarks>
+            /// <para>这会导致控制台窗口中显示的行在光标前进到窗口的最后一行时自动向上滚动；还会导致控制台屏幕缓冲区的内容在光标前进到控制台屏幕缓冲区的最后一行时向上滚动（<![CDATA[../]]>丢弃控制台屏幕缓冲区的顶行）</para>
+            /// <para>如果禁用此模式，则将覆盖该行中的最后一个字符以及后面的任何字符</para>
+            /// </remarks>
+            EnableWrapAtEOLOutput = 0x0002,
+
+            /// <summary>
+            /// 开启虚拟终端
+            /// </summary>
+            /// <remarks>
+            /// <para>让控制台能够识别并处理<![CDATA[VT100/xterm]]>兼容的ANSI转义序列。</para>
+            /// <para>在Windows 10周年更新（版本1511）之前，控制台默认禁用此功能</para>
+            /// </remarks>
+            EnableVirtualTerminalProcessing = 0x0004,
+
+            /// <summary>
+            /// 禁用到达行末时的自动回车行为
+            /// </summary>
+            /// <remarks>
+            /// <para>设置此标志后，控制台禁用到达行末时的自动回车行为。光标会停留在最后一列，直到遇到明确的换行或回车指令</para>
+            /// <para>在未设置此标志时，向控制台输出文本时，如果文本到达控制台缓冲区的最后一列，光标会自动移到下一行的开头。若之后紧跟换行符'\n'，就会多出一个空行</para>
+            /// </remarks>
+            DisableNewLineAutoReturn = 0x0008,
+
+            /// <summary>
+            /// 用于写入字符属性的 API 允许使用来自字符属性的标志调整文本的前景色和背景色
+            /// </summary>
+            /// <remarks>
+            /// <para>
+            /// 用于写入字符属性（包括 WriteConsoleOutput 和 WriteConsoleOutputAttribute 函数）的 API 允许使用来自字符属性的标志调整文本的前景色和背景色<br/>
+            /// 此外，使用 COMMON_LVB 前缀指定了 DBCS 标志范围。 过去，这些标志仅在中文、日语和韩语的 DBCS 代码页中起作用
+            /// </para>
+            /// <para>除前导字节和尾随字节标志以外，其余描述线条绘制和反向显示（<![CDATA[../]]>前景色和背景色转换）的标志对于其他语言很有用，可用于强调输出的各个部分</para>
+            /// <para>如果设置此控制台模式标志，则将允许在每种语言的每个代码页中使用这些属性</para>
+            /// <para>默认情况下，此标志处于禁用状态，以保持与过去利用控制台的已知应用程序的兼容性，控制台会忽略非 CJK 计算机上的这些标志，以存储这些位字段，供自己使用或发生意外时使用</para>
+            /// <para>请注意，使用 <see cref="EnableVirtualTerminalProcessing"/> 模式可能会导致设置 LVB 的网格和反向显示标志，而如果附加应用程序通过控制台虚拟终端序列请求下划线或反向显示，则此标志仍会处于禁用状态</para>
+            /// </remarks>
+            EnableLVBGridWorldWide = 0x0010,
+
+        }
+
+        #endregion
+
     }
 }

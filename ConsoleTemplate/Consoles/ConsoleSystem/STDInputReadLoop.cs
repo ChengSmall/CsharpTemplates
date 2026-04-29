@@ -23,69 +23,6 @@ namespace Cheng.Consoles
 {
 
     /// <summary>
-    /// 
-    /// </summary>
-    public enum PrintCharType : byte
-    {
-
-        /// <summary>
-        /// 打印一个字符
-        /// </summary>
-        PrintChar = 1,
-
-        /// <summary>
-        /// 删除一个字符
-        /// </summary>
-        Backspace = 2,
-
-        Control = 3,
-
-        Enter = 4
-    }
-
-    /// <summary>
-    /// 打印一个字符的回调参数
-    /// </summary>
-    public struct PrintCharAction
-    {
-
-        public PrintCharAction(PrintCharType type, char value)
-        {
-            this.type = type; this.value = value;
-        }
-
-        public PrintCharAction(char value)
-        {
-            this.value = value;
-            type = PrintCharType.PrintChar;
-        }
-
-        #region 初始化
-
-        #endregion
-
-        #region 参数
-
-        public readonly char value;
-
-        public readonly PrintCharType type;
-
-        #endregion
-
-        #region 功能
-
-
-
-        public override string ToString()
-        {
-            return value.ToString();
-        }
-
-        #endregion
-
-    }
-
-    /// <summary>
     /// 标准输入读取系统
     /// </summary>
     /// <remarks>
@@ -746,6 +683,3 @@ namespace Cheng.Consoles
     }
 
 }
-
-#if DEBUG
-#endif

@@ -93,6 +93,89 @@ namespace Cheng.Consoles
 
         #endregion
 
+        #region SetConsoleMode
+
+        /// <summary>
+        /// 设置控制台输入缓冲区的输入模式或控制台屏幕缓冲区的输出模式
+        /// </summary>
+        /// <param name="handle">控制台句柄</param>
+        /// <param name="mode">模式位值</param>
+        /// <returns>成功设置返回0，否则返回错误码</returns>
+        public static int TrySetConsoleMode(IntPtr handle, uint mode)
+        {
+            if (SetConsoleMode(handle, mode)) return 0;
+            return (int)GetLastError();
+        }
+
+        /// <summary>
+        /// 获取控制台输入缓冲区的输入模式或控制台屏幕缓冲区的输出模式
+        /// </summary>
+        /// <param name="handle">控制台句柄</param>
+        /// <param name="mode">要获取的值</param>
+        /// <returns>成功获取返回0，否则返回错误码</returns>
+        public static int TryGetConsoleMode(IntPtr handle, out uint mode)
+        {
+            if (GetConsoleMode(handle, out mode)) return 0;
+            return (int)GetLastError();
+        }
+
+        /// <summary>
+        /// 设置控制台标准输出的输出模式
+        /// </summary>
+        /// <param name="mode">输出模式位值</param>
+        /// <returns>成功设置返回0，否则返回错误码</returns>
+        public static int TrySetOutputConsoleMode(OutputConsoleMode mode)
+        {
+            var iStdOut = GetStdHandle(STD_Output_HandleID);
+            if (SetConsoleMode(iStdOut, (uint)mode)) return 0;
+            return (int)GetLastError();
+        }
+
+        /// <summary>
+        /// 设置控制台标准输出的输出模式
+        /// </summary>
+        /// <param name="mode">输出模式位值</param>
+        /// <exception cref="Win32Exception">win32错误</exception>
+        public static void SetOutputConsoleMode(OutputConsoleMode mode)
+        {
+            var iStdOut = GetStdHandle(STD_Output_HandleID);
+            if (!SetConsoleMode(iStdOut, (uint)mode))
+            {
+                throw new Win32Exception((int)GetLastError());
+            }
+        }
+
+        /// <summary>
+        /// 获取控制台标准输出的输出模式
+        /// </summary>
+        /// <param name="mode">获取的输出模式位值</param>
+        /// <returns>成功获取返回0，否则返回错误码</returns>
+        public static int TryGetOutputConsoleMode(out OutputConsoleMode mode)
+        {
+            var iStdOut = GetStdHandle(STD_Output_HandleID);
+            if (GetConsoleMode(iStdOut, out var wmode))
+            {
+                mode = (OutputConsoleMode)wmode;
+                return 0;
+            }
+            mode = 0;
+            return (int)GetLastError();
+        }
+
+        /// <summary>
+        /// 获取控制台标准输出的输出模式
+        /// </summary>
+        /// <returns>获取的输出模式位值</returns>
+        /// <exception cref="Win32Exception">win32错误</exception>
+        public static OutputConsoleMode GetOutputConsoleMode()
+        {
+            var err = TryGetOutputConsoleMode(out var mode);
+            if (err == 0) return mode;
+            throw new Win32Exception(err);
+        }
+
+        #endregion
+
         #region winapi
 
         #region 封装
@@ -111,7 +194,7 @@ namespace Cheng.Consoles
 
             if ((ptr == new IntPtr(-1)))
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                throw new Win32Exception((int)GetLastError());
             }
 
             return ptr;
@@ -131,7 +214,7 @@ namespace Cheng.Consoles
 
             if (ptr == new IntPtr(-1))
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                throw new Win32Exception((int)GetLastError());
             }
 
             return ptr;
@@ -151,7 +234,7 @@ namespace Cheng.Consoles
 
             if (ptr == new IntPtr(-1))
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                throw new Win32Exception((int)GetLastError());
             }
 
             return ptr;
@@ -453,7 +536,7 @@ namespace Cheng.Consoles
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll")]
         private static extern IntPtr GetStdHandle(int nStdHandle);
 
         [DllImport("kernel32.dll")]
