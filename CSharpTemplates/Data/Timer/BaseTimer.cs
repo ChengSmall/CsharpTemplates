@@ -63,7 +63,7 @@ namespace Cheng.Timers
     }
 
     /// <summary>
-    /// 一个以Tick结构作为时间参数的计时器
+    /// 一个以<see cref="TimeSpan"/>结构作为时间参数的计时器
     /// </summary>
     public abstract class TickTimeTimer : ITimer
     {
@@ -110,18 +110,9 @@ namespace Cheng.Timers
         #region 功能
 
         /// <summary>
-        /// 获取当前的时间刻
-        /// </summary>
-        /// <returns>在派生类重写此属性，以返回当前时间刻</returns>
-        protected virtual DateTime NowTime
-        {
-            get => new DateTime((long)NowTimeTick);
-        }
-
-        /// <summary>
         /// 获取当前的时间刻tick
         /// </summary>
-        /// <returns>在派生类重写此属性，以返回当前时间刻</returns>
+        /// <returns>在派生类重写此属性，以返回当前时间刻；刻度单位是<see cref="TimeSpan.Ticks"/></returns>
         protected abstract ulong NowTimeTick { get; }
 
         /// <summary>
@@ -131,7 +122,10 @@ namespace Cheng.Timers
         {
             get
             {
-                if (p_running) return new TimeSpan((long)(p_elapsed + (NowTimeTick - p_startTime)));
+                if (p_running)
+                {
+                    return new TimeSpan((long)(p_elapsed + (NowTimeTick - p_startTime)));
+                }
                 return new TimeSpan((long)p_elapsed);
             }
         }
@@ -180,8 +174,8 @@ namespace Cheng.Timers
         {
             if (p_running)
             {
-                p_elapsed += (ulong)(NowTimeTick - p_startTime);
                 p_running = false;
+                p_elapsed += (ulong)(NowTimeTick - p_startTime);
             }
         }
 
@@ -214,7 +208,7 @@ namespace Cheng.Timers
         }
 
         /// <summary>
-        /// 将计时器的时间写入到缓冲区参数
+        /// 将计时器的时间写入到缓存参数
         /// </summary>
         public void Flush()
         {

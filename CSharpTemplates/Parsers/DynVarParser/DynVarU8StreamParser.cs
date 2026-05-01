@@ -23,11 +23,20 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         #region 构造
 
+        /// <summary>
+        /// 实例化对象序列化转换器
+        /// </summary>
         public DynVarU8StreamParser() : this(1024 * 4)
         {}
 
+        /// <summary>
+        /// 实例化对象序列化转换器
+        /// </summary>
+        /// <param name="bufferSize">缓冲区大小</param>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区大小小于或等于0</exception>
         public DynVarU8StreamParser(int bufferSize)
         {
+            if (bufferSize <= 0) throw new ArgumentOutOfRangeException();
             p_utf8 = new UTF8Encoding(true);
             p_utf8Enr = p_utf8.GetEncoder();
             p_buffer = new byte[bufferSize];

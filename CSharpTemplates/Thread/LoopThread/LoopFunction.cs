@@ -780,7 +780,14 @@ namespace Cheng.LoopThreads
         /// <returns></returns>
         protected virtual long GetNowTimeTick()
         {
-            return Stopwatch.GetTimestamp();
+            const ulong senTick = TimeSpan.TicksPerSecond;
+            ulong fre = (ulong)Stopwatch.Frequency;
+            var stamp = (ulong)System.Diagnostics.Stopwatch.GetTimestamp();
+            if (fre == senTick)
+            {
+                return (long)stamp;
+            }
+            return (long)(((double)senTick / fre) * stamp);
         }
 
         /// <summary>

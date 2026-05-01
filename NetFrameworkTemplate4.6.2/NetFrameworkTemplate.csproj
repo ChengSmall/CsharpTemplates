@@ -98,7 +98,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Systems\Data.cs" />
-    <Compile Include="Systems\SystemEnvironment.cs" />
+    <Compile Include="Systems\SystemEnvironmentWindows.cs" />
+    <Compile Include="Systems\SystemEnvironmentWindows.Device.cs" />
     <Compile Include="Winapi\Hooks\Hooks.cs" />
     <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
     <Compile Include="Winapi\Hooks\MouseHooks\MouseHook.cs" />

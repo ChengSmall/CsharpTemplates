@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Cheng.Timers
@@ -25,8 +26,21 @@ namespace Cheng.Timers
         {
         }
 
-        protected override DateTime NowTime => new DateTime(System.Diagnostics.Stopwatch.GetTimestamp());
-        protected override ulong NowTimeTick => (ulong)System.Diagnostics.Stopwatch.GetTimestamp();
+        protected override ulong NowTimeTick
+        {
+            get
+            {
+                // 标准秒刻度数
+                const ulong senTick = TimeSpan.TicksPerSecond;
+                ulong fre = (ulong)Stopwatch.Frequency;
+                var stamp = (ulong)System.Diagnostics.Stopwatch.GetTimestamp();
+                if (fre == senTick)
+                {
+                    return stamp;
+                }
+                return (ulong)((stamp * (double)senTick) / fre);
+            }
+        }
 
         /// <summary>
         /// 返回一个开始计时的新实例
@@ -42,7 +56,7 @@ namespace Cheng.Timers
     }
 
     /// <summary>
-    /// 可以做计时工作的计时器，使用<see cref="System.Environment.TickCount"/>作为计时刻，精度在毫秒级别
+    /// 可简单计时的计时器，使用<see cref="System.Environment.TickCount"/>作为刻度，精度在毫秒级别
     /// </summary>
     public sealed class MilliSecondCalculagraph : TickTimeTimer
     {
@@ -74,14 +88,6 @@ namespace Cheng.Timers
             get
             {
                 return ((uint)System.Environment.TickCount) * (ulong)TimeSpan.TicksPerMillisecond;
-            }
-        }
-
-        protected override DateTime NowTime
-        {
-            get
-            {
-                return new DateTime((long)(((uint)System.Environment.TickCount) * (ulong)TimeSpan.TicksPerMillisecond));
             }
         }
 

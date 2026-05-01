@@ -30,13 +30,17 @@ namespace Cheng.Timers
         {
             get
             {
-                return (ulong)Stopwatch.GetTimestamp();
+                const ulong senTick = TimeSpan.TicksPerSecond;
+                ulong fre = (ulong)Stopwatch.Frequency;
+                var stamp = (ulong)System.Diagnostics.Stopwatch.GetTimestamp();
+                if (fre == senTick)
+                {
+                    return stamp;
+                }
+                return (ulong)(((double)senTick / fre) * stamp);
             }
         }
 
-        protected override DateTime NowTime => new DateTime(Stopwatch.GetTimestamp());
-
     }
-
 
 }

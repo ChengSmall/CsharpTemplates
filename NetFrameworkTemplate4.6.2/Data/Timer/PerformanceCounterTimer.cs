@@ -48,7 +48,7 @@ namespace Cheng.Timers
         /// <returns>
         /// <para>性能计数器的频率</para>
         /// <para>性能计数器的频率在系统启动后就会固定，并且在所有处理器中保持一致；因此，只需在应用程序初始化时查询一次参数便可缓存结果</para>
-        /// <para>如果系统无法使用性能计数器则返回-1；可以使用<see cref="Marshal.GetHRForLastWin32Error"/>获取错误代码</para>
+        /// <para>如果系统无法使用性能计数器则返回-1；可以使用<see cref="Marshal.GetLastWin32Error"/>获取错误代码</para>
         /// </returns>
         public static long GetPerformanceFrequency()
         {
@@ -97,16 +97,6 @@ namespace Cheng.Timers
                 long t = 0;
                 QueryPerformanceCounter(&t);
                 return (ulong)t;
-            }
-        }
-
-        protected override DateTime NowTime
-        {
-            get
-            {
-                long t = 0;
-                QueryPerformanceCounter(&t);
-                return new DateTime(t);
             }
         }
 

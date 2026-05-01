@@ -358,8 +358,6 @@ namespace Cheng.LoopThreads
 
         private LoopFunction p_loop;
 
-        protected override DateTime NowTime => p_loop.p_nowTime;
-
         protected override ulong NowTimeTick => (ulong)p_loop.p_nowTime.Ticks;
 
         /// <summary>
@@ -396,8 +394,6 @@ namespace Cheng.LoopThreads
         }
 
         private LoopFunction p_loop;
-
-        protected override DateTime NowTime => p_loop.p_nowScaleTime;
 
         protected override ulong NowTimeTick => (ulong)p_loop.p_nowScaleTime.Ticks;
 

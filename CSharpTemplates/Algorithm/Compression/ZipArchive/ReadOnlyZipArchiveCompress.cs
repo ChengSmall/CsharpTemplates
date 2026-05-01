@@ -8,6 +8,8 @@ using System.Collections;
 using Cheng.Algorithm.Collections;
 using Cheng.Algorithm.Trees;
 using Cheng.Streams;
+using Cheng.DataStructure;
+using Cheng.DataStructure.Collections;
 
 namespace Cheng.Algorithm.Compressions.Systems
 {
@@ -36,7 +38,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         /// <exception cref="NotSupportedException">流无法读取或查找</exception>
         /// <exception cref="ArgumentException">该流已关闭</exception>
         /// <exception cref="InvalidDataException">内容无法解析为zip</exception>
-        public ReadOnlyZipArchiveCompress(Stream zipStream) : this(zipStream, true, BufferSizeDefault, Encoding.UTF8)
+        public ReadOnlyZipArchiveCompress(Stream zipStream) : this(zipStream, true)
         {
         }
 
@@ -49,7 +51,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         /// <exception cref="NotSupportedException">流无法读取或查找</exception>
         /// <exception cref="ArgumentException">该流已关闭</exception>
         /// <exception cref="InvalidDataException">内容无法解析为zip</exception>
-        public ReadOnlyZipArchiveCompress(Stream zipStream, bool onDispose) : this(zipStream, onDispose, BufferSizeDefault, Encoding.UTF8)
+        public ReadOnlyZipArchiveCompress(Stream zipStream, bool onDispose) : this(zipStream, onDispose, BufferSizeDefault, Encoding.UTF8, null)
         {
         }
 
@@ -64,7 +66,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         /// <exception cref="NotSupportedException">流无法读取或查找</exception>
         /// <exception cref="ArgumentException">该流已关闭</exception>
         /// <exception cref="InvalidDataException">内容无法解析为zip</exception>
-        public ReadOnlyZipArchiveCompress(Stream zipStream, bool onDispose, int bufferSize) : this(zipStream, onDispose, bufferSize, Encoding.UTF8)
+        public ReadOnlyZipArchiveCompress(Stream zipStream, bool onDispose, int bufferSize) : this(zipStream, onDispose, bufferSize, Encoding.UTF8, null)
         {
         }
 
@@ -80,7 +82,23 @@ namespace Cheng.Algorithm.Compressions.Systems
         /// <exception cref="NotSupportedException">流无法读取或查找</exception>
         /// <exception cref="ArgumentException">该流已关闭</exception>
         /// <exception cref="InvalidDataException">内容无法解析为zip</exception>
-        public ReadOnlyZipArchiveCompress(Stream zipStream, bool onDispose, int bufferSize, Encoding entryNameEncoding)
+        public ReadOnlyZipArchiveCompress(Stream zipStream, bool onDispose, int bufferSize, Encoding entryNameEncoding) : this(zipStream, onDispose, bufferSize, entryNameEncoding, null)
+        {}
+
+        /// <summary>
+        /// 实例化一个只读<see cref="ZipArchive"/>实例
+        /// </summary>
+        /// <param name="zipStream">要封装的压缩包数据</param>
+        /// <param name="onDispose">在释放对象时是否释放基础流，默认为true</param>
+        /// <param name="bufferSize">拷贝数据时的缓冲区长度，默认为8192</param>
+        /// <param name="entryNameEncoding">在zip包中读取项名时使用的文本编码；默认为utf-8</param>
+        /// <param name="createDictionaryFunc">用于创建索引字典的委托，设为 null 使用默认字典<see cref="Dictionary{TKey, TValue}"/></param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区小于或等于0</exception>
+        /// <exception cref="NotSupportedException">流无法读取或查找</exception>
+        /// <exception cref="ArgumentException">该流已关闭</exception>
+        /// <exception cref="InvalidDataException">内容无法解析为zip</exception>
+        public ReadOnlyZipArchiveCompress(Stream zipStream, bool onDispose, int bufferSize, Encoding entryNameEncoding, CreateDictionaryByCollection<string, DataInformation> createDictionaryFunc)
         {
             if (zipStream is null) throw new ArgumentNullException();
             if (!(zipStream.CanRead && zipStream.CanSeek)) throw new NotSupportedException();
@@ -88,26 +106,50 @@ namespace Cheng.Algorithm.Compressions.Systems
 
             p_stream = zipStream;
             p_buffer = new byte[bufferSize];
-            
+
             p_zip = new ZipArchive(zipStream, ZipArchiveMode.Read, !onDispose, entryNameEncoding);
-            f_init();
+            try
+            {
+                f_init(createDictionaryFunc);
+            }
+            catch (Exception)
+            {
+                p_zip.Dispose();
+                throw;
+            }
         }
 
-        private void f_init()
+        private void f_init(CreateDictionaryByCollection<string, DataInformation> createFunc)
         {
+            if(createFunc is null)
+            {
+                createFunc = ListExtend.CreateDictionaryByCollection;
+            }
             var ens = p_zip.Entries;
             int length = ens.Count;
-            p_zipDict = new Dictionary<string, ZipArchiveInf>(length, new Cheng.DataStructure.Collections.EqualityStrNotPathSeparator(false, true));
+
             p_zipList = new List<ZipArchiveInf>(length);
+
             for (int i = 0; i < length; i++)
             {
                 var entry = ens[i];
-                if (entry.Length <= 0) continue;
-                var enf = new ZipArchiveInf(entry);
-                p_zipList.Add(enf);
-                p_zipDict.Add(entry.FullName, enf);
+                if (string.IsNullOrEmpty(entry.Name)) continue;
+                var fn = entry.FullName;
+                if (string.IsNullOrEmpty(fn)) continue;
+                var c = fn[fn.Length - 1];
+                if (c == '\\' || c == '/') continue;
+
+                p_zipList.Add(new ZipArchiveInf(entry));
             }
 
+            if (p_zipList.Count < (p_zipList.Capacity * 0.75))
+            {
+                p_zipList.Capacity = p_zipList.Count;
+            }
+
+            p_zipDict = createFunc.Invoke(p_zipList,
+                (tinf) => tinf?.DataPath,
+                new EqualityStrNotPathSeparator(false, true));
         }
 
         #endregion
@@ -118,7 +160,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         private ZipArchive p_zip;
         private byte[] p_buffer;
 
-        private Dictionary<string, ZipArchiveInf> p_zipDict;
+        private IReadOnlyDictionary<string, DataInformation> p_zipDict;
         private List<ZipArchiveInf> p_zipList;
         #endregion
 
@@ -131,12 +173,13 @@ namespace Cheng.Algorithm.Compressions.Systems
             if (disposeing)
             {
                 p_zip.Dispose();
-            }
 
-            p_zip = null;
-            p_stream = null;
-            p_zipDict = null;
-            p_zipList = null;
+                p_zip = null;
+                p_stream = null;
+                p_zipDict = null;
+                p_zipList = null;
+                p_buffer = null;
+            }
             return true;
         }
 
@@ -147,7 +190,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override Stream ParserData => p_stream;
 
         /// <summary>
-        /// 获取内部封装的<see cref="ZipArchive"/>类
+        /// 获取内部封装的<see cref="ZipArchive"/>对象
         /// </summary>
         public ZipArchive BaseArchive
         {
@@ -186,7 +229,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         {
             if (p_zipDict.TryGetValue(path, out var inf))
             {
-                return inf.p_entry;
+                return ((ZipArchiveInf)inf).p_entry;
             }
             return null;
         }
@@ -371,7 +414,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         public override byte[] DeCompressionToData(string dataPath)
         {
             ThrowObjectDisposeException();
-            var entry = p_zipDict[dataPath];
+            var entry = p_zipDict[dataPath] as ZipArchiveInf;
             if (entry is null)
             {
                 throw new ArgumentException();
