@@ -55,60 +55,52 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         #region 静态类型
 
-        private static DynVariable f_getInt32(Stream stream)
+        private static int f_getInt32(Stream stream)
         {
             uint value = 0;
-           
             for (int i = 0; i < 4; i++)
             {
                 var re = stream.ReadByte();
                 if (re == -1) throw new NotImplementedException();
                 value |= ((uint)re) << ((8 * i));
             }
-
-            return DynVariable.CreateInt32((int)value);
+            return (int)value;
         }
 
-        private static DynVariable f_getInt64(Stream stream)
+        private static long f_getInt64(Stream stream)
         {
             ulong value = 0;
-
             for (int i = 0; i < 8; i++)
             {
                 var re = stream.ReadByte();
                 if (re == -1) throw new NotImplementedException();
                 value |= ((ulong)re) << ((8 * i));
             }
-
-            return DynVariable.CreateInt64((long)value);
+            return (long)value;
         }
 
-        private static DynVariable f_getFloat(Stream stream)
+        private static float f_getFloat(Stream stream)
         {
             uint value = 0;
-
             for (int i = 0; i < 4; i++)
             {
                 var re = stream.ReadByte();
                 if (re == -1) throw new NotImplementedException();
                 value |= ((uint)re) << ((8 * i));
             }
-
-            return DynVariable.CreateFloat(*(float*)&value);
+            return *(float*)&value;
         }
 
-        private static DynVariable f_getDouble(Stream stream)
+        private static double f_getDouble(Stream stream)
         {
             ulong value = 0;
-
             for (int i = 0; i < 8; i++)
             {
                 var re = stream.ReadByte();
                 if (re == -1) throw new NotImplementedException();
                 value |= ((ulong)re) << ((8 * i));
             }
-
-            return DynVariable.CreateDouble(*(long*)&value);
+            return *(double*)&value;
         }
 
 #if DEBUG
@@ -118,7 +110,7 @@ namespace Cheng.Streams.Parsers.DynVariableParser
         /// <param name="stream"></param>
         /// <returns></returns>
 #endif
-        private DynVariable f_getStr(Stream stream)
+        private string f_getStr(Stream stream)
         {
             uint len = 0;
             int re;
@@ -145,9 +137,7 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
                 p_strBuf.Append((char)uc);
             }
-
-            return DynVariable.CreateString(p_strBuf.ToString());
-
+            return p_strBuf.ToString();
         }
 
 #if DEBUG
@@ -187,6 +177,16 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
             return p_strBuf.ToString();
 
+        }
+
+
+        private byte[] f_getBytes(Stream stream)
+        {
+            var length = f_getInt32(stream);
+            byte[] bs = new byte[length];
+            var ri = stream.ReadBlock(bs, 0, length);
+            if (ri < length) throw new NotImplementedException();
+            return bs;
         }
 
         #endregion
@@ -253,7 +253,6 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         private DynVariable f_getOnceVar(Stream stream, byte firstType)
         {
-
             DynVariableType dt = (DynVariableType)(firstType & 0b0000_1111);
 
             if((firstType & 0b1000) == 0b1000)
@@ -266,6 +265,10 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                 else if(dt == DynVariableType.Dictionary)
                 {
                     return f_getDict(stream);
+                }
+                else if (dt == DynVariableType.Bytes)
+                {
+                    return new DynBytes(f_getBytes(stream), true);
                 }
                 else
                 {
@@ -290,15 +293,15 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                             return DynVariable.BooleanFalse;
                         }
                     case DynVariableType.Int32:
-                        return f_getInt32(stream);
+                        return DynVariable.CreateInt32(f_getInt32(stream));
                     case DynVariableType.Int64:
-                        return f_getInt64(stream);
+                        return DynVariable.CreateInt64(f_getInt64(stream));
                     case DynVariableType.Float:
-                        return f_getFloat(stream);
+                        return DynVariable.CreateFloat(f_getFloat(stream));
                     case DynVariableType.Double:
-                        return f_getDouble(stream);
+                        return DynVariable.CreateDouble(f_getDouble(stream));
                     case DynVariableType.String:
-                        return f_getStr(stream);
+                        return DynVariable.CreateString(f_getStr(stream));
                     default:
                         throw new NotImplementedException();
                 }
@@ -364,6 +367,14 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                 stream.WriteByte((byte)(c & 0b11111111));
                 stream.WriteByte((byte)((c >> 8) & 0b11111111));
             }
+        }
+
+        private void f_writeBytes(Stream stream, DynBytes bytes)
+        {
+            var bbs = bytes.GetBaseByteArray();
+            int length = bbs.Length;
+            f_setInt32(stream, length);
+            stream.Write(bbs, 0, length);
         }
 
         #endregion
@@ -445,6 +456,11 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                 {
                     f_setDict(stream, value.DynamicDictionary);
                 }
+                else if(type == DynVariableType.Bytes)
+                {
+                    //字节序列
+                    f_writeBytes(stream, value.DynamicBytes);
+                }
             }
             else
             {
@@ -483,16 +499,22 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                 if (type == DynVariableType.List)
                 {
                     f_setList(stream, value.DynamicList);
+                    return;
                 }
-                else if (type == DynVariableType.Dictionary)
+                if (type == DynVariableType.Dictionary)
                 {
                     f_setDict(stream, value.DynamicDictionary);
+                    return;
+                }
+                if(type == DynVariableType.Bytes)
+                {
+                    f_writeBytes(stream, value.DynamicBytes);
+                    return;
                 }
             }
             else
             {
                 //静态类型
-                
                 switch (type)
                 {
                     case DynVariableType.Empty:

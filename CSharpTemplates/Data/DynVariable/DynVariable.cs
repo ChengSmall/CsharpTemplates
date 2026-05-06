@@ -62,6 +62,14 @@ namespace Cheng.DataStructure.DynamicVariables
         /// <remarks>key是字符串，value是动态类型数据的字典；key的字符数量不超过65535</remarks>
         Dictionary =    0b1010, // 10
 
+        /// <summary>
+        /// 字节序列
+        /// </summary>
+        /// <remarks>
+        /// <para>一个二进制字节序列，字节长度不超过2147483647</para>
+        /// </remarks>
+        Bytes =         0b1100
+
     }
 
     /// <summary>
@@ -150,6 +158,14 @@ namespace Cheng.DataStructure.DynamicVariables
         /// </summary>
         /// <exception cref="NotSupportedException">不是该类型</exception>
         public virtual DynDictionary DynamicDictionary
+        {
+            get => throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 获取字节序列类型
+        /// </summary>
+        public virtual DynBytes DynamicBytes
         {
             get => throw new NotSupportedException();
         }
@@ -314,6 +330,17 @@ namespace Cheng.DataStructure.DynamicVariables
         public static DynVariable CreateEmpty()
         {
             return new DynEmpty();
+        }
+
+        /// <summary>
+        /// 创建一个新的字节序列
+        /// </summary>
+        /// <param name="buffer">要拷贝到对象的字节数组</param>
+        /// <returns>字节序列对象</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static DynBytes CreateBytes(byte[] buffer)
+        {
+            return new DynBytes(buffer);
         }
 
         #endregion

@@ -188,6 +188,14 @@ namespace Cheng.Streams.Parsers.DynVariableParser
             f_setStrValue(stream, value, enr, buffer);
         }
 
+        private void f_writeBytes(Stream stream, DynBytes bytes)
+        {
+            var bbs = bytes.GetBaseByteArray();
+            int length = bbs.Length;
+            f_setInt32(stream, length);
+            stream.Write(bbs, 0, length);
+        }
+
         #endregion
 
         #region 集合
@@ -296,10 +304,15 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                     //集合
                     f_writeList(stream, value.DynamicList);
                 }
-                else
+                else if(type == 0b1010)
                 {
                     //字典
                     f_writeDict(stream, value.DynamicDictionary);
+                }
+                else
+                {
+                    //字节序列
+                    f_writeBytes(stream, value.DynamicBytes);
                 }
                 return;
             }
@@ -422,6 +435,15 @@ namespace Cheng.Streams.Parsers.DynVariableParser
             return f_readOnlyStr(stream, len);
         }
 
+        private DynBytes f_readBytes(Stream stream)
+        {
+            var length = f_getInt32(stream);
+            byte[] bs = new byte[length];
+            var ri = stream.ReadBlock(bs, 0, length);
+            if (ri < length) throw new NotImplementedException();
+            return new DynBytes(bs, true);
+        }
+
         #endregion
 
         #region 集合
@@ -539,10 +561,18 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                     //集合
                     return f_readList(stream);
                 }
-                else
+                else if(tt == 0b1010)
                 {
                     //字典
                     return f_readDict(stream);
+                }
+                else if (tt == 0b1100)
+                {
+                    return f_readBytes(stream);
+                }
+                else
+                {
+                    throw new NotImplementedException();
                 }
             }
 

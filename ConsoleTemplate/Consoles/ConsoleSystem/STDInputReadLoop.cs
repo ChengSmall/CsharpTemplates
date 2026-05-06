@@ -324,7 +324,7 @@ namespace Cheng.Consoles
         /// 使用索引获取缓冲区队列内任意参数
         /// </summary>
         /// <param name="index">队列索引，范围在[0,<see cref="BufferCount"/>)，索引0的参数等同于用<see cref="PeekInput"/>获取的参数</param>
-        /// <returns></returns>
+        /// <returns>缓冲区队列内索引<paramref name="index"/>所在的参数（不会移除缓冲区参数）</returns>
         public CInR GetInputByIndex(int index)
         {
             lock (p_list)

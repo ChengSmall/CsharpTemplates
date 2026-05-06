@@ -141,6 +141,16 @@ namespace Cheng.DataStructure.DynamicVariables
                 }
                 return jdict;
             }
+            if(dtype == DynVariableType.Bytes)
+            {
+                var dbytes = dyn.DynamicBytes;
+                JsonList jlist = new JsonList(dbytes.Length);
+                foreach (var item in dbytes.GetBaseByteArray())
+                {
+                    jlist.Add(item);
+                }
+                return jlist;
+            }
 
             return JsonNull.Nullable;
         }

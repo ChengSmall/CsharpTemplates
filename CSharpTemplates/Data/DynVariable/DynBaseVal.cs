@@ -1,6 +1,8 @@
 ﻿using Cheng.Algorithm.HashCodes;
+using Cheng.Memorys;
 using System;
-
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Cheng.DataStructure.DynamicVariables
 {
@@ -352,6 +354,143 @@ namespace Cheng.DataStructure.DynamicVariables
         public override DynVariable Clone()
         {
             return this;
+        }
+    }
+
+    /// <summary>
+    /// 字节序列
+    /// </summary>
+    public sealed unsafe class DynBytes : DynVariable, IReadOnlyList<byte>
+    {
+
+        /// <summary>
+        /// 实例化一个字节序列
+        /// </summary>
+        /// <param name="buffer">要初始化到对象的字节数组</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public DynBytes(byte[] buffer) : this(buffer, false)
+        {}
+
+        /// <summary>
+        /// 实例化一个字节序列
+        /// </summary>
+        /// <param name="buffer">要初始化到对象的字节数组</param>
+        /// <param name="origin">使用true允许传入原数据，false则将拷贝<paramref name="buffer"/>到新的实例</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public DynBytes(byte[] buffer, bool origin)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if(origin) p_buffer = buffer;
+            else p_buffer = (byte[])buffer.Clone();
+        }
+
+        private byte[] p_buffer;
+
+        /// <summary>
+        /// 访问字节数据
+        /// </summary>
+        /// <param name="offset">起始偏移</param>
+        /// <returns></returns>
+        public byte this[int offset]
+        {
+            get
+            {
+                return p_buffer[offset];
+            }
+        }
+
+        /// <summary>
+        /// 获取内部封装的字节数组对象
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetBaseByteArray()
+        {
+            return p_buffer;
+        }
+
+        /// <summary>
+        /// 字节长度
+        /// </summary>
+        public int Length => p_buffer.Length;
+
+        public override DynVariableType DynType => DynVariableType.Bytes;
+
+        public override DynBytes DynamicBytes => this;
+
+        public override bool Equals(DynVariable other)
+        {
+            if (other is null) return false;
+            if (other.DynType == DynVariableType.Bytes)
+            {
+                return MemoryOperation.EqualsBytes(p_buffer, other.DynamicBytes.p_buffer);
+            }
+            return false;
+        }
+
+        public override long GetHashCode64()
+        {
+            const ulong FNV_OFFSET_BASIS = 14695981039346656037UL;
+            const ulong FNV_PRIME = 1099511628211UL;
+
+            var length = p_buffer.Length;
+            int i;
+            ulong hash;
+            fixed (byte* bptr = p_buffer)
+            {
+                ulong* ip = (ulong*)bptr;
+                int mod = length / 8;
+
+                hash = FNV_OFFSET_BASIS;
+                for (i = 0; i < mod; i++)
+                {
+                    hash = (hash ^ ip[i]) * FNV_PRIME;
+                }
+
+                ip += i;
+                //剩余bytes
+                mod = length % 8;
+                if(mod > 0)
+                {
+                    byte* bp = (byte*)ip;
+                    ulong lhash = 0;
+                    //byte* hptr = (byte*)&lhash;
+                    for (i = 0; i < mod; i++)
+                    {
+                        //hptr[i] = bp[i];
+                        lhash |= (((ulong)bp[i]) << (i * 8));
+                    }
+                    hash ^= lhash;
+                }
+            }
+
+            return (long)hash;
+        }
+
+        public override int GetHashCode()
+        {
+            return GetHashCode64().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return string.Empty;
+        }
+
+        public override DynVariable Clone()
+        {
+            return this;
+        }
+
+        int IReadOnlyCollection<byte>.Count => p_buffer.Length;
+
+        IEnumerator<byte> IEnumerable<byte>.GetEnumerator()
+        {
+            return ((IEnumerable<byte>)p_buffer).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return p_buffer.GetEnumerator();
         }
     }
 
