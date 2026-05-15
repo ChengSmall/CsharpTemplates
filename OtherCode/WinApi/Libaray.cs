@@ -23,10 +23,10 @@ namespace Cheng.OtherCode.Winapi
         /// <para>如果字符串指定了没有路径的模块名称，并且省略文件扩展名，该函数会将默认库扩展名“.DLL”追加到模块名称；若要防止函数将“.DLL”追加到模块名称，请在模块名称字符串中包含尾随点字符'.'</para>
         /// </param>
         /// <returns>如果函数成功，则返回值是模块的基址；如果函数失败，则返回为 null</returns>
-        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "LoadLibrary")]
-        public static extern void* LoadLibrary([MarshalAs(UnmanagedType.LPStr)] string lpFileName);
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "LoadLibraryW", CharSet = CharSet.Unicode)]
+        public static extern void* LoadLibrary(string lpFileName);
 
-        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "LoadLibrary")]
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "LoadLibraryW", CharSet = CharSet.Unicode)]
         public static extern void* LoadLibrary(char* lpFileName);
 
         /// <summary>
@@ -35,8 +35,11 @@ namespace Cheng.OtherCode.Winapi
         /// <param name="hModule">DLL 模块的基址</param>
         /// <param name="lpProcName">函数或变量名称，或函数的序号值；如果此参数是序号值，则它必须在低序位字中，高序位字必须为零</param>
         /// <returns>如果函数成功，则返回导出的函数或变量的地址；如果函数失败，则返回为 NULL</returns>
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetProcAddress")]
         public static extern void* GetProcAddress(void* hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetProcAddress")]
+        public static extern void* GetProcAddress(void* hModule, void* lpProcName);
 
         /// <summary>
         /// 释放加载的动态链接库模块，并在必要时递减其引用计数
