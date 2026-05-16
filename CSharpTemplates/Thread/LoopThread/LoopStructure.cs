@@ -50,7 +50,7 @@ namespace Cheng.LoopThreads
         /// <summary>
         /// 下次推进的时间
         /// </summary>
-        internal DateTime nextTime;
+        internal long nextTime;
 
         internal IEnumerator enumator;
 
@@ -69,7 +69,7 @@ namespace Cheng.LoopThreads
         /// </summary>
         /// <param name="nextTime">下次推进时间</param>
         /// <param name="isScale">是否为缩放时间</param>
-        public void SetNextTime(DateTime nextTime, bool isScale)
+        public void SetNextTime(long nextTime, bool isScale)
         {
             isNextFrame = false;
             this.nextTime = nextTime;
@@ -358,7 +358,7 @@ namespace Cheng.LoopThreads
 
         private LoopFunction p_loop;
 
-        protected override ulong NowTimeTick => (ulong)p_loop.p_nowTime.Ticks;
+        protected override ulong NowTimeTick => (ulong)p_loop.p_nowTime;
 
         /// <summary>
         /// 获取此计时器的循环线程
@@ -395,7 +395,7 @@ namespace Cheng.LoopThreads
 
         private LoopFunction p_loop;
 
-        protected override ulong NowTimeTick => (ulong)p_loop.p_nowScaleTime.Ticks;
+        protected override ulong NowTimeTick => (ulong)p_loop.p_nowScaleTime;
 
         /// <summary>
         /// 获取此计时器的循环线程

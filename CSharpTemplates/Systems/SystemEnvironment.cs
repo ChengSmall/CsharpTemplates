@@ -1,12 +1,13 @@
 using System;
 using System.Diagnostics;
 using System.Security.Principal;
+using System.Threading;
 
 namespace Cheng.Systems
 {
 
     /// <summary>
-    /// 系统环境参数
+    /// 系统功能
     /// </summary>
     public unsafe static partial class SystemEnvironment
     {
@@ -86,6 +87,37 @@ namespace Cheng.Systems
             {
                 args = null;
                 return false;
+            }
+        }
+
+        #endregion
+
+        #region 线程
+
+        /// <summary>
+        /// 将当前线程进行更精准的线程等待
+        /// </summary>
+        /// <remarks>
+        /// <para>该函数会在当前线程等待指定时间，使用代码轮询的方式进行精度更高的等待，因此不会大幅释放CPU资源</para>
+        /// </remarks>
+        /// <param name="waitTime">指定等待时间，最小为0</param>
+        public static void ThreadSleepHighPrecision(TimeSpan waitTime)
+        {
+            if (waitTime <= TimeSpan.Zero)
+            {
+                Thread.Sleep(0);
+                return;
+            }
+            var nowMs = Stopwatch.GetTimestamp();
+            if (Stopwatch.Frequency != TimeSpan.TicksPerSecond)
+            {
+                // 跨平台兼容转换
+                nowMs = (long)(nowMs * (TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency));
+            }
+            var wtick = waitTime.Ticks;
+            while ((Stopwatch.GetTimestamp() - nowMs) < wtick)
+            {
+                Thread.Sleep(0);
             }
         }
 

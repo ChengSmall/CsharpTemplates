@@ -103,35 +103,35 @@ namespace Cheng.LoopThreads
         /// <summary>
         /// 每调用fixed事件后的时间
         /// </summary>
-        protected DateTime f_fixedLateCallTime;
+        protected long f_fixedLateCallTime;
 
         /// <summary>
         /// 每调用fixed缩放事件后的时间
         /// </summary>
-        protected DateTime f_fixedLateCallScaleTime;
+        protected long f_fixedLateCallScaleTime;
 
         /// <summary>
         /// 上一帧时间
         /// </summary>
-        private DateTime p_lastTime;
+        private long p_lastTime;
 
         /// <summary>
         /// 当前帧时间
         /// </summary>
-        internal protected DateTime p_nowTime;
+        internal protected long p_nowTime;
 
         /// <summary>
         /// 上一帧的缩放时间
         /// </summary>
-        protected DateTime p_lastScaleTime;
+        protected long p_lastScaleTime;
 
         /// <summary>
         /// 当前帧缩放时间
         /// </summary>
-        internal protected DateTime p_nowScaleTime;
+        internal protected long p_nowScaleTime;
 
         /// <summary>
-        /// 当前帧时间间隔
+        /// 当前帧与上一帧的时间间隔
         /// </summary>
         protected TimeSpan p_nowFrameTime;
 
@@ -163,7 +163,12 @@ namespace Cheng.LoopThreads
         /// <summary>
         /// 开始的时间点
         /// </summary>
-        protected DateTime p_startTime;
+        protected long p_startTime;
+
+        /// <summary>
+        /// 每次完整循环的起始时间
+        /// </summary>
+        protected long p_onUpdateBeginTime;
 
         //private Stopwatch p_waitTimer;
 
@@ -289,7 +294,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 当前帧的时间间隔
+        /// 当前帧与上一帧的时间间隔
         /// </summary>
         public TimeSpan FrameTime
         {
@@ -372,7 +377,7 @@ namespace Cheng.LoopThreads
         {
             get
             {
-                return new DateTime(GetNowTimeTick()) - p_startTime;
+                return TimeSpan.FromTicks(GetNowTimeTick() - p_startTime);
             }
         }
 
@@ -393,20 +398,20 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 限制每秒帧数
+        /// 限制每秒最大帧数
         /// </summary>
-        /// <value>限制循环每秒帧数，0表示无限制；该值只是一个期望值，实际帧数会有浮动；值默认为0</value>
+        /// <value>限制循环每秒帧数，0表示无限制；该值只是一个期望值，实际帧数可能会有浮动；值默认为0</value>
         /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
         public int FramesPerSecond
         {
             get => p_fps;
             set
             {
-                //frames per second  FramesPerSecond
                 if (value < 0) throw new ArgumentOutOfRangeException();
                 p_fps = value;
             }
         }
+
         #endregion
 
         #region 事件
@@ -656,11 +661,11 @@ namespace Cheng.LoopThreads
 
                     if (obj is YieldWaitTime wait)
                     {
-                        ye.SetNextTime(p_nowTime + wait.time, false);
+                        ye.SetNextTime(p_nowTime + wait.time.Ticks, false);
                     }
                     else if (obj is YieldWaitScaleTime waits)
                     {
-                        ye.SetNextTime(p_nowTime + waits.time, true);
+                        ye.SetNextTime(p_nowTime + waits.time.Ticks, true);
                     }
                     else if (obj is YieldNestEnumator nest)
                     {
@@ -700,7 +705,9 @@ namespace Cheng.LoopThreads
 
         private void f_loopStartInit()
         {
-            p_startTime = new DateTime(GetNowTimeTick());
+            p_frame = 0;
+            p_onUpdateBeginTime = 0;
+            p_startTime = GetNowTimeTick();
             p_lastTime = p_startTime;
             p_nowTime = p_startTime;
             p_lastScaleTime = p_startTime;
@@ -708,7 +715,8 @@ namespace Cheng.LoopThreads
 
             f_fixedLateCallScaleTime = p_startTime;
             f_fixedLateCallTime = p_startTime;
-
+            p_runScaleTime = TimeSpan.Zero;
+            p_runTime = TimeSpan.Zero;
             LoopStartInvoke();
             try
             {
@@ -723,11 +731,13 @@ namespace Cheng.LoopThreads
 
         private void f_loopFirst()
         {
-            DateTime now = new DateTime(GetNowTimeTick());
+            var now = GetNowTimeTick();
+            p_onUpdateBeginTime = now;
+
             p_lastTime = p_nowTime;
             p_nowTime = now;
 
-            p_nowFrameTime = p_nowTime - p_lastTime;
+            p_nowFrameTime = TimeSpan.FromTicks(p_nowTime - p_lastTime);
 
             p_runTime += p_nowFrameTime;
 
@@ -735,7 +745,7 @@ namespace Cheng.LoopThreads
 
             p_lastScaleTime = p_nowScaleTime;
 
-            p_nowScaleTime += p_nowScaleFrameTime;
+            p_nowScaleTime += p_nowScaleFrameTime.Ticks;
 
             p_runScaleTime += p_nowScaleFrameTime;
 
@@ -754,24 +764,30 @@ namespace Cheng.LoopThreads
         /// </summary>
         protected virtual void EndLoopWaitFPS()
         {
-            if (p_fps > 0)
+            try
             {
-                try
+                if (p_fps > 0)
                 {
-                    //计算等待时间
-                    var waitTime = TimeSpan.FromSeconds((1d / p_fps)) - this.p_nowFrameTime;
+                    // 计算等待时间
+                    var waitTime = (long)((TimeSpan.TicksPerSecond / ((double)p_fps)) - (GetNowTimeTick() - p_onUpdateBeginTime));
 
-                    if (waitTime >= TimeSpan.Zero)
+                    if (waitTime > 0)
                     {
-                        ThreadSleep(waitTime);
+                        ThreadSleep(TimeSpan.FromTicks(waitTime));
+                    }
+                    else
+                    {
+                        ThreadSleep(TimeSpan.Zero);
                     }
                 }
-                catch (Exception)
+                else
                 {
+                    ThreadSleep(TimeSpan.Zero);
                 }
-
             }
-
+            catch (Exception)
+            {
+            }
         }
 
         /// <summary>
@@ -780,23 +796,31 @@ namespace Cheng.LoopThreads
         /// <returns></returns>
         protected virtual long GetNowTimeTick()
         {
-            const ulong senTick = TimeSpan.TicksPerSecond;
-            ulong fre = (ulong)Stopwatch.Frequency;
-            var stamp = (ulong)System.Diagnostics.Stopwatch.GetTimestamp();
+            const long senTick = TimeSpan.TicksPerSecond;
+            long fre = System.Diagnostics.Stopwatch.Frequency;
+            var stamp = System.Diagnostics.Stopwatch.GetTimestamp();
             if (fre == senTick)
             {
-                return (long)stamp;
+                return stamp;
             }
             return (long)(((double)senTick / fre) * stamp);
         }
 
         /// <summary>
-        /// 调用此函数后，当前线程会进入线程挂起等待，指定等待时间
+        /// 调用此函数后，当前线程会挂起等待指定时间
         /// </summary>
+        /// <remarks>重载此函数重新编写线程等待方式</remarks>
         /// <param name="waitTime">要进行线程等待的时间</param>
         protected virtual void ThreadSleep(TimeSpan waitTime)
         {
-            Thread.Sleep(waitTime);
+            const long lazySleep = (long)(TimeSpan.TicksPerMillisecond * 16.667);
+            if (waitTime.Ticks > lazySleep)
+            {
+                Thread.Sleep(waitTime);
+                return;
+            }
+            // 高精度等待
+            Cheng.Systems.SystemEnvironment.ThreadSleepHighPrecision(waitTime);
         }
 
         private void f_loopEnd()
@@ -804,7 +828,6 @@ namespace Cheng.LoopThreads
             LoopEnd();
 
             EndLoopWaitFPS();
-
             p_frame++;
         }
 
@@ -856,7 +879,7 @@ namespace Cheng.LoopThreads
 
         private void f_fixedUpdate()
         {
-            if (p_nowTime - f_fixedLateCallTime >= p_fixedUpdateTimeSpan)
+            if ((p_nowTime - f_fixedLateCallTime) >= p_fixedUpdateTimeSpan.Ticks)
             {
                 f_fixedLateCallTime = p_nowTime;
 
@@ -879,7 +902,7 @@ namespace Cheng.LoopThreads
 
         private void f_fixedScaleUpdate()
         {
-            if (p_nowScaleTime - f_fixedLateCallScaleTime >= p_fixedUpdateTimeSpan)
+            if ((p_nowScaleTime - f_fixedLateCallScaleTime) >= p_fixedUpdateTimeSpan.Ticks)
             {
                 f_fixedLateCallScaleTime = p_nowScaleTime;
 
