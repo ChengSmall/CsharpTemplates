@@ -236,7 +236,7 @@ namespace Cheng.Streams.Parsers.DynVariableParser
         {
             byte btype = (byte)(type & 0b1111);
 
-            if((type & 0b1000) == 0)
+            if((btype & 0b1000) == 0)
             {
                 //基本类型
                 if (btype < 4)
@@ -299,12 +299,12 @@ namespace Cheng.Streams.Parsers.DynVariableParser
             {
                 stream.WriteByte(type);
                 //复合类型
-                if (type == 0b1001)
+                if (btype == 0b1001)
                 {
                     //集合
                     f_writeList(stream, value.DynamicList);
                 }
-                else if(type == 0b1010)
+                else if(btype == 0b1010)
                 {
                     //字典
                     f_writeDict(stream, value.DynamicDictionary);
@@ -399,14 +399,15 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         private string f_readOnlyStr(Stream stream, uint len)
         {
-            var pos = stream.Position;
-            var bfs = new NotBufferTruncateStream(stream, pos, len, false);
-            string str;
-            using (StreamReader sreader = new StreamReader(bfs, p_utf8, false, 1024))
+            using (var bfs = new SequentialStream(stream, len, false))
             {
-                str = sreader.ReadToEnd();
+                string str;
+                using (StreamReader sreader = new StreamReader(bfs, p_utf8, false, (int)Math.Min(len * 2, 1024)))
+                {
+                    str = sreader.ReadToEnd();
+                }
+                return str;
             }
-            return str;
         }
 
         private string f_readStr(Stream stream)

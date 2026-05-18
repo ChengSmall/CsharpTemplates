@@ -14,7 +14,7 @@ namespace Cheng.Streams
     /// </summary>
     /// <remarks>
     /// <para>封装指定的流对象，将其截断其中一部分数据作为只读流；封装的流必须要有读取和查找功能</para>
-    /// <para>对封装的同一个内部<see cref="System.IO.Stream"/>线程安全（类型本身并不是线程安全的）</para>
+    /// <para>对封装的同一个内部<see cref="System.IO.Stream"/>线程安全（<see cref="TruncateStream"/>本身不是线程安全的）</para>
     /// </remarks>
     public class TruncateStream : HEStream
     {
@@ -48,7 +48,7 @@ namespace Cheng.Streams
         /// <param name="length">要截断的字节量</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">给定的参数超出范围</exception>
-        /// <exception cref="ArgumentException">给定的流不支持查找</exception>
+        /// <exception cref="ArgumentException">给定的流不支持读取或查找</exception>
         public TruncateStream(Stream stream, long startPosition, long length) : this(stream, startPosition, length, true, cp_defBufferSize)
         {
         }
@@ -62,7 +62,7 @@ namespace Cheng.Streams
         /// <param name="freeBaseStream">在释放资源时是否释放封装的基础流，默认为true</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">给定的参数超出范围</exception>
-        /// <exception cref="ArgumentException">给定的流不支持查找</exception>
+        /// <exception cref="ArgumentException">给定的流不支持读取或查找</exception>
         public TruncateStream(Stream stream, long startPosition, long length, bool freeBaseStream) : this(stream, startPosition, length, freeBaseStream, cp_defBufferSize)
         {
         }
@@ -77,7 +77,7 @@ namespace Cheng.Streams
         /// <param name="bufferSize">指定缓冲区容量，以字节为单位；默认为4096</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
         /// <exception cref="ArgumentOutOfRangeException">给定的参数超出范围</exception>
-        /// <exception cref="ArgumentException">给定的流不支持查找</exception>
+        /// <exception cref="ArgumentException">给定的流不支持读取或查找</exception>
         public TruncateStream(Stream stream, long startPosition, long length, bool freeBaseStream, int bufferSize)
         {
             f_initThrow(stream, startPosition, length, bufferSize);
@@ -965,13 +965,52 @@ namespace Cheng.Streams
         {
             ThrowIsDispose(nameof(NotBufferTruncateStream));
             if (buffer == null) throw new ArgumentNullException();
+            if (count == 0) return 0;
+            //var len = buffer.Length;
 
-            if(p_stream is HEStream hes)
+            if (count < 0) throw new ArgumentOutOfRangeException();
+
+            if (p_nowPos > p_endPos)
             {
-                return hes.ReadToAddress(buffer, count);
+                return 0;
+            }
+            if (p_nowPos < p_startPos)
+            {
+                p_nowPos = p_startPos;
             }
 
-            return base.ReadToAddress(buffer, count);
+            //截断流剩余长度
+            var length = (p_endPos + 1) - p_nowPos;
+
+            if (length <= 0)
+            {
+                return 0;
+            }
+
+            if (length > ((p_endPos - p_startPos) + 1))
+            {
+                //超过范围
+                return 0;
+            }
+
+            int reCount;
+            if (length <= int.MaxValue) reCount = (int)Math.Min(length, count);
+            else reCount = count;
+
+            //判断并设置基位置
+            lock (p_stream)
+            {
+                if (p_nowPos != p_stream.Position)
+                {
+                    p_stream.Position = p_nowPos;
+                }
+                reCount = p_stream.ReadToAddress(buffer, count);
+            }
+
+            p_nowPos += reCount;
+
+            return reCount;
+
         }
 
         #region 无实现
