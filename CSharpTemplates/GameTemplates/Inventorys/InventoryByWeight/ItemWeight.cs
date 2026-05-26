@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Reflection;
 
-namespace Cheng.GameTemplates.Inventorys.Weights
+namespace Cheng.GameTemplates.Inventorys.InventoryByWeights
 {
 
     /// <summary>
-    /// 包含重量对象的公共接口
+    /// 获取对象重量值的公共接口
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public interface IObjItemWeight
     {
         /// <summary>
@@ -21,6 +20,7 @@ namespace Cheng.GameTemplates.Inventorys.Weights
     /// <summary>
     /// 重量获取的公共接口
     /// </summary>
+    /// <remarks>派生该接口实现获取对象重量值的方法，也可以将类型继承<see cref="IObjItemWeight"/>接口匹配默认实现</remarks>
     /// <typeparam name="T"></typeparam>
     public interface IGetItemWeight<T>
     {
@@ -57,10 +57,9 @@ namespace Cheng.GameTemplates.Inventorys.Weights
         {
             get
             {
-                return def;
+                return LazyLoad.def;
             }
         }
-        private static GetItemWeight<T> def = f_createDef();
 
         /// <summary>
         /// 创建一个委托到重量获取接口
@@ -76,28 +75,41 @@ namespace Cheng.GameTemplates.Inventorys.Weights
 
         #region
 
-        private static GetItemWeight<T> f_createDef()
+        private static class LazyLoad
         {
-            Type objType = typeof(T);
-            bool flag;
 
-            flag = typeof(IObjItemWeight).IsAssignableFrom(objType);
-            if (flag)
+            public static GetItemWeight<T> def = f_createDef();
+
+            private static GetItemWeight<T> f_createDef()
             {
-                var isValue = objType.IsValueType;
-                Type t;
-                if (isValue)
+                Type objType = typeof(T);
+                bool flag;
+                try
                 {
-                    t = typeof(ByInterFaceWeightValue<>);
+                    flag = typeof(IObjItemWeight).IsAssignableFrom(objType);
+                    if (flag)
+                    {
+                        var isValue = objType.IsValueType;
+                        Type t;
+                        if (isValue)
+                        {
+                            t = typeof(ByInterFaceWeightValue<>);
+                        }
+                        else
+                        {
+                            t = typeof(ByInterFaceWeight<>);
+                        }
+                        t = t.MakeGenericType(objType);
+                        return (GetItemWeight<T>)Activator.CreateInstance(t);
+                    }
                 }
-                else {
-                    t = typeof(ByInterFaceWeight<>);
+                catch (Exception)
+                {
                 }
-                t = t.MakeGenericType(objType);
-                return (GetItemWeight<T>)Activator.CreateInstance(t);
+
+                return new NotInterFace();
             }
 
-            return new NotInterFace();
         }
 
         private class NotInterFace : GetItemWeight<T>
@@ -112,6 +124,7 @@ namespace Cheng.GameTemplates.Inventorys.Weights
 
     }
 
+    #region
 
     internal sealed class DelegateByWeight<T> : GetItemWeight<T>
     {
@@ -119,11 +132,37 @@ namespace Cheng.GameTemplates.Inventorys.Weights
         {
             toWeight = func;
         }
-        private Func<T, ulong> toWeight;
+        private readonly Func<T, ulong> toWeight;
         public override ulong GetWeight(T obj)
         {
             return toWeight.Invoke(obj);
         }
     }
+
+    internal sealed class ByInterFaceWeight<T> : GetItemWeight<T> where T : IObjItemWeight
+    {
+        public ByInterFaceWeight()
+        {
+        }
+
+        public sealed override ulong GetWeight(T obj)
+        {
+            return (obj == null) ? 0 : obj.Weight;
+        }
+    }
+
+    internal sealed class ByInterFaceWeightValue<T> : GetItemWeight<T> where T : struct, IObjItemWeight
+    {
+        public ByInterFaceWeightValue()
+        {
+        }
+
+        public sealed override ulong GetWeight(T obj)
+        {
+            return obj.Weight;
+        }
+    }
+
+    #endregion
 
 }

@@ -40,8 +40,6 @@ namespace Cheng.DataStructure
         /// <exception cref="ArgumentNullException">参数是null</exception>
         public abstract long GetHashCode64(T value);
 
-        static defEq p_def = new defEq();
-
         /// <summary>
         /// 获取一个默认实现的<typeparamref name="T"/>类型对象
         /// </summary>
@@ -50,13 +48,15 @@ namespace Cheng.DataStructure
         /// </returns>
         public static EqualityComparerHash64<T> Default
         {
-            get => p_def;
+            get => defEq.p_def;
         }
 
         #region
 
         private sealed class defEq : EqualityComparerHash64<T>
         {
+            public static defEq p_def = new defEq();
+
             public defEq()
             {
                 p_defeq = EqualityComparer<T>.Default;

@@ -1,9 +1,11 @@
 using System;
-using Cheng.DataStructure.Collections;
-using Cheng.Algorithm.Pathfindings;
 using System.Text;
 using System.Collections.Generic;
+
+using Cheng.DataStructure.Collections;
+using Cheng.Algorithm.Pathfindings;
 using Cheng.DataStructure.Cherrsdinates;
+using Cheng.Algorithm.Pathfindings.GridPathfindings;
 
 namespace Cheng.DEBUG
 {
@@ -11,23 +13,32 @@ namespace Cheng.DEBUG
     /// <summary>
     /// 测试地图数据
     /// </summary>
-    public class TestGridObjects : IGridObjects, ITwoDimensionalArray<bool>
+    public class TestGridMap : IGridMap, ITwoDimensionalArray<bool>
     {
 
         #region ctor
 
-        public TestGridObjects(bool[,] array)
+        public TestGridMap(bool[,] array)
         {
             this.array = array;
             width = array.GetLength(0);
             height = array.GetLength(1);
+            p_canDiagonally = true;
         }
 
-        public TestGridObjects(int width, int height)
+        public TestGridMap(int width, int height)
         {
+            p_canDiagonally = true;
             array = new bool[width, height];
             this.width = width;
             this.height = height;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    array[x, y] = true;
+                }
+            }
         }
 
         #endregion
@@ -37,11 +48,24 @@ namespace Cheng.DEBUG
         private readonly bool[,] array;
         private readonly int width;
         private readonly int height;
+        private bool p_canDiagonally;
 
         #endregion
 
         #region 派生
 
+        public bool CanDiagonally
+        {
+            get => p_canDiagonally;
+            set => p_canDiagonally = value;
+        }
+
+        /// <summary>
+        /// 设置指定索引下的地图格子是可用路径还是不可用路径
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns>true表示可用路径，false表示不可用路径</returns>
         public bool this[int x, int y]
         {
             get => array[x, y];
@@ -60,8 +84,9 @@ namespace Cheng.DEBUG
 
         #region debug
 
-        const char On = '□';
-        const char Off = '■';
+        public const char On = '□';
+        public const char Off = '■';
+        public const char Path = '★';
 
         /// <summary>
         /// 返回当前地图数据
@@ -104,16 +129,13 @@ namespace Cheng.DEBUG
         /// 返回当前地图数据
         /// </summary>
         /// <param name="mapPaths">行进路径</param>
-        /// <param name="sb"></param>
+        /// <param name="sb">要添加到的缓冲区</param>
         /// <param name="On">可用路径点字符</param>
         /// <param name="Off">不可行走路径点字符</param>
         /// <param name="pathChar">行进路径字符</param>
-        /// <returns></returns>
-        public string GetMapString(List<PointInt2> mapPaths, StringBuilder sb, char On, char Off, char pathChar)
+        public void GetMapStringByPath(IList<PointInt2> mapPaths, StringBuilder sb, char On, char Off, char pathChar)
         {
-
-            //StringBuilder sb = new StringBuilder(array.Length + (height * 2));
-            sb.Clear();
+            //sb.Clear();
 
             int x, y;
 
@@ -138,13 +160,24 @@ namespace Cheng.DEBUG
                 sb.AppendLine();
             }
 
-            return sb.ToString();
+            //return sb.ToString();
+        }
 
+        public void GetMapStringByPath(IList<PointInt2> mapPaths, StringBuilder append)
+        {
+            GetMapStringByPath(mapPaths, append, On, Off, Path);
+        }
+
+        public string GetMapStringByPath(IList<PointInt2> mapPaths)
+        {
+            StringBuilder sb = new StringBuilder(32);
+            GetMapStringByPath(mapPaths, sb, On, Off, Path);
+            return sb.ToString();
         }
 
         public int GetGridPrice(int x, int y)
         {
-            if (x < 0 || y < 0 || x >= width || y >= height) return int.MinValue;
+            if (x < 0 || y < 0 || x >= width || y >= height) return -1;
             return array[x, y] ? 0 : -1;
         }
 

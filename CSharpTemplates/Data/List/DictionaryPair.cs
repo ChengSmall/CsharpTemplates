@@ -48,7 +48,7 @@ namespace Cheng.DataStructure.Collections
         /// <returns>字符串表示形式的键值对</returns>
         public override string ToString()
         {
-            return "[" + key?.ToString() + ", " + value?.ToString() + "]";
+            return "[" + key?.ToString() + " : " + value?.ToString() + "]";
         }
 
         /// <summary>

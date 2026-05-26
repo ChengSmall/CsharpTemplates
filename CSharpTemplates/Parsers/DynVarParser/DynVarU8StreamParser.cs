@@ -41,6 +41,7 @@ namespace Cheng.Streams.Parsers.DynVariableParser
             p_utf8Enr = p_utf8.GetEncoder();
             p_buffer = new byte[bufferSize];
             p_readOnLock = false;
+            p_maxDep = 0;
         }
 
         #endregion
@@ -52,6 +53,12 @@ namespace Cheng.Streams.Parsers.DynVariableParser
         private Encoder p_utf8Enr;
 
         private byte[] p_buffer;
+
+        private int p_maxDep;
+
+        private int p_depCount;
+
+        private int p_countMaxDep;
 
         private bool p_readOnLock;
 
@@ -234,6 +241,14 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         private void f_writerObj(Stream stream, DynVariable value, byte type)
         {
+            if (p_maxDep > 0)
+            {
+                if(p_depCount > p_maxDep)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
             byte btype = (byte)(type & 0b1111);
 
             if((btype & 0b1000) == 0)
@@ -302,12 +317,18 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                 if (btype == 0b1001)
                 {
                     //集合
+                    p_depCount++;
+                    p_countMaxDep = Math.Max(p_depCount, p_countMaxDep);
                     f_writeList(stream, value.DynamicList);
+                    p_depCount--;
                 }
                 else if(btype == 0b1010)
                 {
                     //字典
+                    p_depCount++;
+                    p_countMaxDep = Math.Max(p_depCount, p_countMaxDep);
                     f_writeDict(stream, value.DynamicDictionary);
+                    p_depCount--;
                 }
                 else
                 {
@@ -451,6 +472,9 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         private DynList f_readList(Stream stream)
         {
+            p_depCount++;
+            p_countMaxDep = Math.Max(p_depCount, p_countMaxDep);
+
             int re;
             DynList list = new DynList();
             Loop:
@@ -464,6 +488,7 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                 {
                     list.OnLock();
                 }
+                p_depCount--;
                 return list; //末尾
             }
 
@@ -479,6 +504,8 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         private DynDictionary f_readDict(Stream stream)
         {
+            p_depCount++;
+            p_countMaxDep = Math.Max(p_depCount, p_countMaxDep);
             int re;
             DynDictionary dict = new DynDictionary();
 
@@ -492,6 +519,7 @@ namespace Cheng.Streams.Parsers.DynVariableParser
                 {
                     dict.OnLock();
                 }
+                p_depCount--;
                 return dict;
             }
 
@@ -506,6 +534,14 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         private DynVariable f_getOnceVar(Stream stream, byte type)
         {
+            if (p_maxDep > 0)
+            {
+                if (p_depCount > p_maxDep)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
             var tt = (byte)(type & 0b1111);
 
             if ((tt & 0b1000) == 0)
@@ -604,34 +640,94 @@ namespace Cheng.Streams.Parsers.DynVariableParser
         /// 从流对象中读取并反序列化到对象
         /// </summary>
         /// <param name="stream">要读取的流</param>
-        /// <returns>反序列化后的对象</returns>
+        /// <param name="value">反序列化后的对象</param>
+        /// <returns>此次反序列化的最大嵌套深度</returns>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/>是null</exception>
         /// <exception cref="NotSupportedException">流对象没有读取权限</exception>
         /// <exception cref="ObjectDisposedException">流对象已关闭</exception>
         /// <exception cref="IOException">IO错误</exception>
-        /// <exception cref="NotImplementedException">无法读取数据，格式错误</exception>
-        public DynVariable ConverToValue(Stream stream)
+        /// <exception cref="NotImplementedException">无法读取数据，格式错误；或超过最大嵌套层数</exception>
+        public int ConverToValueGetDepthCount(Stream stream, out DynVariable value)
         {
             if (stream is null) throw new ArgumentNullException(nameof(stream));
             if (!stream.CanRead) throw new NotSupportedException();
-            return f_readObj(stream);
+            p_depCount = 0;
+            p_countMaxDep = 0;
+            value = f_readObj(stream);
+            return p_countMaxDep;
         }
 
         /// <summary>
         /// 将对象序列化到流数据
         /// </summary>
         /// <param name="value">对象</param>
-        /// <param name="stream">流数据</param>
+        /// <param name="stream">要写入的流</param>
+        /// <returns>此次序列化操作的最大嵌套深度</returns>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/>是null</exception>
         /// <exception cref="NotSupportedException">流对象没有写入权限</exception>
         /// <exception cref="ObjectDisposedException">流对象已关闭</exception>
         /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotImplementedException">超过最大嵌套层数</exception>
         /// <exception cref="Exception">写入流时发生的其它错误</exception>
-        public void ConverToStream(DynVariable value, Stream stream)
+        public int ConverToStreamGetDepthCount(DynVariable value, Stream stream)
         {
             if (stream is null) throw new ArgumentNullException();
             if (!stream.CanWrite) throw new NotSupportedException();
+            p_depCount = 0;
+            p_countMaxDep = 0;
             f_writerToTypeAndObj(stream, value);
+            return p_countMaxDep;
+        }
+
+        /// <summary>
+        /// 从流对象中读取并反序列化到对象
+        /// </summary>
+        /// <param name="stream">要读取的流</param>
+        /// <returns>反序列化后的对象</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/>是null</exception>
+        /// <exception cref="NotSupportedException">流对象没有读取权限</exception>
+        /// <exception cref="ObjectDisposedException">流对象已关闭</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotImplementedException">无法读取数据，格式错误；或超过最大嵌套层数</exception>
+        public DynVariable ConverToValue(Stream stream)
+        {
+            ConverToValueGetDepthCount(stream, out var re);
+            return re;
+        }
+
+        /// <summary>
+        /// 将对象序列化到流数据
+        /// </summary>
+        /// <param name="value">对象</param>
+        /// <param name="stream">要写入的流</param>
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/>是null</exception>
+        /// <exception cref="NotSupportedException">流对象没有写入权限</exception>
+        /// <exception cref="ObjectDisposedException">流对象已关闭</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="NotImplementedException">超过最大嵌套层数</exception>
+        /// <exception cref="Exception">写入流时发生的其它错误</exception>
+        public void ConverToStream(DynVariable value, Stream stream)
+        {
+            ConverToStreamGetDepthCount(value, stream);
+        }
+
+        /// <summary>
+        /// 解析器分析对象结构时的最大嵌套深度
+        /// </summary>
+        /// <value>
+        /// <para>在解析对象结构时，每一层<see cref="DynVariableType.Dictionary"/>或<see cref="DynVariableType.List"/>都会让嵌套深度增加，该值限制解析器最大层数，以保证程序不会栈溢出</para>
+        /// <para>当解析器的深度超过设定层数时，引发<see cref="NotImplementedException"/>异常</para>
+        /// <para>当值设为0时，将不会限制解析器深度；值默认为0</para>
+        /// </value>
+        /// <exception cref="ArgumentOutOfRangeException">值小于0</exception>
+        public int ParserMaxDepth
+        {
+            get => p_maxDep;
+            set
+            {
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+                p_maxDep = value;
+            }
         }
 
         #endregion
@@ -640,12 +736,13 @@ namespace Cheng.Streams.Parsers.DynVariableParser
 
         public override object ConverToObject(Stream stream)
         {
-            return ConverToValue(stream);
+            ConverToValueGetDepthCount(stream, out var re);
+            return re;
         }
 
         public override void ConverToStream(object obj, Stream stream)
         {
-            ConverToStream(obj as DynVariable, stream);
+            ConverToStreamGetDepthCount(obj as DynVariable, stream);
         }
 
         #endregion

@@ -95,9 +95,6 @@
     <Compile Include="Moudles\Randoms\FixedProbabilityRewardPool.cs" />
     <Compile Include="Moudles\Randoms\RewardPoolParameter.cs" />
     <Compile Include="Moudles\Randoms\RewardPoolRandom.cs" />
-    <Compile Include="Moudles\游戏物品栏系统\UpperWeightLimit\BaseInterFace.cs" />
-    <Compile Include="Moudles\游戏物品栏系统\UpperWeightLimit\InventoryByWeight.cs" />
-    <Compile Include="Moudles\游戏物品栏系统\UpperWeightLimit\itemweight.cs" />
     <Compile Include="小游戏\推箱子\PushBoxGame.cs" />
     <Compile Include="小游戏\推箱子\PushBoxScene.cs" />
     <Compile Include="小游戏\推箱子\PushBoxStructure.cs" />
@@ -116,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Moudles\Numgenerator\" />
+    <Folder Include="Moudles\游戏物品栏系统\UpperWeightLimit\" />
     <Folder Include="棋类游戏\象棋\AI\" />
     <Folder Include="游戏数据结构\" />
   </ItemGroup>
