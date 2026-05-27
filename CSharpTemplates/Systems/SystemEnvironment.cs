@@ -1,0 +1,128 @@
+using System;
+using System.Diagnostics;
+using System.Security.Principal;
+using System.Threading;
+
+namespace Cheng.Systems
+{
+
+    /// <summary>
+    /// 系统功能
+    /// </summary>
+    public unsafe static partial class SystemEnvironment
+    {
+
+        #region 环境判断
+
+        /// <summary>
+        /// 判断此进程为64位运行环境
+        /// </summary>
+        /// <returns>若此进程是64位运行环境返回true，否则返回false</returns>
+        public static bool X64
+        {
+            get => sizeof(void*) == 8;
+        }
+
+        /// <summary>
+        /// 获取当前进程的线程数量
+        /// </summary>
+        /// <returns>当前进程的线程数量，此属性会创建进程资源再销毁，因此最好不要频繁调用</returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+        /// <exception cref="SystemException"></exception>
+        public static int ThreadCount
+        {
+            get
+            {
+                int count;
+                Process pro = null;
+                try
+                {
+                    pro = Process.GetCurrentProcess();
+                    count = pro.Threads.Count;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally
+                {
+                    pro?.Close();
+                }
+
+                return count;
+            }
+        }
+
+        #endregion
+
+        #region 命令行
+
+        /// <summary>
+        /// 获取一个命令行参数，若没有命令行参数则为空数组
+        /// </summary>
+        /// <exception cref="NotSupportedException">系统不支持命令行参数</exception>
+        /// <returns>一个表示命令行参数的字符串数组实例，返回的对象是新申请的实例</returns>
+        public static string[] GetCommandArgs()
+        {
+            string[] s = Environment.GetCommandLineArgs();
+            int length = s.Length - 1;
+            string[] args = new string[length];
+            Array.Copy(s, 1, args, 0, length);
+            return args;
+        }
+
+        /// <summary>
+        /// 获取一个命令行参数，若没有命令行参数则为空数组
+        /// </summary>
+        /// <param name="args">获取的表示命令行参数的字符串数组实例，若无法成功获取则为null，返回的对象是新申请的实例</param>
+        /// <returns>是否成功获取，成功获取返回true，否则返回false</returns>
+        public static bool TryGetCommandArgs(out string[] args)
+        {
+            try
+            {
+                args = GetCommandArgs();
+                return true;
+            }
+            catch (Exception)
+            {
+                args = null;
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region 线程
+
+        /// <summary>
+        /// 将当前线程进行更精准的线程等待
+        /// </summary>
+        /// <remarks>
+        /// <para>该函数会在当前线程等待指定时间，使用代码轮询的方式进行精度更高的等待，因此不会大幅释放CPU资源</para>
+        /// </remarks>
+        /// <param name="waitTime">指定等待时间，最小为0</param>
+        public static void ThreadSleepHighPrecision(TimeSpan waitTime)
+        {
+            if (waitTime <= TimeSpan.Zero)
+            {
+                Thread.Sleep(0);
+                return;
+            }
+            var nowMs = Stopwatch.GetTimestamp();
+            if (Stopwatch.Frequency != TimeSpan.TicksPerSecond)
+            {
+                // 跨平台兼容转换
+                nowMs = (long)(nowMs * (TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency));
+            }
+            var wtick = waitTime.Ticks;
+            while ((Stopwatch.GetTimestamp() - nowMs) < wtick)
+            {
+                Thread.Sleep(0);
+            }
+        }
+
+        #endregion
+
+    }
+
+}

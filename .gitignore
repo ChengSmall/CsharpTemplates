@@ -1,0 +1,12 @@
+# 本地测试项目
+/ProgramTest
+
+# 忽略 Visual Studio 用户特定文件
+.vs
+
+# 忽略生成文件
+**/bin/**
+**/obj/**
+
+# 本地缓存
+UnityCode/项目代码/未完功能

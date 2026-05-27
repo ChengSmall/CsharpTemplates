@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B34EED8C-0F8E-4E84-906F-9604233DB045}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Cheng.DEBUGCode</RootNamespace>
+    <AssemblyName>DEBUGCode</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\temp\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\DEBUGCode.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityWindows|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UnityWindows\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityAndroid|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UnityAndroid\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnityEditor|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\UnityEditor\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="简介.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ConsoleTemplate\ConsoleTemplate.csproj">
+      <Project>{985d5b0d-5a00-4e1a-a0f1-9efc688d3b27}</Project>
+      <Name>ConsoleTemplate</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
+      <Project>{338a4b93-0e1e-4fde-afe2-9ec29106ab1f}</Project>
+      <Name>CSharpTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GameTemplates\GameTemplates.csproj">
+      <Project>{bf887d71-f9bf-46d3-bf92-532b27afab78}</Project>
+      <Name>GameTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\NetFrameworkTemplate4.6.2\NetFrameworkTemplate.csproj">
+      <Project>{4560f930-7d25-4f57-9b33-882a78e0f4fb}</Project>
+      <Name>NetFrameworkTemplate</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DEBUG\Button\Debutton.cs" />
+    <Compile Include="DEBUG\Console\Consoles.cs" />
+    <Compile Include="DEBUG\DEBUGTEST.cs" />
+    <Compile Include="DEBUG\Image\ImageExd.cs" />
+    <Compile Include="DEBUG\Json\TestJson.cs" />
+    <Compile Include="DEBUG\Lists\DebugList.cs" />
+    <Compile Include="DEBUG\Lists\ListExt.cs" />
+    <Compile Include="DEBUG\Pathfindings\TestGridMap.cs" />
+    <Compile Include="DEBUG\Pathfindings\TestNodeNetworkMap.cs" />
+    <Compile Include="DEBUG\Random\TestRandom.cs" />
+    <Compile Include="DEBUG\Stream\DEBUGFile.cs" />
+    <Compile Include="DEBUG\Stream\DEBUGStream.cs" />
+    <Compile Include="DEBUG\Stream\DEBUGStreamExd.cs" />
+    <Compile Include="DEBUG\Stream\RandomReadCountStream.cs" />
+    <Compile Include="DEBUG\TestStructure.cs" />
+    <Compile Include="DEBUG\Text\DEBUGText.cs" />
+    <Compile Include="DEBUG\Text\TextMultWriter.cs" />
+    <Compile Include="DEBUG\WebNet\BilibiliNet.cs" />
+    <Compile Include="DEBUG\WebNet\DEBUGNet.cs" />
+    <Compile Include="DEBUG\Zip\ZipDec.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if "Release" == "$(ConfigurationName)" (
+copy /y "$(TargetPath)" "$(ProjectDir)bin\$(ConfigurationName)\"
+copy /y "$(TargetDir)$(TargetName).xml" "$(ProjectDir)bin\$(ConfigurationName)\"
+)</PostBuildEvent>
+  </PropertyGroup>
+</Project>
