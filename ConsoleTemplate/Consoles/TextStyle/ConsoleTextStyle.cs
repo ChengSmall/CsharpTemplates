@@ -1,0 +1,472 @@
+using Cheng.DataStructure.Colors;
+using Cheng.Texts;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+namespace Cheng.Consoles
+{
+
+    /// <summary>
+    /// 控制台的ASNI转移序列
+    /// </summary>
+    /// <remarks>使用前需要开启控制台虚拟终端；使用<see cref="ConsoleSystem.EnableVirtualTerminalProcessingOnWindows"/>开启虚拟终端</remarks>
+    public unsafe static class ConsoleASNIText
+    {
+
+        #region ASNI
+
+        #region 样式字符
+
+        /// <summary>
+        /// 样式转义字符
+        /// </summary>
+        public const char ASNIStyle_Begin = '\u001B';
+
+        /// <summary>
+        /// 样式转义终止符
+        /// </summary>
+        public const char ASNIStyle_End = 'm';
+
+        /// <summary>
+        /// 将文本样式重置为默认样式
+        /// </summary>
+        public const string ResetStyleText = "\u001B[0m";
+
+        /// <summary>
+        /// 将文本样式重置为默认的字符
+        /// </summary>
+        public const char ResetStyleChar = '0';
+
+        /// <summary>
+        /// 添加粗体，高亮
+        /// </summary>
+        public const string StyleBold = "\u001B[1m";
+
+        /// <summary>
+        /// 添加下划线样式
+        /// </summary>
+        public const string StyleUnderLine = "\u001B[4m";
+
+        /// <summary>
+        /// 添加闪烁样式
+        /// </summary>
+        public const string StyleBlink = "\u001B[5m";
+
+        /// <summary>
+        /// 添加反显逆色效果
+        /// </summary>
+        public const string StyleReverse = "\u001B[7m";
+
+        /// <summary>
+        /// 添加隐藏字符样式
+        /// </summary>
+        public const string StyleHidden = "\u001B[8m";
+
+        #endregion
+
+        #region 屏幕
+
+        /// <summary>
+        /// 清除整个屏幕文本
+        /// </summary>
+        public const string ClearViewText = "\x1b[2J";
+
+        /// <summary>
+        /// 清除滚动缓冲区的文本
+        /// </summary>
+        public const string ClearScrollbackBuffer = "\x1b[3J";
+
+        /// <summary>
+        /// 清除控制台窗口所有文本和缓冲区内容
+        /// </summary>
+        public const string ClearAllView = ClearViewText + ClearScrollbackBuffer;
+
+        /// <summary>
+        /// 清除从行首到光标的内容
+        /// </summary>
+        public const string ClearLineFirstToCursorText = "\x1b[1K";
+
+        /// <summary>
+        /// 清除从光标到行尾的内容
+        /// </summary>
+        public const string ClearLineCursorToEndText = "\x1b[K";
+
+        /// <summary>
+        /// 清除光标所在行的内容
+        /// </summary>
+        public const string ClearLineText = "\x1b[2K";
+
+        #endregion
+
+        #region 颜色
+
+        #endregion
+
+        #endregion
+
+        #region 颜色转义
+
+        static void f_appendByte(this StringBuilder append, byte value)
+        {
+            char c;
+            int r;
+            //获取左侧
+
+            if (value > 199)
+            {
+                append.Append('2');
+            }
+            else if (value > 99)
+            {
+                append.Append('1');
+            }
+
+            if (value > 9)
+            {
+                r = (value / 10) % 10;
+                c = (char)('0' + r);
+                append.Append(c);
+            }
+
+            r = value % 10;
+            c = (char)('0' + r);
+            append.Append(c);
+
+        }
+
+        static void f_appendByte(this TextWriter append, byte value)
+        {
+            char c;
+            int r;
+            //获取左侧
+
+            if (value > 199)
+            {
+                append.Write('2');
+            }
+            else if (value > 99)
+            {
+                append.Write('1');
+            }
+
+            if (value > 9)
+            {
+                r = (value / 10) % 10;
+                c = (char)('0' + r);
+                append.Write(c);
+            }
+
+            r = value % 10;
+            c = (char)('0' + r);
+            append.Write(c);
+        }
+
+        static void f_appendByte(this CMStringBuilder append, byte value)
+        {
+            char c;
+            int r;
+            //获取左侧
+
+            if (value > 199)
+            {
+                append.Append('2');
+            }
+            else if (value > 99)
+            {
+                append.Append('1');
+            }
+
+            if (value > 9)
+            {
+                r = (value / 10) % 10;
+                c = (char)('0' + r);
+                append.Append(c);
+            }
+
+            r = value % 10;
+            c = (char)('0' + r);
+            append.Append(c);
+
+        }
+
+        /// <summary>
+        /// 转化修改文本颜色的ASNI转义序列
+        /// </summary>
+        /// <param name="r">颜色的R值</param>
+        /// <param name="g">颜色的G值</param>
+        /// <param name="b">颜色的B值</param>
+        /// <param name="isBackground">是否为背景色，背景色则为true，前景色（文本颜色）则为false</param>
+        /// <param name="append">要转化后写入的字符串缓冲区</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void ColorToText(byte r, byte g, byte b, bool isBackground, Cheng.Texts.CMStringBuilder append)
+        {
+            if (append is null) throw new ArgumentNullException();
+            append.Append(ASNIStyle_Begin);
+            append.Append('[');
+            append.Append((isBackground ? "48;" : "38;"));
+            append.Append("2;");
+            append.f_appendByte(r);
+            append.Append(';');
+            append.f_appendByte(g);
+            append.Append(';');
+            append.f_appendByte(b);
+            append.Append(ASNIStyle_End);
+        }
+
+        /// <summary>
+        /// 转化修改文本颜色的ASNI转义序列
+        /// </summary>
+        /// <param name="r">颜色的R值</param>
+        /// <param name="g">颜色的G值</param>
+        /// <param name="b">颜色的B值</param>
+        /// <param name="isBackground">是否为背景色，背景色则为true，前景色（文本颜色）则为false</param>
+        /// <param name="append">要转化后写入的字符串缓冲区</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void ColorToText(byte r, byte g, byte b, bool isBackground, StringBuilder append)
+        {
+            if (append is null) throw new ArgumentNullException();
+
+            append.Append(ASNIStyle_Begin);
+            append.Append('[');
+            append.Append((isBackground ? "48;" : "38;"));
+            append.Append("2;");
+            append.f_appendByte(r);
+            append.Append(';');
+            append.f_appendByte(g);
+            append.Append(';');
+            append.f_appendByte(b);
+            append.Append(ASNIStyle_End);
+        }
+
+        /// <summary>
+        /// 转化修改文本颜色的ASNI转义序列
+        /// </summary>
+        /// <param name="r">颜色的R值</param>
+        /// <param name="g">颜色的G值</param>
+        /// <param name="b">颜色的B值</param>
+        /// <param name="isBackground">是否为背景色，背景色则为true，前景色（文本颜色）则为false</param>
+        /// <param name="append">要转化后写入的字符串缓冲区</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void ColorToText(byte r, byte g, byte b, bool isBackground, TextWriter append)
+        {
+            if (append is null) throw new ArgumentNullException();
+
+            append.Write(ASNIStyle_Begin);
+            append.Write('[');
+            append.Write((isBackground ? "48;" : "38;"));
+            append.Write("2;");
+            append.f_appendByte(r);
+            append.Write(';');
+            append.f_appendByte(g);
+            append.Write(';');
+            append.f_appendByte(b);
+            append.Write(ASNIStyle_End);
+        }
+
+        /// <summary>
+        /// 计算指定颜色转化到ASNI文本转义序列字符的字符数量
+        /// </summary>
+        /// <param name="r">颜色的R值</param>
+        /// <param name="g">颜色的G值</param>
+        /// <param name="b">颜色的B值</param>
+        /// <returns>指定颜色的ASNI文本转义序列字符串的字符数量</returns>
+        public static int ColorToTextCount(byte r, byte g, byte b)
+        {
+            int count;
+            if (r > 99)
+            {
+                count = 3;
+            }
+            else if (r > 9)
+            {
+                count = 2;
+            }
+            else
+            {
+                count = 1;
+            }
+
+            if (g > 99)
+            {
+                count += 3;
+            }
+            else if (r > 9)
+            {
+                count += 2;
+            }
+            else
+            {
+                count += 1;
+            }
+
+            if (b > 99)
+            {
+                count += 3;
+            }
+            else if (r > 9)
+            {
+                count += 2;
+            }
+            else
+            {
+                count += 1;
+            }
+
+            return 10 + count;
+        }
+
+        /// <summary>
+        /// 转化修改文本颜色的ASNI转义序列
+        /// </summary>
+        /// <param name="color">指定颜色，忽略<see cref="Colour.a"/></param>
+        /// <param name="isBackground">是否为背景色，背景色则为true，前景色（文本颜色）则为false</param>
+        /// <returns>转化后的ASNI转义序列文本</returns>
+        public static string ColorToText(Colour color, bool isBackground)
+        {
+            return ColorToText(color.r, color.g, color.b, isBackground);
+        }
+
+        /// <summary>
+        /// 转化修改文本颜色的ASNI转义序列
+        /// </summary>
+        /// <param name="r">颜色的R值</param>
+        /// <param name="g">颜色的G值</param>
+        /// <param name="b">颜色的B值</param>
+        /// <param name="isBackground">是否为背景色，背景色则为true，前景色（文本颜色）则为false</param>
+        /// <returns>转化后的ASNI转义序列文本</returns>
+        public static string ColorToText(byte r, byte g, byte b, bool isBackground)
+        {
+            StringBuilder sb = new StringBuilder(ColorToTextCount(r, g, b));
+            ColorToText(r, g, b, isBackground, sb);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="r">红色</param>
+        /// <param name="g">绿色</param>
+        /// <param name="b">蓝色</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void WriteANSIColorText(this TextWriter append, byte r, byte g, byte b, bool isBackground)
+        {
+            ColorToText(r, g, b, isBackground, append);
+        }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="r">红色</param>
+        /// <param name="g">绿色</param>
+        /// <param name="b">蓝色</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <returns>实例本身</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static StringBuilder AppendANSIColorText(this StringBuilder append, byte r, byte g, byte b, bool isBackground)
+        {
+            ColorToText(r, g, b, isBackground, append);
+            return append;
+        }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="r">红色</param>
+        /// <param name="g">绿色</param>
+        /// <param name="b">蓝色</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static CMStringBuilder AppendANSIColorText(this CMStringBuilder append, byte r, byte g, byte b, bool isBackground)
+        {
+            ColorToText(r, g, b, isBackground, append);
+            return append;
+        }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="color">要添加的颜色；忽略透明通道</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void WriteANSIColorText(this TextWriter append, Colour color, bool isBackground)
+        {
+            ColorToText(color.r, color.g, color.b, isBackground, append);
+        }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="color">要添加的颜色；忽略透明通道</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <returns>自身</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static StringBuilder AppendANSIColorText(this StringBuilder append, Colour color, bool isBackground)
+        {
+            ColorToText(color.r, color.g, color.b, isBackground, append);
+            return append;
+        }
+
+        /// <summary>
+        /// 按照颜色参数转化为修改字符颜色的ANSI转义序列并写入
+        /// </summary>
+        /// <param name="append"></param>
+        /// <param name="color">要添加的颜色；忽略透明通道</param>
+        /// <param name="isBackground">是否是背景色，true表示背景色，false表示前景色（文本颜色）</param>
+        /// <returns>自身</returns>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static CMStringBuilder AppendANSIColorText(this CMStringBuilder append, Colour color, bool isBackground)
+        {
+            ColorToText(color.r, color.g, color.b, isBackground, append);
+            return append;
+        }
+
+        #endregion
+
+        #region 重置样式
+
+        /// <summary>
+        /// 添加重置文字样式的ANSI转义字符序列
+        /// </summary>
+        /// <param name="append"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void WriteANSIStyleResetText(this TextWriter append)
+        {
+            if (append is null) throw new ArgumentNullException();
+            append.Write(ResetStyleText);
+        }
+
+        /// <summary>
+        /// 添加重置文字样式的ANSI转义字符序列
+        /// </summary>
+        /// <param name="append"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static StringBuilder AppendANSIStyleResetText(this StringBuilder append)
+        {
+            if (append is null) throw new ArgumentNullException();
+            return append.Append(ResetStyleText);
+        }
+
+        /// <summary>
+        /// 添加重置文字样式的ANSI转义字符序列
+        /// </summary>
+        /// <param name="append"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static CMStringBuilder AppendANSIStyleResetText(this CMStringBuilder append)
+        {
+            if (append is null) throw new ArgumentNullException();
+            return append.Append(ResetStyleText);
+        }
+
+        #endregion
+
+    }
+
+}
