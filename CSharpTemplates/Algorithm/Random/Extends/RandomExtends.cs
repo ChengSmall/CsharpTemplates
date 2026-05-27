@@ -1,0 +1,747 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+
+using Cheng.Algorithm.Collections;
+using Cheng.DataStructure;
+
+namespace Cheng.Algorithm.Randoms.Extends
+{
+
+    /// <summary>
+    /// 随机相关扩展方法
+    /// </summary>
+    public static unsafe partial class RandomExtends
+    {
+
+        #region 洗牌
+
+        /// <summary>
+        /// 使用随机生成器将给定的集合打乱顺序
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要打乱的集合</param>
+        /// <param name="index">要打乱的范围起始索引</param>
+        /// <param name="count">要打乱的元素数</param>
+        /// <param name="Chaosfrequency">打乱频率，最小为1</param>
+        /// <exception cref="ArgumentOutOfRangeException">参数不正确</exception>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void RandomDisrupt<T>(this BaseRandom random, IList<T> list, int index, int count, int Chaosfrequency)
+        {
+            if (random is null || list is null) throw new ArgumentNullException();
+
+            if (Chaosfrequency <= 0 || index < 0 || count < 0 || (index + count > list.Count)) throw new ArgumentOutOfRangeException();
+
+            if (count == 0) return;
+            int length = count + index;
+            int end = length - 1;
+            int i;
+
+            for (int k = 0; k < Chaosfrequency; k++)
+            {
+                for (i = index; i < end; i++)
+                {
+                    list.f_Swap(i, random.Next(i + 1, length));
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// 使用随机生成器将给定的集合打乱顺序
+        /// </summary>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要打乱的集合</param>
+        /// <param name="index">要打乱的范围起始索引</param>
+        /// <param name="count">要打乱的元素数</param>
+        /// <param name="Chaosfrequency">打乱频率，最小为1</param>
+        /// <exception cref="ArgumentException">参数不正确</exception>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void RandomDisrupt(this BaseRandom random, global::System.Collections.IList list, int index, int count, int Chaosfrequency)
+        {
+            if (random is null || list is null) throw new ArgumentNullException();
+
+            if (Chaosfrequency <= 0 || index < 0 || count < 0 || (index + count > list.Count)) throw new ArgumentOutOfRangeException();
+
+            if (count == 0) return;
+
+            int length = count + index;
+            int end = length - 1;
+            int i, k, j;
+
+            for (k = 0; k < Chaosfrequency; k++)
+            {
+
+                for (i = index; i < end; i++)
+                {
+                    j = random.Next(i + 1, length);
+
+                    list.f_Swap(i, j);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// 使用随机生成器将给定的集合打乱顺序
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要打乱的集合</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void RandomDisrupt<T>(this BaseRandom random, IList<T> list)
+        {
+            if (list is null) throw new ArgumentNullException();
+            RandomDisrupt(random, list, 0, list.Count, 2);
+        }
+
+        /// <summary>
+        /// 使用随机生成器将给定的集合打乱顺序
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要打乱的集合</param>
+        /// <param name="index">要打乱的范围起始索引</param>
+        /// <param name="count">要打乱的元素数</param>
+        /// <exception cref="ArgumentOutOfRangeException">参数不正确</exception>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void RandomDisrupt<T>(this BaseRandom random, IList<T> list, int index, int count)
+        {
+            RandomDisrupt(random, list, index, count, 2);
+        }
+
+        /// <summary>
+        /// 使用随机生成器将给定的集合打乱顺序
+        /// </summary>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要打乱的集合</param>
+        /// <param name="index">要打乱的范围起始索引</param>
+        /// <param name="count">要打乱的元素数</param>
+        /// <exception cref="ArgumentOutOfRangeException">参数不正确</exception>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void RandomDisrupt(this BaseRandom random, global::System.Collections.IList list, int index, int count)
+        {
+            RandomDisrupt(random, list, index, count, 2);
+        }
+
+        /// <summary>
+        /// 使用随机生成器将给定的集合打乱顺序
+        /// </summary>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要打乱的集合</param>
+        /// <exception cref="ArgumentNullException">参数为null</exception>
+        public static void RandomDisrupt(this BaseRandom random, global::System.Collections.IList list)
+        {
+            if (list is null) throw new ArgumentNullException();
+            RandomDisrupt(random, list, 0, list.Count, 2);
+        }
+
+        #endregion
+
+        #region 唯一概率
+
+        /// <summary>
+        /// 按照概率值挑选有序集合内的归一化值
+        /// </summary>
+        /// <param name="list">
+        /// <para>存放归一化数值的有序集合</para>
+        /// <para>该集合内的所有值，全部是范围在[0,1)的浮点值，并且该集合元素的顺序是从小到大排列</para>
+        /// <para>如果集合参数不符合要求则不保证返回值符合要求</para>
+        /// </param>
+        /// <param name="probability">
+        /// <para>一个范围区间在[0,1)的浮点值</para>
+        /// <para>如果参数大于或等于1则返回值永远是<see cref="ICollection{T}.Count"/>，参数小于0时函数返回-1</para>
+        /// </param>
+        /// <returns>
+        /// <para>集合内匹配顺序范围的元素索引</para>
+        /// <para>
+        /// 按顺序遍历集合<paramref name="list"/>，判断<paramref name="probability"/>是否处于从0开始到第一个元素的值所在范围并返回0，如果不匹配则继续判断第一个元素值到第二个元素值范围并返回1，直至最后一个元素；如果全部不匹配返回<see cref="ICollection{T}.Count"/>
+        /// </para>
+        /// <para>如果<paramref name="probability"/>小于0则返回-1，</para>
+        /// </returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static int SelectListRange(this IList<double> list, double probability)
+        {
+            if (list is null) throw new ArgumentNullException();
+            var late = 0d;
+            int length = list.Count;
+            if (probability < 0) return -1;
+            int i;
+            for (i = 0; i < length; i++)
+            {
+                var pv = list[i];
+
+                if (late <= probability && probability < pv)
+                {
+                    return i;
+                }
+
+                late = pv;
+            }
+
+            return i;
+        }
+
+        /// <summary>
+        /// 按照概率值挑选有序集合内的归一化值
+        /// </summary>
+        /// <param name="list">
+        /// <para>存放归一化数值的有序集合</para>
+        /// <para>该集合内的所有值，全部是范围在[0,1)的浮点值，并且该集合元素的顺序是从小到大排列</para>
+        /// <para>如果集合参数不符合要求则不保证返回值符合要求</para>
+        /// </param>
+        /// <param name="probability">
+        /// <para>一个范围区间在[0,1)的浮点值</para>
+        /// <para>如果参数大于或等于1则返回值永远是<see cref="ICollection{T}.Count"/>，参数小于0时函数返回-1</para>
+        /// </param>
+        /// <returns>
+        /// <para>集合内匹配顺序范围的元素索引</para>
+        /// <para>
+        /// 按顺序遍历集合<paramref name="list"/>，判断<paramref name="probability"/>是否处于从0开始到第一个元素的值所在范围并返回0，如果不匹配则继续判断第一个元素值到第二个元素值范围并返回1，直至最后一个元素；如果全部不匹配返回<see cref="ICollection{T}.Count"/>
+        /// </para>
+        /// <para>如果<paramref name="probability"/>小于0则返回-1，</para>
+        /// </returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static int SelectListRange(this IList<float> list, float probability)
+        {
+            if (list is null) throw new ArgumentNullException();
+            var late = 0f;
+            int length = list.Count;
+            if (probability < 0) return -1;
+            int i;
+            for (i = 0; i < length; i++)
+            {
+                var pv = list[i];
+
+                if (late <= probability && probability < pv)
+                {
+                    return i;
+                }
+
+                late = pv;
+            }
+
+            return i;
+        }
+
+        /// <summary>
+        /// 按照概率值挑选有序集合内的归一化值
+        /// </summary>
+        /// <param name="list">
+        /// <para>存放归一化数值的有序集合</para>
+        /// <para>该集合内的所有值，全部是范围在[0,1)的浮点值，并且该集合元素的顺序是从小到大排列</para>
+        /// <para>如果集合参数不符合要求则不保证返回值符合要求</para>
+        /// </param>
+        /// <param name="probability">
+        /// <para>一个范围区间在[0,1)的浮点值</para>
+        /// <para>如果参数大于或等于1则返回值永远是<see cref="ICollection{T}.Count"/>，参数小于0时函数返回-1</para>
+        /// </param>
+        /// <returns>
+        /// <para>集合内匹配顺序范围的元素索引</para>
+        /// <para>
+        /// 按顺序遍历集合<paramref name="list"/>，判断<paramref name="probability"/>是否处于从0开始到第一个元素的值所在范围并返回0，如果不匹配则继续判断第一个元素值到第二个元素值范围并返回1，直至最后一个元素；如果全部不匹配返回<see cref="ICollection{T}.Count"/>
+        /// </para>
+        /// <para>如果<paramref name="probability"/>小于0则返回-1，</para>
+        /// </returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static int SelectListRange(this IReadOnlyList<double> list, double probability)
+        {
+            if (list is null) throw new ArgumentNullException();
+            var late = 0d;
+            int length = list.Count;
+            if (probability < 0) return -1;
+            int i;
+            for (i = 0; i < length; i++)
+            {
+                var pv = list[i];
+                if (late <= probability && probability < pv)
+                {
+                    return i;
+                }
+                late = pv;
+            }
+
+            return i;
+        }
+
+        /// <summary>
+        /// 按照概率值挑选有序集合内的归一化值
+        /// </summary>
+        /// <param name="list">
+        /// <para>存放归一化数值的有序集合</para>
+        /// <para>该集合内的所有值，全部是范围在[0,1)的浮点值，并且该集合元素的顺序是从小到大排列</para>
+        /// <para>如果集合参数不符合要求则不保证返回值符合要求</para>
+        /// </param>
+        /// <param name="probability">
+        /// <para>一个范围区间在[0,1)的浮点值</para>
+        /// <para>如果参数大于或等于1则返回值永远是<see cref="ICollection{T}.Count"/>，参数小于0时函数返回-1</para>
+        /// </param>
+        /// <returns>
+        /// <para>集合内匹配顺序范围的元素索引</para>
+        /// <para>
+        /// 按顺序遍历集合<paramref name="list"/>，判断<paramref name="probability"/>是否处于从0开始到第一个元素的值所在范围并返回0，如果不匹配则继续判断第一个元素值到第二个元素值范围并返回1，直至最后一个元素；如果全部不匹配返回<see cref="ICollection{T}.Count"/>
+        /// </para>
+        /// <para>如果<paramref name="probability"/>小于0则返回-1，</para>
+        /// </returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        public static int SelectListRange(this IReadOnlyList<float> list, float probability)
+        {
+            if (list is null) throw new ArgumentNullException();
+            var late = 0f;
+            int length = list.Count;
+            if (probability < 0) return -1;
+            int i;
+            for (i = 0; i < length; i++)
+            {
+                var pv = list[i];
+
+                if (late <= probability && probability < pv)
+                {
+                    return i;
+                }
+
+                late = pv;
+            }
+
+            return i;
+        }
+
+        #endregion
+
+        #region seed
+
+        /// <summary>
+        /// 根据本地时间和计算机启动时间返回一个值，可用于随机数生成器的种子
+        /// </summary>
+        /// <returns>根据本地时间和计算机启动时间生成的值</returns>
+        public static long GetSeedByTickXORNowTime()
+        {
+            return (long)(((ulong)DateTime.Now.Ticks) ^ (((ulong)(uint)Environment.TickCount) << 31));
+        }
+
+        /// <summary>
+        /// 根据UTC时间和计算机启动时间返回一个值，可用于随机数生成器的种子
+        /// </summary>
+        /// <returns>根据本地时间和计算机启动时间生成的值</returns>
+        public static long GetSeedByTickXORUtcNowTime()
+        {
+            return (long)(((ulong)DateTime.UtcNow.Ticks) ^ (((ulong)(uint)Environment.TickCount) << 31));
+        }
+
+        #endregion
+
+        #region 随机选取
+
+        /// <summary>
+        /// 随机选择器，根据集合映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射函数<paramref name="itemToIntFunc"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射函数<paramref name="itemToIntFunc"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="itemToIntFunc">将集合元素<typeparamref name="T"/>映射为32位整数的映射函数，每一个元素对应一个固定的大于0的整数</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
+        public static int RandomSelectItemFunc<T>(this BaseRandom random, Converter<T, int> itemToIntFunc, IReadOnlyList<T> list)
+        {
+            return RandomSelectItemFunc(random, itemToIntFunc, list, 0, (list ?? throw new ArgumentNullException()).Count);
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射函数<paramref name="itemToIntFunc"/>返回的对应整数，值越大被选择的概率越高</para>
+        /// <para>映射函数<paramref name="itemToIntFunc"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="itemToIntFunc">将集合元素<typeparamref name="T"/>映射为32位整数的映射函数，每一个元素对应一个固定的大于0的整数</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
+        public static int RandomSelectItemFunc<T>(this BaseRandom random, Converter<T, int> itemToIntFunc, IList<T> list)
+        {
+            return RandomSelectItemFunc(random, itemToIntFunc, list, 0, (list ?? throw new ArgumentNullException()).Count);
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射函数<paramref name="itemToIntFunc"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射函数<paramref name="itemToIntFunc"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <param name="random">随机器</param>
+        /// <param name="itemToIntFunc">将集合元素映射为32位整数的映射函数，每一个元素对应一个固定的大于0的整数</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
+        public static int RandomSelectItemFunc(this BaseRandom random, Converter<object, int> itemToIntFunc, IList list)
+        {
+            return RandomSelectItemFunc(random, itemToIntFunc, list, 0, (list ?? throw new ArgumentNullException()).Count);
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合元素映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射函数<paramref name="itemToIntFunc"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射函数<paramref name="itemToIntFunc"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素类型</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="itemToIntFunc">将<typeparamref name="T"/>类型对象映射为32位整数的映射函数，每一个元素对应一个固定的大于0的整数</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="index">要选取的集合范围起始索引</param>
+        /// <param name="count">要选取的集合元素数量</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
+        public static int RandomSelectItemFunc<T>(this BaseRandom random, Converter<T, int> itemToIntFunc, IReadOnlyList<T> list, int index, int count)
+        {
+            if (random is null || list is null || itemToIntFunc is null) throw new ArgumentNullException();
+            if(index < 0 || count < 0 || (count + index > list.Count))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (count == 0) return -1;
+
+            int length = count + index;
+            int i;
+            long all = 0;
+
+            for (i = index; i < length; i++)
+            {
+                all += itemToIntFunc.Invoke(list[i]);
+            }
+
+            var rv = random.NextLong(0, all);
+
+            all = 0;
+            for (i = index; i < length; i++)
+            {
+                all += itemToIntFunc.Invoke(list[i]);
+
+                if (rv < all)
+                {
+                    break;
+                }
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合元素映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射函数<paramref name="itemToIntFunc"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射函数<paramref name="itemToIntFunc"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素类型</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="itemToIntFunc">将<typeparamref name="T"/>类型对象映射为32位整数的映射函数，每一个元素对应一个固定的大于0的整数</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="index">要选取的集合范围起始索引</param>
+        /// <param name="count">要选取的集合元素数量</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
+        public static int RandomSelectItemFunc<T>(this BaseRandom random, Converter<T, int> itemToIntFunc, IList<T> list, int index, int count)
+        {
+            if (random is null || list is null || itemToIntFunc is null) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (count + index > list.Count))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (count == 0) return -1;
+
+            int length = count + index;
+            int i;
+            long all = 0;
+
+            for (i = index; i < length; i++)
+            {
+                all += itemToIntFunc.Invoke(list[i]);
+            }
+
+            var rv = random.NextLong(0, all);
+
+            all = 0;
+            for (i = index; i < length; i++)
+            {
+                all += itemToIntFunc.Invoke(list[i]);
+
+                if (rv < all)
+                {
+                    break;
+                }
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合元素映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射函数<paramref name="itemToIntFunc"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射函数<paramref name="itemToIntFunc"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <param name="random">随机器</param>
+        /// <param name="itemToIntFunc">将<see cref="object"/>对象映射为32位整数的映射函数，每一个元素对应一个固定的大于0的整数</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="index">要选取的集合范围起始索引</param>
+        /// <param name="count">要选取的集合元素数量</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
+        public static int RandomSelectItemFunc(this BaseRandom random, Converter<object, int> itemToIntFunc, IList list, int index, int count)
+        {
+            if (random is null || list is null || itemToIntFunc is null) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (count + index > list.Count))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (count == 0) return -1;
+
+            int length = count + index;
+            int i;
+            long all = 0;
+
+            for (i = index; i < length; i++)
+            {
+                all += itemToIntFunc.Invoke(list[i]);
+            }
+
+            var rv = random.NextLong(0, all);
+
+            all = 0;
+            for (i = index; i < length; i++)
+            {
+                all += itemToIntFunc.Invoke(list[i]);
+
+                if (rv < all)
+                {
+                    break;
+                }
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射接口<paramref name="converToInt"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射接口<paramref name="converToInt"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="converToInt">将集合元素<typeparamref name="T"/>映射为32位整数的映射接口，每一个元素对应一个固定的大于0的整数；null使用默认实现的转换器</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
+        public static int RandomSelectItem<T>(this BaseRandom random, IConverter<T, int> converToInt, IReadOnlyList<T> list)
+        {
+            return RandomSelectItem(random, converToInt, list, 0, (list ?? throw new ArgumentNullException()).Count);
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射接口<paramref name="converToInt"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射接口<paramref name="converToInt"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="converToInt">将集合元素<typeparamref name="T"/>映射为32位整数的映射接口，每一个元素对应一个固定的大于0的整数；null使用默认实现的转换器</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
+        public static int RandomSelectItem<T>(this BaseRandom random, IConverter<T, int> converToInt, IList<T> list)
+        {
+            return RandomSelectItem(random, converToInt, list, 0, (list ?? throw new ArgumentNullException()).Count);
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射接口<paramref name="converToInt"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射接口<paramref name="converToInt"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="converToInt">将集合元素<typeparamref name="T"/>映射为32位整数的映射接口，每一个元素对应一个固定的大于0的整数；null使用默认实现的转换器</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
+        public static int RandomSelectItem(this BaseRandom random, IConverter<object, int> converToInt, IList list)
+        {
+            return RandomSelectItem(random, converToInt, list, 0, (list ?? throw new ArgumentNullException()).Count);
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合元素映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射接口<paramref name="converToInt"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射接口<paramref name="converToInt"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素类型</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="converToInt">将<typeparamref name="T"/>类型对象映射为32位整数的映射器接口，每一个元素对应一个固定的大于0的整数；null使用默认实现的转换器</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="index">要选取的集合范围起始索引</param>
+        /// <param name="count">要选取的集合元素数量</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
+        public static int RandomSelectItem<T>(this BaseRandom random, IConverter<T, int> converToInt, IReadOnlyList<T> list, int index, int count)
+        {
+            if (random is null || list is null) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (count + index > list.Count))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (count == 0) return -1;
+            if (converToInt is null) converToInt = BaseConverter<T, int>.Default;
+            int length = count + index;
+            int i;
+            long all = 0;
+
+            for (i = index; i < length; i++)
+            {
+                all += converToInt.Convert(list[i]);
+            }
+
+            var rv = random.NextLong(0, all);
+
+            all = 0;
+            for (i = index; i < length; i++)
+            {
+                all += converToInt.Convert(list[i]);
+
+                if (rv < all)
+                {
+                    break;
+                }
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合元素映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射接口<paramref name="converToInt"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射接口<paramref name="converToInt"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素类型</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="converToInt">将<typeparamref name="T"/>类型对象映射为32位整数的映射器接口，每一个元素对应一个固定的大于0的整数；null使用默认实现的转换器</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="index">要选取的集合范围起始索引</param>
+        /// <param name="count">要选取的集合元素数量</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
+        public static int RandomSelectItem<T>(this BaseRandom random, IConverter<T, int> converToInt, IList<T> list, int index, int count)
+        {
+            if (random is null || list is null) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (count + index > list.Count))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (count == 0) return -1;
+            if (converToInt is null) converToInt = BaseConverter<T, int>.Default;
+            int length = count + index;
+            int i;
+            long all = 0;
+
+            for (i = index; i < length; i++)
+            {
+                all += converToInt.Convert(list[i]);
+            }
+
+            var rv = random.NextLong(0, all);
+
+            all = 0;
+            for (i = index; i < length; i++)
+            {
+                all += converToInt.Convert(list[i]);
+
+                if (rv < all)
+                {
+                    break;
+                }
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// 随机选择器，根据集合元素映射的整型值返回选择的元素索引
+        /// </summary>
+        /// <remarks>
+        /// <para>使用随机生成器随机选择集合中某一个元素，按照映射接口<paramref name="converToInt"/>返回的对应整数，值越大被选择的概率越高；如果所有元素映射的值相等则选择每个元素的概率相同</para>
+        /// <para>映射接口<paramref name="converToInt"/>的返回值必须大于0，否则返回结果可能不符合预期</para>
+        /// </remarks>
+        /// <typeparam name="T">集合元素类型</typeparam>
+        /// <param name="random">随机器</param>
+        /// <param name="converToInt">将<typeparamref name="T"/>类型对象映射为32位整数的映射器接口，每一个元素对应一个固定的大于0的整数；null使用默认实现的转换器</param>
+        /// <param name="list">要选择其中元素的集合</param>
+        /// <param name="index">要选取的集合范围起始索引</param>
+        /// <param name="count">要选取的集合元素数量</param>
+        /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
+        public static int RandomSelectItem(this BaseRandom random, IConverter<object, int> converToInt, IList list, int index, int count)
+        {
+            if (random is null || list is null) throw new ArgumentNullException();
+            if (index < 0 || count < 0 || (count + index > list.Count))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (count == 0) return -1;
+            if (converToInt is null) converToInt = BaseConverter<object, int>.Default;
+            int length = count + index;
+            int i;
+            long all = 0;
+
+            for (i = index; i < length; i++)
+            {
+                all += converToInt.Convert(list[i]);
+            }
+
+            var rv = random.NextLong(0, all);
+
+            all = 0;
+            for (i = index; i < length; i++)
+            {
+                all += converToInt.Convert(list[i]);
+
+                if (rv < all)
+                {
+                    break;
+                }
+            }
+            return i;
+        }
+
+        #endregion
+
+    }
+
+}

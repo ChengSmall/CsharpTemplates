@@ -1,0 +1,79 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Cheng.UnityCSharpTemplates</RootNamespace>
+    <Authors>Cheng</Authors>
+    <Copyright>© Cheng</Copyright>
+    <Configurations>Debug;Release;UnityEditor;UnityWindows;UnityAndroid</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityEditor|AnyCPU'">
+    <OutputPath>bin\UnityEditor\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DocumentationFile>bin\UnityEditor\UnityCSharpTemplates.xml</DocumentationFile>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,HAVE_MOUSE</DefineConstants>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;DEBUG;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,HAVE_MOUSE,HAVE_TOUCH</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_EDITOR,UNITY_STANDALONE,PLATFORM_ANDROID,UNITY_ANDROID,HAVE_TOUCH,HAVE_MOUSE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityWindows|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\UnityWindows\</OutputPath>
+    <DefineConstants>TRACE;UNITY_STANDALONE_WIN,UNITY_STANDALONE,HAVE_MOUSE</DefineConstants>
+    <DocumentationFile>bin\UnityWindows\UnityCSharpTemplates.xml</DocumentationFile>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityAndroid|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\UnityAndroid\</OutputPath>
+    <DocumentationFile>bin\UnityAndroid\UnityCSharpTemplates.xml</DocumentationFile>
+    <DefineConstants>TRACE;PLATFORM_ANDROID,UNITY_ANDROID,HAVE_TOUCH</DefineConstants>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controls\DataStructure\Button\Androids\" />
+    <Folder Include="Controls\DataStructure\Button\ConditionButtons\" />
+    <Folder Include="Controls\MonoBehaviours\Camera\3D\" />
+    <Folder Include="DEBUG\MonoBehaviour\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEditor">
+      <HintPath>E:\备份\DLL\Unity\Unity3D.SDK.2020.3.13.1\lib\UnityEditor.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>E:\备份\DLL\Unity\Unity3D.SDK.2020.3.13.1\lib\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if not &quot;Debug&quot; == &quot;$(ConfigurationName)&quot; (&#xD;&#xA;copy /y &quot;$(TargetDir)&quot; &quot;$(ProjectDir)bin\$(ConfigurationName)&quot;&#xD;&#xA;)&#xD;&#xA;" />
+  </Target>
+
+</Project>
