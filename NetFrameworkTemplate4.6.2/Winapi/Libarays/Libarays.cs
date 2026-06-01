@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.DesignerServices;
 using System.IO;
 using System.ComponentModel;
+using System.Text;
+
 using Cheng.Memorys;
 
 namespace Cheng.Windows
@@ -12,36 +14,26 @@ namespace Cheng.Windows
     /// <summary>
     /// Windows动态链接的代码模块
     /// </summary>
-    public unsafe sealed class WinLibaray : SafreleaseUnmanagedResources
+    public unsafe sealed class WinLibaray : ReleaseDestructor
     {
 
         #region api
 
-        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "LoadLibrary")]
-        private static extern void* winapi_LoadLibrary([MarshalAs(UnmanagedType.LPStr)] string lpFileName);
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "LoadLibraryW", CharSet = CharSet.Unicode)]
+        private static extern void* winapi_LoadLibrary(string lpFileName);
 
         [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetProcAddress")]
-        private static extern void* winapi_GetProcAddress(void* hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+        private static extern void* winapi_GetProcAddress(void* hModule, [MarshalAs(UnmanagedType.AnsiBStr)] string lpProcName);
 
         [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "FreeLibrary")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool winapi_FreeLibrary(void* hModule);
 
-        private sealed class SafeDLLHandle : System.Runtime.InteropServices.SafeHandle
-        {
-            public SafeDLLHandle(void* hmod) : base(IntPtr.Zero, true)
-            {
-                this.SetHandle(new IntPtr(hmod));
-            }
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetProcAddress")]
+        private static extern void* winapi_GetProcAddress_ptr(void* hModule, void* lpProcName);
 
-            public override bool IsInvalid => DangerousGetHandle() == IntPtr.Zero;
-
-            protected override bool ReleaseHandle()
-            {
-                var p = DangerousGetHandle();
-                return winapi_FreeLibrary(p.ToPointer());
-            }
-        }
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "GetModuleHandleW", CharSet = CharSet.Unicode)]
+        private static extern void winapi_GetModuleHandle(char* dllName);
 
         #endregion
 
@@ -63,20 +55,41 @@ namespace Cheng.Windows
         /// </para>
         /// </param>
         /// <returns>代码库对象，不再使用后请手动释放对象</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数是空字符串</exception>
+        /// <exception cref="Win32Exception">win32错误</exception>
         public static WinLibaray LoadLibaray(string dllFileName)
+        {
+            return new WinLibaray(dllFileName);
+        }
+
+        /// <summary>
+        /// 加载指定的模块到调用进程的地址空间中，并返回代码库对象
+        /// </summary>
+        /// <param name="dllFileName">
+        /// <para>dll代码模块的名称</para>
+        /// <para>
+        /// 指定的名称是模块的文件名，与库模块本身中存储的名称无关<br/>
+        /// 如果字符串指定完整路径，则仅搜索模块的该路径；如果字符串指定相对路径或没有路径的模块名称，则使用标准搜索策略查找模块<br/>
+        /// 如果字符串指定了没有路径的模块名称，并且省略文件扩展名，该函数会将默认库扩展名“.DLL”追加到模块名称；若要防止函数将“.DLL”追加到模块名称，请在模块名称字符串中包含尾随点字符'.'
+        /// </para>
+        /// </param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数是空字符串</exception>
+        /// <exception cref="Win32Exception">win32错误</exception>
+        public WinLibaray(string dllFileName)
         {
             if (dllFileName is null) throw new ArgumentNullException();
             if (string.IsNullOrEmpty(dllFileName)) throw new ArgumentException();
 
             dllFileName = dllFileName.Replace('/', '\\');
             var ptr = winapi_LoadLibrary(dllFileName);
-            if(ptr == null)
+            if (ptr == null)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
-            WinLibaray lib = new WinLibaray();
-            lib.p_hmod = new SafeDLLHandle(ptr);
-            return lib;
+            p_hmod = ptr;
+            p_encoding = Encoding.ASCII;
         }
 
         #endregion
@@ -85,11 +98,15 @@ namespace Cheng.Windows
 
         protected override bool Disposeing(bool disposeing)
         {
-            if (disposeing)
+            //p_hmod?.Dispose();
+            if(p_hmod != null)
             {
-                p_hmod.Dispose();
+                if (winapi_FreeLibrary(p_hmod))
+                {
+                    p_hmod = null;
+                }
             }
-            p_hmod = null;
+            p_encoding = null;
             return false;
         }
 
@@ -97,7 +114,8 @@ namespace Cheng.Windows
 
         #region 参数
 
-        private SafeDLLHandle p_hmod;
+        private void* p_hmod;
+        private Encoding p_encoding;
 
         #endregion
 
@@ -111,7 +129,7 @@ namespace Cheng.Windows
         public IntPtr GetModuleBaseHandle()
         {
             ThrowObjectDisposeException();
-            return p_hmod.DangerousGetHandle();
+            return new IntPtr(p_hmod);
         }
 
         /// <summary>
@@ -122,7 +140,7 @@ namespace Cheng.Windows
         public CPtr GetModuleBaseCPtr()
         {
             ThrowObjectDisposeException();
-            return p_hmod.DangerousGetHandle();
+            return new CPtr(p_hmod);
         }
 
         /// <summary>
@@ -139,7 +157,24 @@ namespace Cheng.Windows
             if (procName is null) throw new ArgumentNullException();
             if (procName.Length == 0) throw new ArgumentException();
 
-            var ptr = winapi_GetProcAddress(p_hmod.DangerousGetHandle().ToPointer(), procName);
+            var asciCount = p_encoding.GetByteCount(procName);
+            if(asciCount > 4096)
+            {
+                throw new ArgumentException();
+            }
+
+            byte* bptr = stackalloc byte[asciCount + 1];
+            fixed (char* nameCPtr = procName)
+            {
+                var wrCC = p_encoding.GetBytes(nameCPtr, procName.Length, bptr, asciCount);
+                if(wrCC < asciCount)
+                {
+                    throw new ArgumentException();
+                }
+            }
+            bptr[asciCount] = 0;
+
+            void* ptr = winapi_GetProcAddress_ptr(p_hmod, bptr);
             if(ptr == null)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
