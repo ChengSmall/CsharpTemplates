@@ -144,6 +144,32 @@ namespace Cheng.Memorys
         /// <summary>
         /// 将内存块拷贝到另一块内存当中
         /// </summary>
+        /// <param name="copyMemory">要拷贝的原字节数组</param>
+        /// <param name="copyMemoryOffset">原字节数组的起始偏移</param>
+        /// <param name="toMemory">要拷贝到的目标字节数组</param>
+        /// <param name="toMempryOffset">写入到目标数组的起始偏移</param>
+        /// <param name="size">要拷贝的字节数量</param>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">指定参数超出范围</exception>
+        public static void MemoryCopy(this byte[] copyMemory, int copyMemoryOffset, byte[] toMemory, int toMempryOffset, int size)
+        {
+            if (copyMemory is null || toMemory is null) throw new ArgumentNullException();
+            if(copyMemoryOffset < 0 || toMempryOffset < 0 || size < 0) throw new ArgumentOutOfRangeException();
+            if ((copyMemoryOffset + (long)size > copyMemory.LongLength) || (toMempryOffset + (long)size > toMemory.LongLength))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            if (size == 0) return;
+            fixed (byte* copyPtr = copyMemory, toPtr = toMemory)
+            {
+                MemoryCopy(copyPtr + copyMemoryOffset, toPtr + toMempryOffset, size);
+            }
+        }
+
+        /// <summary>
+        /// 将内存块拷贝到另一块内存当中
+        /// </summary>
         /// <param name="copyMemory">要拷贝的内存块</param>
         /// <param name="toMemory">要拷贝到的内存位置</param>
         /// <param name="size">要拷贝的内存字节大小</param>
@@ -553,6 +579,5 @@ namespace Cheng.Memorys
         #endregion
 
     }
-
 
 }

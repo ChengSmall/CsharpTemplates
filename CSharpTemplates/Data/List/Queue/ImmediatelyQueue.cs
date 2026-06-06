@@ -23,7 +23,7 @@ namespace Cheng.DataStructure.Collections
         /// </summary>
         public ImmediatelyQueue()
         {
-            p_array = sp_emptyArray;
+            p_array = Array.Empty<T>();
             p_version = 0;
             p_head = 0;
             p_tail = 0;
@@ -41,7 +41,7 @@ namespace Cheng.DataStructure.Collections
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity));
             }
-            if (capacity == 0) p_array = sp_emptyArray;
+            if (capacity == 0) p_array = Array.Empty<T>();
             else p_array = new T[capacity];
             p_head = 0;
             p_tail = 0;
@@ -58,7 +58,7 @@ namespace Cheng.DataStructure.Collections
             p_version = 0;
             if (collection is null)
             {
-                p_array = sp_emptyArray;
+                p_array = Array.Empty<T>();
             }
             else
             {
@@ -84,8 +84,6 @@ namespace Cheng.DataStructure.Collections
         #region 参数
 
         private const int cp_DefaultCapacity = 4;
-
-        private static T[] sp_emptyArray = new T[0];
 
         private T[] p_array;
 
@@ -326,7 +324,7 @@ namespace Cheng.DataStructure.Collections
         /// 从队尾清除指定数量个元素
         /// </summary>
         /// <param name="count">要清除的元素数</param>
-        /// <exception cref="ArgumentOutOfRangeException">参数小于0或</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数小于0或大于当前元素数</exception>
         public void DequeueCount(int count)
         {
             if (count < 0 || count > p_size)
