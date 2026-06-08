@@ -151,9 +151,7 @@ namespace Cheng.Windows.Hooks
 
             public override int GetHashCode()
             {
-                
                 return (int)(((uint)p_kb.vkCode | ((uint)p_kb.scanCode << 15)) ^ ((p_kb.flags ^ p_kb.time) | (((uint)keyState) << 30)));
-
             }
 
         }
@@ -236,7 +234,6 @@ namespace Cheng.Windows.Hooks
                         break;
                 }
 
-                //KeyHookArgs kh = new KeyHookArgs(ref *(KBDLLHOOKSTRUCT*)args.lParam, ks);
                 p_keyEvent?.Invoke(this, new KeyHookArgs(ref *(KBDLLHOOKSTRUCT*)args.lParam, ks));
             }
         }
