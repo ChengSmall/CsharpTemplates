@@ -181,6 +181,21 @@ namespace Cheng.Consoles
         #region 封装
 
         /// <summary>
+        /// 判断控制台窗口是否拥有焦点
+        /// </summary>
+        /// <returns>当前进程控制台窗口拥有焦点返回true，否则返回false</returns>
+        public static bool IsConsoleFocused()
+        {
+            IntPtr fh = GetForegroundWindow();
+            if (fh == IntPtr.Zero) return false;
+
+            IntPtr ch = GetConsoleWindow();
+            if (ch == IntPtr.Zero) return false;
+
+            return fh == ch;
+        }
+
+        /// <summary>
         /// 获取标准输入设备的句柄
         /// </summary>
         /// <returns>
@@ -493,6 +508,13 @@ namespace Cheng.Consoles
         #endregion
 
         #region 原始
+
+        /// <summary>
+        /// 检索前台窗口的句柄
+        /// </summary>
+        /// <returns>前台窗口的句柄；在某些情况下（例如，当窗口丢失焦点时），句柄可以为 null</returns>
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetForegroundWindow")]
+        public static extern IntPtr GetForegroundWindow();
 
 #if DEBUG
         /// <summary>

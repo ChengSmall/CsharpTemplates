@@ -7,13 +7,11 @@ using Cheng.Memorys;
 using Cheng.Streams;
 using Cheng.Algorithm;
 
-//using T = System.Byte;
-
 namespace Cheng.DataStructure.Collections
 {
 
     /// <summary>
-    /// 字节缓存队列
+    /// 先进先出的字节缓存队列
     /// </summary>
     public unsafe class BufferQueue : System.Collections.Generic.IReadOnlyList<byte>
     {
@@ -182,7 +180,7 @@ namespace Cheng.DataStructure.Collections
 
                     if (p_head < p_tail)
                     {
-                        Array.Copy(p_buffer, p_head, newbuf, 0, p_size);
+                        //Array.Copy(p_buffer, p_head, newbuf, 0, p_size);
 
                         MemoryOperation.MemoryCopy(bufPtr + p_head, newPtr, p_size);
                     }
@@ -286,7 +284,6 @@ namespace Cheng.DataStructure.Collections
         public void Clear()
         {
             p_version++;
-
             p_head = 0;
             p_tail = 0;
             p_size = 0;
@@ -458,9 +455,9 @@ namespace Cheng.DataStructure.Collections
             if (newsize >= p_buffer.Length)
             {
                 int num = (int)((long)p_buffer.Length * 200L / 100);
-                if (num < p_buffer.Length + 4)
+                if (num < p_buffer.Length + 64)
                 {
-                    num = p_buffer.Length + 4;
+                    num = p_buffer.Length + 64;
                 }
                 SetCapacity(Math.Max(num, newsize));
             }
@@ -469,14 +466,10 @@ namespace Cheng.DataStructure.Collections
             {
                 if (p_head < p_tail)
                 {
-                    //Array.Clear(p_buffer, p_head, p_size);
-                    MemoryOperation.MemoryCopy(buffer + 0, bptr + p_head, size);
-
+                    MemoryOperation.MemoryCopy(buffer + 0, bptr + p_tail, size);
                 }
                 else
                 {
-                    //Array.Clear(p_buffer, p_head, p_buffer.Length - p_head);
-                    //Array.Clear(p_buffer, 0, p_tail);
                     var lastC = p_buffer.Length - p_head;
                     int toOfc;
                     var cpc = Math.Min(lastC, size);
@@ -489,7 +482,6 @@ namespace Cheng.DataStructure.Collections
                         cpc = size - cpc;
                         MemoryOperation.MemoryCopy(buffer + toOfc, bptr, cpc);
                     }
-
                 }
             }
 
@@ -554,7 +546,7 @@ namespace Cheng.DataStructure.Collections
                 throw new ArgumentOutOfRangeException();
             }
 
-            if (p_size == 0) return 0;
+            if (p_size == 0 || size == 0) return 0;
 
             int count = Math.Min(size, p_size);
             fixed (byte* bptr = p_buffer)
@@ -562,7 +554,6 @@ namespace Cheng.DataStructure.Collections
 
                 if (p_head < p_tail)
                 {
-                    //Array.Clear(p_buffer, p_head, count);
                     MemoryOperation.MemoryCopy(bptr + p_head, buffer, count);
                 }
                 else
@@ -572,19 +563,15 @@ namespace Cheng.DataStructure.Collections
                     int cpc;
                     MemoryOperation.MemoryCopy(bptr + p_head, buffer, c);
                     cpc = c;
-                    //Array.Clear(p_buffer, p_head, c);
 
                     c = Math.Min(p_tail, count - c);
                     if (c != 0)
                     {
                         MemoryOperation.MemoryCopy(bptr, buffer + cpc, c);
-                        //Array.Clear(p_buffer, 0, c);
                     }
                 }
             }
 
-            //p_head = (p_head + count) % p_buffer.Length;
-            //p_size -= count;
             return count;
         }
 
@@ -710,12 +697,12 @@ namespace Cheng.DataStructure.Collections
         /// <exception cref="ObjectDisposedException">流对象已释放</exception>
         /// <exception cref="IOException">IO错误</exception>
         /// <exception cref="Exception">操作流对象时出现的其他错误</exception>
-        public long DequeueToStream(Stream stream, byte[] buffer)
+        public int DequeueToStream(Stream stream, byte[] buffer)
         {
             if (stream is null || buffer is null) throw new ArgumentNullException();
             if (buffer.Length == 0) throw new ArgumentOutOfRangeException();
             int rec;
-            long c = 0;
+            int c = 0;
             Loop:
             rec = DequeueBuffer(buffer, 0, buffer.Length);
             if (rec == 0) return c;
@@ -724,9 +711,111 @@ namespace Cheng.DataStructure.Collections
             goto Loop;
         }
 
-        #endregion
+        /// <summary>
+        /// 从指定索引处读取指定字节数量但不清除读取的数据
+        /// </summary>
+        /// <param name="index">字节缓存的起始索引，从队尾开始向前，范围在[0,<see cref="Length"/>)；输入0和<see cref="PeekBuffer"/>相同</param>
+        /// <param name="buffer">要将读取的数据写入到此处的内存首位</param>
+        /// <param name="size">要读取的字节数量</param>
+        /// <returns>实际能读取的字节数量</returns>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public int PeekBufferByIndex(int index, byte* buffer, int size)
+        {
+            if (index < 0 || index > p_size) throw new ArgumentOutOfRangeException();
+            if (size < 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (p_size == 0 || index == p_size || size == 0) return 0;
 
-        #region 派生
+            int startHead = (index + p_head) % p_buffer.Length;
+
+            int count = Math.Min(size, p_size);
+            fixed (byte* bptr = p_buffer)
+            {
+                if (startHead < p_tail)
+                {
+                    MemoryOperation.MemoryCopy(bptr + (startHead), buffer, count);
+                }
+                else
+                {
+                    var nextC = p_buffer.Length - startHead;
+                    var c = Math.Min(count, nextC);
+                    int cpc;
+                    MemoryOperation.MemoryCopy(bptr + startHead, buffer, c);
+                    cpc = c;
+
+                    c = Math.Min(p_tail, count - c);
+                    if (c != 0)
+                    {
+                        MemoryOperation.MemoryCopy(bptr, buffer + cpc, c);
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// 从指定索引处读取指定字节数量但不清除读取的数据
+        /// </summary>
+        /// <param name="index">字节缓存的起始索引，从队尾开始向前，范围在[0,<see cref="Length"/>)；输入0和<see cref="PeekBuffer"/>相同</param>
+        /// <param name="buffer">要将读取的数据写入此字节数组</param>
+        /// <param name="offset">写入字节数组的起始偏移</param>
+        /// <param name="count">要读取的字节数量</param>
+        /// <returns>实际能读取的字节数量</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
+        public int PeekBufferByIndex(int index, byte[] buffer, int offset, int count)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (count < 0 || offset < 0 || (offset + count > buffer.Length))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            fixed (byte* bptr = buffer)
+            {
+                return PeekBufferByIndex(index, bptr + offset, count);
+            }
+        }
+
+        /// <summary>
+        /// 将当前数据提取并写入指定流但不清除数据
+        /// </summary>
+        /// <param name="stream">要写入的流</param>
+        /// <param name="buffer">用作数据拷贝的缓冲区对象</param>
+        /// <returns>拷贝的字节数量</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">缓冲区对象大小是0</exception>
+        /// <exception cref="NotSupportedException">流没有写入权限</exception>
+        /// <exception cref="ObjectDisposedException">流对象已释放</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        /// <exception cref="Exception">操作流对象时出现的其他错误</exception>
+        public int PeekToStream(Stream stream, byte[] buffer)
+        {
+            if (stream is null || buffer is null) throw new ArgumentNullException();
+            if (buffer.Length == 0) throw new ArgumentOutOfRangeException();
+            int rec;
+            int c = 0;
+            var size = p_size;
+            fixed (byte* bptr = buffer)
+            {
+                Loop:
+                if(size <= 0 || c >= p_size)
+                {
+                    return c;
+                }
+                rec = PeekBufferByIndex(c, bptr, Math.Min(buffer.Length, size));
+                if (rec == 0) return c;
+                stream.Write(buffer, 0, rec);
+                c += rec;
+                size -= rec;
+                goto Loop;
+            }
+        }
+
+        #endregion
 
         #region 枚举器
 
@@ -763,11 +852,6 @@ namespace Cheng.DataStructure.Collections
             {
                 get
                 {
-                    //if (_index < 0)
-                    //{
-                    //    throw new InvalidOperationException();
-                    //}
-
                     return p_cut;
                 }
             }
@@ -825,6 +909,8 @@ namespace Cheng.DataStructure.Collections
             return new Enumerator(this);
         }
 
+        #endregion
+
         #region 派生
 
         IEnumerator<byte> IEnumerable<byte>.GetEnumerator()
@@ -839,9 +925,6 @@ namespace Cheng.DataStructure.Collections
 
         int IReadOnlyCollection<byte>.Count => p_size;
 
-        #endregion
-
-        #endregion
 
         #endregion
 

@@ -1,7 +1,8 @@
+using System;
 using System.IO;
+using System.Threading;
 
 using Cheng.Algorithm.Randoms;
-
 using Cheng.Streams;
 
 namespace Cheng.DEBUG
@@ -22,10 +23,31 @@ namespace Cheng.DEBUG
         {
             p_stream = stream;
             p_random = random;
+            p_rwMinMS = 0;
+            p_rwMaxMS = 10;
         }
-        
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="stream">封装流</param>
+        /// <param name="random">随机器</param>
+        /// <param name="minWaitMS">每次读取最小等待毫秒数</param>
+        /// <param name="maxWaitMS">每次读取最大等待毫秒数</param>
+        public RandomReadCountStream(Stream stream, BaseRandom random, int minWaitMS, int maxWaitMS)
+        {
+            if (minWaitMS >= maxWaitMS) throw new ArgumentOutOfRangeException();
+            p_stream = stream;
+            p_random = random;
+            p_rwMinMS = minWaitMS;
+            p_rwMaxMS = maxWaitMS;
+        }
+
         private Stream p_stream;
         private BaseRandom p_random;
+
+        private int p_rwMaxMS;
+        private int p_rwMinMS;
 
         #region 派生
 
@@ -60,6 +82,7 @@ namespace Cheng.DEBUG
 
         public override long Seek(long offset, SeekOrigin origin)
         {
+            ThrowIsDispose();
             return p_stream.Seek(offset, origin);
         }
 
@@ -70,6 +93,7 @@ namespace Cheng.DEBUG
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            ThrowIsDispose();
             int t;
             if(count > 1 && count < int.MaxValue)
             {
@@ -79,21 +103,30 @@ namespace Cheng.DEBUG
             {
                 t = count;
             }
+            var wait = p_random.Next(p_rwMinMS, p_rwMaxMS);
+            if(wait >= 0) Thread.Sleep(wait);
             return p_stream.Read(buffer, offset, t);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            ThrowIsDispose();
             p_stream.Write(buffer, offset, count);
         }
 
         public override int ReadByte()
         {
-            return p_stream.ReadByte();
+            ThrowIsDispose();
+            var re = p_stream.ReadByte();
+            if (re < 0) return -1;
+            var wait = p_random.Next(p_rwMinMS, p_rwMaxMS);
+            if (wait >= 0) Thread.Sleep(wait);
+            return re;
         }
 
         public override void WriteByte(byte value)
         {
+            ThrowIsDispose();
             p_stream.WriteByte(value);
         }
 

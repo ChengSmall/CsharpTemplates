@@ -82,13 +82,7 @@ namespace Cheng.Windows.Hooks
         /// <returns></returns>
         protected override bool Disposeing(bool disposeing)
         {
-            try
-            {
-                p_fixedCallbackFuncGC.Free();
-            }
-            catch (Exception)
-            {
-            }
+
             if (disposeing)
             {
                 p_safeHandle?.Dispose();
@@ -140,11 +134,9 @@ namespace Cheng.Windows.Hooks
         public Hook(HookID id, int threadID, IntPtr handleMod)
         {
             p_callback = f_callBack;
-            p_fixedCallbackFuncGC = GCHandle.Alloc(p_callback, GCHandleType.Normal);
             p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, handleMod.ToPointer(), (uint)threadID);
             if (p_hookID == null)
             {
-                if (p_fixedCallbackFuncGC.IsAllocated) p_fixedCallbackFuncGC.Free();
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
             p_safeHandle = new HookHandle(p_hookID);
@@ -168,11 +160,9 @@ namespace Cheng.Windows.Hooks
         protected void initCtor(HookID id, int threadID, IntPtr handleMod)
         {
             p_callback = f_callBack;
-            p_fixedCallbackFuncGC = GCHandle.Alloc(p_callback, GCHandleType.Normal);
             p_hookID = WinHooks.SetWindowsHookEx(id, p_callback, handleMod.ToPointer(), (uint)threadID);
             if (p_hookID == null)
             {
-                if(p_fixedCallbackFuncGC.IsAllocated) p_fixedCallbackFuncGC.Free();
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
             p_safeHandle = new HookHandle(p_hookID);
@@ -187,11 +177,6 @@ namespace Cheng.Windows.Hooks
         /// 指向挂钩过程的回调函数
         /// </summary>
         protected ProcCallBack p_callback;
-
-        /// <summary>
-        /// 对 指向挂钩过程的回调函数 显示固定内存的显式gc对象
-        /// </summary>
-        protected GCHandle p_fixedCallbackFuncGC;
 
         private HookHandle p_safeHandle;
 
@@ -211,10 +196,13 @@ namespace Cheng.Windows.Hooks
 
         private void* f_callBack(int nCode, void* wParam, void* lParam)
         {
-            var args = new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam));
+
             if (IsNotDispose)
             {
-                if (p_active) HookCallBack(args);
+                if (p_active)
+                {
+                    HookCallBack(new HookArgs(nCode, new IntPtr(wParam), new IntPtr(lParam)));
+                }
             }
 
             return WinHooks.CallNextHookEx(p_hookID, nCode, wParam, lParam);
