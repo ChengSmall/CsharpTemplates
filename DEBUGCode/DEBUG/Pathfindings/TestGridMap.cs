@@ -133,7 +133,7 @@ namespace Cheng.DEBUG
         /// <param name="On">可用路径点字符</param>
         /// <param name="Off">不可行走路径点字符</param>
         /// <param name="pathChar">行进路径字符</param>
-        public void GetMapStringByPath(IList<PointInt2> mapPaths, StringBuilder sb, char On, char Off, char pathChar)
+        public void GetMapStringByPath(IList<Point2I32> mapPaths, StringBuilder sb, char On, char Off, char pathChar)
         {
             //sb.Clear();
 
@@ -144,7 +144,7 @@ namespace Cheng.DEBUG
                 for (x = 0; x < width; x++)
                 {
                     char c;
-                    var b = mapPaths.Contains(new PointInt2(x, y));
+                    var b = mapPaths.Contains(new Point2I32(x, y));
                     //int ix = mapPaths.IndexOf(new PointInt2(x, y));
                     if(b)
                     {
@@ -163,12 +163,12 @@ namespace Cheng.DEBUG
             //return sb.ToString();
         }
 
-        public void GetMapStringByPath(IList<PointInt2> mapPaths, StringBuilder append)
+        public void GetMapStringByPath(IList<Point2I32> mapPaths, StringBuilder append)
         {
             GetMapStringByPath(mapPaths, append, On, Off, Path);
         }
 
-        public string GetMapStringByPath(IList<PointInt2> mapPaths)
+        public string GetMapStringByPath(IList<Point2I32> mapPaths)
         {
             StringBuilder sb = new StringBuilder(32);
             GetMapStringByPath(mapPaths, sb, On, Off, Path);

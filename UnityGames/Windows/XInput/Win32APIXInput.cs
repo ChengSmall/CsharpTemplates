@@ -368,17 +368,17 @@ namespace Cheng.Unitys.Windows.XInput.Win32API
         /// <summary>
         /// 左摇杆原始数据，每个轴的范围在[-32768,32767]
         /// </summary>
-        public PointInt2 LeftJoystickInt
+        public Point2I32 LeftJoystickInt
         {
-            get => new PointInt2(thumbLX, thumbLY);
+            get => new Point2I32(thumbLX, thumbLY);
         }
 
         /// <summary>
         /// 右摇杆原始数据，每个轴的范围在[-32768,32767]
         /// </summary>
-        public PointInt2 RightJoystickInt
+        public Point2I32 RightJoystickInt
         {
-            get => new PointInt2(thumbRX, thumbRY);
+            get => new Point2I32(thumbRX, thumbRY);
         }
 
         #endregion

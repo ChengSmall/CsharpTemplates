@@ -139,14 +139,14 @@ namespace Cheng.DataStructure.Cherrsdinates
             return new TP(p.x / num, p.y / num);
         }
 
-        public static explicit operator TP(PointInt2 p)
+        public static explicit operator TP(Point2I32 p)
         {
             return new TP(p.x, p.y);
         }
 
-        public static explicit operator PointInt2(TP p)
+        public static explicit operator Point2I32(TP p)
         {
-            return new PointInt2((int)p.x, (int)p.y);
+            return new Point2I32((int)p.x, (int)p.y);
         }
 
         public static implicit operator Point2(Point2F p)

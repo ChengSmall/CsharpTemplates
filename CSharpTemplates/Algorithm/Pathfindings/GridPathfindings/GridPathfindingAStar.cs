@@ -118,7 +118,7 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
         {
             p_minCost = Math.Max(0, minHeuristicCost);
             p_openList = new MinHeap();
-            p_path = new List<PointInt2>();
+            p_path = new List<Point2I32>();
             p_gScore = null;
             p_parent = null;
             p_dirXCD = new[] { -1, 0, 1, -1, 1, -1, 0, 1 };
@@ -133,11 +133,11 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
 
         private MinHeap p_openList;
 
-        private List<PointInt2> p_path;
+        private List<Point2I32> p_path;
 
         private long[,] p_gScore;
 
-        private PointInt2[,] p_parent;
+        private Point2I32[,] p_parent;
 
         private int[] p_dirXCD;
 
@@ -164,7 +164,7 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
                 return (((long)p_minCost)) * (dx + dy);
         }
 
-        private bool f_Calculation(IGridMap map, PointInt2 startPos, PointInt2 endPos, ICollection<PointInt2> append)
+        private bool f_Calculation(IGridMap map, Point2I32 startPos, Point2I32 endPos, ICollection<Point2I32> append)
         {
 
             if (map.GetGridPrice(startPos.x, startPos.y) < 0 ||
@@ -197,7 +197,7 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
 
             if (p_parent is null)
             {
-                p_parent = new PointInt2[width, height];
+                p_parent = new Point2I32[width, height];
             }
             else
             {
@@ -207,12 +207,12 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
                 }
                 else
                 {
-                    p_parent = new PointInt2[width, height];
+                    p_parent = new Point2I32[width, height];
                 }
             }
 
             long[,] gScore = p_gScore;
-            PointInt2[,] parent = p_parent;
+            Point2I32[,] parent = p_parent;
 
             // 记录各格子的最小 g 值和父节点
             for (int x = 0; x < width; x++)
@@ -250,13 +250,13 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
                 if (cx == endPos.x && cy == endPos.y)
                 {
                     // 重建路径（不含起点和终点）
-                    List<PointInt2> path = p_path;
+                    List<Point2I32> path = p_path;
                     path.Clear();
                     int px = cx, py = cy;
                     while (!(px == startPos.x && py == startPos.y))
                     {
-                        path.Add(new PointInt2(px, py));
-                        PointInt2 p = parent[px, py];
+                        path.Add(new Point2I32(px, py));
+                        Point2I32 p = parent[px, py];
                         px = p.x;
                         py = p.y;
                     }
@@ -288,7 +288,7 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
                     if (newG < gScore[nx, ny])
                     {
                         gScore[nx, ny] = newG;
-                        parent[nx, ny] = new PointInt2(cx, cy);
+                        parent[nx, ny] = new Point2I32(cx, cy);
                         long h = f_Heuristic(nx, ny, endPos.x, endPos.y, map.CanDiagonally);
                         openList.Enqueue(nx, ny, newG, newG + h);
                     }
@@ -299,7 +299,7 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
             return false;
         }
 
-        public override bool Calculation(IGridMap map, PointInt2 startPos, PointInt2 endPos, ICollection<PointInt2> append)
+        public override bool Calculation(IGridMap map, Point2I32 startPos, Point2I32 endPos, ICollection<Point2I32> append)
         {
             if (map is null || append is null) throw new ArgumentNullException();
             return f_Calculation(map, startPos, endPos, append);

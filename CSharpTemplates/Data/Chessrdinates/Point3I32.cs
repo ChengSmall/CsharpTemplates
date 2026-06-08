@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Cheng.Algorithm;
 
 using tv = System.Int32;
-using TP = Cheng.DataStructure.Cherrsdinates.PointInt3;
+using TP = Cheng.DataStructure.Cherrsdinates.Point3I32;
 
 namespace Cheng.DataStructure.Cherrsdinates
 {
@@ -13,7 +13,7 @@ namespace Cheng.DataStructure.Cherrsdinates
     /// 可表示空间坐标或向量的结构
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct PointInt3 : IEquatable<TP>, IHashCode64, IFormattable
+    public readonly struct Point3I32 : IEquatable<TP>, IHashCode64, IFormattable
     {
 
         #region 构造
@@ -24,7 +24,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        public PointInt3(tv x, tv y, tv z)
+        public Point3I32(tv x, tv y, tv z)
         {
             this.x = x;
             this.y = y;
@@ -36,7 +36,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public PointInt3(tv x, tv y)
+        public Point3I32(tv x, tv y)
         {
             this.x = x;
             this.y = y;
@@ -178,34 +178,34 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         #region 转换
 
-        public static explicit operator PointInt2(PointInt3 point)
+        public static explicit operator Point2I32(Point3I32 point)
         {
-            return new PointInt2(point.x, point.y);
+            return new Point2I32(point.x, point.y);
         }
 
-        public static explicit operator PointInt3(PointInt2 point)
+        public static explicit operator Point3I32(Point2I32 point)
         {
-            return new PointInt3(point.x, point.y);
+            return new Point3I32(point.x, point.y);
         }
 
-        public static explicit operator Point3(PointInt3 point)
+        public static explicit operator Point3(Point3I32 point)
         {
             return new Point3(point.x, point.y, point.z);
         }
 
-        public static explicit operator PointInt3(Point3 point)
+        public static explicit operator Point3I32(Point3 point)
         {
-            return new PointInt3((tv)point.x, (tv)point.y, (tv)point.z);
+            return new Point3I32((tv)point.x, (tv)point.y, (tv)point.z);
         }
 
-        public static explicit operator Point3F(PointInt3 point)
+        public static explicit operator Point3F(Point3I32 point)
         {
             return new Point3F(point.x, point.y, point.z);
         }
 
-        public static explicit operator PointInt3(Point3F point)
+        public static explicit operator Point3I32(Point3F point)
         {
-            return new PointInt3((tv)point.x, (tv)point.y, (tv)point.z);
+            return new Point3I32((tv)point.x, (tv)point.y, (tv)point.z);
         }
 
         #endregion

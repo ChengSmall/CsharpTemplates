@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
+using PT = Cheng.DataStructure.Cherrsdinates.Point2I32;
+
 namespace Cheng.GameTemplates.PushingBoxes
 {
 
@@ -69,9 +71,8 @@ namespace Cheng.GameTemplates.PushingBoxes
 
         private void f_init()
         {
-            pos_buffer = new List<PointInt2>();
-            //p_targetOnBox = new Dictionary<PointInt2, bool>();
-            pos_targetPoses = new ArrayReadOnly<PointInt2>(pos_buffer);
+            pos_buffer = new List<PT>();
+            pos_targetPoses = new ArrayReadOnly<PT>(pos_buffer);
         }
         #endregion
 
@@ -82,17 +83,14 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// </summary>
         public PushBoxScene scene;
 
-        //private PointInt2[] p_targetPos;
-        //private Dictionary<PointInt2, bool> p_targetOnBox;
-
         /// <summary>
         /// 角色当前所在位置
         /// </summary>
-        private PointInt2 playerPos;
+        private PT playerPos;
 
-        private List<PointInt2> pos_buffer;
+        private List<PT> pos_buffer;
         
-        private ArrayReadOnly<PointInt2> pos_targetPoses;
+        private ArrayReadOnly<PT> pos_targetPoses;
 
         /// <summary>
         /// 箱子处于目标点上的数量
@@ -112,12 +110,12 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <summary>
         /// 初始化参数时的临时缓冲区
         /// </summary>
-        public List<PointInt2> TragetBuffer => pos_buffer;
+        public List<PT> TragetBuffer => pos_buffer;
 
         /// <summary>
         /// 玩家当前所在位置
         /// </summary>
-        public PointInt2 PlayerPosition
+        public PT PlayerPosition
         {
             get => playerPos;
         }
@@ -125,7 +123,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <summary>
         /// 该场景所有目标点的坐标
         /// </summary>
-        public ArrayReadOnly<PointInt2> Targets
+        public ArrayReadOnly<Point2I32> Targets
         {
             get => pos_targetPoses;
         }
@@ -140,13 +138,13 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <remarks>
         /// 参数表示目标点坐标
         /// </remarks>
-        public event PushBoxEvent<PointInt2> BoxMoveToTraget;
+        public event PushBoxEvent<Point2I32> BoxMoveToTraget;
 
         /// <summary>
         /// 将箱子推离目标点时引发的事件
         /// </summary>
         /// <remarks>参数表示目标点所在的位置</remarks>
-        public event PushBoxEvent<PointInt2> BoxPushAwayByTarget;
+        public event PushBoxEvent<Point2I32> BoxPushAwayByTarget;
 
         /// <summary>
         /// 游戏胜利
@@ -167,7 +165,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="origin">移动前的坐标</param>
         /// <param name="moveTo">移动到的坐标</param>
         /// <param name="moveType">移动方向</param>
-        private void feInvoke_MoveToGrid(PointInt2 origin, PointInt2 moveTo, MoveType moveType)
+        private void feInvoke_MoveToGrid(PT origin, PT moveTo, MoveType moveType)
         {
             bool susumeiIsBox = false;
             var moveToGrid = scene[moveTo.x, moveTo.y];
@@ -199,7 +197,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// 将箱子移动到任意目标点引发的回调
         /// </summary>
         /// <param name="point"></param>
-        private void feInvoke_BoxMoveToTarget(PointInt2 point)
+        private void feInvoke_BoxMoveToTarget(PT point)
         {
             p_boxOnTargetCount++;
             BoxMoveToTraget?.Invoke(this, point);
@@ -218,7 +216,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="move">要移动的方向</param>
         /// <param name="toMove">移动后的人物位置</param>
         /// <returns>是否成功移动</returns>
-        private bool moveTo(PointInt2 playerPosition, MoveType move, out PointInt2 toMove)
+        private bool moveTo(PT playerPosition, MoveType move, out PT toMove)
         {
             var scene = this.scene;
             int x = playerPosition.x, y = playerPosition.y;
@@ -290,16 +288,16 @@ namespace Cheng.GameTemplates.PushingBoxes
                 }
 
                 //写入人物坐标
-                toMove = new PointInt2(tox, toy);
+                toMove = new Point2I32(tox, toy);
                 //移动
 
                 //if (!changeTraget) changeTraget = (scene[x, y].IsTraget || scene[toMove.x, toMove.y].IsTraget);
 
-                f_moveToPlayer(scene, new PointInt2(x, y), toMove);
+                f_moveToPlayer(scene, new Point2I32(x, y), toMove);
 
                 if (changeTraget)
                 {
-                    feInvoke_BoxMoveToTarget(new PointInt2(cx, cy));
+                    feInvoke_BoxMoveToTarget(new Point2I32(cx, cy));
                 }
 
                 return true;
@@ -357,13 +355,13 @@ namespace Cheng.GameTemplates.PushingBoxes
                 }
 
                 //写入人物坐标
-                toMove = new PointInt2(tox, toy);
+                toMove = new Point2I32(tox, toy);
 
-                f_moveToPlayer(scene, new PointInt2(x, y), toMove);
+                f_moveToPlayer(scene, new Point2I32(x, y), toMove);
 
                 if (changeTraget)
                 {
-                    feInvoke_BoxMoveToTarget(new PointInt2(cx, cy));
+                    feInvoke_BoxMoveToTarget(new Point2I32(cx, cy));
                 }
 
                 return true;
@@ -418,14 +416,14 @@ namespace Cheng.GameTemplates.PushingBoxes
                 }
 
                 //写入人物坐标
-                toMove = new PointInt2(tox, toy);
+                toMove = new Point2I32(tox, toy);
                 //移动
 
-                f_moveToPlayer(scene, new PointInt2(x, y), toMove);
+                f_moveToPlayer(scene, new Point2I32(x, y), toMove);
 
                 if (changeTraget)
                 {
-                    feInvoke_BoxMoveToTarget(new PointInt2(cx, cy));
+                    feInvoke_BoxMoveToTarget(new Point2I32(cx, cy));
                 }
                 return true;
                 #endregion
@@ -477,14 +475,14 @@ namespace Cheng.GameTemplates.PushingBoxes
 
 
                 //写入人物坐标
-                toMove = new PointInt2(tox, toy);
+                toMove = new Point2I32(tox, toy);
                 //移动
 
-                f_moveToPlayer(scene, new PointInt2(x, y), toMove);
+                f_moveToPlayer(scene, new Point2I32(x, y), toMove);
 
                 if (changeTraget)
                 {
-                    feInvoke_BoxMoveToTarget(new PointInt2(cx, cy));
+                    feInvoke_BoxMoveToTarget(new Point2I32(cx, cy));
                 }
                 return true;
                 #endregion
@@ -499,7 +497,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="scene"></param>
         /// <param name="origin">源人物</param>
         /// <param name="toMove">移动到的地点</param>
-        static void f_moveToPlayer(PushBoxScene scene, PointInt2 origin, PointInt2 toMove)
+        static void f_moveToPlayer(PushBoxScene scene, PT origin, PT toMove)
         {
             var obj = scene[origin.x, origin.y];
             var toObj = scene[toMove.x, toMove.y];
@@ -522,7 +520,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="position">坐标</param>
         /// <param name="moveType">移动方位</param>
         /// <returns>移动后的坐标</returns>
-        public static PointInt2 PositionMoveTo(PointInt2 position, MoveType moveType)
+        public static PT PositionMoveTo(PT position, MoveType moveType)
         {
             int x, y;
             switch (moveType)
@@ -548,7 +546,7 @@ namespace Cheng.GameTemplates.PushingBoxes
                     y = position.y;
                     break;
             }
-            return new PointInt2(x, y);
+            return new Point2I32(x, y);
         }
 
         /// <summary>
@@ -556,7 +554,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// </summary>
         /// <param name="position"></param>
         /// <returns>超出场景true，没有超出false</returns>
-        public bool CheckPosOutArg(PointInt2 position)
+        public bool CheckPosOutArg(PT position)
         {
             return (position.x < 0 || position.y < 0 || position.x >= scene.width || position.y > scene.height);
         }
@@ -567,7 +565,7 @@ namespace Cheng.GameTemplates.PushingBoxes
         /// <param name="position">坐标</param>
         /// <param name="moveType">移动方位</param>
         /// <returns>超出返回true</returns>
-        public bool CheckPosOutArg(PointInt2 position, MoveType moveType)
+        public bool CheckPosOutArg(PT position, MoveType moveType)
         {
             int x, y;
             switch (moveType)
@@ -662,7 +660,7 @@ namespace Cheng.GameTemplates.PushingBoxes
 
             if (scene is null) throw new ArgumentNullException("场景对象未引用实例");
 
-            List<PointInt2> ts = pos_buffer;
+            List<Point2I32> ts = pos_buffer;
             ts.Clear();
 
             p_targetCount = 0;
@@ -679,13 +677,13 @@ namespace Cheng.GameTemplates.PushingBoxes
                     if (obj == SceneObject.Player)
                     {
                         //此处是玩家位置
-                        playerPos = new PointInt2(x, y);
+                        playerPos = new Point2I32(x, y);
                     }
 
                     if (target == SceneTarget.Exist)
                     {
                         //此处是目标点
-                        ts.Add(new PointInt2(x, y));
+                        ts.Add(new Point2I32(x, y));
                         p_targetCount++;
                         if (obj == SceneObject.Box)
                         {

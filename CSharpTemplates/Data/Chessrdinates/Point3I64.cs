@@ -3,8 +3,8 @@ using System.Runtime.InteropServices;
 using Cheng.Algorithm.HashCodes;
 using Cheng.Algorithm;
 
-using tv = System.Single;
-using TP = Cheng.DataStructure.Cherrsdinates.Point3F;
+using tv = System.Int64;
+using TP = Cheng.DataStructure.Cherrsdinates.Point3I64;
 
 namespace Cheng.DataStructure.Cherrsdinates
 {
@@ -13,7 +13,7 @@ namespace Cheng.DataStructure.Cherrsdinates
     /// 可表示空间坐标或向量的结构
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Point3F : IEquatable<TP>, IHashCode64, IFormattable
+    public readonly struct Point3I64 : IEquatable<TP>, IHashCode64, IFormattable
     {
 
         #region 构造
@@ -24,7 +24,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        public Point3F(tv x, tv y, tv z)
+        public Point3I64(tv x, tv y, tv z)
         {
             this.x = x; this.y = y; this.z = z;
         }
@@ -34,7 +34,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public Point3F(tv x, tv y)
+        public Point3I64(tv x, tv y)
         {
             this.x = x; this.y = y; z = 0;
         }
@@ -106,7 +106,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static TP operator +(TP p1, TP p2)
+        public static TP operator +(in TP p1, in TP p2)
         {
             return new TP(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
         }
@@ -117,7 +117,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static TP operator -(TP p1, TP p2)
+        public static TP operator -(in TP p1, in TP p2)
         {
             return new TP(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
         }
@@ -154,7 +154,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static bool operator ==(TP p1, TP p2)
+        public static bool operator ==(in TP p1, in TP p2)
         {
             return p1.x == p2.x && p1.y == p2.y && p1.z == p2.z;
         }
@@ -165,7 +165,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static bool operator !=(TP p1, TP p2)
+        public static bool operator !=(in TP p1, in TP p2)
         {
             return p1.x != p2.x || p1.y != p2.y || p1.z != p2.z;
         }
@@ -174,24 +174,44 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         #region 转换
 
-        public static explicit operator Point2F(Point3F point)
+        public static implicit operator Point3(TP p)
         {
-            return new Point2F(point.x, point.y);
+            return new Point3(p.x, p.y, p.z);
         }
 
-        public static explicit operator Point3F(Point2F point)
+        public static explicit operator Point3F(TP p)
         {
-            return new Point3F(point.x, point.y);
+            return new Point3F(p.x, p.y, p.z);
         }
 
-        public static implicit operator Point3(Point3F p)
+        public static explicit operator TP(Point3 p)
         {
-            return new Point3(p.x, p.y);
+            return new TP((tv)p.x, (tv)p.y);
         }
 
-        public static explicit operator Point3F(Point3 p)
+        public static explicit operator TP(Point3F p)
         {
-            return new Point3F((tv)p.x, (tv)p.y);
+            return new TP((tv)p.x, (tv)p.y);
+        }
+
+        public static explicit operator Point2I32(TP p)
+        {
+            return new Point2I32((int)p.x, (int)p.y);
+        }
+
+        public static explicit operator Point3I32(TP p)
+        {
+            return new Point3I32((int)p.x, (int)p.y, (int)p.z);
+        }
+
+        public static explicit operator Point2I64(TP p)
+        {
+            return new Point2I64(p.x, p.y);
+        }
+
+        public static explicit operator TP(Point2I64 p)
+        {
+            return new TP(p.x, p.x);
         }
 
         #endregion
@@ -237,12 +257,12 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// 返回单位向量
         /// </summary>
         /// <returns>将该对象当作向量并把长度缩放为1的新向量</returns>
-        public TP Normalized
+        public Point3 Normalized
         {
             get
             {
                 var re = System.Math.Sqrt(x * x + y * y + z * z);
-                return new TP((float)(this.x / re), (float)(this.y / re), (float)(this.z / re));
+                return new Point3((this.x / re), (this.y / re), (this.z / re));
             }
         }
 
@@ -331,13 +351,12 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         public override int GetHashCode()
         {
-            return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
+            return (x ^ y ^ z).GetHashCode();
         }
 
         public unsafe long GetHashCode64()
         {
-            tv tx = x, ty = y, tz = z;
-            return (long)(((*(uint*)&tx) | (((ulong)(*(uint*)&ty)) << 32)) ^ (((ulong)(*(uint*)&tz)) << 16));
+            return (x ^ y ^ z);
         }
 
         /// <summary>
