@@ -1,18 +1,19 @@
-using System;
-using System.Runtime.InteropServices;
+﻿using System;
 using Cheng.Algorithm.HashCodes;
+using System.Runtime.InteropServices;
+using Cheng.Algorithm;
 
-using tv = System.Double;
-using TP = Cheng.DataStructure.Cherrsdinates.Point2;
+using tv = System.Int64;
+using TP = Cheng.DataStructure.Cherrsdinates.Point2I64;
 
 namespace Cheng.DataStructure.Cherrsdinates
 {
 
     /// <summary>
-    /// 平面坐标或向量结构
+    /// 可表示空间坐标或向量的结构
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Point2 : IEquatable<TP>, IHashCode64, IFormattable
+    public readonly struct Point2I64 : IEquatable<TP>, IHashCode64, IFormattable
     {
 
         #region 构造
@@ -22,7 +23,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public Point2(tv x, tv y)
+        public Point2I64(tv x, tv y)
         {
             this.x = x; this.y = y;
         }
@@ -52,9 +53,9 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="value">新的x</param>
         /// <returns></returns>
-        public Point2 SetX(tv value)
+        public TP SetX(tv value)
         {
-            return new Point2(value, y);
+            return new TP(value, y);
         }
 
         /// <summary>
@@ -62,9 +63,9 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="value">新的y</param>
         /// <returns></returns>
-        public Point2 SetY(tv value)
+        public TP SetY(tv value)
         {
-            return new Point2(x, value);
+            return new TP(x, value);
         }
 
         #endregion
@@ -77,7 +78,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static bool operator ==(TP p1, TP p2)
+        public static bool operator ==(in TP p1, in TP p2)
         {
             return p1.x == p2.x && p1.y == p2.y;
         }
@@ -88,7 +89,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static bool operator !=(TP p1, TP p2)
+        public static bool operator !=(in TP p1, in TP p2)
         {
             return p1.x != p2.x || p1.y != p2.y;
         }
@@ -99,9 +100,9 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static TP operator +(TP p1, TP p2)
+        public static TP operator +(in TP p1, in TP p2)
         {
-            return new Point2(p1.x + p2.x, p1.y + p2.y);
+            return new TP(p1.x + p2.x, p1.y + p2.y);
         }
 
         /// <summary>
@@ -110,9 +111,9 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <returns></returns>
-        public static TP operator -(TP p1, TP p2)
+        public static TP operator -(in TP p1, in TP p2)
         {
-            return new Point2(p1.x - p2.x, p1.y - p2.y);
+            return new TP(p1.x - p2.x, p1.y - p2.y);
         }
 
         /// <summary>
@@ -123,7 +124,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns></returns>
         public static TP operator *(TP p, tv num)
         {
-            return new Point2(p.x * num, p.y * num);
+            return new TP(p.x * num, p.y * num);
         }
 
         /// <summary>
@@ -134,17 +135,32 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// <returns></returns>
         public static TP operator /(TP p, tv num)
         {
-            return new Point2(p.x / num, p.y / num);
+            return new TP(p.x / num, p.y / num);
         }
 
         public static explicit operator TP(Point2I32 p)
         {
+            return new TP(p.x, p.y);
+        }
+
+        public static implicit operator Point2(TP p)
+        {
             return new Point2(p.x, p.y);
         }
 
-        public static implicit operator Point2I32(TP p)
+        public static explicit operator Point2F(TP p)
         {
-            return new Point2I32((int)p.x, (int)p.y);
+            return new Point2F((float)p.x, (float)p.y);
+        }
+
+        public static implicit operator TP((tv, tv) tuple)
+        {
+            return new TP(tuple.Item1, tuple.Item2);
+        }
+
+        public static explicit operator (tv, tv)(TP p)
+        {
+            return ValueTuple.Create(p.x, p.y);
         }
 
         #endregion
@@ -153,7 +169,7 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         public override bool Equals(object obj)
         {
-            if (obj is Point2 p)
+            if (obj is TP p)
             {
                 return this == p;
             }
@@ -162,7 +178,7 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         public override int GetHashCode()
         {
-            return x.GetHashCode() ^ y.GetHashCode();
+            return (x ^ y).GetHashCode();
         }
 
         public bool Equals(TP other)
@@ -189,7 +205,6 @@ namespace Cheng.DataStructure.Cherrsdinates
             return "(" + x.ToString(format) + "," + y.ToString(format) + ")";
         }
 
-
         public string ToString(string format, IFormatProvider formatProvider)
         {
             return "(" + x.ToString(format, formatProvider) + "," + y.ToString(format, formatProvider) + ")";
@@ -197,7 +212,7 @@ namespace Cheng.DataStructure.Cherrsdinates
 
         public long GetHashCode64()
         {
-            return x.GetHashCode64() ^ y.GetHashCode64();
+            return x ^ y;
         }
 
         #endregion
@@ -205,48 +220,11 @@ namespace Cheng.DataStructure.Cherrsdinates
         #region 坐标运算
 
         /// <summary>
-        /// 计算从此坐标到指定坐标的距离
-        /// </summary>
-        /// <param name="other">指定坐标</param>
-        /// <returns>一个表示距离的二维向量</returns>
-        public tv Distance(TP other)
-        {
-            var xn = other.x - x;
-            var yn = other.y - y;
-
-            return System.Math.Sqrt(xn * xn + yn * yn);
-        }
-
-        /// <summary>
-        /// 计算从原点(0,0)到此实例坐标的距离
-        /// </summary>
-        /// <returns>距离</returns>
-        public tv DistanceByZero
-        {
-            get
-            {
-                return System.Math.Sqrt(x * x + y * y);
-            }
-        }
-
-        /// <summary>
-        /// 返回单位向量
-        /// </summary>
-        /// <returns>将该向量长度缩放为1的新向量</returns>
-        public TP Normalized
-        {
-            get
-            {
-                return this / System.Math.Sqrt(x * x + y * y);
-            }
-        }
-
-        /// <summary>
         /// 计算和另一个向量的点积
         /// </summary>
         /// <param name="other">另一个向量</param>
         /// <returns>点积</returns>
-        public tv DotPro(TP other)
+        public tv DotPro(in TP other)
         {
             return x * other.x + y * other.y;
         }
@@ -256,9 +234,9 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="other">另一个坐标</param>
         /// <returns>表示二维向量的结构</returns>
-        public TP Vector(TP other)
+        public TP Vector(in TP other)
         {
-            return new Point2(other.x - x, other.y - y);
+            return new TP(other.x - x, other.y - y);
         }
 
         /// <summary>
@@ -266,7 +244,7 @@ namespace Cheng.DataStructure.Cherrsdinates
         /// </summary>
         /// <param name="other">另一个向量</param>
         /// <returns></returns>
-        public tv CrossPro(TP other)
+        public tv CrossPro(in TP other)
         {
             return x * other.y - other.x * y;
         }

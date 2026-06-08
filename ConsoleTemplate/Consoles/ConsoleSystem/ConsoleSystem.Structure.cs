@@ -359,9 +359,9 @@ namespace Cheng.Consoles
             /// <summary>
             /// 光标事件 - 光标位置坐标，以控制台屏幕缓冲区的字符单元格坐标为单位
             /// </summary>
-            public Cheng.DataStructure.Cherrsdinates.PointInt2 Mouse_Position
+            public Cheng.DataStructure.Cherrsdinates.Point2I32 Mouse_Position
             {
-                get => new DataStructure.Cherrsdinates.PointInt2(mouseEvent.dwMousePosition.X, mouseEvent.dwMousePosition.Y);
+                get => new DataStructure.Cherrsdinates.Point2I32(mouseEvent.dwMousePosition.X, mouseEvent.dwMousePosition.Y);
             }
 
             /// <summary>
@@ -411,9 +411,9 @@ namespace Cheng.Consoles
             /// <summary>
             /// 控制台缓冲区消息 - 包含控制台屏幕缓冲区的大小，以字符单元格列和行为单位
             /// </summary>
-            public Cheng.DataStructure.Cherrsdinates.PointInt2 Console_Size
+            public Cheng.DataStructure.Cherrsdinates.Point2I32 Console_Size
             {
-                get => new DataStructure.Cherrsdinates.PointInt2(windowBufferSizeEvent.dwSize.X, windowBufferSizeEvent.dwSize.Y);
+                get => new DataStructure.Cherrsdinates.Point2I32(windowBufferSizeEvent.dwSize.X, windowBufferSizeEvent.dwSize.Y);
             }
 
             #endregion
