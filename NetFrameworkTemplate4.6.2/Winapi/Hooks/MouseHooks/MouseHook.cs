@@ -111,9 +111,9 @@ namespace Cheng.Windows.Hooks
             /// <summary>
             /// 鼠标光标的x和y位置，按DPI屏幕坐标
             /// </summary>
-            public PointInt2 Position
+            public Point2I32 Position
             {
-                get => new PointInt2(p_ms.pt.x, p_ms.pt.y);
+                get => new Point2I32(p_ms.pt.x, p_ms.pt.y);
             }
 
             /// <summary>

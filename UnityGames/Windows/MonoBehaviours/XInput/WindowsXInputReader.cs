@@ -28,9 +28,9 @@ namespace Cheng.Unitys.Windows.XInput
 
         #region 参数
 
-        internal PointInt2 leftVector;
+        internal Point2I32 leftVector;
 
-        internal PointInt2 rightVector;
+        internal Point2I32 rightVector;
 
         internal Vector2 leftVectorF;
 
@@ -124,7 +124,7 @@ namespace Cheng.Unitys.Windows.XInput
         /// <summary>
         /// 当前帧左摇杆的位移原始数据，每个轴范围在[-65535, 65535]
         /// </summary>
-        public PointInt2 LeftJoystickVectorInt
+        public Point2I32 LeftJoystickVectorInt
         {
             get => leftVector;
         }
@@ -132,7 +132,7 @@ namespace Cheng.Unitys.Windows.XInput
         /// <summary>
         /// 当前帧右摇杆的位移原始数据，每个轴范围在[-65535, 65535]
         /// </summary>
-        public PointInt2 RightJoystickVectorInt
+        public Point2I32 RightJoystickVectorInt
         {
             get => rightVector;
         }
@@ -329,12 +329,12 @@ namespace Cheng.Unitys.Windows.XInput
             data.nowFrameUp = (GamePadButtons)nowUp;
 
             // 摇杆帧向量
-            data.leftVector = new PointInt2(
+            data.leftVector = new Point2I32(
                 data.gamePad.thumbLX - oldPad.thumbLX,
                 data.gamePad.thumbLY - oldPad.thumbLY
                 );
 
-            data.rightVector = new PointInt2(
+            data.rightVector = new Point2I32(
                 data.gamePad.thumbRX - oldPad.thumbRX,
                 data.gamePad.thumbRY - oldPad.thumbRY
                 );
@@ -371,8 +371,8 @@ namespace Cheng.Unitys.Windows.XInput
                         state.nowFrameUp = 0;
                         state.leftTriggerVector = 0;
                         state.rightTriggerVector = 0;
-                        state.leftVector = new PointInt2(0, 0);
-                        state.rightVector = new PointInt2(0, 0);
+                        state.leftVector = new Point2I32(0, 0);
+                        state.rightVector = new Point2I32(0, 0);
                         continue;
                     }
 

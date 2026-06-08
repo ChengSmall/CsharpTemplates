@@ -30,7 +30,7 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
         /// </returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="NotSupportedException">集合是只读集合无法添加元素</exception>
-        bool Calculation(IGridMap map, PointInt2 startPos, PointInt2 endPos, ICollection<PointInt2> append);
+        bool Calculation(IGridMap map, Point2I32 startPos, Point2I32 endPos, ICollection<Point2I32> append);
 
     }
 
@@ -46,7 +46,7 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
         /// <value>当参数是true时，对象存在需要释放的资源，需要调用资源释放的代码；如果是false，则表示不需要释放资源</value>
         public virtual bool HavingDispose => false;
 
-        public abstract bool Calculation(IGridMap map, PointInt2 startPos, PointInt2 endPos, ICollection<PointInt2> append);
+        public abstract bool Calculation(IGridMap map, Point2I32 startPos, Point2I32 endPos, ICollection<Point2I32> append);
 
         /// <summary>
         /// 计算从<paramref name="startPos"/>到<paramref name="endPos"/>的最佳路径，并返回路径集合
@@ -55,9 +55,9 @@ namespace Cheng.Algorithm.Pathfindings.GridPathfindings
         /// <param name="startPos">起始位置</param>
         /// <param name="endPos">目标位置</param>
         /// <returns>返回从<paramref name="startPos"/>的下一个要行进到的坐标位置开始，按行动路线顺序直至<paramref name="endPos"/>的前一个坐标的数组；null表示无法找到通路</returns>
-        public virtual PointInt2[] Calculation(IGridMap map, PointInt2 startPos, PointInt2 endPos)
+        public virtual Point2I32[] Calculation(IGridMap map, Point2I32 startPos, Point2I32 endPos)
         {
-            List<PointInt2> list = new List<PointInt2>();
+            List<Point2I32> list = new List<Point2I32>();
             if (Calculation(map, startPos, endPos, list)) return list.ToArray();
             return null;
         }
