@@ -311,7 +311,7 @@ namespace Cheng.Algorithm.Compressions
         }
 
         /// <summary>
-        /// 将指定索引下的数据解压缩并返回解压后的数据
+        /// 将指定索引下的数据解压缩解压缩到指定流
         /// </summary>
         /// <param name="index">数据所在索引</param>
         /// <param name="stream">要将数据解压缩到的流</param>

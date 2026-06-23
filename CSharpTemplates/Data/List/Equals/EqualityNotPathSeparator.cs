@@ -236,44 +236,49 @@ namespace Cheng.DataStructure.Collections
             {
                 return false;
             }
-
+            char c;
             int xlen = x.Length;
             int ylen = y.Length;
-            int length = xlen;
+
+            if (ifEndSeparators)
+            {
+                if(xlen > 0)
+                {
+                    c = x[xlen - 1];
+                    if (c == '\\' || c == '/')
+                    {
+                        xlen -= 1;
+                    }
+                }
+                if(ylen > 0)
+                {
+                    c = y[ylen - 1];
+                    if (c == '\\' || c == '/')
+                    {
+                        ylen -= 1;
+                    }
+                }
+            }
+
             if (xlen != ylen)
             {
-                if (ifEndSeparators)
-                {
-                    if (xlen + 1 == ylen)
-                    {
-                        //y 比 x 多 1
-                        if (y[xlen] == '\\' || y[xlen] == '/')
-                        {
-                            //省略最后一个分隔符
-                            length = xlen;
-                        }
-                        else return false; //不属于分隔符
-                    }
-                    else if (xlen == ylen + 1)
-                    {
-                        //x 比 y 多 1
-                        if (x[ylen] == '\\' || x[ylen] == '/')
-                        {
-                            //省略最后一个分隔符
-                            length = ylen;
-                        }
-                        else return false; //不属于分隔符
-                    }
-                }
-                else
-                {
-                    //长度不等
-                    return false;
-                }
+                //长度不等
+                return false;
+            }
+
+            if (xlen == 0)
+            {
+                if (ylen == 0) return true;
+                return false;
+            }
+            else if (ylen == 0)
+            {
+                if (xlen == 0) return true;
+                return false;
             }
             fixed (char* xp = x, yp = y)
             {
-                return EqualPathByAddress(xp, yp, length, caseInsensitive);
+                return EqualPathByAddress(xp, yp, xlen, caseInsensitive);
             }
         }
 

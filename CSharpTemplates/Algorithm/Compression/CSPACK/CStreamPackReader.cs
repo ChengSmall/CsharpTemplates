@@ -409,6 +409,14 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         #region 文件头
 
         /// <summary>
+        /// 当前包数据类型
+        /// </summary>
+        public CSPackEncType CSPackType
+        {
+            get => p_encType;
+        }
+
+        /// <summary>
         /// 读取并检查头数据是否匹配包数据头格式
         /// </summary>
         /// <param name="stream">要读取的流对象</param>
@@ -497,7 +505,7 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         /// <summary>
         /// U8类型包头的ASCLL文本数据
         /// </summary>
-        public const string U8HeaderString = "CSPACK";
+        public const string U8HeaderString = "U8CSPACK";
 
         /// <summary>
         /// 从流对象持续读取数据并检查到符合包数据头的格式

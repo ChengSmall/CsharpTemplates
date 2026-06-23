@@ -224,6 +224,27 @@ namespace Cheng.Algorithm.Compressions.CSPACK
 
         #region 打包封装
 
+        static bool f_writeHeaderBuffer(CSPackEncType type, byte* buffer, int length)
+        {
+            int offset = 0;
+            //0x43, 0x53, 0x50, 0x41, 0x43, 0x4B
+            if (type == CSPackEncType.U8CSPack)
+            {
+                // 0x55, 0x38
+                if (length < 8) return false;
+                buffer[offset++] = 0x55;
+                buffer[offset++] = 0x38;
+            }
+            if (length < 6) return false;
+            buffer[offset++] =  0x43;
+            buffer[offset++] =  0x53;
+            buffer[offset++] =  0x50;
+            buffer[offset++] =  0x41;
+            buffer[offset++] =  0x43;
+            buffer[offset] =    0x4B;
+            return true;
+        }
+
         static void f_writeHeader(Stream stream, CSPackEncType type)
         {
             //0x43, 0x53, 0x50, 0x41, 0x43, 0x4B
@@ -496,6 +517,45 @@ namespace Cheng.Algorithm.Compressions.CSPACK
         {
             if (type <= 0 || type > CSPackEncType.U8CSPack) throw new ArgumentException();
             f_writeHeader(stream ?? throw new ArgumentNullException(nameof(stream)), type);
+        }
+
+        /// <summary>
+        /// 写入CSPACK包标准头数据
+        /// </summary>
+        /// <param name="type">要写入的头类型</param>
+        /// <param name="buffer">要写入到的内存位置</param>
+        /// <param name="length">写入的内存最大可用字节长度</param>
+        /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        public static void WriteHeaderBuffer(CSPackEncType type, byte* buffer, int length)
+        {
+            if (length < 0 || type <= 0 || type > CSPackEncType.U8CSPack) throw new ArgumentOutOfRangeException();
+            if(!f_writeHeaderBuffer(type, buffer, length))
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        /// <summary>
+        /// 写入CSPACK包标准头数据
+        /// </summary>
+        /// <param name="type">要写入的头类型</param>
+        /// <param name="buffer">要写入到的字节数组</param>
+        /// <param name="offset">写入的字节数组起始偏移字节</param>
+        /// <exception cref="ArgumentOutOfRangeException">参数超出范围</exception>
+        /// <exception cref="ArgumentException">参数错误</exception>
+        public static void WriteHeaderBuffer(CSPackEncType type, byte[] buffer, int offset)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (offset < 0 || (offset) > buffer.Length || type <= 0 || type > CSPackEncType.U8CSPack) throw new ArgumentOutOfRangeException();
+            int count = buffer.Length - offset;
+            fixed (byte* bptr = buffer)
+            {
+                if (!f_writeHeaderBuffer(type, bptr + offset, count))
+                {
+                    throw new ArgumentException();
+                }
+            }
         }
 
         /// <summary>
