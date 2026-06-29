@@ -42,7 +42,7 @@ namespace Cheng.Json.GeneratorNumbers
         /// 创建一个随机数生成器
         /// </summary>
         /// <remarks>可在派生类重写以创建定制的随机数生成器对象</remarks>
-        /// <returns>一个新的随机数生成器</returns>
+        /// <returns>一个随机数生成器</returns>
         protected virtual BaseRandom CreateRandom()
         {
             return new XorshiftRandom(RandomExtends.GetSeedByTickXORNowTime());
@@ -129,14 +129,93 @@ namespace Cheng.Json.GeneratorNumbers
 
             var num_x = JsonToNum(x);
 
-            if (type == NumGeneratorMath.OperationType.Sqrt)
+            NumGenerator num_y;
+            if(json.TryGetValue("y", out var json_y))
             {
-                return new NumGeneratorMath(type, num_x, defaultNumGenerator);
+                num_y = JsonToNum(json_y);
+            }
+            else
+            {
+                num_y = defaultNumGenerator;
             }
 
-            var num_y = JsonToNum(json["y"]);
-
             return new NumGeneratorMath(type, num_x, num_y);
+        }
+
+        private NumGenerator f_condition(JsonDictionary json)
+        {
+            JsonVariable condition;
+            if (!(json.TryGetValue("cond", out condition) || json.TryGetValue("condition", out condition)))
+            {
+                return defaultNumGenerator;
+            }
+
+            var ctype = condition.String;
+
+            /*
+            判断值的条件，根据cond参数判断x和y并返回值，0 表示 false，1 表示 true
+            参数:
+            eq => 判断 x == y
+            neq => 判断 x != y
+            le => 判断 x < y
+            gt => 判断 x > y
+            leq => 判断 x >= y
+            geq => 判断 x >= y
+            not => 取反 x 的条件参数（可不写y）
+            and => 判断 x 和 y 都是true
+            or => 判断 x 或 y 是true
+            */
+
+            ConditionNumGeneratorType type;
+
+            switch (ctype)
+            {
+                case "eq":
+                    type = ConditionNumGeneratorType.Equal;
+                    break;
+                case "neq":
+                    type = ConditionNumGeneratorType.NotEqual;
+                    break;
+                case "le":
+                    type = ConditionNumGeneratorType.Less;
+                    break;
+                case "gt":
+                    type = ConditionNumGeneratorType.Greater;
+                    break;
+                case "leq":
+                    type = ConditionNumGeneratorType.LessEqual;
+                    break;
+                case "geq":
+                    type = ConditionNumGeneratorType.GreaterEqual;
+                    break;
+                case "not":
+                    type = ConditionNumGeneratorType.Neg;
+                    break;
+                case "and":
+                    type = ConditionNumGeneratorType.And;
+                    break;
+                case "or":
+                    type = ConditionNumGeneratorType.Or;
+                    break;
+                default:
+                    return defaultNumGenerator;
+            }
+
+            NumGenerator x;
+            NumGenerator y;
+
+            x = JsonToNum(json["x"]);
+
+            if(json.TryGetValue("y", out var json_y))
+            {
+                y = JsonToNum(json_y);
+            }
+            else
+            {
+                y = defaultNumGenerator;
+            }
+
+            return new ConditionNumGenerator(type, x, y);
         }
 
         /// <summary>
@@ -179,26 +258,9 @@ namespace Cheng.Json.GeneratorNumbers
                             return f_math(jd);
                         case "bernoulli":
                             return f_randomBer(jd);
-                        default:
-                            break;
+                        case "condition":
+                            return f_condition(jd);
                     }
-
-                    //if (type == "fixed")
-                    //{
-                    //    return f_fixedValue(jd);
-                    //}
-                    //if (type == "random")
-                    //{
-                    //    return f_random(jd);
-                    //}
-                    //if (type == "arith")
-                    //{
-                    //    return f_math(jd);
-                    //}
-                    //if (type == "bernoulli")
-                    //{
-                    //    return f_randomBer(jd);
-                    //}
 
                     return OtherJsonToNum(jd);
                 }

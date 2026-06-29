@@ -198,17 +198,14 @@ namespace Cheng.DataStructure.NumGenerators
             if (min >= max) return 0;
 
             bool real = min.type == NumType.RealNumber || max.type == NumType.RealNumber;
-
             if (real)
             {
-                
                 return random.NextDouble((double)min, (double)max);
             }
             else
             {
                 return random.NextLong(min.valueInteger, max.valueInteger);
             }
-
         }
 
         #endregion

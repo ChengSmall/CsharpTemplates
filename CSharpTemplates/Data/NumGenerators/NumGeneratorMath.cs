@@ -12,7 +12,7 @@ namespace Cheng.DataStructure.NumGenerators
         #region 结构
 
         /// <summary>
-        /// 算数运算类型
+        /// 运算类型
         /// </summary>
         public enum OperationType : byte
         {
@@ -141,9 +141,10 @@ namespace Cheng.DataStructure.NumGenerators
 
         public override DynamicNumber Generate()
         {
+            var ot = operationType;
             var x = p_x.Generate();
 
-            switch (operationType)
+            switch (ot)
             {
                 case OperationType.Neg:
                     return -x;
@@ -152,15 +153,14 @@ namespace Cheng.DataStructure.NumGenerators
                 default:
                     break;
             }
-            if (operationType == OperationType.Sqrt)
+            if (ot == OperationType.Sqrt)
             {
                 return Math.Sqrt((double)x);
             }
 
-
             var y = p_y.Generate();
 
-            switch (operationType)
+            switch (ot)
             {
                 case OperationType.Add:
                     return x + y;
@@ -174,11 +174,10 @@ namespace Cheng.DataStructure.NumGenerators
                     return x % y;
                 case OperationType.Pow:
                     return Math.Pow((double)x, (double)y);
+
                 default:
                     throw new NotImplementedException();
             }
-
-
 
 
         }

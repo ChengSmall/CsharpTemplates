@@ -34,14 +34,14 @@ namespace Cheng.Consoles
         /// </summary>
         public ConsolePrint()
         {
-            p_buffer = new StringBuilder();
+            p_buffer = new CMStringBuilder();
         }
 
         #endregion
 
         #region 参数
 
-        private StringBuilder p_buffer;
+        private CMStringBuilder p_buffer;
 
         private TimeSpan p_span;
 
@@ -54,7 +54,7 @@ namespace Cheng.Consoles
         /// <summary>
         /// 待打印文本字符串缓冲区
         /// </summary>
-        public StringBuilder StringBuffer
+        public CMStringBuilder StringBuffer
         {
             get => p_buffer;
         }
@@ -103,9 +103,9 @@ namespace Cheng.Consoles
                 }
                 else
                 {
-                    Console.Write(sb.ToString());
+                    var sbf = sb.GetCharBuffer();
+                    Console.Write(sbf.Array, sbf.Offset, sbf.Count);
                 }
-
 
             }
 
@@ -183,9 +183,9 @@ namespace Cheng.Consoles
                 }
                 else
                 {
-                    Console.Write(sb.ToString());
+                    var sbf = sb.GetCharBuffer();
+                    Console.Write(sbf.Array, sbf.Offset, sbf.Count);
                 }
-
 
             }
 
@@ -285,8 +285,6 @@ namespace Cheng.Consoles
             {
                 print.Write(sb.ToString());
             }
-
-            
 
         }
 
