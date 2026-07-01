@@ -115,6 +115,7 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
 
         #region 封装
 
+#if DEBUG
         /// <summary>
         /// 一组byte转化4个字符
         /// </summary>
@@ -126,6 +127,7 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
         /// <param name="c3"></param>
         /// <param name="c4"></param>
         /// <returns>表示3个一组的byte缺失了多少byte</returns>
+#endif
         private int f_transToBase64(byte b0, byte? b1, byte? b2, out char c1, out char c2, out char c3, out char c4)
         {
             bool b1h = b1.HasValue;
@@ -181,10 +183,12 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
             }
         }
 
+#if DEBUG
         /// <summary>
         /// 从基础流读取到缓冲区（假设缓冲区用完）
         /// </summary>
         /// <returns>是否到结尾</returns>
+#endif
         private bool f_readBaseStream()
         {
             p_charBufferPos = 0;

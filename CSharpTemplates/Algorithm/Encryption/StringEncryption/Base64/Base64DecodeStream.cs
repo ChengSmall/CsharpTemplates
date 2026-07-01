@@ -134,6 +134,7 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
             return false;
         }
 
+#if DEBUG
         /// <summary>
         /// 解码一组4个字符到字节
         /// </summary>
@@ -145,6 +146,7 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
         /// <param name="b2">解码后第2个字节，没有则null</param>
         /// <param name="b3">解码后第3个字节，没有则null</param>
         /// <returns>此次解码后空余的字节数，0表示没有空余，-1表示错误</returns>
+#endif
         private int f_base64ToBytes(char c1, char c2, char c3, char c4, out byte b1, out byte? b2, out byte? b3)
         {
             const char bw = '=';
@@ -217,11 +219,13 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
             }
         }
 
+#if DEBUG
         /// <summary>
         /// 从文本读取数据并解码到缓冲区（假设无缓冲区）
         /// </summary>
         /// <param name="over">此次读取已经无法读取新数据</param>
         /// <returns>是否成功正常解码</returns>
+#endif
         private bool f_readToBuffer(out bool over)
         {
             over = false;
@@ -434,6 +438,5 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
         #endregion
 
     }
-
 
 }

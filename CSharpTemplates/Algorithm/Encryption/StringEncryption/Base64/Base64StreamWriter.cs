@@ -93,9 +93,11 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
 
         #region 封装
 
+#if DEBUG
         /// <summary>
         /// 将buffer转化写入文本（缓冲区填满时）
         /// </summary>
+#endif
         private void f_toBase64TextWriter()
         {
             var charCount = Convert.ToBase64CharArray(p_buffer, 0, p_bufferLen, p_charBuf, 0, Base64FormattingOptions.None);
@@ -151,7 +153,7 @@ namespace Cheng.Algorithm.Encryptions.Base64Encryption
         protected override bool Disposing(bool disposing)
         {
             f_flushOver();
-            p_writer?.Flush();
+
             if (disposing && p_disposeBaseWriter)
             {
                 p_writer.Close();
