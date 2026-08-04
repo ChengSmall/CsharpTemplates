@@ -17,14 +17,14 @@ namespace Cheng.IO
     public unsafe static partial class IOoperations
     {
 
-        #region 顺序字节转化
+        #region 固定小端字节序转化
 
         #region 转为流
 
         #region 指针
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -39,7 +39,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -49,7 +49,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -59,7 +59,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -74,7 +74,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -85,7 +85,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -96,7 +96,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -107,7 +107,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -118,7 +118,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -128,9 +128,8 @@ namespace Cheng.IO
             OrderToBytes(*(ulong*)&t, buffer);
         }
 
-
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -140,7 +139,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -150,7 +149,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -160,7 +159,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -170,7 +169,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -180,7 +179,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -190,7 +189,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -200,7 +199,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -210,7 +209,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定内存序列
+        /// 将值按小端字节序转化到指定内存序列
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的内存序列，必须保证该地址的可用内存等于或大于<paramref name="value"/>的字节大小</param>
@@ -224,7 +223,7 @@ namespace Cheng.IO
         #region 字节数组
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -251,7 +250,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -278,7 +277,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -305,7 +304,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -332,7 +331,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -359,7 +358,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -386,7 +385,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -413,7 +412,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -440,7 +439,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将值顺序转化到指定的字节数组
+        /// 将值按小端字节序转化到指定的字节数组
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="buffer">要转化到的字节数组</param>
@@ -475,7 +474,7 @@ namespace Cheng.IO
         #region 指针
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
         /// <returns>转化后的值</returns>
@@ -486,7 +485,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
         /// <returns>转化后的值</returns>
@@ -498,7 +497,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
         /// <returns>转化后的值</returns>
@@ -508,7 +507,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
         /// <returns>转化后的值</returns>
@@ -518,7 +517,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
         /// <returns>转化后的值</returns>
@@ -529,7 +528,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
         /// <returns>转化后的值</returns>
@@ -540,7 +539,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要2字节</param>
         /// <returns>转化后的值</returns>
@@ -551,7 +550,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要2字节</param>
         /// <returns>转化后的值</returns>
@@ -563,7 +562,7 @@ namespace Cheng.IO
 
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
         /// <returns>转化后的值</returns>
@@ -574,7 +573,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
         /// <returns>转化后的值</returns>
@@ -586,7 +585,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
         /// <returns>转化后的值</returns>
@@ -596,7 +595,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
         /// <returns>转化后的值</returns>
@@ -606,7 +605,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要4字节</param>
         /// <returns>转化后的值</returns>
@@ -617,7 +616,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要8字节</param>
         /// <returns>转化后的值</returns>
@@ -628,7 +627,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要2字节</param>
         /// <returns>转化后的值</returns>
@@ -639,7 +638,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将内存顺序序列转化为值
+        /// 将内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">表示一个可用内存地址，内存可用长度至少要2字节</param>
         /// <returns>转化后的值</returns>
@@ -654,7 +653,7 @@ namespace Cheng.IO
         #region 字节数组转
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <param name="offset">从字节数组读取的起始位置</param>
@@ -678,7 +677,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <param name="offset">从字节数组读取的起始位置</param>
@@ -702,7 +701,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <param name="offset">从字节数组读取的起始位置</param>
@@ -726,7 +725,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <param name="offset">从字节数组读取的起始位置</param>
@@ -750,7 +749,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <param name="offset">从字节数组读取的起始位置</param>
@@ -774,7 +773,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <param name="offset">从字节数组读取的起始位置</param>
@@ -798,7 +797,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <param name="offset">从字节数组读取的起始位置</param>
@@ -822,7 +821,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <param name="offset">从字节数组读取的起始位置</param>
@@ -847,7 +846,7 @@ namespace Cheng.IO
 
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <returns>要转化的值</returns>
@@ -870,7 +869,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <returns>要转化的值</returns>
@@ -893,7 +892,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <returns>要转化的值</returns>
@@ -916,7 +915,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <returns>要转化的值</returns>
@@ -939,7 +938,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <returns>要转化的值</returns>
@@ -962,7 +961,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <returns>要转化的值</returns>
@@ -985,7 +984,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <returns>要转化的值</returns>
@@ -1008,7 +1007,7 @@ namespace Cheng.IO
         }
 
         /// <summary>
-        /// 将字节数组的内存按顺序序列转化为值
+        /// 将字节数组的内存按小端字节序转化为值
         /// </summary>
         /// <param name="buffer">字节数组</param>
         /// <returns>要转化的值</returns>
