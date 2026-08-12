@@ -104,11 +104,6 @@
       <Name>CSharpTemplates</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GameTemplates\GameTemplates.csproj">
-      <Project>{bf887d71-f9bf-46d3-bf92-532b27afab78}</Project>
-      <Name>GameTemplates</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\UnityGames\UnityCSharpTemplates.csproj">
       <Project>{5921c56a-6327-4f94-a853-4815e9e990ac}</Project>
       <Name>UnityCSharpTemplates</Name>

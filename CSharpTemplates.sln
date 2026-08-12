@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.33529.622
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProgramTest", "ProgramTest\ProgramTest.csproj", "{9D1EB4E2-C996-4EB4-843C-455E001F57A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTemplates", "GameTemplates\GameTemplates.csproj", "{BF887D71-F9BF-46D3-BF92-532B27AFAB78}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtherCode", "OtherCode\OtherCode.csproj", "{5C493D14-A1FD-41D5-8908-FC752BA3CE80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFrameworkTemplate", "NetFrameworkTemplate4.6.2\NetFrameworkTemplate.csproj", "{4560F930-7D25-4F57-9B33-882A78E0F4FB}"
@@ -38,13 +36,6 @@ Global
 		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityEditor|Any CPU.Build.0 = Debug|Any CPU
 		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityWindows|Any CPU.ActiveCfg = Release|Any CPU
 		{9D1EB4E2-C996-4EB4-843C-455E001F57A2}.UnityWindows|Any CPU.Build.0 = Release|Any CPU
-		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.UnityAndroid|Any CPU.ActiveCfg = Release|Any CPU
-		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.UnityEditor|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF887D71-F9BF-46D3-BF92-532B27AFAB78}.UnityWindows|Any CPU.ActiveCfg = Release|Any CPU
 		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C493D14-A1FD-41D5-8908-FC752BA3CE80}.Release|Any CPU.ActiveCfg = Release|Any CPU

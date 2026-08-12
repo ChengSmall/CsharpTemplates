@@ -95,11 +95,6 @@
       <Name>CSharpTemplates</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GameTemplates\GameTemplates.csproj">
-      <Project>{bf887d71-f9bf-46d3-bf92-532b27afab78}</Project>
-      <Name>GameTemplates</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\NetFrameworkTemplate4.6.2\NetFrameworkTemplate.csproj">
       <Project>{4560f930-7d25-4f57-9b33-882a78e0f4fb}</Project>
       <Name>NetFrameworkTemplate</Name>
