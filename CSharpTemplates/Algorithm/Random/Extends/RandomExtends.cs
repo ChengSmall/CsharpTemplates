@@ -28,7 +28,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <param name="Chaosfrequency">打乱频率，最小为1</param>
         /// <exception cref="ArgumentOutOfRangeException">参数不正确</exception>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void RandomDisrupt<T>(this BaseRandom random, IList<T> list, int index, int count, int Chaosfrequency)
+        public static void RandomDisrupt<T>(this IRandomGenerateValue random, IList<T> list, int index, int count, int Chaosfrequency)
         {
             if (random is null || list is null) throw new ArgumentNullException();
 
@@ -59,7 +59,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <param name="Chaosfrequency">打乱频率，最小为1</param>
         /// <exception cref="ArgumentException">参数不正确</exception>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void RandomDisrupt(this BaseRandom random, global::System.Collections.IList list, int index, int count, int Chaosfrequency)
+        public static void RandomDisrupt(this IRandomGenerateValue random, global::System.Collections.IList list, int index, int count, int Chaosfrequency)
         {
             if (random is null || list is null) throw new ArgumentNullException();
 
@@ -91,7 +91,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <param name="random">随机器</param>
         /// <param name="list">要打乱的集合</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void RandomDisrupt<T>(this BaseRandom random, IList<T> list)
+        public static void RandomDisrupt<T>(this IRandomGenerateValue random, IList<T> list)
         {
             if (list is null) throw new ArgumentNullException();
             RandomDisrupt(random, list, 0, list.Count, 2);
@@ -107,7 +107,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <param name="count">要打乱的元素数</param>
         /// <exception cref="ArgumentOutOfRangeException">参数不正确</exception>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void RandomDisrupt<T>(this BaseRandom random, IList<T> list, int index, int count)
+        public static void RandomDisrupt<T>(this IRandomGenerateValue random, IList<T> list, int index, int count)
         {
             RandomDisrupt(random, list, index, count, 2);
         }
@@ -121,7 +121,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <param name="count">要打乱的元素数</param>
         /// <exception cref="ArgumentOutOfRangeException">参数不正确</exception>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void RandomDisrupt(this BaseRandom random, global::System.Collections.IList list, int index, int count)
+        public static void RandomDisrupt(this IRandomGenerateValue random, global::System.Collections.IList list, int index, int count)
         {
             RandomDisrupt(random, list, index, count, 2);
         }
@@ -132,7 +132,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <param name="random">随机器</param>
         /// <param name="list">要打乱的集合</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static void RandomDisrupt(this BaseRandom random, global::System.Collections.IList list)
+        public static void RandomDisrupt(this IRandomGenerateValue random, global::System.Collections.IList list)
         {
             if (list is null) throw new ArgumentNullException();
             RandomDisrupt(random, list, 0, list.Count, 2);
@@ -348,7 +348,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
-        public static int RandomSelectItemFunc<T>(this BaseRandom random, Converter<T, int> itemToIntFunc, IReadOnlyList<T> list)
+        public static int RandomSelectItemFunc<T>(this IRandomGenerateValue random, Converter<T, int> itemToIntFunc, IReadOnlyList<T> list)
         {
             return RandomSelectItemFunc(random, itemToIntFunc, list, 0, (list ?? throw new ArgumentNullException()).Count);
         }
@@ -367,7 +367,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
-        public static int RandomSelectItemFunc<T>(this BaseRandom random, Converter<T, int> itemToIntFunc, IList<T> list)
+        public static int RandomSelectItemFunc<T>(this IRandomGenerateValue random, Converter<T, int> itemToIntFunc, IList<T> list)
         {
             return RandomSelectItemFunc(random, itemToIntFunc, list, 0, (list ?? throw new ArgumentNullException()).Count);
         }
@@ -385,7 +385,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
-        public static int RandomSelectItemFunc(this BaseRandom random, Converter<object, int> itemToIntFunc, IList list)
+        public static int RandomSelectItemFunc(this IRandomGenerateValue random, Converter<object, int> itemToIntFunc, IList list)
         {
             return RandomSelectItemFunc(random, itemToIntFunc, list, 0, (list ?? throw new ArgumentNullException()).Count);
         }
@@ -406,7 +406,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
-        public static int RandomSelectItemFunc<T>(this BaseRandom random, Converter<T, int> itemToIntFunc, IReadOnlyList<T> list, int index, int count)
+        public static int RandomSelectItemFunc<T>(this IRandomGenerateValue random, Converter<T, int> itemToIntFunc, IReadOnlyList<T> list, int index, int count)
         {
             if (random is null || list is null || itemToIntFunc is null) throw new ArgumentNullException();
             if(index < 0 || count < 0 || (count + index > list.Count))
@@ -424,7 +424,7 @@ namespace Cheng.Algorithm.Randoms.Extends
                 all += itemToIntFunc.Invoke(list[i]);
             }
 
-            var rv = random.NextLong(0, all);
+            var rv = random.NextLong() % all;
 
             all = 0;
             for (i = index; i < length; i++)
@@ -455,7 +455,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
-        public static int RandomSelectItemFunc<T>(this BaseRandom random, Converter<T, int> itemToIntFunc, IList<T> list, int index, int count)
+        public static int RandomSelectItemFunc<T>(this IRandomGenerateValue random, Converter<T, int> itemToIntFunc, IList<T> list, int index, int count)
         {
             if (random is null || list is null || itemToIntFunc is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (count + index > list.Count))
@@ -473,7 +473,7 @@ namespace Cheng.Algorithm.Randoms.Extends
                 all += itemToIntFunc.Invoke(list[i]);
             }
 
-            var rv = random.NextLong(0, all);
+            var rv = random.NextLong() % all;
 
             all = 0;
             for (i = index; i < length; i++)
@@ -503,7 +503,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
-        public static int RandomSelectItemFunc(this BaseRandom random, Converter<object, int> itemToIntFunc, IList list, int index, int count)
+        public static int RandomSelectItemFunc(this IRandomGenerateValue random, Converter<object, int> itemToIntFunc, IList list, int index, int count)
         {
             if (random is null || list is null || itemToIntFunc is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (count + index > list.Count))
@@ -521,7 +521,7 @@ namespace Cheng.Algorithm.Randoms.Extends
                 all += itemToIntFunc.Invoke(list[i]);
             }
 
-            var rv = random.NextLong(0, all);
+            var rv = random.NextLong() % all;
 
             all = 0;
             for (i = index; i < length; i++)
@@ -550,7 +550,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
-        public static int RandomSelectItem<T>(this BaseRandom random, IConverter<T, int> converToInt, IReadOnlyList<T> list)
+        public static int RandomSelectItem<T>(this IRandomGenerateValue random, IConverter<T, int> converToInt, IReadOnlyList<T> list)
         {
             return RandomSelectItem(random, converToInt, list, 0, (list ?? throw new ArgumentNullException()).Count);
         }
@@ -569,7 +569,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
-        public static int RandomSelectItem<T>(this BaseRandom random, IConverter<T, int> converToInt, IList<T> list)
+        public static int RandomSelectItem<T>(this IRandomGenerateValue random, IConverter<T, int> converToInt, IList<T> list)
         {
             return RandomSelectItem(random, converToInt, list, 0, (list ?? throw new ArgumentNullException()).Count);
         }
@@ -588,7 +588,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值</exception>
-        public static int RandomSelectItem(this BaseRandom random, IConverter<object, int> converToInt, IList list)
+        public static int RandomSelectItem(this IRandomGenerateValue random, IConverter<object, int> converToInt, IList list)
         {
             return RandomSelectItem(random, converToInt, list, 0, (list ?? throw new ArgumentNullException()).Count);
         }
@@ -609,7 +609,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
-        public static int RandomSelectItem<T>(this BaseRandom random, IConverter<T, int> converToInt, IReadOnlyList<T> list, int index, int count)
+        public static int RandomSelectItem<T>(this IRandomGenerateValue random, IConverter<T, int> converToInt, IReadOnlyList<T> list, int index, int count)
         {
             if (random is null || list is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (count + index > list.Count))
@@ -627,7 +627,7 @@ namespace Cheng.Algorithm.Randoms.Extends
                 all += converToInt.Convert(list[i]);
             }
 
-            var rv = random.NextLong(0, all);
+            var rv = random.NextLong() % all;
 
             all = 0;
             for (i = index; i < length; i++)
@@ -658,7 +658,7 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
-        public static int RandomSelectItem<T>(this BaseRandom random, IConverter<T, int> converToInt, IList<T> list, int index, int count)
+        public static int RandomSelectItem<T>(this IRandomGenerateValue random, IConverter<T, int> converToInt, IList<T> list, int index, int count)
         {
             if (random is null || list is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (count + index > list.Count))
@@ -676,7 +676,7 @@ namespace Cheng.Algorithm.Randoms.Extends
                 all += converToInt.Convert(list[i]);
             }
 
-            var rv = random.NextLong(0, all);
+            var rv = random.NextLong() % all;
 
             all = 0;
             for (i = index; i < length; i++)
@@ -700,14 +700,14 @@ namespace Cheng.Algorithm.Randoms.Extends
         /// </remarks>
         /// <typeparam name="T">集合元素类型</typeparam>
         /// <param name="random">随机器</param>
-        /// <param name="converToInt">将<typeparamref name="T"/>类型对象映射为32位整数的映射器接口，每一个元素对应一个固定的大于0的整数；null使用默认实现的转换器</param>
+        /// <param name="converToInt">将<see cref="object"/>类型对象映射为32位整数的映射器接口，每一个元素对应一个固定的大于0的整数；null使用默认实现的转换器</param>
         /// <param name="list">要选择其中元素的集合</param>
         /// <param name="index">要选取的集合范围起始索引</param>
         /// <param name="count">要选取的集合元素数量</param>
         /// <returns>选中的集合元素所在索引；如果映射器出错，或者集合元素为0，返回-1</returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">集合元素映射的值小于或等于0，或者映射的值不是固定值；或者给定集合索引参数超出范围</exception>
-        public static int RandomSelectItem(this BaseRandom random, IConverter<object, int> converToInt, IList list, int index, int count)
+        public static int RandomSelectItem(this IRandomGenerateValue random, IConverter<object, int> converToInt, IList list, int index, int count)
         {
             if (random is null || list is null) throw new ArgumentNullException();
             if (index < 0 || count < 0 || (count + index > list.Count))
@@ -725,7 +725,7 @@ namespace Cheng.Algorithm.Randoms.Extends
                 all += converToInt.Convert(list[i]);
             }
 
-            var rv = random.NextLong(0, all);
+            var rv = random.NextLong() % all;
 
             all = 0;
             for (i = index; i < length; i++)

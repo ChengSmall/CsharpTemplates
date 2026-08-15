@@ -5,9 +5,65 @@ namespace Cheng.Algorithm.Randoms
 {
 
     /// <summary>
+    /// 随机数生成器公共接口
+    /// </summary>
+    public interface IRandomGenerateValue
+    {
+
+        /// <summary>
+        /// 获取一个随机整数
+        /// </summary>
+        /// <returns>一个随机整数，范围区间在[0, 2147483647)</returns>
+        int Next();
+
+        /// <summary>
+        /// 获取一个64位随机整数
+        /// </summary>
+        /// <returns>一个64位随机整数，范围区间在[0,9223372036854775807)</returns>
+        long NextLong();
+
+        /// <summary>
+        /// 获取一个范围取键在[0,1)的双浮点随机数
+        /// </summary>
+        /// <returns>范围取键在[0,1)的双浮点随机数</returns>
+        double NextDouble();
+
+        /// <summary>
+        /// 获取一个范围区间在[<paramref name="min"/>,<paramref name="max"/>)的随机数
+        /// </summary>
+        /// <param name="min">最小值</param>
+        /// <param name="max">不超过或等于此值</param>
+        /// <returns>一个指定范围的随机数</returns>
+        /// <exception cref="ArgumentOutOfRangeException">参数min大于或等于max</exception>
+        int Next(int min, int max);
+
+    }
+
+    /// <summary>
+    /// 随机字节序列生成器公共接口
+    /// </summary>
+    public interface IRandomGenerateBytes
+    {
+
+        /// <summary>
+        /// 用随机数填充指定内存中的每一个字节
+        /// </summary>
+        /// <param name="ptr">指向字节数据的指针</param>
+        /// <param name="length">要填充的字节数量</param>
+        void NextPtr(CPtr<byte> ptr, int length);
+    }
+
+    /// <summary>
+    /// 表示一个生成随机数列的随机数生成器公共接口
+    /// </summary>
+    public interface IBaseRandom : IRandomGenerateValue, IRandomGenerateBytes
+    {
+    }
+
+    /// <summary>
     /// 表示一个生成随机数列的随机数生成器基类
     /// </summary>
-    public abstract class BaseRandom
+    public abstract class BaseRandom : IBaseRandom
     {
 
         #region 结构
@@ -123,7 +179,7 @@ namespace Cheng.Algorithm.Randoms
         public virtual int Next(int min, int max)
         {
             if (min >= max) throw new ArgumentOutOfRangeException();
-            return min + (Next() % (max - min));
+            return (int)(min + (NextLong() % (max - min)));
         }
 
         /// <summary>
@@ -140,8 +196,7 @@ namespace Cheng.Algorithm.Randoms
             ulong n2 = (ulong)(Next() % 0b1_00000000_00000000_00000000);
             ulong n3 = (ulong)(Next() % 0b1_00000000_00000000);
 
-            n1 = ((n3 << (8 * 6)) | (n2 << (8 * 3)) | (n1));
-            return (long)(n1 % long.MaxValue);
+            return (long)(((n3 << (8 * 6)) | (n2 << (8 * 3)) | (n1)) % long.MaxValue);
         }
 
         /// <summary>
@@ -202,7 +257,7 @@ namespace Cheng.Algorithm.Randoms
         }
 
         /// <summary>
-        /// 用随机数填充指定字节数组的元素。
+        /// 用随机数填充指定字节数组的元素
         /// </summary>
         /// <param name="buffer">待填充的字节数组</param>
         /// <exception cref="ArgumentNullException">参数为null</exception>
@@ -267,7 +322,7 @@ namespace Cheng.Algorithm.Randoms
         /// <param name="length">要填充的字节长度</param>
         public virtual unsafe void NextPtr(IntPtr ptr, int length)
         {
-            NextPtr((CPtr<byte>)ptr, length);
+            NextPtr(new CPtr<byte>((byte*)ptr), length);
         }
 
         /// <summary>
