@@ -42,15 +42,8 @@
     <None Include="App.config" />
     <None Include="codes\KeyCode中文名称json映射表\KeyCode键码汉化表.json" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="codes\角色控制器\2D\" />
-    <Folder Include="codes\角色控制器\3D\第三人称视角\" />
-    <Folder Include="项目代码\未完功能\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="codes\推箱子\CameraDrawPushBoxScene.cs" />
-    <Compile Include="codes\推箱子\EditorDrawStructure.cs" />
-    <Compile Include="codes\推箱子\Editor\SpriteDrawEditorGUI.cs" />
     <Compile Include="codes\游戏静态参数类\GameParameters.cs" />
   </ItemGroup>
   <ItemGroup>
