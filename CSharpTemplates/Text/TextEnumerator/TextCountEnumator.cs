@@ -293,11 +293,13 @@ namespace Cheng.Texts.NumEnumator
 
         public override bool CanReset => true;
 
+#if DEBUG
         /// <summary>
         /// 返回26进制位数
         /// </summary>
         /// <param name="maxCount"></param>
         /// <returns></returns>
+#endif
         static int reDigit(int maxCount)
         {
             int count = 0;
@@ -312,14 +314,16 @@ namespace Cheng.Texts.NumEnumator
         }
 
         /// <summary>
-        /// 返回字母数
+        /// 返回字母形式的计数值
         /// </summary>
-        /// <param name="value">字母数的值</param>
-        /// <param name="maxCount">最高值</param>
-        /// <param name="big">开启大写</param>
-        /// <returns></returns>
-        static string toLetter(int value, int maxCount, bool big)
+        /// <param name="value">表示当前计数的值</param>
+        /// <param name="maxCount">此计数器的最大值</param>
+        /// <param name="toUpper">是否使用大写字母</param>
+        /// <returns>使用字母表示的计数值</returns>
+        /// <exception cref="ArgumentOutOfRangeException">值小于或等于0；或最大值小于当前计数值</exception>
+        public static string ToLetter(int value, int maxCount, bool toUpper)
         {
+            if (value < 0 || maxCount <= 0 || (maxCount < value)) throw new ArgumentOutOfRangeException();
             //字母位数
             var digitCount = reDigit(maxCount);
             //缓存
@@ -327,7 +331,7 @@ namespace Cheng.Texts.NumEnumator
 
             char firstChar;
 
-            if (big) firstChar = 'A';
+            if (toUpper) firstChar = 'A';
             else firstChar = 'a';
 
             int i;
@@ -360,7 +364,7 @@ namespace Cheng.Texts.NumEnumator
 
             p_count++;
 
-            p_name = (p_last + toLetter(p_count, p_maxCount, p_big) + p_next);
+            p_name = (p_last + ToLetter(p_count, p_maxCount, p_big) + p_next);
 
             return true;
         }
