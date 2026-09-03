@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProgramTest", "ProgramTest\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtherCode", "OtherCode\OtherCode.csproj", "{5C493D14-A1FD-41D5-8908-FC752BA3CE80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFrameworkTemplate", "NetFrameworkTemplate4.6.2\NetFrameworkTemplate.csproj", "{4560F930-7D25-4F57-9B33-882A78E0F4FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFrameworkTemplate", "NetFrameworkTemplate\NetFrameworkTemplate.csproj", "{4560F930-7D25-4F57-9B33-882A78E0F4FB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DEBUGCode", "DEBUGCode\DEBUGCode.csproj", "{B34EED8C-0F8E-4E84-906F-9604233DB045}"
 EndProject
