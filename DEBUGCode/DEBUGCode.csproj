@@ -98,6 +98,7 @@
     <ProjectReference Include="..\NetFrameworkTemplate\NetFrameworkTemplate.csproj">
       <Project>{4560f930-7d25-4f57-9b33-882a78e0f4fb}</Project>
       <Name>NetFrameworkTemplate</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
