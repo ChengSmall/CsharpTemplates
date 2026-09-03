@@ -41,7 +41,7 @@ namespace Cheng.Streams.Parsers
         /// <param name="stream">要读取的流数据</param>
         /// <returns>转化到的对象</returns>
         /// <exception cref="ArgumentNullException">流对象为null</exception>
-        /// <exception cref="StreamParserException">无法解析</exception>
+        /// <exception cref="Exception">其他错误</exception>
         public abstract object ConverToObject(Stream stream);
 
         /// <summary>
@@ -50,23 +50,12 @@ namespace Cheng.Streams.Parsers
         /// <param name="obj">要转化的对象</param>
         /// <param name="stream">要写入的数据流对象</param>
         /// <exception cref="ArgumentNullException">流对象为null</exception>
-        /// <exception cref="StreamParserException">无法解析</exception>
+        /// <exception cref="Exception">其他错误</exception>
         public abstract void ConverToStream(object obj, Stream stream);
 
         #endregion
 
         #region 功能
-
-        /// <summary>
-        /// 线程安全封装
-        /// </summary>
-        /// <param name="streamParser">要封装为线程安全的解析器</param>
-        /// <returns>一个线程安全的流数据解析器</returns>
-        /// <exception cref="ArgumentNullException">参数为null</exception>
-        public static StreamParser AsnyhSafe(IStreamParser streamParser)
-        {
-            return new ThreadSafe(streamParser);
-        }
 
         /// <summary>
         /// 读取流数据转化为对象
@@ -75,7 +64,6 @@ namespace Cheng.Streams.Parsers
         /// <param name="stream">要读取的流数据</param>
         /// <returns>转化到的对象</returns>
         /// <exception cref="ArgumentNullException">流对象为null</exception>
-        /// <exception cref="StreamParserException">无法解析</exception>
         public virtual T ConverToObject<T>(Stream stream)
         {
             return (T)ConverToObject(stream);
@@ -83,29 +71,6 @@ namespace Cheng.Streams.Parsers
 
         #endregion
 
-        #region 结构
-
-        class ThreadSafe : StreamParser
-        {
-            public ThreadSafe(IStreamParser sp)
-            {
-                this.sp = sp ?? throw new ArgumentNullException();
-            }
-
-            IStreamParser sp;
-
-            public override object ConverToObject(Stream stream)
-            {
-                lock (sp) return sp.ConverToObject(stream);
-            }
-
-            public override void ConverToStream(object obj, Stream stream)
-            {
-                lock (sp) sp.ConverToStream(obj, stream);
-            }
-        }
-
-        #endregion
     }
 
 }

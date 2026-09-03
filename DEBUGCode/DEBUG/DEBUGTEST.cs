@@ -17,7 +17,6 @@ namespace Cheng.DEBUG
     public unsafe static class DEBUGTEST
     {
         const string nullstr = "[Null]";
-        //const string emptystr = "[Empty]";
 
         #region print
 

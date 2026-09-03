@@ -75,7 +75,7 @@ namespace Cheng.Parsers.CommandParsers
         /// </summary>
         public CommandParser()
         {
-            p_parsers = new Dictionary<string, ExecuteCommandAction>();
+            p_parsers = new Dictionary<string, ExecuteCommandAction>(StringComparer.Ordinal);
             p_separator = ' ';
             p_lastError = ExecuteCommandError.NoneError;
         }
@@ -86,14 +86,26 @@ namespace Cheng.Parsers.CommandParsers
         /// <param name="separator">指定拆解命令的分隔符，默认为空格' '</param>
         public CommandParser(char separator)
         {
-            p_parsers = new Dictionary<string, ExecuteCommandAction>();
+            p_parsers = new Dictionary<string, ExecuteCommandAction>(StringComparer.Ordinal);
+            p_separator = separator;
+            p_lastError = ExecuteCommandError.NoneError;
+        }
+
+        /// <summary>
+        /// 实例化一个命令解析器
+        /// </summary>
+        /// <param name="separator">指定拆解命令的分隔符，默认为空格' '</param>
+        /// <param name="cmdComparer">命令字符串比较器，默认使用二进制比较器</param>
+        public CommandParser(char separator, IEqualityComparer<string> cmdComparer)
+        {
+            p_parsers = new Dictionary<string, ExecuteCommandAction>(cmdComparer ?? StringComparer.Ordinal);
             p_separator = separator;
             p_lastError = ExecuteCommandError.NoneError;
         }
 
         protected CommandParser(bool init)
         {
-            if (init) p_parsers = new Dictionary<string, ExecuteCommandAction>();
+            if (init) p_parsers = new Dictionary<string, ExecuteCommandAction>(StringComparer.Ordinal);
         }
 
         #endregion
