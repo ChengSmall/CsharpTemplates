@@ -109,15 +109,56 @@ namespace Cheng.Systems
                 return;
             }
             var nowMs = Stopwatch.GetTimestamp();
-            if (Stopwatch.Frequency != TimeSpan.TicksPerSecond)
+            // 转换等待单位 span 到 tick
+            long wtick;
+            if (Stopwatch.Frequency == TimeSpan.TicksPerSecond)
             {
-                // 跨平台兼容转换
-                nowMs = (long)(nowMs * (TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency));
+                wtick = waitTime.Ticks;
             }
-            var wtick = waitTime.Ticks;
-            while ((Stopwatch.GetTimestamp() - nowMs) < wtick)
+            else
+            {
+                wtick = (long)(waitTime.Ticks * (Stopwatch.Frequency / TimeSpan.TicksPerSecond));
+            }
+            var lw = wtick - ((Stopwatch.Frequency / 1000) * 2);
+            while ((Stopwatch.GetTimestamp() - nowMs) < lw)
             {
                 Thread.Sleep(0);
+            }
+            while ((Stopwatch.GetTimestamp() - nowMs) < wtick)
+            {
+            }
+        }
+
+        /// <summary>
+        /// 将当前线程进行更精准的线程等待
+        /// </summary>
+        /// <param name="waitTimeMS">指定等待时间，单位毫秒；最小值为0</param>
+        public static void ThreadSleepHighPrecision(int waitTimeMS)
+        {
+            if (waitTimeMS <= 0)
+            {
+                Thread.Sleep(0);
+                return;
+            }
+            var nowMs = Stopwatch.GetTimestamp();
+            var frms = (Stopwatch.Frequency / 1000);
+            // 转换等待单位 毫秒 到 tick
+            long wtick;
+            if (Stopwatch.Frequency == 1000)
+            {
+                wtick = waitTimeMS;
+            }
+            else
+            {
+                wtick = (long)(waitTimeMS * frms);
+            }
+            var lw = wtick - (frms * 2);
+            while ((Stopwatch.GetTimestamp() - nowMs) < lw)
+            {
+                Thread.Sleep(0);
+            }
+            while ((Stopwatch.GetTimestamp() - nowMs) < (wtick))
+            {
             }
         }
 
