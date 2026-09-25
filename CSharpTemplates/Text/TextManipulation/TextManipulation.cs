@@ -1,7 +1,11 @@
-using Cheng.Memorys;
 using System;
 using System.IO;
 using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+
+using Cheng.DataStructure;
+using Cheng.Memorys;
 
 namespace Cheng.Texts
 {
@@ -911,6 +915,140 @@ namespace Cheng.Texts
                 ToStdNewLineByAddress(charBuffer + startIndex, count, newLine, sb);
                 return sb.ToString();
             }
+        }
+
+        #endregion
+
+        #region Format
+
+        /// <summary>
+        /// 从指定委托中替换字符串内占位符所示文本的字符串
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// 该函数会从<paramref name="textLookup"/>中根据给定的参数获取对应的替换字符串，以此将字符串原版的占位符替换为对应文本<br/>
+        /// 例: <paramref name="format"/>是 "abc {name} 123"时，函数会用"name"字符串传入<paramref name="textLookup"/>，并将获取的字符串替换到'{name}'中，变成 "abc 替换后的文本 123"<br/>
+        /// 如果需要在<paramref name="format"/>参数中使用花括号字符，则前花括号需要添加连续两个，例: "{{100}"，返回的字符串是 "{100}"；当单独出现右花括号'}'时，不会出现错误而是直接写入结果
+        /// </para>
+        /// </remarks>
+        /// <param name="format">
+        /// <para>一个复合字符串格式，使用花括号'{}'表示<paramref name="textLookup"/>内参数，并调用<paramref name="textLookup"/>替换对应字符串</para>
+        /// </param>
+        /// <param name="textLookup">要根据字符串搜索替换文本的搜索器函数，当返回true时成功替换，返回false时则不存在可替换内容</param>
+        /// <param name="isNotkeyThrow">在<paramref name="textLookup"/>中无法获取某个占位符文本时是否引发异常；true表示直接引发异常，false表示忽略无法查询到的占位符</param>
+        /// <returns>格式替换后的新字符串</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="FormatException">字符串格式错误</exception>
+        /// <exception cref="ArgumentException">复合字符串内的占位符不在搜索器内（仅当<paramref name="isNotkeyThrow"/>为true时有效）</exception>
+        public static string FormatByTextLookup(this string format, ConvertByCondition<string, string> textLookup, bool isNotkeyThrow)
+        {
+            if (format is null || textLookup is null) throw new ArgumentNullException();
+            int i;
+            int length = format.Length;
+            if (length == 0) return format;
+
+            for (i = 0; i < length; i++)
+            {
+                if (format[i] == '{')
+                {
+                    goto IsH;
+                }
+            }
+            // 不存在花括号
+            return format;
+
+            IsH:
+            // 存在花括号
+            StringBuilder sb = new StringBuilder(length);
+            StringBuilder tsb = new StringBuilder(16);
+            for (i = 0; i < length;)
+            {
+                char c = format[i];
+                if (c != '{')
+                {
+                    // 不等于占位符
+                    i++;
+                    sb.Append(c);
+                    continue;
+                }
+                // 首字符属于占位符
+                i++;
+                if (i >= length)
+                {
+                    throw new FormatException();
+                }
+                c = format[i];
+                if (c == '{')
+                {
+                    // 连续两个占位符视为普通字符
+                    i++;
+                    sb.Append(c);
+                    continue;
+                }
+
+                // 从i开始获取文本
+                {
+                    tsb.Clear();
+                    int textI = i;
+                    for (; ; )
+                    {
+                        if (textI >= length)
+                        {
+                            throw new FormatException();
+                        }
+
+                        c = format[textI];
+                        if (c == '}')
+                        {
+                            // 结束符号
+                            textI++;
+                            i = textI;
+                            var getdKey = tsb.ToString();
+                            if (textLookup.Invoke(getdKey, out string rest))
+                            {
+                                sb.Append(rest);
+                            }
+                            else
+                            {
+                                if (isNotkeyThrow)
+                                {
+                                    throw new ArgumentException();
+                                }
+                            }
+                            break;
+                        }
+
+                        tsb.Append(c);
+                        textI++;
+                    }
+                }
+
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 从指定委托中替换字符串内占位符所示文本的字符串
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// 该函数会从<paramref name="textLookup"/>中根据给定的参数获取对应的替换字符串，以此将字符串原版的占位符替换为对应文本<br/>
+        /// 例: <paramref name="format"/>是 "abc {name} 123"时，函数会用"name"字符串传入<paramref name="textLookup"/>，并将获取的字符串替换到'{name}'中，变成 "abc 替换后的文本 123"<br/>
+        /// 如果需要在<paramref name="format"/>参数中使用花括号字符，则前花括号需要添加连续两个，例: "{{100}"，返回的字符串是 "{100}"；当单独出现右花括号'}'时，不会出现错误而是直接写入结果
+        /// </para>
+        /// </remarks>
+        /// <param name="format">
+        /// <para>一个复合字符串格式，使用花括号'{}'表示<paramref name="textLookup"/>内参数，并调用<paramref name="textLookup"/>替换对应字符串</para>
+        /// </param>
+        /// <param name="textLookup">要根据字符串搜索替换文本的搜索器函数，当返回true时成功替换，返回false时则不存在可替换内容</param>
+        /// <returns>格式替换后的新字符串</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="FormatException">字符串格式错误</exception>
+        /// <exception cref="ArgumentException">复合字符串内的占位符不在搜索器内</exception>
+        public static string FormatByTextLookup(this string format, ConvertByCondition<string, string> textLookup)
+        {
+            return FormatByTextLookup(format, textLookup, true);
         }
 
         #endregion
