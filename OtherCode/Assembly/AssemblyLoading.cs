@@ -26,9 +26,12 @@ namespace Cheng.Systems
                 p_dict = new Dictionary<string, Assembly>(StringComparer.Ordinal);
                 p_registerFunc = Dom_AssemblyResolve;
                 p_registerOtherFunc = null;
+                p_runningAssembly = null;
             }
 
             public Dictionary<string, Assembly> p_dict;
+
+            public Assembly p_runningAssembly;
 
             public ResolveEventHandler p_registerFunc;
 
@@ -124,9 +127,19 @@ namespace Cheng.Systems
         /// <summary>
         /// 初始化动态程序集加载功能
         /// </summary>
-        public static void InitLoading()
+        /// <param name="assembly">当前的运行时模块程序集</param>
+        public static void InitLoading(Assembly assembly)
         {
             p_lock = new S_Obj();
+            p_lock.p_runningAssembly = assembly;
+            if(p_lock.p_runningAssembly is null)
+            {
+                p_lock.p_runningAssembly =  Assembly.GetEntryAssembly();
+            }
+            if (p_lock.p_runningAssembly is null)
+            {
+                p_lock.p_runningAssembly = Assembly.GetExecutingAssembly();
+            }
         }
 
         /// <summary>

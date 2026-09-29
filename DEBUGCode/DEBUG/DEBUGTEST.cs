@@ -1,13 +1,13 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Reflection;
+using System.Globalization;
+
 using Cheng.Json;
 using Cheng.Memorys;
-using System.Globalization;
 
 namespace Cheng.DEBUG
 {
@@ -18,30 +18,74 @@ namespace Cheng.DEBUG
     {
         const string nullstr = "[Null]";
 
+        #region 线程安全
+
+        private class SafeObj
+        {
+            public static SafeObj obj = new SafeObj();
+
+            public SafeObj()
+            {
+                lockobj = Environment.TickCount;
+            }
+
+            public int lockobj;
+        }
+
+        #endregion
+
         #region print
 
         /// <summary>
         /// （DEBUG）打印输出到控制台
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
-        public static void print<T>(this T obj)
+        public static void print(this string obj)
         {
-            string str = obj?.ToString();
-            if (str is null) Console.Write(nullstr);
-            else Console.Write(str);
+            lock (SafeObj.obj)
+            {
+                if (obj is null) Console.Write(nullstr);
+                else Console.Write(obj);
+            }
         }
 
         /// <summary>
         /// （DEBUG）后继换行打印输出到控制台
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
-        public static void printl<T>(this T obj)
+        public static void printl(this string obj)
         {
-            string str = obj?.ToString();
-            if (str is null) Console.WriteLine(nullstr);
-            else Console.WriteLine(str);
+            lock (SafeObj.obj)
+            {
+                if (obj is null) Console.WriteLine(nullstr);
+                else Console.WriteLine(obj);
+            }
+        }
+
+        /// <summary>
+        /// （DEBUG）后继换行打印输出到控制台
+        /// </summary>
+        /// <param name="obj"></param>
+        public static void print(this object obj)
+        {
+            lock (SafeObj.obj)
+            {
+                if (obj == null) Console.Write(nullstr);
+                else Console.Write(obj);
+            }
+        }
+
+        /// <summary>
+        /// （DEBUG）后继换行打印输出到控制台
+        /// </summary>
+        /// <param name="obj"></param>
+        public static void printl(this object obj)
+        {
+            lock (SafeObj.obj)
+            {
+                if (obj == null) Console.WriteLine(nullstr);
+                else Console.WriteLine(obj);
+            }
         }
 
         /// <summary>
@@ -50,7 +94,7 @@ namespace Cheng.DEBUG
         /// <param name="ptr"></param>
         public static void print(this IntPtr ptr)
         {
-            ((ulong)ptr.ToPointer()).ToString("x").ToUpper().print();
+            lock (SafeObj.obj) Console.Write(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
         }
 
         /// <summary>
@@ -59,7 +103,7 @@ namespace Cheng.DEBUG
         /// <param name="ptr"></param>
         public static void printl(this IntPtr ptr)
         {
-            ((ulong)ptr.ToPointer()).ToString("x").ToUpper().printl();
+            lock (SafeObj.obj) Console.WriteLine(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
         }
 
         /// <summary>
@@ -68,7 +112,7 @@ namespace Cheng.DEBUG
         /// <param name="ptr"></param>
         public static void print(this UIntPtr ptr)
         {
-            ((ulong)ptr.ToPointer()).ToString("x").ToUpper().print();
+            lock (SafeObj.obj) Console.Write(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
         }
 
         /// <summary>
@@ -77,29 +121,7 @@ namespace Cheng.DEBUG
         /// <param name="ptr"></param>
         public static void printl(this UIntPtr ptr)
         {
-            ((ulong)ptr.ToPointer()).ToString("x").ToUpper().printl();
-        }
-
-        /// <summary>
-        /// （DEBUG）以指针模式打印输出到控制台
-        /// </summary>
-        /// <typeparam name="TPTR"></typeparam>
-        /// <param name="ptr"></param>
-        public static void ptrint<TPTR>(this TPTR ptr) where TPTR : unmanaged
-        {
-            var p = (*(IntPtr*)&ptr);
-            p.print();
-        }
-
-        /// <summary>
-        /// （DEBUG）以指针模式后继换行打印输出到控制台
-        /// </summary>
-        /// <typeparam name="TPTR"></typeparam>
-        /// <param name="ptr"></param>
-        public static void ptrintl<TPTR>(this TPTR ptr) where TPTR : unmanaged
-        {
-            var p = (*(IntPtr*)&ptr);
-            p.printl();
+            lock (SafeObj.obj) Console.WriteLine(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
         }
 
         static void f_toUp(char* originCharptr, char* toCharptr, int length)
@@ -118,14 +140,12 @@ namespace Cheng.DEBUG
                     toCharptr[i] = c;
                 }
             }
-
         }
 
         static void f_toLop(char* originCharptr, char* toCharptr, int length)
         {
             //小写1大写0
             const ushort cbit = 0b11111111_11011111;
-
             char c;
             for (int i = 0; i < length; i++)
             {
@@ -141,9 +161,9 @@ namespace Cheng.DEBUG
 
         public static string defToStr<T>(T obj)
         {
-            string str = obj?.ToString();
-            if (str is null) return nullstr;
-            return str;
+                string str = obj?.ToString();
+                if (str is null) return nullstr;
+                return str;
         }
 
         public static string defToStr(object obj)
@@ -538,7 +558,7 @@ namespace Cheng.DEBUG
         /// </summary>
         public static void printl()
         {
-            Console.WriteLine();
+            lock(SafeObj.obj) Console.WriteLine();
         }
 
         public static int Sizeof<T>(this T value) where T : unmanaged
@@ -583,7 +603,7 @@ namespace Cheng.DEBUG
             }
             if (highSize == 2) return ((double)value / mb).ToString("0.#####") + "MB";
 
-            return ((double)value / gb).ToString("0.######") + "GB";
+            return ((double)value / gb).ToString("0.#####") + "GB";
         }
 
         /// <summary>
@@ -618,7 +638,7 @@ namespace Cheng.DEBUG
             }
             if (highSize == 2) return ((double)value / mb).ToString("0.#####") + "MB";
 
-            return ((double)value / gb).ToString("0.######") + "GB";
+            return ((double)value / gb).ToString("0.#####") + "GB";
         }
 
         /// <summary>
@@ -653,16 +673,37 @@ namespace Cheng.DEBUG
             if (cultureInfo is null) return "[Null]";
             StringBuilder sb = new StringBuilder(32);
 
-            var two = cultureInfo.TwoLetterISOLanguageName;
-            var thr = cultureInfo.ThreeLetterWindowsLanguageName;
-            sb.Append(two);
-            if (!string.IsNullOrEmpty(thr))
-            {
-                sb.Append('-');
-                sb.Append(thr.ToLowerInvariant());
-            }
+            sb.Append(cultureInfo.Name);
             sb.Append(" => ");
             sb.Append(cultureInfo.DisplayName);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 返回区域性信息的名称，格式例 zh-CN
+        /// </summary>
+        /// <param name="cultureInfo"></param>
+        /// <returns></returns>
+        public static string ToCultName(this CultureInfo cultureInfo)
+        {
+            if (cultureInfo is null) return "[Null]";
+            StringBuilder sb = new StringBuilder(32);
+            var ISO639_1 = cultureInfo.TwoLetterISOLanguageName;
+            sb.Append(ISO639_1);
+            try
+            {
+                var rinfo = new RegionInfo(cultureInfo.LCID);
+                var ISO3166 = rinfo.TwoLetterISORegionName;
+                if (!string.IsNullOrEmpty(ISO3166))
+                {
+                    sb.Append('-');
+                    sb.Append(ISO3166);
+                }
+            }
+            catch (Exception)
+            {
+            }
+
             return sb.ToString();
         }
 
