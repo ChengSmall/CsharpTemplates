@@ -13,7 +13,7 @@ namespace Cheng.DataStructure.Texts
 {
 
     /// <summary>
-    /// 可表示为代理项字符的32位字符值
+    /// 可表示为代理对字符的32位字符值
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public readonly unsafe struct Unichar : IEquatable<Unichar>, IComparable<Unichar>, IComparable
@@ -54,7 +54,7 @@ namespace Cheng.DataStructure.Texts
         /// 使用高低位代理项码位初始化字符
         /// </summary>
         /// <param name="high">高代理项码位（范围从 U+D800 到 U+DBFF）</param>
-        /// <param name="low">低代理项码位（范围从 U+DC00 到 U+DFFF）</param>
+        /// <param name="low">低代理项码位（范围从 U+DC00 到 U+DFFF）；如果该参数是0，可将<paramref name="high"/>表示为普通字符值</param>
         public Unichar(char high, char low)
         {
             this.low = low; this.high = high;
@@ -63,7 +63,7 @@ namespace Cheng.DataStructure.Texts
         /// <summary>
         /// 使用unicode码初始化字符
         /// </summary>
-        /// <param name="unicode">如果值属于一个代理对字符码位，则初始化为代理对字符；否则将前16位作为high，后16位作为low值初始化</param>
+        /// <param name="unicode">如果值属于一个代理对字符码位，则初始化为代理对字符；否则将前16位作为high参数，后16位作为low参数初始化</param>
         public Unichar(int unicode)
         {
             if((unicode >= 0x10000 && unicode <= 0x10FFFF))
@@ -158,6 +158,21 @@ namespace Cheng.DataStructure.Texts
         {
             if (char.IsSurrogatePair(high, low)) return toCode(high, low);
             return (int)(((uint)high) | (((uint)low) << 16));
+        }
+
+        /// <summary>
+        /// 获取字符值
+        /// </summary>
+        /// <param name="value">要获取的字符值或代理对的第一个字符</param>
+        /// <returns>如果返回null，则<paramref name="value"/>获取的是字符值；如果返回值不是null，则<paramref name="value"/>获取的是代理对字符的高位（第一个）值，返回值是代理对字符的低位（第二个）值</returns>
+        public char? ToCharPair(out char value)
+        {
+            value = high;
+            if (char.IsSurrogatePair(value, low))
+            {
+                return low;
+            }
+            return null;
         }
 
         /// <summary>
@@ -363,10 +378,10 @@ namespace Cheng.DataStructure.Texts
         }
 
         /// <summary>
-        /// 转换为一个32为整数值，代表unicode字符码
+        /// 转换为一个32位整数值，代表unicode字符码
         /// </summary>
         /// <param name="c"></param>
-        public static explicit operator int(Unichar c)
+        public static implicit operator int(Unichar c)
         {
             return c.ToChar();
         }
