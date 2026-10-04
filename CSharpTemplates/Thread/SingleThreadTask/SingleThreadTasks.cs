@@ -170,7 +170,6 @@ namespace Cheng.Threads
                     p_tasks.Enqueue(st);
                 }
             }
-
         }
 
         private bool f_onceTaskLoop()
@@ -198,25 +197,6 @@ namespace Cheng.Threads
                 }
                 Thread.Sleep(0);
             }
-
-            //int i;
-            //for (i = 0; i < count; i++)
-            //{
-            //    task = p_tasks[i];
-            //    //task.p_start = true;
-            //    try
-            //    {
-            //        TryExecuteTask(task);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        //task.p_abnormalOver = true;
-            //        this.TaskThrowExceptionEvent?.Invoke(this, ex);
-            //    }
-            //    //task.p_over = true;
-            //    p_tasks[i] = null;
-            //    //task.p_onList = false;
-            //}
 
             //p_tasks.Clear();
             return true;

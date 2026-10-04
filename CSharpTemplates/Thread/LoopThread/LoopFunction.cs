@@ -9,7 +9,7 @@ namespace Cheng.LoopThreads
 {
 
     /// <summary>
-    /// 表示一个循环执行的线程函数
+    /// 一个单线程循环模板
     /// </summary>
     public unsafe class LoopFunction : SafreleaseUnmanagedResources
     {
@@ -73,8 +73,6 @@ namespace Cheng.LoopThreads
             p_yieldList = new List<YieldEnumator>();
 
             p_fps = 0;
-
-            //p_waitTimer = new Stopwatch();
             //p_threadEventLock = new object();
 
             p_threadSafe_initEvent = new object();
@@ -232,9 +230,20 @@ namespace Cheng.LoopThreads
         #endregion
 
         #region 条件参数
-        private bool f_start;
 
-        private bool f_loop;
+#if DEBUG
+        /// <summary>
+        /// 是否正在循环
+        /// </summary>
+#endif
+        private bool p_startLooping;
+
+#if DEBUG
+        /// <summary>
+        /// 是否已开启循环
+        /// </summary>
+#endif
+        private bool p_onloop;
         #endregion
 
         #endregion
@@ -587,8 +596,33 @@ namespace Cheng.LoopThreads
 
         #endregion
 
-        #region 循环套件
-        
+        #region 状态
+
+        /// <summary>
+        /// 循环是否已被开启
+        /// </summary>
+        public bool OnLoop
+        {
+            get => p_onloop;
+        }
+
+        /// <summary>
+        /// 是否正在运行循环
+        /// </summary>
+        public bool Running
+        {
+            get => p_startLooping;
+        }
+
+        /// <summary>
+        /// 循环已经不再运行
+        /// </summary>
+        /// <returns>仅当开启循环并且停止运行循环才会是true，其它状态下都是false</returns>
+        public bool IsCloseLoop
+        {
+            get => (!p_startLooping) && (p_onloop);
+        }
+
         #endregion
 
         #endregion
@@ -626,6 +660,10 @@ namespace Cheng.LoopThreads
             {
                 for (i = 0; i < list.Count; )
                 {
+                    if (!p_startLooping)
+                    {
+                        break;
+                    }
                     //获取实例
                     ye = list[i];
 
@@ -691,7 +729,7 @@ namespace Cheng.LoopThreads
 
         private void f_exception(Exception ex)
         {
-            if(p_exceptionEvent == null)
+            if(p_exceptionEvent is null)
             {
                 throw ex;
             }
@@ -785,8 +823,9 @@ namespace Cheng.LoopThreads
                     ThreadSleep(TimeSpan.Zero);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                f_exception(ex);
             }
         }
 
@@ -794,16 +833,15 @@ namespace Cheng.LoopThreads
         /// 获取用于计时的当前时间戳
         /// </summary>
         /// <returns></returns>
-        protected virtual long GetNowTimeTick()
+        protected long GetNowTimeTick()
         {
             const long senTick = TimeSpan.TicksPerSecond;
-            long fre = System.Diagnostics.Stopwatch.Frequency;
             var stamp = System.Diagnostics.Stopwatch.GetTimestamp();
-            if (fre == senTick)
+            if (System.Diagnostics.Stopwatch.Frequency == senTick)
             {
                 return stamp;
             }
-            return (long)(((double)senTick / fre) * stamp);
+            return (long)(((double)senTick / System.Diagnostics.Stopwatch.Frequency) * stamp);
         }
 
         /// <summary>
@@ -813,21 +851,35 @@ namespace Cheng.LoopThreads
         /// <param name="waitTime">要进行线程等待的时间</param>
         protected virtual void ThreadSleep(TimeSpan waitTime)
         {
-            const long lazySleep = (long)(TimeSpan.TicksPerMillisecond * 16.667);
-            if (waitTime.Ticks > lazySleep)
+            // 懒等待tick数
+            const long lazySleep = (long)(TimeSpan.TicksPerMillisecond * 16);
+            var wtick = waitTime.Ticks;
+            if (wtick > lazySleep)
             {
-                Thread.Sleep(waitTime);
-                return;
+                // 大于懒等待时长
+
+                var nowTick = GetNowTimeTick();
+
+                // 要懒等待的时长
+                var waitTick = wtick - (TimeSpan.TicksPerMillisecond * 15);
+
+                // 线程睡眠
+                Thread.Sleep((int)(waitTick / TimeSpan.TicksPerMillisecond));
+
+                // 计算等待实际耗时
+                nowTick = GetNowTimeTick() - nowTick;
+                // 写入剩余高精度等待的时长
+                waitTime = new TimeSpan(wtick - (nowTick));
             }
             // 高精度等待
-            Cheng.Systems.SystemEnvironment.ThreadSleepHighPrecision(waitTime);
+            Cheng.Systems.SystemEnvironment.ThreadSleepHighPrecision(new TimeSpan(waitTime.Ticks - 100), true);
         }
 
         private void f_loopEnd()
         {
             LoopEnd();
 
-            EndLoopWaitFPS();
+            if (p_startLooping) EndLoopWaitFPS();
             p_frame++;
         }
 
@@ -923,12 +975,12 @@ namespace Cheng.LoopThreads
         private void f_updateFunc()
         {
             p_dyeltaTime = p_nowFrameTime;
-            f_update();
-            f_lateUpdate();
+            if (p_startLooping) f_update();
+            if (p_startLooping) f_lateUpdate();
             p_dyeltaTime = p_fixedUpdateTimeSpan;
-            f_fixedUpdate();
+            if (p_startLooping) f_fixedUpdate();
             p_dyeltaTime = p_nowScaleFrameTime;
-            f_fixedScaleUpdate();
+            if (p_startLooping) f_fixedScaleUpdate();
             p_dyeltaTime = p_nowFrameTime;
         }
 
@@ -945,7 +997,6 @@ namespace Cheng.LoopThreads
             {
                 f_exception(ex);
             }
-            
         }
 
         /// <summary>
@@ -953,32 +1004,46 @@ namespace Cheng.LoopThreads
         /// </summary>
         protected virtual void ExitLoop() { }
 
+        private void f_loopLastEnd()
+        {
+            LoopLastEnd();
+        }
+
+        /// <summary>
+        /// 每次循环时调用一次，此函数调用顺序在<see cref="LoopLastEnd"/>之前的最后一个调用
+        /// </summary>
+        /// <remarks>（此函数为空实现）</remarks>
+        protected virtual void LoopLastEnd() { }
+
         /// <summary>
         /// 要执行的循环函数
         /// </summary>
         /// <exception cref="LoopStartException">循环已经被执行或已经关闭</exception>
         protected void LoopFunctionMethod()
         {
-            if (f_loop)
+            if (p_onloop)
             {
                 throw new LoopStartException("循环已被启动或执行完毕");
             }
             //开始
-            f_loop = true;
-            f_start = true;
+            p_onloop = true;
+            p_startLooping = true;
 
             f_loopStartInit();
 
-            while (f_start)
+            while (p_startLooping)
             {
                 //头
                 f_loopFirst();
 
                 //帧
-                f_updateFunc();
+                if (p_startLooping) f_updateFunc();
 
-                //枚举器
-                f_enumator();
+                // 枚举器
+                if (p_startLooping) f_enumator();
+
+                // 尾前
+                if (p_startLooping) f_loopLastEnd();
 
                 //尾
                 f_loopEnd();
@@ -998,9 +1063,9 @@ namespace Cheng.LoopThreads
         /// <returns>是否成功退出；成功退出循环返回true，否则返回false</returns>
         public bool Exit()
         {
-            if(f_start)
+            if(p_startLooping)
             {
-                f_start = false;
+                p_startLooping = false;
                 return true;
             }
 

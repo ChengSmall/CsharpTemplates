@@ -101,14 +101,17 @@ namespace Cheng.Systems
         /// <para>该函数会在当前线程等待指定时间，使用代码轮询的方式进行精度更高的等待，因此不会大幅释放CPU资源</para>
         /// </remarks>
         /// <param name="waitTime">指定等待时间，最小为0</param>
-        public static void ThreadSleepHighPrecision(TimeSpan waitTime)
+        /// <param name="sleepZero">会在每次轮询时都使用<see cref="Thread.Sleep(int)"/>将多余时间片让出，从而稍微减轻CPU负担，但可能会让等待时间变得不稳定；false则不会使用<see cref="Thread.Sleep(int)"/></param>
+        public static void ThreadSleepHighPrecision(TimeSpan waitTime, bool sleepZero)
         {
+            var nowMs = Stopwatch.GetTimestamp();
+
             if (waitTime <= TimeSpan.Zero)
             {
-                Thread.Sleep(0);
+                if (sleepZero) Thread.Sleep(0);
                 return;
             }
-            var nowMs = Stopwatch.GetTimestamp();
+
             // 转换等待单位 span 到 tick
             long wtick;
             if (Stopwatch.Frequency == TimeSpan.TicksPerSecond)
@@ -119,14 +122,32 @@ namespace Cheng.Systems
             {
                 wtick = (long)(waitTime.Ticks * (Stopwatch.Frequency / TimeSpan.TicksPerSecond));
             }
-            var lw = wtick - ((Stopwatch.Frequency / 1000) * 2);
-            while ((Stopwatch.GetTimestamp() - nowMs) < lw)
+
+            if (sleepZero)
             {
-                Thread.Sleep(0);
+                while ((Stopwatch.GetTimestamp() - nowMs) < wtick)
+                {
+                    Thread.Sleep(0);
+                }
             }
-            while ((Stopwatch.GetTimestamp() - nowMs) < wtick)
+            else
             {
+                while ((Stopwatch.GetTimestamp() - nowMs) < wtick)
+                {
+                }
             }
+        }
+
+        /// <summary>
+        /// 将当前线程进行更精准的线程等待
+        /// </summary>
+        /// <remarks>
+        /// <para>该函数会在当前线程等待指定时间，使用代码轮询的方式进行精度更高的等待，因此不会大幅释放CPU资源</para>
+        /// </remarks>
+        /// <param name="waitTime">指定等待时间，最小为0</param>
+        public static void ThreadSleepHighPrecision(TimeSpan waitTime)
+        {
+            ThreadSleepHighPrecision(waitTime, true);
         }
 
         /// <summary>
@@ -135,31 +156,7 @@ namespace Cheng.Systems
         /// <param name="waitTimeMS">指定等待时间，单位毫秒；最小值为0</param>
         public static void ThreadSleepHighPrecision(int waitTimeMS)
         {
-            if (waitTimeMS <= 0)
-            {
-                Thread.Sleep(0);
-                return;
-            }
-            var nowMs = Stopwatch.GetTimestamp();
-            var frms = (Stopwatch.Frequency / 1000);
-            // 转换等待单位 毫秒 到 tick
-            long wtick;
-            if (Stopwatch.Frequency == 1000)
-            {
-                wtick = waitTimeMS;
-            }
-            else
-            {
-                wtick = (long)(waitTimeMS * frms);
-            }
-            var lw = wtick - (frms * 2);
-            while ((Stopwatch.GetTimestamp() - nowMs) < lw)
-            {
-                Thread.Sleep(0);
-            }
-            while ((Stopwatch.GetTimestamp() - nowMs) < (wtick))
-            {
-            }
+            ThreadSleepHighPrecision(new TimeSpan(waitTimeMS * TimeSpan.TicksPerMillisecond), true);
         }
 
         #endregion
