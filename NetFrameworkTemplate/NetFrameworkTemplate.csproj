@@ -85,34 +85,13 @@
   <ItemGroup>
     <Compile Include="Compressions\ResourcePackageWinForm\CompressionParserListView.cs" />
     <Compile Include="Data\Colour\ColourExtend.cs" />
-    <Compile Include="Data\Controllers\XInputButtons.cs" />
-    <Compile Include="Data\Controllers\XInputXBox360GameController.cs" />
-    <Compile Include="Data\Timer\PerformanceCounterTimer.cs" />
-    <Compile Include="Processes\API.cs" />
-    <Compile Include="Processes\ProcessAccessFlags.cs" />
-    <Compile Include="Processes\ProcessOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Systems\Data.cs" />
-    <Compile Include="Systems\SystemEnvironmentWindows.cs" />
-    <Compile Include="Systems\SystemEnvironmentWindows.Device.cs" />
-    <Compile Include="Systems\SystemEnvironmentWindows.Registry.cs" />
-    <Compile Include="Winapi\Hooks\Hooks.cs" />
-    <Compile Include="Winapi\Hooks\KeyHooks\KeyHook.cs" />
-    <Compile Include="Winapi\Hooks\MouseHooks\MouseHook.cs" />
-    <Compile Include="Winapi\Hooks\WinHooks.cs" />
-    <Compile Include="Winapi\Input\XInput.cs" />
-    <Compile Include="Winapi\Libarays\Libarays.cs" />
-    <Compile Include="Winapi\Midi\MidiException.cs" />
-    <Compile Include="Winapi\Midi\MidiHandle.cs" />
-    <Compile Include="Winapi\Midi\MidiData.cs" />
-    <Compile Include="Winapi\Midi\ProgramChangeNumber.cs" />
-    <Compile Include="Winapi\Midi\WinAPI.cs" />
-    <Compile Include="Winapi\WinThreadAPI.cs" />
+    <Compile Include="Systems\SystemEnvironmentFramework.cs" />
     <Compile Include="WinForms\Controls\ControlExtend.cs" />
     <Compile Include="WinForms\Controls\Slider\DragSlider.cs">
       <SubType>UserControl</SubType>
@@ -131,10 +110,7 @@
     <Compile Include="WinForms\Message\MessageBoxExtend.cs" />
     <Compile Include="WinForms\ParserToJsonExtend.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IO\" />
-    <Folder Include="WinForms\Exception\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -150,6 +126,11 @@
       <Name>CSharpTemplates</Name>
       <Private>False</Private>
       <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\CSharpWindowsAPI\CSharpWindowsAPI.csproj">
+      <Project>{92cc4d69-94f9-456c-b7a1-eb26d0f34e7f}</Project>
+      <Name>CSharpWindowsAPI</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -429,12 +429,6 @@ namespace Cheng.Texts
 
         }
 
-        [Obsolete("", true)]
-        public static void ToLopper(this TextReader reader, TextWriter toLopper, char[] buffer)
-        {
-            ToLower(reader, toLopper, buffer);
-        }
-
         /// <summary>
         /// 将读取器中的字符序列的字母转化为小写并写入到写入器
         /// </summary>
@@ -504,12 +498,6 @@ namespace Cheng.Texts
 
             }
 
-        }
-
-        [Obsolete("", true)]
-        public static void ToLopper(this char[] buffer, int index, int count, char[] toLopper, int toIndex)
-        {
-            ToLower(buffer, index, count, toLopper, toIndex);
         }
 
         /// <summary>

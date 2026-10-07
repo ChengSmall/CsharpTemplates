@@ -306,7 +306,6 @@ namespace Cheng.Windows.Controls
 
             //控件本地矩形
             Rectangle crect = new Rectangle(new Point(0, 0), ClientSize);
-            //crect = base.ClientRectangle;
             Rectangle orect;
 
             var fr = p_front;
@@ -369,8 +368,6 @@ namespace Cheng.Windows.Controls
                 return true;
             }
 
-
-            return true;
         }
 
         #region UI绘制

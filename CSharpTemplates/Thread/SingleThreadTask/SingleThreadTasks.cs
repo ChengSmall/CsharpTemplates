@@ -14,7 +14,7 @@ namespace Cheng.Threads
     /// <summary>
     /// 单线程后台任务循环
     /// </summary>
-    public sealed class SingleThreadTasks : TaskScheduler
+    public sealed class SingleThreadTasks : TaskScheduler, IDisposable
     {
 
         #region 初始化
@@ -40,6 +40,13 @@ namespace Cheng.Threads
             f_initPar();
         }
 
+        /// <summary>
+        /// 实例化循环单线程任务队列
+        /// </summary>
+        /// <param name="isBackground">指示是否为后台线程</param>
+        /// <param name="state">指定线程单元状态</param>
+        /// <param name="priority">指定线程调度优先级</param>
+        /// <exception cref="Exception">异常</exception>
         public SingleThreadTasks(bool isBackground, ApartmentState state, ThreadPriority priority)
         {
             f_init(isBackground, priority, 0, state, null);
@@ -85,12 +92,12 @@ namespace Cheng.Threads
 
         private void f_init(bool isBack, ThreadPriority priority, int stackMax, ApartmentState state, string name)
         {
-            p_thread = new Thread(f_loopThreadFunc, stackMax);
-            p_thread.SetApartmentState(state);
-            p_thread.Priority = priority;
-            p_thread.IsBackground = isBack;
-            if((object)name != null) p_thread.Name = name;
             p_isBack = isBack;
+            p_stackMax = stackMax;
+            p_state = state;
+            p_priority = priority;
+            p_threadName = name;
+            f_initNewThreadObj();
         }
 
         private void f_initPar()
@@ -100,7 +107,27 @@ namespace Cheng.Threads
             p_start = false;
             p_close = false;
             p_running = false;
-            p_vacantTime = new TimeSpan(50 * TimeSpan.TicksPerMillisecond);
+            p_vacantTime = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
+            p_mres = new ManualResetEventSlim(false);
+            p_isDispose = false;
+            //System.Threading.ManualResetEvent;
+            //System.Threading.CountdownEvent;
+            //System.Threading.AutoResetEvent;
+            //System.Threading.ManualResetEventSlim;
+        }
+
+#if DEBUG
+        /// <summary>
+        /// 初始化新线程对象
+        /// </summary>
+#endif
+        private void f_initNewThreadObj()
+        {
+            p_thread = new Thread(f_loopThreadFunc, p_stackMax);
+            p_thread.SetApartmentState(p_state);
+            p_thread.Priority = p_priority;
+            p_thread.IsBackground = p_isBack;
+            if (!string.IsNullOrEmpty(p_threadName)) p_thread.Name = p_threadName;
         }
 
         #endregion
@@ -108,9 +135,13 @@ namespace Cheng.Threads
         #region 参数
 
         #region 线程实例
+        private int p_stackMax;
+        private ApartmentState p_state;
+        private ThreadPriority p_priority;
+        private string p_threadName;
 
         private Thread p_thread;
-
+        private ManualResetEventSlim p_mres;
 #if DEBUG
         /// <summary>
         /// 任务队列
@@ -133,8 +164,16 @@ namespace Cheng.Threads
 
         private bool p_isBack;
 
+#if DEBUG
+
+#endif
         private bool p_start;
 
+#if DEBUG
+        /// <summary>
+        /// 是否存在运行的单线程循环
+        /// </summary>
+#endif
         private bool p_running;
 
         private bool p_close;
@@ -161,81 +200,235 @@ namespace Cheng.Threads
 
         #region 封装
 
-        private void f_addBufferTask()
+        #region 释放
+
+#if DEBUG
+        /// <summary>
+        /// 释放代码内终止了析构函数时调用该方法
+        /// </summary>
+        /// <remarks>
+        /// <para>当调用清理函数<see cref="Dispose(bool)"/>参数为true，且<see cref="Disposeing(bool)"/>返回值为true时，会调用该方法一次；</para>
+        /// </remarks>
+#endif
+        private void IsSuppressFunalize() { }
+
+#if DEBUG
+        /// <summary>
+        /// 在派生类重写此方法，用于释放非托管资源和托管对象
+        /// </summary>
+        /// <remarks>该方法在首次调用<see cref="Dispose(bool)"/>方法时被调用，<paramref name="disposeing"/>参数由<see cref="Dispose(bool)"/>的参数传递</remarks>
+        /// <param name="disposeing">是否清理托管资源对象</param>
+        /// <returns>
+        /// <para>是否关闭该对象的析构方法</para>
+        /// <para>
+        /// 返回false时，将不会对实例调用<see cref="GC.SuppressFinalize(object)"/>和<see cref="IsSuppressFunalize"/>；<br/>
+        /// 返回true时，如果<see cref="Dispose(bool)"/>的参数为true，则会对实例调用<see cref="GC.SuppressFinalize(object)"/>和<see cref="IsSuppressFunalize"/>
+        /// </para>
+        /// <para>默认返回值为true</para>
+        /// </returns>
+#endif
+        private bool Disposeing(bool disposeing)
         {
-            lock (p_buffer)
+            if (disposeing)
             {
-                while (p_buffer.TryDequeue(out var st))
-                {
-                    p_tasks.Enqueue(st);
-                }
+                p_mres.Dispose();
             }
-        }
-
-        private bool f_onceTaskLoop()
-        {
-            int count = p_tasks.Count;
-
-            if (count == 0) return false;
-
-            Task task;
-
-            while (p_tasks.TryDequeue(out task))
-            {
-                try
-                {
-                    if (!TryExecuteTask(task))
-                    {
-                        p_tasks.Enqueue(task);
-                        break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //task.p_abnormalOver = true;
-                    this.TaskThrowExceptionEvent?.Invoke(this, ex);
-                }
-                Thread.Sleep(0);
-            }
-
-            //p_tasks.Clear();
+            p_mres = null;
             return true;
         }
 
+        /// <summary>
+        /// 当前实例是否已被释放
+        /// </summary>
+        public bool IsDispose => p_isDispose;
+
+        #region 封装
+
+        private bool p_isDispose;
+
+        /// <summary>
+        /// 调用该方法清理非托管资源
+        /// </summary>
+        public void Close()
+        {
+            Dispose(true);
+        }
+
+#if DEBUG
+        /// <summary>
+        /// 调用此方法清理非托管资源
+        /// </summary>
+        /// <param name="disposed">是否释放托管资源并停止析构方法；
+        /// <para>参数为true时，在资源释放后若<see cref="Disposeing(bool)"/>的返回值为true，则会使用<see cref="GC.SuppressFinalize(object)"/>禁止该对象的对象终结器并调用<see cref="IsSuppressFunalize"/>；<br/>
+        /// 若参数是false，则仅释放资源，且不会调用<see cref="IsSuppressFunalize"/>；一般在析构函数中调用时使用false</para>
+        /// </param>
+        /// <param name="notSuppressFinalize">如果该参数为true，则无论如何都不会使用<see cref="GC.SuppressFinalize(object)"/>来终止析构函数；参数为false则正常运行</param>
+#endif
+        private void Dispose(bool disposed, bool notSuppressFinalize)
+        {
+            if (p_isDispose) return;
+            p_isDispose = true;
+
+            //----释放----
+            bool flag = Disposeing(disposed);
+            //----释放----
+
+            if (disposed && flag && (!notSuppressFinalize))
+            {
+                GC.SuppressFinalize(this);
+                IsSuppressFunalize();
+            }
+
+        }
+
+#if DEBUG
+        /// <summary>
+        /// 调用此方法清理非托管资源
+        /// </summary>
+        /// <param name="disposing">是否释放托管资源并停止析构方法；
+        /// <para>参数为true时，在资源释放后若<see cref="Disposeing(bool)"/>的返回值为true，则会使用<see cref="GC.SuppressFinalize(object)"/>禁止该对象的对象终结器并调用<see cref="IsSuppressFunalize"/>；<br/>
+        /// 若参数是false，则仅释放资源，且不会调用<see cref="IsSuppressFunalize"/>；一般在析构方法中调用时使用false</para>
+        /// </param>
+#endif
+        private void Dispose(bool disposing)
+        {
+            Dispose(disposing, false);
+        }
+
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// 调用该函数，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
+        /// </summary>
+        private void ThrowObjectDisposeException()
+        {
+            if (p_isDispose) throw new ObjectDisposedException(nameof(SingleThreadedSynchronizationContext));
+        }
+
+        #endregion
+
+        #endregion
+
+#if DEBUG
+        /// <summary>
+        /// 从缓冲区里提取待执行列表
+        /// </summary>
+        /// <returns>true表示成功从中提取任务到列表</returns>
+#endif
+        private bool f_addBufferTask()
+        {
+            bool re = false;
+            lock (p_buffer)
+            {
+                int count = 0;
+                int end = Math.Min(p_buffer.Count, 3);
+                lock (p_tasks)
+                {
+                    while (count < end)
+                    {
+                        if (p_buffer.TryDequeue(out var st))
+                        {
+                            if (st != null)
+                            {
+                                p_tasks.Enqueue(st);
+                                re = true;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                        count++;
+                    }
+
+                }
+            }
+            return re;
+        }
+
+#if DEBUG
+        /// <summary>
+        /// 将执行列表的任务依次执行直至为空
+        /// </summary>
+        /// <returns>false表示此次没有任何任务</returns>
+#endif
+        private bool f_onceTaskLoop()
+        {
+
+            lock (p_tasks)
+            {
+                int count = p_tasks.Count;
+
+                if (count == 0) return false;
+
+                Task task;
+
+                while (p_tasks.TryDequeue(out task))
+                {
+                    try
+                    {
+                        TryExecuteTask(task);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.TaskThrowExceptionEvent?.Invoke(this, ex);
+                    }
+                    Thread.Sleep(0);
+                }
+            }
+
+            return true;
+        }
+
+#if DEBUG
+        /// <summary>
+        /// 单线程循环核心函数
+        /// </summary>
+#endif
         private void f_loopThreadFunc()
         {
             p_start = true;
-            bool b = true;
-
-            while (p_running || b)
+            p_running = true;
+            bool b1, b2;
+            while ((!p_isDispose))
             {
-                f_addBufferTask();
-
-                bool b2 = f_onceTaskLoop();
-                if (!b2)
+                // 添加待运行任务
+                b1 = f_addBufferTask();
+                b2 = false;
+                if (b1)
                 {
-                    //无任务
-                    lock (p_buffer)
+                    b2 = f_onceTaskLoop();
+                }
+
+                if (b1 || b2)
+                {
+                    // 存在任务
+                    Thread.Sleep(0);
+                }
+                else
+                {
+                    if (!p_running)
                     {
-                        b = p_buffer.Count != 0;
+                        break;
                     }
-                    if (p_running)
+                    // 不存在任务
+                    if (p_isDispose)
                     {
                         Thread.Sleep(p_vacantTime);
                     }
                     else
                     {
-                        Thread.Sleep(0);
+                        p_mres.Wait(p_vacantTime);
+                        p_mres.Reset();
                     }
                 }
-                else
-                {
-                    Thread.Sleep(0);
-                }
-
             }
 
             TaskOverEvent?.Invoke(this);
+            p_running = false;
             p_close = true;
         }
 
@@ -243,19 +436,26 @@ namespace Cheng.Threads
         {
             if (Debugger.IsAttached)
             {
+                List<Task> list = new List<Task>();
                 lock (p_buffer)
                 {
-                    return p_buffer.ToArray();
+                    list.AddRange(p_buffer);
                 }
+                lock (p_tasks)
+                {
+                    list.AddRange(p_tasks);
+                }
+                return list;
             }
             throw new NotSupportedException();
         }
 
         protected override void QueueTask(Task task)
         {
+            if (!p_start) throw new TaskSchedulerException(new SingleThreadException());
             if (p_start && (!p_running))
             {
-                throw new TaskSchedulerException(new SingleThreadException("线程正处于关闭状态"));
+                throw new TaskSchedulerException(new SingleThreadException());
             }
             if (p_close)
             {
@@ -266,7 +466,7 @@ namespace Cheng.Threads
             lock (p_buffer)
             {
                 p_buffer.Enqueue(task);
-                //task.p_onList = true;
+                p_mres?.Set();
             }
         }
 
@@ -277,6 +477,20 @@ namespace Cheng.Threads
 
         protected override bool TryDequeue(Task task)
         {
+            if (task is null) throw new ArgumentNullException();
+            lock (p_buffer)
+            {
+                int length = p_buffer.Count;
+                for (int i = 0; i < length; i++)
+                {
+                    var pt = p_buffer.f_getElement(i);
+                    if(pt == task)
+                    {
+                        p_buffer.f_setElement(i, null);
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 
@@ -368,7 +582,7 @@ namespace Cheng.Threads
         }
 
         /// <summary>
-        /// 在无任务列表时线程进行一次休眠的时间；该值默认50毫秒
+        /// 在无任务列表时线程进行一次休眠的最大时间；该值默认500毫秒
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">参数小于0</exception>
         public TimeSpan VacantTime
@@ -376,8 +590,7 @@ namespace Cheng.Threads
             get => p_vacantTime;
             set
             {
-                TimeSpan zero = new TimeSpan(0);
-                if(value < zero)
+                if(value < TimeSpan.Zero)
                 {
                     throw new ArgumentOutOfRangeException();
                 }
@@ -401,8 +614,8 @@ namespace Cheng.Threads
             {
                 throw new SingleThreadException("线程已启动或结束");
             }
+            p_start = true;
             p_thread.Start();
-            p_running = true;
         }
 
         /// <summary>
@@ -423,7 +636,7 @@ namespace Cheng.Threads
         }
 
         /// <summary>
-        /// 停止当前调用线程并等待该线程结束
+        /// 停止当前线程并等待任务线程结束
         /// </summary>
         /// <returns>
         /// <para>返回true表示线程已结束；false表示线程并未关闭，无法等待</para>
@@ -456,14 +669,6 @@ namespace Cheng.Threads
         /// <exception cref="TaskSchedulerException">无法将此任务排入队列</exception>
         public Task AddTask(Action action)
         {
-            if (p_start && (!p_running))
-            {
-                throw new SingleThreadException();
-            }
-            if (p_close)
-            {
-                throw new SingleThreadException();
-            }
             Task task = new Task(action);
             task.Start(this);
             return task;
@@ -481,14 +686,6 @@ namespace Cheng.Threads
         /// <exception cref="TaskSchedulerException">无法将此任务排入队列</exception>
         public Task AddTask(Action<object> action, object state)
         {
-            if (p_start && (!p_running))
-            {
-                throw new SingleThreadException();
-            }
-            if (p_close)
-            {
-                throw new SingleThreadException();
-            }
             Task task = new Task(action, state);
             task.Start(this);
             return task;
@@ -506,14 +703,6 @@ namespace Cheng.Threads
         /// <exception cref="TaskSchedulerException">无法将此任务排入队列</exception>
         public Task<T> AddTask<T>(Func<T> func)
         {
-            if (p_start && (!p_running))
-            {
-                throw new SingleThreadException();
-            }
-            if (p_close)
-            {
-                throw new SingleThreadException();
-            }
             var task = new Task<T>(func);
             task.Start(this);
             return task;
@@ -532,14 +721,6 @@ namespace Cheng.Threads
         /// <exception cref="TaskSchedulerException">无法将此任务排入队列</exception>
         public Task<T> AddTask<T>(Func<object, T> func, object state)
         {
-            if (p_start && (!p_running))
-            {
-                throw new SingleThreadException();
-            }
-            if (p_close)
-            {
-                throw new SingleThreadException();
-            }
             var task = new Task<T>(func, state);
             task.Start(this);
             return task;
@@ -547,7 +728,18 @@ namespace Cheng.Threads
 
         #endregion
 
-        #region 派生
+        #region 功能
+
+        /// <summary>
+        /// 创建并运行一个单线程后台任务
+        /// </summary>
+        /// <returns>运行的单线程后台任务</returns>
+        public static SingleThreadTasks CreateBackgroundTaskScheduler()
+        {
+            var t = new SingleThreadTasks(true, ApartmentState.MTA, ThreadPriority.Normal);
+            t.Start();
+            return t;
+        }
 
         #endregion
 

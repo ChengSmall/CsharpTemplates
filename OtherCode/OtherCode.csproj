@@ -138,9 +138,18 @@
     <Folder Include="WinApi\Consoles\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConsoleTemplate\ConsoleTemplates.csproj">
+      <Project>{1edadd65-4e5a-4d6f-8436-474883dc040b}</Project>
+      <Name>ConsoleTemplates</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CSharpTemplates\CSharpTemplates.csproj">
       <Project>{338a4b93-0e1e-4fde-afe2-9ec29106ab1f}</Project>
       <Name>CSharpTemplates</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CSharpWindowsAPI\CSharpWindowsAPI.csproj">
+      <Project>{92cc4d69-94f9-456c-b7a1-eb26d0f34e7f}</Project>
+      <Name>CSharpWindowsAPI</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\NetFrameworkTemplate\NetFrameworkTemplate.csproj">
