@@ -127,13 +127,6 @@ namespace Cheng.Algorithm.HashCodes
         }
     }
 
-    internal class GuidHashCode64 : BaseHashCode64<Guid>
-    {
-        public override long GetHashCode64(Guid value)
-        {
-            return value.GetHashCode64();
-        }
-    }
     #endregion
 
     internal class TypeHashCode64<T> : BaseHashCode64<T> where T : IHashCode64
@@ -157,14 +150,10 @@ namespace Cheng.Algorithm.HashCodes
 
         public TypeHashCode64Value()
         {
-            //p_isValue = typeof(T).IsValueType;
         }
-        //private readonly bool p_isValue;
         public override long GetHashCode64(T value)
         {
-            //if (p_isValue) return value.GetHashCode64();
             return value.GetHashCode64();
-            //return (value?.GetHashCode64()).GetValueOrDefault();
         }
     }
 

@@ -168,44 +168,52 @@ namespace Cheng.Streams
 
         #region 封装
 
+#if DEBUG
         /// <summary>
         /// 按索引区间计算剩余可用缓存量
         /// </summary>
         /// <param name="beginIndex"></param>
         /// <param name="endIndex"></param>
         /// <returns></returns>
+#endif
         private static int f_bufferHaveReadCount(int beginIndex, int endIndex)
         {
             return endIndex - beginIndex + 1;
         }
 
+#if DEBUG
         /// <summary>
         /// 查看缓存未使用容量
         /// </summary>
         /// <param name="length">缓存长度</param>
         /// <param name="endPos">缓存末端指针</param>
         /// <returns></returns>
+#endif
         private static int f_bufferNextCount(int length, int endPos)
         {
             return length - (endPos + 1);
         }
 
+#if DEBUG
         /// <summary>
         /// 将缓冲区指针的指向设为清空数据
         /// </summary>
         /// <param name="beginIndex">起始指针</param>
         /// <param name="endIndex">末端指针</param>
+#endif
         private static void f_bufferClear(ref int beginIndex, ref int endIndex)
         {
             beginIndex = 0;
             endIndex = -1;
         }
 
+#if DEBUG
         /// <summary>
         /// 读取基础流数据到缓存（缓存必须为空）
         /// </summary>
         /// <param name="bufCount">缓冲区要读取的量</param>
         /// <returns>此次读取的量</returns>
+#endif
         private int f_bufferReadbase(out int bufCount)
         {
             var buf = p_buffer;
@@ -263,9 +271,11 @@ namespace Cheng.Streams
             return re;
         }
 
+#if DEBUG
         /// <summary>
         /// 清空缓存数据并重置缓存指针
         /// </summary>
+#endif
         private void f_bufferClear()
         {
             //如果存在缓存则先将记录的基础流位置变更到理想位置
@@ -275,6 +285,7 @@ namespace Cheng.Streams
             p_bufPosEnd = -1;
         }
 
+#if DEBUG
         /// <summary>
         /// 将缓存读取到指定数据
         /// </summary>
@@ -282,9 +293,9 @@ namespace Cheng.Streams
         /// <param name="offset"></param>
         /// <param name="count"></param>
         /// <returns>读取到的字节</returns>
+#endif
         private int f_readBuffer(byte[] buffer, int offset, int count)
         {
-            //int bufCount = f_bufferHaveReadCount(p_bufPos, p_bufPosEnd);
             //当前缓存的字节量
             int bufCount = p_bufPosEnd - p_bufPos + 1;
 
@@ -301,13 +312,8 @@ namespace Cheng.Streams
                 buffer[offset] = p_buffer[p_bufPos++];
                 return 1;
             }
-            
+
             Buffer.BlockCopy(p_buffer, p_bufPos, buffer, offset, rc);
-            //Array.Copy(p_buffer, p_bufPos, buffer, offset, rc);
-            //fixed (byte* orcBuf = p_buffer, toBuf = buffer)
-            //{
-            //    Memorys.MemoryOperation.MemoryCopy(orcBuf + p_bufPos, toBuf + offset, rc);
-            //}
 
             p_bufPos += rc;
 
@@ -423,7 +429,7 @@ namespace Cheng.Streams
             return re;
         }
 
-        #endregion
+#endregion
 
         #region 参数
 
@@ -531,7 +537,7 @@ namespace Cheng.Streams
         public override long Seek(long offset, SeekOrigin origin)
         {
             ThrowIsDispose(nameof(TruncateStream));
-            
+
             long value;
 
             //f_bufferClear();
@@ -897,7 +903,7 @@ namespace Cheng.Streams
             {
                 return 0;
             }
-            if(p_nowPos < p_startPos)
+            if (p_nowPos < p_startPos)
             {
                 p_nowPos = p_startPos;
                 //return 0;
@@ -906,12 +912,12 @@ namespace Cheng.Streams
             //截断流剩余长度
             var length = (p_endPos + 1) - p_nowPos;
 
-            if(length <= 0)
+            if (length <= 0)
             {
                 return 0;
             }
 
-            if(length > ((p_endPos - p_startPos) + 1))
+            if (length > ((p_endPos - p_startPos) + 1))
             {
                 //超过范围
                 //throwOutRange();

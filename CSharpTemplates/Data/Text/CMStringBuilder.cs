@@ -1036,7 +1036,7 @@ namespace Cheng.Texts
 
             fixed (char* thisBuf = p_charBuffer)
             {
-                MemoryOperation.MemoryCopyWhole(thisBuf + index, charBuffer, sizeof(char) * count);
+                MemoryOperation.MemoryCopy(thisBuf + index, charBuffer, sizeof(char) * count);
             }
 
         }

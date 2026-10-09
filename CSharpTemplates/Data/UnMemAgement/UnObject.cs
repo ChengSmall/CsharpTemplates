@@ -14,7 +14,7 @@ namespace Cheng.DataStructure.UnmanagedMemoryagements
     /// 非托管固定对象基类
     /// </summary>
     /// <remarks>
-    /// <para>基于<see cref="UnmanagedMemoryagement"/>的非托管数据实现，在释放对象时不会主动释放管理器对象</para>
+    /// <para>基于<see cref="UnmanagedMemoryagement"/>的非托管数据实现，在释放对象时不会主动释放内存管理器</para>
     /// </remarks>
     public abstract class UnObject : SafreleaseUnmanagedResources
     {
@@ -31,7 +31,7 @@ namespace Cheng.DataStructure.UnmanagedMemoryagements
         #region 释放
 
         /// <summary>
-        /// 重写时调用父实现
+        /// 重写时调用基实现
         /// </summary>
         /// <param name="disposeing"></param>
         /// <returns></returns>

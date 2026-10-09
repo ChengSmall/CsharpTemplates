@@ -219,10 +219,6 @@ namespace Cheng.Algorithm.HashCodes
             {
                 return (BaseHashCode64<T>)((object)new TimeSpanHashCode64());
             }
-            if(type == typeof(Guid))
-            {
-                return (BaseHashCode64<T>)((object)new GuidHashCode64());
-            }
 
             return null;
         }
@@ -441,7 +437,7 @@ namespace Cheng.Algorithm.HashCodes
         /// <returns>实例的64位哈希值</returns>
         public static long GetHashCode64(this float value)
         {
-            return *(int*)&value;
+            return value.GetHashCode();
         }
 
         /// <summary>
@@ -492,16 +488,6 @@ namespace Cheng.Algorithm.HashCodes
             return value.Ticks;
         }
 
-        /// <summary>
-        /// 获取实例的64位哈希值
-        /// </summary>
-        /// <param name="guid">要获取的对象</param>
-        /// <returns>实例的64位哈希值</returns>
-        public static long GetHashCode64(this Guid guid)
-        {
-            long* re = (long*)&guid;
-            return re[0] ^ re[1];
-        }
         #endregion
 
         #region 字符串
@@ -519,6 +505,26 @@ namespace Cheng.Algorithm.HashCodes
             fixed (char* p = str)
             {
                 return GetHashCode64ByPointer(p, length);
+            }
+        }
+
+        /// <summary>
+        /// 截取字符串的默认64位哈希值
+        /// </summary>
+        /// <param name="str">要获取的字符串</param>
+        /// <param name="startIndex">字符串截取的起始索引</param>
+        /// <param name="length">字符串截取长度</param>
+        /// <returns>截取字符串的64位哈希值</returns>
+        public static long GetHashCode64(this string str, int startIndex, int length)
+        {
+            if (str is null) throw new ArgumentNullException();
+            if(startIndex < 0 || length < 0 || (startIndex + length > str.Length))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            fixed (char* cp = str)
+            {
+                return GetHashCode64ByPointer(cp + startIndex, length);
             }
         }
 
@@ -548,8 +554,5 @@ namespace Cheng.Algorithm.HashCodes
         #endregion
 
     }
-
-
-    
 
 }
