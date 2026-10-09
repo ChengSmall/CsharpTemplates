@@ -19,7 +19,7 @@ namespace Cheng.Threads
     public sealed class SingleThreadedSynchronizationContext : SynchronizationContext, IDisposable
     {
 
-        #region
+        #region 参数
 
         /// <summary>
         /// 实例化一个单线程同步上下文
@@ -27,12 +27,10 @@ namespace Cheng.Threads
         public SingleThreadedSynchronizationContext()
         {
             p_queue = new ConcurrentQueue<(SendOrPostCallback, object)>();
-            p_mres = new ManualResetEventSlim(false);
             p_isDispose = false;
         }
 
         private ConcurrentQueue<(SendOrPostCallback, object)> p_queue;
-        private ManualResetEventSlim p_mres;
 
         #endregion
 
@@ -67,9 +65,7 @@ namespace Cheng.Threads
         {
             if (disposeing)
             {
-                p_mres.Dispose();
             }
-            p_mres = null;
             return true;
         }
 
@@ -83,7 +79,7 @@ namespace Cheng.Threads
         private bool p_isDispose;
 
         /// <summary>
-        /// 调用该方法清理非托管资源
+        /// 调用该方法清理资源
         /// </summary>
         public void Close()
         {
@@ -136,9 +132,6 @@ namespace Cheng.Threads
             Dispose(true);
         }
 
-        /// <summary>
-        /// 调用该函数，以此在实例资源已释放时引发<see cref="ObjectDisposedException"/>异常
-        /// </summary>
         private void ThrowObjectDisposeException()
         {
             if (p_isDispose) throw new ObjectDisposedException(nameof(SingleThreadedSynchronizationContext));
@@ -169,7 +162,7 @@ namespace Cheng.Threads
             internal ManualResetEventSlim done;
         }
 
-        internal void fcb_PostCallback(object state)
+        internal static void fcb_PostCallback(object state)
         {
             var s = (c_SendCB)state;
             try
@@ -178,7 +171,7 @@ namespace Cheng.Threads
             }
             finally
             {
-                s.done.Set();
+                s.done?.Set();
             }
         }
 
@@ -190,36 +183,89 @@ namespace Cheng.Threads
                 d?.Invoke(state);
                 return;
             }
-
             // 投递后阻塞
-            p_mres.Reset();
-            Post(fcb_PostCallback, new c_SendCB(d, state, p_mres));
-            p_mres.Wait();
-
-            //using (var done = new ManualResetEventSlim(false))
-            //{
-            //    Post(fcb_PostCallback, new c_SendCB(d, state, done));
-            //    done.Wait();
-            //}
+            using (var mrs = new ManualResetEventSlim(false))
+            {
+                Post(fcb_PostCallback, new c_SendCB(d, state, mrs));
+                mrs.Wait();
+            }
         }
 
         #endregion
 
+        #region 功能
+
         /// <summary>
-        /// 阻塞调用消息泵更新
+        /// 当前消息队列内消息的数量
+        /// </summary>
+        public int QueueCount
+        {
+            get => p_queue.Count;
+        }
+
+        /// <summary>
+        /// 消息泵更新
         /// </summary>
         /// <remarks>
-        /// <para>需要在线程内循环调用的消息泵更新</para>
+        /// <para>在线程内循环调用的消息泵更新，执行所有已经排列到队列内的任务</para>
         /// </remarks>
-        /// <exception cref="ObjectDisposedException">已释放</exception>
         public void PumpInvoke()
         {
-            ThrowObjectDisposeException();
-            while (p_queue.TryDequeue(out var item))
+            while (OncePumpUpdate()) ;
+        }
+
+        /// <summary>
+        /// 更新一次消息泵
+        /// </summary>
+        /// <remarks>在线程内循环调用的消息泵更新，执行一个已经排列到队列内的任务</remarks>
+        /// <returns>是否成功更新；返回true表示此次调用后执行了一个任务，false表示此时消息泵没有需要执行的任务</returns>
+        public bool OncePumpUpdate()
+        {
+            var re = p_queue.TryDequeue(out var item);
+            if (re)
             {
                 item.Item1?.Invoke(item.Item2);
             }
+            return re;
         }
+
+        /// <summary>
+        /// 更新一次消息泵
+        /// </summary>
+        /// <remarks>在线程内循环调用的消息泵更新，执行一个已经排列到队列内的任务</remarks>
+        /// <returns>
+        /// <para>更新后的剩余任务数量</para>
+        /// <para>在更新后如果存在剩余任务，返回剩余任务数量；返回 0 表示此次执行的是当前队列最后一个任务，返回 -1 表示没有当前没有可执行的任务</para>
+        /// </returns>
+        public int OncePumpUpdateResultCount()
+        {
+            var c = p_queue.Count;
+            if(c > 0)
+            {
+                if(p_queue.TryDequeue(out var item))
+                {
+                    item.Item1?.Invoke(item.Item2);
+                }
+            }
+            return c - 1;
+        }
+
+        /// <summary>
+        /// 消息泵更新
+        /// </summary>
+        /// <remarks>
+        /// <para>在线程内循环更新消息泵，直到更新任务数量等于<paramref name="count"/>或任务更新完毕</para>
+        /// </remarks>
+        /// <param name="count">要执行的任务最大数量</param>
+        public void PumpInvoke(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (!OncePumpUpdate()) break;
+            }
+        }
+
+        #endregion
 
     }
 

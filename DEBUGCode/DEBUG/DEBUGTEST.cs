@@ -20,7 +20,7 @@ namespace Cheng.DEBUG
 
         #region 线程安全
 
-        private class SafeObj
+        private sealed class SafeObj
         {
             public static SafeObj obj = new SafeObj();
 
@@ -30,6 +30,14 @@ namespace Cheng.DEBUG
             }
 
             public int lockobj;
+        }
+
+        /// <summary>
+        /// DEBUG扩展输出时的线程对象锁
+        /// </summary>
+        public static object ThreadSafeObject
+        {
+            get => SafeObj.obj;
         }
 
         #endregion

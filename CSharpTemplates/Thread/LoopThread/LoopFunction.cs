@@ -1010,7 +1010,7 @@ namespace Cheng.LoopThreads
         }
 
         /// <summary>
-        /// 每次循环时调用一次，此函数调用顺序在<see cref="LoopLastEnd"/>之前的最后一个调用
+        /// 每次循环时调用一次，此函数调用顺序在<see cref="LoopEnd"/>之前的最后一个调用
         /// </summary>
         /// <remarks>（此函数为空实现）</remarks>
         protected virtual void LoopLastEnd() { }
