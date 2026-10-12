@@ -22,14 +22,49 @@ namespace Cheng.DEBUG
 
         private sealed class SafeObj
         {
-            public static SafeObj obj = new SafeObj();
+            internal static SafeObj obj = new SafeObj();
 
-            public SafeObj()
+            internal SafeObj()
             {
-                lockobj = Environment.TickCount;
+                p_openDebug = true;
+                p_print = Console.Out;
             }
 
-            public int lockobj;
+            internal TextWriter p_print;
+            internal bool p_openDebug;
+        }
+
+        private static void f_print(string str)
+        {
+            var obj = SafeObj.obj;
+            lock (obj)
+            {
+                if (obj.p_openDebug)
+                {
+                    obj.p_print?.Write(str);
+                }
+            }
+        }
+
+        private static void f_printl(string str)
+        {
+            var obj = SafeObj.obj;
+            lock (obj)
+            {
+                if (obj.p_openDebug)
+                {
+                    obj.p_print?.WriteLine(str);
+                }
+            }
+        }
+
+        private static void f_printl()
+        {
+            var obj = SafeObj.obj;
+            lock (obj)
+            {
+                if (obj.p_openDebug) obj.p_print?.WriteLine();
+            }
         }
 
         /// <summary>
@@ -38,6 +73,36 @@ namespace Cheng.DEBUG
         public static object ThreadSafeObject
         {
             get => SafeObj.obj;
+        }
+
+        /// <summary>
+        /// 是否开启打印输出功能
+        /// </summary>
+        /// <value>默认开启</value>
+        public static bool EnablePrint
+        {
+            get => SafeObj.obj.p_openDebug;
+            set
+            {
+                lock (SafeObj.obj) SafeObj.obj.p_openDebug = value;
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置打印输出功能内部的文本写入对象
+        /// </summary>
+        /// <exception cref="ArgumentNullException">设置的对象是null</exception>
+        public static TextWriter BasePrintTextWriter
+        {
+            get => SafeObj.obj.p_print;
+            set
+            {
+                if (value is null) throw new ArgumentNullException();
+                lock (SafeObj.obj)
+                {
+                    SafeObj.obj.p_print = value;
+                }
+            }
         }
 
         #endregion
@@ -50,11 +115,8 @@ namespace Cheng.DEBUG
         /// <param name="obj"></param>
         public static void print(this string obj)
         {
-            lock (SafeObj.obj)
-            {
-                if (obj is null) Console.Write(nullstr);
-                else Console.Write(obj);
-            }
+            if (obj is null) f_print(nullstr);
+            else f_print(obj);
         }
 
         /// <summary>
@@ -63,11 +125,8 @@ namespace Cheng.DEBUG
         /// <param name="obj"></param>
         public static void printl(this string obj)
         {
-            lock (SafeObj.obj)
-            {
-                if (obj is null) Console.WriteLine(nullstr);
-                else Console.WriteLine(obj);
-            }
+            if (obj is null) f_printl(nullstr);
+            else f_printl(obj);
         }
 
         /// <summary>
@@ -76,11 +135,8 @@ namespace Cheng.DEBUG
         /// <param name="obj"></param>
         public static void print(this object obj)
         {
-            lock (SafeObj.obj)
-            {
-                if (obj == null) Console.Write(nullstr);
-                else Console.Write(obj);
-            }
+            if (obj == null) f_print(nullstr);
+            else f_print(obj.ToString());
         }
 
         /// <summary>
@@ -89,11 +145,8 @@ namespace Cheng.DEBUG
         /// <param name="obj"></param>
         public static void printl(this object obj)
         {
-            lock (SafeObj.obj)
-            {
-                if (obj == null) Console.WriteLine(nullstr);
-                else Console.WriteLine(obj);
-            }
+            if (obj == null) f_printl(nullstr);
+            else f_printl(obj.ToString());
         }
 
         /// <summary>
@@ -102,7 +155,7 @@ namespace Cheng.DEBUG
         /// <param name="ptr"></param>
         public static void print(this IntPtr ptr)
         {
-            lock (SafeObj.obj) Console.Write(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
+            f_print(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
         }
 
         /// <summary>
@@ -111,7 +164,7 @@ namespace Cheng.DEBUG
         /// <param name="ptr"></param>
         public static void printl(this IntPtr ptr)
         {
-            lock (SafeObj.obj) Console.WriteLine(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
+            f_printl(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
         }
 
         /// <summary>
@@ -120,7 +173,7 @@ namespace Cheng.DEBUG
         /// <param name="ptr"></param>
         public static void print(this UIntPtr ptr)
         {
-            lock (SafeObj.obj) Console.Write(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
+            f_print(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
         }
 
         /// <summary>
@@ -129,7 +182,7 @@ namespace Cheng.DEBUG
         /// <param name="ptr"></param>
         public static void printl(this UIntPtr ptr)
         {
-            lock (SafeObj.obj) Console.WriteLine(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
+            f_printl(((ulong)ptr.ToPointer()).ToString("x").ToUpper());
         }
 
         static void f_toUp(char* originCharptr, char* toCharptr, int length)
@@ -921,6 +974,3 @@ namespace Cheng.DEBUG
     }
 
 }
-#if XMLDOC
-
-#endif
