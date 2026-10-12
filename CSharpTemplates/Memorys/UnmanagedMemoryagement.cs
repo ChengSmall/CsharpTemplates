@@ -7,10 +7,23 @@ namespace Cheng.Memorys
 {
 
     /// <summary>
+    /// 用于申请内存的委托函数
+    /// </summary>
+    /// <param name="size">要申请的内存字节大小</param>
+    /// <returns>新申请的内存地址</returns>
+    public delegate IntPtr MemoryAllocFunction(int size);
+
+    /// <summary>
+    /// 释放已申请的内存地址
+    /// </summary>
+    /// <param name="address">要释放的可用内存</param>
+    public delegate void MemoryFreeFunction(IntPtr address);
+
+    /// <summary>
     /// 安全管理非托管内存的内存分配器
     /// </summary>
     /// <remarks>
-    /// <para>使用<see cref="Marshal.AllocHGlobal(int)"/>和<see cref="Marshal.FreeHGlobal(IntPtr)"/>申请与释放内存的安全封装对象</para>
+    /// <para>可使用自定义申请与释放内存的函数安全封装对象</para>
     /// </remarks>
     public sealed unsafe class UnmanagedMemoryagement : ReleaseDestructor
     {
@@ -30,15 +43,62 @@ namespace Cheng.Memorys
             }
         }
 
+        /// <summary>
+        /// 内存管理函数
+        /// </summary>
+        public readonly struct MemoryFunction
+        {
+
+            #region 构造
+
+            public MemoryFunction(MemoryAllocFunction alloc, MemoryFreeFunction free)
+            {
+                this.alloc = alloc; this.free = free;
+            }
+
+            #endregion
+
+            #region 参数
+
+            /// <summary>
+            /// 申请内存的函数
+            /// </summary>
+            public readonly MemoryAllocFunction alloc;
+
+            /// <summary>
+            /// 释放内存的函数
+            /// </summary>
+            public readonly MemoryFreeFunction free;
+
+            #endregion
+
+        }
+
         #endregion
 
         #region 构造
 
         /// <summary>
-        /// 实例化一个内存分配器
+        /// 实例化一个内存分配器，使用默认的非托管内存分配函数
         /// </summary>
         public UnmanagedMemoryagement()
         {
+            p_list = new Dictionary<IntPtr, int>(new IntPtrEqual());
+            p_byteSize = 0;
+            p_mem = new MemoryFunction(Marshal.AllocHGlobal, Marshal.FreeHGlobal);
+        }
+
+        /// <summary>
+        /// 实例化一个内存分配器，使用指定内存管理函数
+        /// </summary>
+        /// <param name="memoryFunction">内存管理函数</param>
+        public UnmanagedMemoryagement(MemoryFunction memoryFunction)
+        {
+            if(memoryFunction.free is null || memoryFunction.alloc is null)
+            {
+                throw new ArgumentNullException();
+            }
+            p_mem = memoryFunction;
             p_list = new Dictionary<IntPtr, int>(new IntPtrEqual());
             p_byteSize = 0;
         }
@@ -47,8 +107,9 @@ namespace Cheng.Memorys
 
         #region 参数
 
-        private long p_byteSize;
+        private MemoryFunction p_mem;
         private Dictionary<IntPtr, int> p_list;
+        private long p_byteSize;
 
         #endregion
 
@@ -81,9 +142,9 @@ namespace Cheng.Memorys
             return true;
         }
 
-        static void f_freeFunc(IntPtr m)
+        void f_freeFunc(IntPtr m)
         {
-            Marshal.FreeHGlobal(m);
+            p_mem.free.Invoke(m);
         }
 
         #endregion
@@ -139,7 +200,7 @@ namespace Cheng.Memorys
             if (cb <= 0) throw new ArgumentOutOfRangeException();
             lock (p_list)
             {
-                var ptr = Marshal.AllocHGlobal(cb);
+                var ptr = p_mem.alloc.Invoke(cb);
                 p_list.Add(ptr, cb);
                 p_byteSize += cb;
                 return ptr;
@@ -332,7 +393,6 @@ namespace Cheng.Memorys
 
             }
         }
-
 
         #endregion
 
