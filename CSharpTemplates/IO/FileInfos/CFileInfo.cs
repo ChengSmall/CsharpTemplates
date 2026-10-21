@@ -952,6 +952,8 @@ namespace Cheng.IO
             return GettingOpenStream();
         }
 
+        OpenStreamIOSourceType IGettingStream.SourceType => OpenStreamIOSourceType.Unknown;
+
         /// <summary>
         /// 实现<see cref="IGettingStream"/>接口的<see cref="IGettingStream.StreamLength"/>参数
         /// </summary>

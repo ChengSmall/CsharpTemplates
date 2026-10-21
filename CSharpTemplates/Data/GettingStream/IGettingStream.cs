@@ -6,10 +6,63 @@ namespace Cheng.DataStructure
 {
 
     /// <summary>
+    /// 数据IO来源类型
+    /// </summary>
+    public enum OpenStreamIOSourceType
+    {
+
+        /// <summary>
+        /// 错误的数据
+        /// </summary>
+        /// <remarks>
+        /// <para>打开的对象是一个无法读取的，错误的数据</para>
+        /// </remarks>
+        Error = -1,
+
+        /// <summary>
+        /// 未知来源或来源不可追踪
+        /// </summary>
+        /// <remarks>
+        /// <para>此类型表示打开的<see cref="Stream"/>读取或写入的数据最终指向的位置不确定；例如一些对象解析器的基类</para>
+        /// </remarks>
+        Unknown = 0,
+
+        /// <summary>
+        /// 数据来源于本地文件系统
+        /// </summary>
+        /// <remarks>
+        /// <para>表示从文件系统访问的数据，例如<see cref="FileStream"/></para>
+        /// </remarks>
+        FileIOStream,
+
+        /// <summary>
+        /// 数据来源于系统内存
+        /// </summary>
+        /// <remarks>
+        /// <para>数据来源于进程或其它进程的内存，例如<see cref="MemoryStream"/></para>
+        /// </remarks>
+        MemoryData,
+
+        /// <summary>
+        /// 数据来源于远程网络
+        /// </summary>
+        /// <remarks>
+        /// <para>任何来源非本地设备的数据都属于该类型，例如<see cref="System.Net.Sockets.NetworkStream"/></para>
+        /// </remarks>
+        WebStream
+
+    }
+
+    /// <summary>
     /// 提供一个可打开<see cref="Stream"/>对象的获取接口
     /// </summary>
     public interface IGettingStream
     {
+
+        /// <summary>
+        /// 该数据流<see cref="Stream"/>的IO来源
+        /// </summary>
+        OpenStreamIOSourceType SourceType { get; }
 
         /// <summary>
         /// 当前对象所指向的<see cref="Stream"/>的长度
@@ -22,6 +75,41 @@ namespace Cheng.DataStructure
         /// </summary>
         /// <returns>一个<see cref="Stream"/>对象，不再使用后需要关闭；如果返回null则表示因为各种原因无法打开流对象</returns>
         Stream OpenStream();
+
+    }
+
+    public static class GettingStreamExtend
+    {
+
+        #region 封装
+
+        private sealed class GettingStreamError : IGettingStream
+        {
+            public GettingStreamError()
+            {
+            }
+
+            public OpenStreamIOSourceType SourceType => OpenStreamIOSourceType.Error;
+
+            public long StreamLength => -1;
+
+            public Stream OpenStream()
+            {
+                return null;
+            }
+
+            internal static GettingStreamError error = new GettingStreamError();
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 表示一个错误的对象获取器
+        /// </summary>
+        public static IGettingStream ErrorGetter
+        {
+            get => GettingStreamError.error;
+        }
 
     }
 
@@ -71,6 +159,9 @@ namespace Cheng.DataStructure
                 return null;
             }
         }
+
+        public OpenStreamIOSourceType SourceType => OpenStreamIOSourceType.Unknown;
+
     }
 
     /// <summary>
@@ -99,6 +190,8 @@ namespace Cheng.DataStructure
         #endregion
 
         #region 派生
+
+        public OpenStreamIOSourceType SourceType => OpenStreamIOSourceType.FileIOStream;
 
         public long StreamLength
         {
@@ -156,6 +249,9 @@ namespace Cheng.DataStructure
         {
             return new MemoryStream(p_buffer);
         }
+
+        public OpenStreamIOSourceType SourceType => OpenStreamIOSourceType.MemoryData;
+
     }
 
 }

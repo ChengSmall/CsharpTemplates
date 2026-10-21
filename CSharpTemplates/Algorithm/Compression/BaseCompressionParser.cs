@@ -9,6 +9,7 @@ using System.Text;
 using Cheng.Algorithm.Trees;
 using Cheng.Algorithm.Sorts.Comparers;
 using Cheng.DataStructure.Collections;
+using Cheng.DataStructure;
 
 namespace Cheng.Algorithm.Compressions
 {
@@ -20,7 +21,7 @@ namespace Cheng.Algorithm.Compressions
     /// <para>派生该类以实现各种数据包或压缩算法的实现</para>
     /// <para>注重于读取和访问操作实现</para>
     /// </remarks>
-    public abstract class BaseCompressionParser : SafreleaseUnmanagedResources, IDataList, System.Collections.Generic.IReadOnlyList<DataInformation>
+    public abstract class BaseCompressionParser : SafreleaseUnmanagedResources, IDataList, System.Collections.Generic.IReadOnlyList<DataInformation>, IOpenTargetStream
     {
 
         #region 构造
@@ -903,6 +904,76 @@ namespace Cheng.Algorithm.Compressions
         public virtual IEnumerator<DataInformation> GetEnumerator()
         {
             throw new NotSupportedException();
+        }
+
+        private sealed class GetterData : IGettingStream
+        {
+            public GetterData(string path, BaseCompressionParser parser)
+            {
+                this.path = path; this.parser = parser;
+            }
+            internal string path;
+            BaseCompressionParser parser;
+
+            public OpenStreamIOSourceType SourceType
+            {
+                get
+                {
+                    if (parser.ContainsData(path)) return OpenStreamIOSourceType.Unknown;
+                    return OpenStreamIOSourceType.Error;
+                }
+            }
+
+            public long StreamLength
+            {
+                get
+                {
+                    try
+                    {
+                        var inf = parser[path];
+                        return inf.BeforeSize;
+                    }
+                    catch (Exception)
+                    {
+                        return -1;
+                    }
+                }
+            }
+
+            public Stream OpenStream()
+            {
+                try
+                {
+                    return parser.OpenCompressedStream(path);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+        }
+
+        IGettingStream IOpenTargetStream.OpenStreamGetter(string path)
+        {
+            try
+            {
+                if (CanOpenCompressedStreamByPath)
+                {
+                    if (ContainsData(path))
+                    {
+                        return new GetterData(path, this);
+                    }
+                }
+                return GettingStreamExtend.ErrorGetter;
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return GettingStreamExtend.ErrorGetter;
+            }
         }
 
         #endregion

@@ -60,6 +60,8 @@ namespace Cheng.Algorithm.Compressions
             }
         }
 
+        public OpenStreamIOSourceType SourceType => OpenStreamIOSourceType.Unknown;
+
     }
 
     /// <summary>
@@ -118,6 +120,7 @@ namespace Cheng.Algorithm.Compressions
             }
         }
 
+        public OpenStreamIOSourceType SourceType => OpenStreamIOSourceType.Unknown;
     }
 
 }
