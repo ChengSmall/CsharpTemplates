@@ -16,7 +16,7 @@ namespace Cheng.Algorithm.Compressions
         #region
 
         /// <summary>
-        /// 当前待打包数据队列的数量
+        /// 当前待打包数据的数量
         /// </summary>
         int Count { get; }
 
@@ -26,7 +26,7 @@ namespace Cheng.Algorithm.Compressions
         bool CanPassword { get; }
 
         /// <summary>
-        /// 允许在设置打包项时分配独立的加密密码
+        /// 允许在设置打包时对每个项分配独立的加密密码
         /// </summary>
         /// <returns>如果该参数是true，则<see cref="CanPassword"/>参数无效</returns>
         bool CanAlonePassword { get; }
@@ -64,7 +64,7 @@ namespace Cheng.Algorithm.Compressions
         /// 查找某个路径是否存在当前待打包队列中
         /// </summary>
         /// <param name="path">要查找的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
-        /// <returns>true表示存在，false表示不存在；在判断时应当忽略非必要的路径字符，例如<![CDATA['/'和'\']]>这两个路径分隔符</returns>
+        /// <returns>true表示存在，false表示不存在</returns>
         /// <exception cref="ArgumentNullException">对象或路径是null</exception>
         /// <exception cref="NotSupportedException">没有查找权限</exception>
         bool ContainsData(string path);
@@ -99,12 +99,12 @@ namespace Cheng.Algorithm.Compressions
         public abstract int Count { get; }
 
         /// <summary>
-        /// 是否允许对象从数据队列中删除已添加的路径
+        /// 是否允许对象从待打包数据队列中删除已添加的路径
         /// </summary>
         public abstract bool CanRemoveData { get; }
 
         /// <summary>
-        /// 是否允许对象从数据队列中确认某个路径是否存在数据
+        /// 是否允许对象从待打包数据队列中确认某个路径是否已存在项
         /// </summary>
         public abstract bool CanContainsData { get; }
 
@@ -144,7 +144,7 @@ namespace Cheng.Algorithm.Compressions
         /// 查找某个路径是否存在当前待打包队列中
         /// </summary>
         /// <param name="path">要查找的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
-        /// <returns>true表示存在，false表示不存在；在判断时应当忽略非必要的路径字符，例如<![CDATA['/'和'\']]>这两个路径分隔符</returns>
+        /// <returns>true表示存在，false表示不存在</returns>
         /// <exception cref="ArgumentNullException">对象或路径是null</exception>
         /// <exception cref="NotSupportedException">没有查找权限</exception>
         public virtual bool ContainsData(string path) => throw new NotSupportedException();

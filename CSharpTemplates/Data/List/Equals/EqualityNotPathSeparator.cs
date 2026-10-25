@@ -80,7 +80,7 @@ namespace Cheng.DataStructure.Collections
     /// 忽略路径分隔符的字符串比较器
     /// </summary>
     /// <remarks>
-    /// <para>在比较字符串时，如果其中两个字符都是'/'或'\'其中一个字符，则判定为相等字符</para>
+    /// <para>在比较字符串时，如果两个字符都是'/'或'\'的其中一个，则判定为相等字符</para>
     /// </remarks>
     public sealed unsafe class EqualityStrNotPathSeparator : EqualityComparerHash64<string>
     {
@@ -178,6 +178,7 @@ namespace Cheng.DataStructure.Collections
                 c = str[length - 1];
                 if (c == '/' || c == '\\') length--;
             }
+            if (length == 0) return 1;
             fixed (char* cp = str)
             {
                 return GetHashCodeUInt64(cp, length, caseInsensitive);

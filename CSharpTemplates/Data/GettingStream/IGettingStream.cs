@@ -49,7 +49,15 @@ namespace Cheng.DataStructure
         /// <remarks>
         /// <para>任何来源非本地设备的数据都属于该类型，例如<see cref="System.Net.Sockets.NetworkStream"/></para>
         /// </remarks>
-        WebStream
+        WebStream,
+
+        /// <summary>
+        /// 数据来源于实时构建
+        /// </summary>
+        /// <remarks>
+        /// <para>数据来源于通过其它方法实时构建的字节序列，例如解析数据结构，序列化对象等</para>
+        /// </remarks>
+        RuntimeBytes,
 
     }
 
@@ -78,14 +86,17 @@ namespace Cheng.DataStructure
 
     }
 
+    /// <summary>
+    /// 数据获取接口扩展
+    /// </summary>
     public static class GettingStreamExtend
     {
 
         #region 封装
 
-        private sealed class GettingStreamError : IGettingStream
+        private sealed class f_gettingStreamError : IGettingStream
         {
-            public GettingStreamError()
+            public f_gettingStreamError()
             {
             }
 
@@ -98,7 +109,7 @@ namespace Cheng.DataStructure
                 return null;
             }
 
-            internal static GettingStreamError error = new GettingStreamError();
+            internal static f_gettingStreamError error = new f_gettingStreamError();
         }
 
         #endregion
@@ -108,7 +119,7 @@ namespace Cheng.DataStructure
         /// </summary>
         public static IGettingStream ErrorGetter
         {
-            get => GettingStreamError.error;
+            get => f_gettingStreamError.error;
         }
 
     }

@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Cheng.DataStructure
@@ -53,6 +51,22 @@ namespace Cheng.DataStructure
             }
             return dict;
         }
+
+        #endregion
+
+        #region 时间戳
+
+        /// <summary>
+        /// 将<see cref="DateTime.Now"/>封装成一个函数
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetNowTime() => DateTime.Now;
+
+        /// <summary>
+        /// 将<see cref="DateTime.UtcNow"/>封装成一个函数
+        /// </summary>
+        /// <returns></returns>
+        public static DateTime GetUtcNowTime() => DateTime.UtcNow;
 
         #endregion
 
