@@ -787,7 +787,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
                 var size = p_utf8enc.GetByteCount(zpath);
                 if (size > cp_maxNameLength) throw new ArgumentException(cp_exceptionPathTooLong);
                 byte[] buf = new byte[size];
-                var toer = p_utf8enc.GetBytes(zpath, 0, zpath.Length, buf, size);
+                var toer = p_utf8enc.GetBytes(zpath, 0, zpath.Length, buf, 0);
                 if (toer != size) throw new ArgumentException();
                 return buf;
             }
