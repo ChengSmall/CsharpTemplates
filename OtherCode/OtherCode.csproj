@@ -92,6 +92,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembly\LazyAssemblyLoading.cs" />
     <Compile Include="Assembly\AssemblyLoading.cs" />
     <Compile Include="CSharpCode\ChangyongFunc.cs" />
     <Compile Include="CSharpCode\ProcessStart.cs" />

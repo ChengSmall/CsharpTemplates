@@ -125,6 +125,15 @@ namespace Cheng.Systems
         #region 功能
 
         /// <summary>
+        /// 为程序域注册程序集解析事件的内部委托对象
+        /// </summary>
+        /// <value>未初始化前返回null</value>
+        public static ResolveEventHandler PrivateAssemblyResolveEvent
+        {
+            get => p_lock?.p_registerFunc;
+        }
+
+        /// <summary>
         /// 初始化动态程序集加载功能
         /// </summary>
         /// <param name="assembly">当前的运行时模块程序集</param>
@@ -139,6 +148,10 @@ namespace Cheng.Systems
             if (p_lock.p_runningAssembly is null)
             {
                 p_lock.p_runningAssembly = Assembly.GetExecutingAssembly();
+            }
+            if (p_lock.p_runningAssembly is null)
+            {
+                p_lock.p_runningAssembly = typeof(AssemblyLoading).Assembly;
             }
         }
 
