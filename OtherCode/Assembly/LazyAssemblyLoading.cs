@@ -81,6 +81,7 @@ namespace Cheng.Systems
 
                 p_dict = new Dictionary<string, c_loadAssPath>(p_fileNameEqual);
                 p_pathList = new List<c_loadAssPath>();
+                p_loadedAssDict = new Dictionary<string, Assembly>(p_fileNameEqual);
                 p_registerFunc = Dom_AssemblyResolve;
                 p_registerOtherFunc = null;
                 p_runningAssembly = null;
@@ -90,9 +91,9 @@ namespace Cheng.Systems
             internal Dictionary<string, c_loadAssPath> p_dict;
             internal List<c_loadAssPath> p_pathList;
             internal Assembly p_runningAssembly;
+            internal Dictionary<string, Assembly> p_loadedAssDict;
 
             internal ResolveEventHandler p_registerFunc;
-
             internal ResolveEventHandler p_registerOtherFunc;
 
             static Assembly f_loadAssToFileData(string filePath, bool isOnlyRef)
@@ -110,121 +111,130 @@ namespace Cheng.Systems
 
             }
 
-            private Assembly f_resolveAss(object sender, ResolveEventArgs args, bool isOnlyRef)
+            private Assembly f_resolveAss(object sender, ResolveEventArgs args, string ename, bool isOnlyRef)
             {
-                var assName = getSimpleAssemblyName(args.Name);
                 Assembly ass = null;
-                lock (this)
-                {
-                    c_loadAssPath asses;
-                    // 搜索精准程序集
-                    if (p_dict.TryGetValue(assName, out asses))
-                    {
 
-                        // 存在精准程序集
-                        try
+                c_loadAssPath asses;
+                // 搜索精准程序集
+                if (p_dict.TryGetValue(ename, out asses))
+                {
+
+                    // 存在精准程序集
+                    try
+                    {
+                        if (asses.loadAssType == AssLoadType.AssemblyData || asses.loadAssType == AssLoadType.AssemblyFile)
                         {
-                            if (asses.loadAssType == AssLoadType.AssemblyData || asses.loadAssType == AssLoadType.AssemblyFile)
+                            ass = asses.assembly;
+                        }
+                        else
+                        {
+                            if (asses.loadAssType == AssLoadType.LazyFile)
                             {
-                                ass = asses.assembly;
+                                // 懒加载文件系统
+                                if (isOnlyRef)
+                                {
+                                    ass = Assembly.ReflectionOnlyLoadFrom(asses.path);
+                                }
+                                else
+                                {
+                                    ass = Assembly.LoadFrom(asses.path);
+                                }
                             }
                             else
                             {
-                                if (asses.loadAssType == AssLoadType.LazyFile)
-                                {
-                                    // 懒加载文件系统
-                                    if (isOnlyRef)
-                                    {
-                                        ass = Assembly.ReflectionOnlyLoadFrom(asses.path);
-                                    }
-                                    else
-                                    {
-                                        ass = Assembly.LoadFrom(asses.path);
-                                    }
-                                }
-                                else
-                                {
-                                    // 懒加载文件数据分离
-                                    ass = f_loadAssToFileData(asses.path, isOnlyRef);
-                                }
-
+                                // 懒加载文件数据分离
+                                ass = f_loadAssToFileData(asses.path, isOnlyRef);
                             }
-                        }
-                        catch (Exception)
-                        {
-                            ass = null;
-                        }
-                    }
-
-    if (ass is null)
-    {
-        foreach (var path in p_pathList)
-        {
-            try
-            {
-                // 扫描目录
-
-            var direInfo = new DirectoryInfo(path.path);
-            var filesEnumator = direInfo.EnumerateFiles("*", SearchOption.TopDirectoryOnly);
-
-                foreach (var fileInfo in filesEnumator)
-                {
-                    try
-                    {
-                        // 当前扫描的文件路径
-                        var fileFullPath = fileInfo.FullName;
-                        // 要搜索的文件名
-                        var sfileName = Path.GetFileNameWithoutExtension(fileFullPath);
-                        // 对比文件名属于要解析的ass名
-                        if (p_fileNameEqual.Equals(sfileName, assName))
-                        {
-                            // 比较成功
-                            if (path.loadAssType == AssLoadType.LazyFile)
-                            {
-                                // 加载文件系统程序集
-                                if (isOnlyRef)
-                                {
-                                    ass = Assembly.ReflectionOnlyLoadFrom(fileFullPath);
-                                }
-                                else
-                                {
-                                    ass = Assembly.LoadFrom(fileFullPath);
-                                }
-                                
-                            goto Over;
-                            }
-                            else if (path.loadAssType == AssLoadType.LazyFileData)
-                            {
-                                // 加载内存分离程序集
-                                f_loadAssToFileData(fileFullPath, isOnlyRef);
-    
-                            goto Over;
-                            }
-
 
                         }
                     }
                     catch (Exception)
                     {
+                        ass = null;
                     }
                 }
 
-            }
-            catch (Exception)
-            {
-            }
-        }
-    }
+                if (ass is null)
+                {
+                    foreach (var path in p_pathList)
+                    {
+                        try
+                        {
+                            // 扫描目录
 
-                    Over:
-                    if (ass is null) ass = p_registerOtherFunc?.Invoke(sender, args);
+                            var direInfo = new DirectoryInfo(path.path);
+                            var filesEnumator = direInfo.EnumerateFiles("*", SearchOption.TopDirectoryOnly);
+
+                            foreach (var fileInfo in filesEnumator)
+                            {
+                                try
+                                {
+                                    // 当前扫描的文件路径
+                                    var fileFullPath = fileInfo.FullName;
+                                    // 要搜索的文件名
+                                    var sfileName = Path.GetFileNameWithoutExtension(fileFullPath);
+                                    // 对比文件名属于要解析的ass名
+                                    if (p_fileNameEqual.Equals(sfileName, ename))
+                                    {
+                                        // 比较成功
+                                        if (path.loadAssType == AssLoadType.LazyFile)
+                                        {
+                                            // 加载文件系统程序集
+                                            if (isOnlyRef)
+                                            {
+                                                ass = Assembly.ReflectionOnlyLoadFrom(fileFullPath);
+                                            }
+                                            else
+                                            {
+                                                ass = Assembly.LoadFrom(fileFullPath);
+                                            }
+
+                                            goto Over;
+                                        }
+                                        else if (path.loadAssType == AssLoadType.LazyFileData)
+                                        {
+                                            // 加载内存分离程序集
+                                            f_loadAssToFileData(fileFullPath, isOnlyRef);
+
+                                            goto Over;
+                                        }
+
+
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                }
+                            }
+
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
                 }
+
+                Over:
+                if (ass is null) ass = p_registerOtherFunc?.Invoke(sender, args);
                 return ass;
             }
 
             private Assembly Dom_AssemblyResolve(object sender, ResolveEventArgs args)
             {
-                return f_resolveAss(sender, args, false);
+                lock (this)
+                {
+                    Assembly ass;
+                    var assName = getSimpleAssemblyName(args.Name);
+                    if(p_loadedAssDict.TryGetValue(assName, out ass))
+                    {
+                        // 返回已缓存的程序集
+                        return ass;
+                    }
+                    ass = f_resolveAss(sender, args, assName, false);
+                    p_loadedAssDict[assName] = ass;
+                    return ass;
+                }
             }
 
         }
@@ -343,6 +353,8 @@ namespace Cheng.Systems
 
         #region 功能
 
+        #region 参数
+
         /// <summary>
         /// 为程序域注册程序集解析事件的内部委托对象
         /// </summary>
@@ -362,6 +374,45 @@ namespace Cheng.Systems
                 return p_lock.p_dict.Keys;
             }
         }
+
+        /// <summary>
+        /// 外部解析程序集方法，在未查找到程序集时调用该函数解析程序集
+        /// </summary>
+        /// <value>null表示不使用外部解析，默认为null</value>
+        internal static ResolveEventHandler OtherResolveFunc
+        {
+            get
+            {
+                if (p_lock is null) throw new ArgumentNullException();
+                lock (p_lock)
+                {
+                    return p_lock.p_registerOtherFunc;
+                }
+            }
+            set
+            {
+                if (p_lock is null) throw new ArgumentNullException();
+                lock (p_lock)
+                {
+                    p_lock.p_registerOtherFunc = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 已成功解析的程序集对象
+        /// </summary>
+        internal static IReadOnlyCollection<Assembly> LoadedAssemblys
+        {
+            get
+            {
+                return p_lock.p_loadedAssDict.Values;
+            }
+        }
+
+        #endregion
+
+        #region 初始化
 
         /// <summary>
         /// 初始化动态程序集加载功能
@@ -390,7 +441,7 @@ namespace Cheng.Systems
         /// </summary>
         /// <param name="dom">要初始化的应用程序域</param>
         /// <exception cref="ArgumentNullException">参数是null或未初始化</exception>
-        public static void RegisterEvent(AppDomain dom)
+        internal static void RegisterEvent(AppDomain dom)
         {
             if (dom is null || p_lock is null) throw new ArgumentNullException();
             lock (p_lock) dom.AssemblyResolve += p_lock.p_registerFunc;
@@ -401,26 +452,13 @@ namespace Cheng.Systems
         /// </summary>
         /// <param name="dom">要注销的应用程序域</param>
         /// <exception cref="ArgumentNullException">参数是null或未初始化</exception>
-        public static void UnregisterEvent(AppDomain dom)
+        internal static void UnregisterEvent(AppDomain dom)
         {
             if (dom is null || p_lock is null) throw new ArgumentNullException();
             lock (p_lock) dom.AssemblyResolve -= p_lock.p_registerFunc;
         }
 
-        /// <summary>
-        /// 裁切多余的缓存容量
-        /// </summary>
-        /// <exception cref="NotImplementedException">未初始化</exception>
-        internal static void TrimExcessBuffer()
-        {
-            if (p_lock is null) throw new NotImplementedException();
-            lock (p_lock)
-            {
-                p_lock.p_pathList.Capacity = p_lock.p_pathList.Count;
-                var dict = new Dictionary<string, c_loadAssPath>(p_lock.p_dict, p_lock.p_dict.Comparer);
-                p_lock.p_dict = dict;
-            }
-        }
+        #endregion
 
         #region 加载 Assembly
 
@@ -742,29 +780,26 @@ namespace Cheng.Systems
 
         #endregion
 
+        #region 其它功能
+
         /// <summary>
-        /// 外部解析程序集方法，在未查找到程序集时调用该函数解析程序集
+        /// 裁切多余的缓存容量
         /// </summary>
-        /// <value>null表示不使用外部解析，默认为null</value>
-        internal static ResolveEventHandler OtherResolveFunc
+        /// <exception cref="NotImplementedException">未初始化</exception>
+        internal static void TrimExcessBuffer()
         {
-            get
+            if (p_lock is null) throw new NotImplementedException();
+            lock (p_lock)
             {
-                if (p_lock is null) throw new ArgumentNullException();
-                lock (p_lock)
-                {
-                    return p_lock.p_registerOtherFunc;
-                }
-            }
-            set
-            {
-                if (p_lock is null) throw new ArgumentNullException();
-                lock (p_lock)
-                {
-                    p_lock.p_registerOtherFunc = value;
-                }
+                p_lock.p_pathList.Capacity = p_lock.p_pathList.Count;
+                var dict = new Dictionary<string, c_loadAssPath>(p_lock.p_dict, p_lock.p_dict.Comparer);
+                p_lock.p_dict = dict;
+                var ddict = new Dictionary<string, Assembly>(p_lock.p_loadedAssDict, p_lock.p_loadedAssDict.Comparer);
+                p_lock.p_loadedAssDict = ddict;
             }
         }
+
+        #endregion
 
         #endregion
 
