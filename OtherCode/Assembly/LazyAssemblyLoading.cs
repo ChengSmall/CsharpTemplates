@@ -116,43 +116,51 @@ namespace Cheng.Systems
                 Assembly ass = null;
 
                 c_loadAssPath asses;
-                // 搜索精准程序集
-                if (p_dict.TryGetValue(ename, out asses))
-                {
 
-                    // 存在精准程序集
-                    try
+                try
+                {
+                    // 搜索精准程序集
+                    if (p_dict.TryGetValue(ename, out asses))
                     {
-                        if (asses.loadAssType == AssLoadType.AssemblyData || asses.loadAssType == AssLoadType.AssemblyFile)
+
+                        // 存在精准程序集
+                        try
                         {
-                            ass = asses.assembly;
-                        }
-                        else
-                        {
-                            if (asses.loadAssType == AssLoadType.LazyFile)
+                            if (asses.loadAssType == AssLoadType.AssemblyData || asses.loadAssType == AssLoadType.AssemblyFile)
                             {
-                                // 懒加载文件系统
-                                if (isOnlyRef)
-                                {
-                                    ass = Assembly.ReflectionOnlyLoadFrom(asses.path);
-                                }
-                                else
-                                {
-                                    ass = Assembly.LoadFrom(asses.path);
-                                }
+                                ass = asses.assembly;
                             }
                             else
                             {
-                                // 懒加载文件数据分离
-                                ass = f_loadAssToFileData(asses.path, isOnlyRef);
-                            }
+                                if (asses.loadAssType == AssLoadType.LazyFile)
+                                {
+                                    // 懒加载文件系统
+                                    if (isOnlyRef)
+                                    {
+                                        ass = Assembly.ReflectionOnlyLoadFrom(asses.path);
+                                    }
+                                    else
+                                    {
+                                        ass = Assembly.LoadFrom(asses.path);
+                                    }
+                                }
+                                else
+                                {
+                                    // 懒加载文件数据分离
+                                    ass = f_loadAssToFileData(asses.path, isOnlyRef);
+                                }
 
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            ass = null;
                         }
                     }
-                    catch (Exception)
-                    {
-                        ass = null;
-                    }
+
+                }
+                catch (Exception)
+                {
                 }
 
                 if (ass is null)
@@ -278,9 +286,6 @@ namespace Cheng.Systems
         {
             string name;
             name = Path.GetFileNameWithoutExtension(assp.path);
-            //lock (p_lock)
-
-            //获取name下的ass集合
             if (cover)
             {
                 p_lock.p_dict[name] = assp;
@@ -630,56 +635,18 @@ namespace Cheng.Systems
         }
 
         /// <summary>
-        /// 将指定目录设置为懒加载模块
+        /// 将指定目录设置为懒加载搜索位置
         /// </summary>
         /// <param name="path">一个文件夹目录</param>
-        /// <param name="cover">若名字重复是否覆盖</param>
-        /// <param name="searchOption">指示是否搜索子目录</param>
         /// <exception cref="Exception">错误</exception>
-        internal static void AddLazyDataAssemblysByPath(string path, bool cover, SearchOption searchOption)
+        internal static Exception AddLazyDataAssemblysByPath(string path)
         {
             if (p_lock is null) throw new ArgumentNullException();
-            DirectoryInfo info = new DirectoryInfo(path);
-
-            var files = info.GetFiles("*.dll", searchOption);
-
-            int length = files.Length;
-            for (int i = 0; i < length; i++)
+            lock (p_lock)
             {
-                var fileInfo = files[i];
-
-                if (fileInfo.Exists)
-                {
-                    try
-                    {
-                        AddLazyDataAssembly(fileInfo.FullName, cover);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
+                p_lock.p_pathList.Add(new c_loadAssPath(AssLoadType.LazyFileData, path));
+                return null;
             }
-        }
-
-        /// <summary>
-        /// 将指定目录设置为懒加载模块
-        /// </summary>
-        /// <param name="path">一个文件夹目录</param>
-        /// <param name="cover">若名字重复是否覆盖</param>
-        /// <exception cref="Exception">错误</exception>
-        internal static void AddLazyDataAssemblysByPath(string path, bool cover)
-        {
-            AddLazyDataAssemblysByPath(path, cover, SearchOption.TopDirectoryOnly);
-        }
-
-        /// <summary>
-        /// 将指定目录设置为懒加载模块
-        /// </summary>
-        /// <param name="path">一个文件夹目录</param>
-        /// <exception cref="Exception">错误</exception>
-        internal static void AddLazyDataAssemblysByPath(string path)
-        {
-            AddLazyDataAssemblysByPath(path, true, SearchOption.TopDirectoryOnly);
         }
 
         #endregion
@@ -722,58 +689,18 @@ namespace Cheng.Systems
         }
 
         /// <summary>
-        /// 将指定目录设置为懒加载模块
+        /// 将指定目录设置为懒加载搜索位置
         /// </summary>
         /// <param name="path">一个文件夹目录</param>
-        /// <param name="cover">若名字重复是否覆盖</param>
-        /// <param name="searchOption">指示是否搜索子目录</param>
         /// <exception cref="Exception">错误</exception>
-        internal static void AddLazyAssemblysByPath(string path, bool cover, SearchOption searchOption)
+        internal static Exception AddLazyAssemblysByPath(string path)
         {
             if (p_lock is null) throw new ArgumentNullException();
-            DirectoryInfo info = new DirectoryInfo(path);
-
-            var files = info.GetFiles("*", searchOption);
-
-            int length = files.Length;
-            for (int i = 0; i < length; i++)
+            lock (p_lock)
             {
-                var fileInfo = files[i];
-
-                if (fileInfo.Exists)
-                {
-
-                    try
-                    {
-                        AddLazyAssembly(fileInfo.FullName, cover);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-
+                p_lock.p_pathList.Add(new c_loadAssPath(AssLoadType.LazyFile, path));
+                return null;
             }
-        }
-
-        /// <summary>
-        /// 将指定目录设置为懒加载模块
-        /// </summary>
-        /// <param name="path">一个文件夹目录</param>
-        /// <param name="cover">若名字重复是否覆盖</param>
-        /// <exception cref="Exception">错误</exception>
-        internal static void AddLazyAssemblysByPath(string path, bool cover)
-        {
-            AddLazyAssemblysByPath(path, cover, SearchOption.TopDirectoryOnly);
-        }
-
-        /// <summary>
-        /// 将指定目录设置为懒加载模块
-        /// </summary>
-        /// <param name="path">一个文件夹目录</param>
-        /// <exception cref="Exception">错误</exception>
-        internal static void AddLazyAssemblysByPath(string path)
-        {
-            AddLazyAssemblysByPath(path, true, SearchOption.TopDirectoryOnly);
         }
 
         #endregion
