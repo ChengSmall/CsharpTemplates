@@ -13,6 +13,12 @@ namespace Cheng.Streams
 
         #region 构造
 
+        /// <summary>
+        /// 实例化 Deflate64 解压缩流
+        /// </summary>
+        /// <param name="stream">要解压的 Deflate64 数据基础流</param>
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> 是 null</exception>
+        /// <exception cref="NotSupportedException"><paramref name="stream"/> 不支持读取</exception>
         public Deflate64DecompressStream(Stream stream) : this(stream, true)
         {}
 
@@ -20,7 +26,7 @@ namespace Cheng.Streams
         /// 实例化 Deflate64 解压缩流
         /// </summary>
         /// <param name="stream">要解压的 Deflate64 数据基础流</param>
-        /// <param name="onDispose">在释放时是否一并释放基础流</param>
+        /// <param name="onDispose">在释放时是否一并释放基础流，默认为true</param>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> 是 null</exception>
         /// <exception cref="NotSupportedException"><paramref name="stream"/> 不支持读取</exception>
         public Deflate64DecompressStream(Stream stream, bool onDispose)
