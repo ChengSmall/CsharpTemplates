@@ -249,7 +249,7 @@ namespace Cheng.DataStructure.UnmanagedMemoryagements
             ThrowObjectDisposeException(nameof(UnString));
             if (other is null) return false;
             if (p_length != other.p_length) return false;
-            return MemoryOperation.EqualsMemory(p_buffer, other.p_buffer, p_length * sizeof(char));
+            return MemoryOperation.EqualsChars(p_buffer, other.p_buffer, p_length);
         }
 
         /// <summary>

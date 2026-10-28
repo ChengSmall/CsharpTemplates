@@ -18,6 +18,30 @@ namespace Cheng.Memorys
         #region 字节数据
 
         /// <summary>
+        /// 将非托管数据写入到另一个内存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">非托管值</param>
+        /// <param name="buffer">要写入的内存</param>
+        public static void ValueToBytePtr<T>(this T value, void* buffer) where T : unmanaged
+        {
+            Buffer.MemoryCopy(&value, buffer, sizeof(T), sizeof(T));
+        }
+
+        /// <summary>
+        /// 从字节数组中读取非托管数据
+        /// </summary>
+        /// <typeparam name="T">要读取的非托管数据类型</typeparam>
+        /// <param name="buffer">从中读取数据的地址</param>
+        /// <returns>读取的值</returns>
+        public static T BytesToStructure<T>(byte* buffer) where T : unmanaged
+        {
+            T re = default;
+            Buffer.MemoryCopy(buffer, &re, sizeof(T), sizeof(T));
+            return re;
+        }
+
+        /// <summary>
         /// 将指定变量的地址以另一个类型变量访问
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -29,15 +53,14 @@ namespace Cheng.Memorys
         /// </returns>
         public static R ToValue<T, R>(this T value) where T : unmanaged where R : unmanaged
         {
-            T vac = value;
             if (sizeof(T) < sizeof(R))
             {
                 R r = default;
-                MemoryCopy(&vac, &r, sizeof(T));
+                MemoryCopy(&value, &r, sizeof(T));
                 return r;
             }
 
-            return *(R*)&vac;
+            return *(R*)&value;
         }
 
         /// <summary>
@@ -54,7 +77,7 @@ namespace Cheng.Memorys
         {
             fixed (byte* bp = buffer)
             {
-                *((T*)(bp + index)) = value;
+                ValueToBytePtr(value, bp + index);
             }
         }
 
@@ -71,7 +94,7 @@ namespace Cheng.Memorys
         {
             fixed (byte* bp = buffer)
             {
-                *((T*)bp) = value;
+                ValueToBytePtr(value, bp);
             }
         }
 
@@ -89,7 +112,7 @@ namespace Cheng.Memorys
         {
             fixed (byte* bp = buffer)
             {
-                return (*((T*)(bp + index)));
+                return BytesToStructure<T>(bp + index);
             }
         }
 
@@ -106,7 +129,7 @@ namespace Cheng.Memorys
         {
             fixed (byte* bp = buffer)
             {
-                return (*((T*)bp));
+                return BytesToStructure<T>(bp);
             }
         }
 
@@ -176,7 +199,7 @@ namespace Cheng.Memorys
         {
             int length = buffer.Length;
 
-            fixed(byte* p = buffer)
+            fixed (byte* p = buffer)
             {
                 return new string((char*)(p + index), 0, count);
             }
@@ -211,7 +234,7 @@ namespace Cheng.Memorys
         /// <param name="copyByteSize">要拷贝的字节数量</param>
         public static void CopyBufferArray<T, TO>(this T[] buffer, int offset, TO[] toBuffer, int toOffset, int copyByteSize) where T : unmanaged where TO : unmanaged
         {
-            
+
             fixed (void* fi_buf = buffer, fi_toBuf = toBuffer)
             {
 
@@ -278,7 +301,7 @@ namespace Cheng.Memorys
         /// <param name="value">设置到指定位域的值，true表示设置为1，false表示设置为0</param>
         public static void ByteBit(this ref byte b, int index, bool value)
         {
-            if(value) b |= (byte)(1 << index);
+            if (value) b |= (byte)(1 << index);
             else b &= (byte)(~((byte)(1 << index)));
         }
 
@@ -482,7 +505,6 @@ namespace Cheng.Memorys
             {
                 re.ByteBit(7 - i, (((value >> i) & 1) == 1));
             }
-            //(((value >> i) & 1) == 1)
 
             return re;
         }
@@ -510,12 +532,100 @@ namespace Cheng.Memorys
         /// </summary>
         /// <param name="ptr1">地址1</param>
         /// <param name="ptr2">地址2</param>
-        /// <param name="length">比较的长度</param>
+        /// <param name="length">比较的字节长度</param>
         /// <returns></returns>
-        public static bool EqualsMemory(this IntPtr ptr1, IntPtr ptr2, int length)
+        public static unsafe bool EqualsMemoryLength64(void* ptr1, void* ptr2, long length)
         {
-            
-            return EqualsMemory(ptr1.ToPointer(), ptr2.ToPointer(), length);
+            if (length == 0) return true;
+
+            byte* b1 = (byte*)ptr1;
+            byte* b2 = (byte*)ptr2;
+
+            // 8字节对齐
+            ulong r1 = (ulong)b1 & 7UL;
+            ulong r2 = (ulong)b2 & 7UL;
+
+            if (r1 == r2)
+            {
+                var head = (long)((8UL - r1) & 7UL);
+                if (head > length) head = length;
+
+                for (int i = 0; i < head; i++)
+                {
+                    if (b1[i] != b2[i]) return false;
+                }
+
+                var remaining = (length - head);
+                var n = remaining >> 3;                  // 完整 8 字节块数
+
+                // 头部对齐后 b1+head 与 b2+head 均按 8 字节对齐
+                ulong* u1 = (ulong*)(b1 + head);
+                ulong* u2 = (ulong*)(b2 + head);
+                for (long i = 0; i < n; i++)
+                {
+                    if (u1[i] != u2[i]) return false;
+                }
+
+                var tailStart = (head + (n << 3));
+                for (var i = tailStart; i < length; i++)
+                {
+                    if (b1[i] != b2[i]) return false;
+                }
+
+                return true;
+            }
+
+            // 4 字节对齐
+            r1 = (ulong)b1 & 3UL;
+            r2 = (ulong)b2 & 3UL;
+
+            if (r1 == r2)
+            {
+                long head = (long)((4UL - r1) & 3UL);   // 0~3
+                if (head > length) head = length;
+
+                for (int i = 0; i < head; i++)
+                {
+                    if (b1[i] != b2[i]) return false;
+                }
+
+                var remaining = length - head;
+                var n = remaining >> 2;                  // 完整 4 字节块数
+
+                uint* u1 = (uint*)(b1 + head);
+                uint* u2 = (uint*)(b2 + head);
+                for (int i = 0; i < n; i++)
+                {
+                    if (u1[i] != u2[i]) return false;
+                }
+
+                var tailStart = head + (n << 2);
+                for (var i = tailStart; i < length; i++)
+                {
+                    if (b1[i] != b2[i]) return false;
+                }
+
+                return true;
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                if (b1[i] != b2[i]) return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 比较两块内存中的数据是否相同
+        /// </summary>
+        /// <param name="ptr1">地址1</param>
+        /// <param name="ptr2">地址2</param>
+        /// <param name="length">比较的字节长度</param>
+        /// <returns></returns>
+        public static unsafe bool EqualsMemory(void* ptr1, void* ptr2, int length)
+        {
+            return EqualsMemoryLength64(ptr1, ptr2, length);
         }
 
         /// <summary>
@@ -525,36 +635,9 @@ namespace Cheng.Memorys
         /// <param name="ptr2">地址2</param>
         /// <param name="length">比较的长度</param>
         /// <returns></returns>
-        public static bool EqualsMemory(void* ptr1, void* ptr2, int length)
+        public static bool EqualsMemory(this IntPtr ptr1, IntPtr ptr2, int length)
         {
-            if (length == 0) return true;
-            var lenM4 = length / 4;
-
-            int* ia = (int*)ptr1;
-            int* ib = (int*)ptr2;
-            int i;
-            for (i = 0; i < lenM4; i++)
-            {
-                if (ia[i] != ib[i]) return false;
-            }
-
-            byte* ba = (byte*)(ia + i);
-            byte* bb = (byte*)(ib + i);
-
-            var ms = length % 4;
-            if (ms != 0)
-            {
-                //至少是1
-                if (ba[0] != bb[0]) return false;
-                if (ms > 1)
-                {
-                    //2 或 3
-                    if (ba[1] != bb[1]) return false;
-                    //是3
-                    if (ms == 3) if (ba[2] != bb[2]) return false;
-                }
-            }
-            return true;
+            return EqualsMemory(ptr1.ToPointer(), ptr2.ToPointer(), length);
         }
 
         /// <summary>
@@ -601,6 +684,42 @@ namespace Cheng.Memorys
             {
                 return EqualsMemory(bp + offset, bp2 + offset2, count);
             }
+        }
+
+        /// <summary>
+        /// 比较两个字符串是否相等
+        /// </summary>
+        /// <param name="charBuffer1">字符串1</param>
+        /// <param name="charBuffer2">字符串2</param>
+        /// <param name="count">字符串长度</param>
+        /// <returns></returns>
+        public static bool EqualsChars(char* charBuffer1, char* charBuffer2, int count)
+        {
+            if (((((long)charBuffer1) & 3) == 0) && (((long)charBuffer2) & 3) == 0)
+            {
+                int length = count / 2;
+                int* c1 = (int*)charBuffer1;
+                int* c2 = (int*)charBuffer2;
+                int i;
+                for (i = 0; i < length; i++)
+                {
+                    if(c1[i] != c2[i])
+                    {
+                        return false;
+                    }
+                }
+                if((count & 1) == 1)
+                {
+                    return (*(char*)(c1 + i)) == (*(char*)(c2 + i));
+                }
+                return true;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                if (charBuffer1[i] != charBuffer2[i]) return false;
+            }
+            return true;
         }
 
         #endregion

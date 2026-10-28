@@ -1104,7 +1104,7 @@ namespace Cheng.Texts
 
             fixed (char* cthis = p_charBuffer, cother = other.p_charBuffer)
             {
-                return MemoryOperation.EqualsMemory(cthis, cother, p_length * sizeof(char));
+                return MemoryOperation.EqualsChars(cthis, cother, p_length);
             }
         }
 
@@ -1124,7 +1124,7 @@ namespace Cheng.Texts
 
             fixed (char* cp1 = s1.p_charBuffer, cp2 = s2.p_charBuffer)
             {
-                return MemoryOperation.EqualsMemory(cp1, cp2, len * sizeof(char));
+                return MemoryOperation.EqualsChars(cp1, cp2, len);
             }
         }
 
@@ -1144,7 +1144,7 @@ namespace Cheng.Texts
 
             fixed (char* cp1 = s1.p_charBuffer, cp2 = s2.p_charBuffer)
             {
-                return !MemoryOperation.EqualsMemory(cp1, cp2, len * sizeof(char));
+                return !MemoryOperation.EqualsChars(cp1, cp2, len);
             }
         }
 
