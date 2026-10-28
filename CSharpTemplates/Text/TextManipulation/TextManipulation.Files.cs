@@ -7,7 +7,7 @@ using Cheng.DataStructure.Collections;
 
 namespace Cheng.Texts
 {
-    
+
     public static partial class TextManipulation
     {
 
@@ -243,7 +243,6 @@ namespace Cheng.Texts
             /// <exception cref="ArgumentException">路径节点数组内存在不合规路径参数，例如两个分隔符并列，".."符号访问到了提供的路径节点之外</exception>
             public static void PathCombine(IEnumerable<string> paths, ImmediatelyStack<string> buffer, char separator, TextWriter append)
             {
-                //throw new NotImplementedException();
 
                 if (buffer is null || paths is null || append is null) throw new ArgumentNullException();
                 buffer.Clear();

@@ -117,8 +117,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
     /// </summary>
     /// <remarks>
     /// <para>该打包器将待打包项写入zip格式的数据流，支持仅存储和Deflate压缩两种方式</para>
-    /// <para>当项数量、单个项大小或中央目录位置超出经典zip格式上限时，会自动写入zip64扩展结构；打包时使用数据描述符记录校验和与数据大小，接收流只需要可写，不要求可查找</para>
-    /// <para>项路径使用UTF-8编码；当前打包器不支持数据加密</para>
+    /// <para>项路径使用UTF-8编码；不支持数据加密</para>
     /// </remarks>
     public sealed partial class ZipPackagingOperation : PackagingOperation
     {

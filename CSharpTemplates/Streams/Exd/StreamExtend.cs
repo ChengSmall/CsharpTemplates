@@ -80,8 +80,6 @@ namespace Cheng.Streams
                 return f_readB(hs, buffer, count);
             }
 
-            //int index = offset;
-            //int rsize;
             int re = 0;
             int index = 0;
             while (count != 0)

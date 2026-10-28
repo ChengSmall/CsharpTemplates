@@ -253,7 +253,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
 #endif
         private const uint cp_crc32Begin = 0xFFFFFFFF;
 
-        private const string cp_exceptionPathInvalid = "路径为空、包含不可打印字符，或以路径分隔符开头结尾";
+        private const string cp_exceptionPathInvalid = "路径不合规";
 
         private const string cp_exceptionPathTooLong = "路径名的UTF-8字节长度超出zip格式上限";
 
@@ -683,32 +683,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
 #endif
         private static HashSet<char> f_createNotPathChars()
         {
-            HashSet<char> chars = new HashSet<char>();
-            char[] pathChars = Path.GetInvalidPathChars();
-            char[] nameChars = Path.GetInvalidFileNameChars();
-
-            int i;
-            for (i = 0; i < pathChars.Length; i++)
-            {
-                chars.Add(pathChars[i]);
-            }
-            for (i = 0; i < nameChars.Length; i++)
-            {
-                chars.Add(nameChars[i]);
-            }
-
-            // 允许路径分隔符
-            chars.Remove('/');
-            chars.Remove('\\');
-
-            // 显式排除所有控制字符
-            for (i = 0; i < 0x20; i++)
-            {
-                chars.Add((char)i);
-            }
-            chars.Add((char)0x7F);
-
-            return chars;
+            return new HashSet<char>();
         }
 
 #if DEBUG
@@ -741,6 +716,14 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
 
             c = path[length - 1];
             if (c == '/' || c == '\\') throw new ArgumentException(cp_exceptionPathInvalid, nameof(path));
+
+            if(length > 1)
+            {
+                if(path[1] == ':')
+                {
+                    throw new ArgumentException(cp_exceptionPathInvalid, nameof(path));
+                }
+            }
 
             string zipPath = path.Replace('\\', '/');
             return zipPath;
@@ -968,7 +951,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// <param name="dosDate">DOS日期</param>
         /// <param name="dosTime">DOS时间</param>
 #endif
-        private static void f_dateTimeToDos(DateTime time, out ushort dosDate, out ushort dosTime)
+        internal static void f_dateTimeToDos(DateTime time, out ushort dosDate, out ushort dosTime)
         {
             int year = time.Year;
             if (year < 1980) year = 1980;

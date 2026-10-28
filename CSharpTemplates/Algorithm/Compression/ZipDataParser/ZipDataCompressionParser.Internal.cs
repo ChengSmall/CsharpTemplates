@@ -91,21 +91,19 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
 
         private const uint cp_zip64Sentinel32 = 0xFFFFFFFF;
 
-        private const string cp_exceptionInvalidData = "The archive is not a valid zip archive.";
+        private const string cp_exceptionInvalidData = "不是有效的zip包";
 
-        private const string cp_exceptionEndOfCentralNotFound = "End of Central Directory record could not be found.";
+        private const string cp_exceptionEndOfCentralNotFound = "找不到中央目录的结束记录";
 
-        private const string cp_exceptionCentralDirectoryCorrupt = "The central directory is corrupt.";
+        private const string cp_exceptionCentralDirectoryCorrupt = "中央目录已损坏";
 
-        private const string cp_exceptionLocalHeaderCorrupt = "A local file header is corrupt.";
+        private const string cp_exceptionLocalHeaderCorrupt = "本地文件头已损坏";
 
-        private const string cp_exceptionEntryNameInvalid = "The entry name is invalid.";
+        private const string cp_exceptionEntryNameInvalid = "项名称无效";
 
-        private const string cp_exceptionUnsupportedCompression = "The archive entry was compressed using an unsupported compression method.";
+        internal const string cp_exceptionUnsupportedCompression = "无法读取不受支持的压缩项";
 
-        private const string cp_exceptionCreateDictionary = "The dictionary creation delegate returned null.";
-
-        private const string cp_exceptionMultiDisk = "Split or spanned archives are not supported.";
+        private const string cp_exceptionMultiDisk = "不支持拆分数据";
 
         #endregion
 
@@ -431,7 +429,15 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
                     beforeSize32, compressedSize32, localHeaderOffset32, diskStart,
                     out beforeSize, out compressedSize, out localHeaderOffset);
 
-                string dataPath = f_decodeEntryName(variableBuffer, variableOffset, nameLength, generalPurposeBitFlag);
+                string dataPath;
+                try
+                {
+                    dataPath = f_decodeEntryName(variableBuffer, variableOffset, nameLength, generalPurposeBitFlag);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidDataException(cp_exceptionEntryNameInvalid, ex);
+                }
                 if (dataPath.Length == 0)
                 {
                     throw new InvalidDataException(cp_exceptionEntryNameInvalid);
@@ -556,9 +562,16 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         private string f_decodeEntryName(byte[] buffer, int offset, int length, ushort generalPurposeBitFlag)
         {
             Encoding encoding;
-            if ((generalPurposeBitFlag & cp_flagUtf8) != 0)
+            if (p_isISO_IEC21320_1)
             {
-                encoding = Encoding.UTF8;
+                if ((generalPurposeBitFlag & cp_flagUtf8) != 0)
+                {
+                    encoding = Encoding.UTF8;
+                }
+                else
+                {
+                    encoding = p_entryNameEncoding;
+                }
             }
             else
             {
@@ -606,7 +619,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// 获取项数据在原始流内的位置，若还未读取本地文件头则读取并缓存
         /// </summary>
 #endif
-        private void f_ensureDataPosition(ZipDataInformation inf)
+        internal void f_ensureDataPosition(ZipDataInformation inf)
         {
             if (inf.p_dataPosition >= 0) return;
 
@@ -651,35 +664,20 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         {
             f_ensureDataPosition(inf);
             int bufsize;
-            switch (inf.p_compressionMethod)
+            if (inf.p_compressedSize == 0)
             {
-                case 0:
-                    // 仅存储
-                    if (inf.p_compressedSize == 0)
-                    {
-                        return new MemoryStream(Array.Empty<byte>(), false);
-                    }
-                    return new TruncateStream(p_zipStream, inf.p_dataPosition, inf.p_compressedSize, false);
-                case 8:
-                    // deflate压缩
-                    if (inf.p_compressedSize == 0)
-                    {
-                        return new MemoryStream(Array.Empty<byte>(), false);
-                    }
-                    if (inf.p_compressedSize > (1024 * 1024 * 256))
-                    {
-                        bufsize = 1024 * 8;
-                    }
-                    else
-                    {
-                        bufsize = 1024 * 4;
-                    }
-
-                    var truncate = new TruncateStream(p_zipStream, inf.p_dataPosition, inf.p_compressedSize, false, bufsize);
-                    return new DeflateStream(truncate, CompressionMode.Decompress, false);
-                default:
-                    throw new InvalidDataException(cp_exceptionUnsupportedCompression);
+                return new MemoryStream(Array.Empty<byte>(), false);
             }
+            if ((inf.p_compressionMethod != 0) && (inf.p_compressedSize > (1024 * 1024 * 256)))
+            {
+                bufsize = 1024 * 8;
+            }
+            else
+            {
+                bufsize = 1024 * 4;
+            }
+            TruncateStream truncate = new TruncateStream(p_zipStream, inf.p_dataPosition, inf.p_compressedSize, false, bufsize);
+            return p_itemDec.CreateDecompressStream(truncate, inf.p_compressionMethod);
         }
 
 #if DEBUG
@@ -710,6 +708,16 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             }
 
             return data;
+        }
+
+        private Stream f_openOriEntry(ZipDataInformation inf)
+        {
+            f_ensureDataPosition(inf);
+            if (inf.p_compressedSize == 0)
+            {
+                return new MemoryStream(Array.Empty<byte>(), false);
+            }
+            return new TruncateStream(p_zipStream, inf.p_dataPosition, inf.p_compressedSize, false, 4096);
         }
 
         #endregion

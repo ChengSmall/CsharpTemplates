@@ -14,11 +14,37 @@ using Cheng.Streams;
 namespace Cheng.Algorithm.Compressions.ZipDataParser
 {
 
+    #region 结构
+
+    /// <summary>
+    /// zip压缩方法类型
+    /// </summary>
+    public enum ZipCompressionMethodType
+    {
+
+        /// <summary>
+        /// 仅存储
+        /// </summary>
+        Stored = 0,
+
+        /// <summary>
+        /// Deflate压缩算法
+        /// </summary>
+        Deflate = 8,
+
+        /// <summary>
+        /// Deflate64压缩算法
+        /// </summary>
+        Deflate64 = 9
+    }
+
     /// <summary>
     /// zip包项数据信息
     /// </summary>
     public sealed class ZipDataInformation : DataInformation
     {
+
+        #region 构造
 
         internal ZipDataInformation(string dataPath, long beforeSize, long compressedSize,
             ushort compressionMethod, ushort generalPurposeBitFlag, long localHeaderOffset,
@@ -37,7 +63,10 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             p_parser = parser;
         }
 
+        #endregion
+
         #region 参数
+
         internal ZipDataCompressionParser p_parser;
 
         internal readonly string p_dataPath;
@@ -114,12 +143,10 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             get => p_parser;
         }
 
-#if DEBUG
         /// <summary>
         /// 项数据使用的zip压缩方法代码
         /// </summary>
-#endif
-        internal ushort CompressionMethod => p_compressionMethod;
+        public int CompressionMethod => p_compressionMethod;
 
 #if DEBUG
         /// <summary>
@@ -128,9 +155,19 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
 #endif
         internal ushort GeneralPurposeBitFlag => p_generalPurposeBitFlag;
 
+        /// <summary>
+        /// 项数据使用的zip压缩方法类型
+        /// </summary>
+        public ZipCompressionMethodType CompressionMethodType
+        {
+            get => (ZipCompressionMethodType)p_compressionMethod;
+        }
+
         #endregion
 
         #region 功能
+
+        #region 封装
 
         private static string f_getDataName(string path)
         {
@@ -155,7 +192,11 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
 
         #endregion
 
+        #endregion
+
     }
+
+    #endregion
 
     /// <summary>
     /// zip包数据解析器
@@ -173,7 +214,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// <exception cref="NotSupportedException">数据不支持读取和查找</exception>
         /// <exception cref="IOException">数据访问IO错误</exception>
         /// <exception cref="NotImplementedException">无法解析zip包</exception>
-        public ZipDataCompressionParser(Stream zipStream) : this(zipStream, true, null, null)
+        public ZipDataCompressionParser(Stream zipStream) : this(zipStream, true, null, null, null)
         {}
 
         /// <summary>
@@ -185,7 +226,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// <exception cref="NotSupportedException">数据不支持读取和查找</exception>
         /// <exception cref="IOException">数据访问IO错误</exception>
         /// <exception cref="NotImplementedException">无法解析zip包</exception>
-        public ZipDataCompressionParser(Stream zipStream, bool onDispose) : this(zipStream, onDispose, null, null)
+        public ZipDataCompressionParser(Stream zipStream, bool onDispose) : this(zipStream, onDispose, null, null, null)
         {}
 
         /// <summary>
@@ -198,7 +239,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// <exception cref="NotSupportedException">数据不支持读取和查找</exception>
         /// <exception cref="IOException">数据访问IO错误</exception>
         /// <exception cref="NotImplementedException">无法解析zip包</exception>
-        public ZipDataCompressionParser(Stream zipStream, bool onDispose, CreateDictionaryByCollection<string, ZipDataInformation> createDictionaryFunc) : this(zipStream, onDispose, createDictionaryFunc, null)
+        public ZipDataCompressionParser(Stream zipStream, bool onDispose, CreateDictionaryByCollection<string, ZipDataInformation> createDictionaryFunc) : this(zipStream, onDispose, createDictionaryFunc, null, null)
         {}
 
         /// <summary>
@@ -212,7 +253,38 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// <exception cref="NotSupportedException">数据不支持读取和查找</exception>
         /// <exception cref="IOException">数据访问IO错误</exception>
         /// <exception cref="NotImplementedException">无法解析zip包</exception>
-        public ZipDataCompressionParser(Stream zipStream, bool onDispose, CreateDictionaryByCollection<string, ZipDataInformation> createDictionaryFunc, Encoding entryNameEncoding)
+        public ZipDataCompressionParser(Stream zipStream, bool onDispose, CreateDictionaryByCollection<string, ZipDataInformation> createDictionaryFunc, Encoding entryNameEncoding) : this(zipStream, onDispose, createDictionaryFunc, entryNameEncoding, null)
+        {}
+
+        /// <summary>
+        /// 实例化zip包数据解析器
+        /// </summary>
+        /// <param name="zipStream">要解析的zip数据</param>
+        /// <param name="onDispose">在释放时是否释放zip流数据对象</param>
+        /// <param name="createDictionaryFunc">用于创建索引字典的委托，null表示使用默认的<see cref="Dictionary{TKey, TValue}"/>字典对象</param>
+        /// <param name="entryNameEncoding">读取和解析zip内的项名时使用的文本编码，null表示默认使用UTF-8编码</param>
+        /// <param name="itemDecompress">zip项数据解压缩器，null表示使用默认实现的解压缩器，默认仅实现deflate和deflate64两种算法</param>
+        /// <exception cref="ArgumentNullException">流对象是null</exception>
+        /// <exception cref="NotSupportedException">数据不支持读取和查找</exception>
+        /// <exception cref="IOException">数据访问IO错误</exception>
+        /// <exception cref="NotImplementedException">无法解析zip包</exception>
+        public ZipDataCompressionParser(Stream zipStream, bool onDispose, CreateDictionaryByCollection<string, ZipDataInformation> createDictionaryFunc, Encoding entryNameEncoding, IZipItemDecompress itemDecompress) : this(zipStream, onDispose, createDictionaryFunc, entryNameEncoding, itemDecompress, false)
+        {}
+
+        /// <summary>
+        /// 实例化zip包数据解析器
+        /// </summary>
+        /// <param name="zipStream">要解析的zip数据</param>
+        /// <param name="onDispose">在释放时是否释放zip流数据对象</param>
+        /// <param name="createDictionaryFunc">用于创建索引字典的委托，null表示使用默认的<see cref="Dictionary{TKey, TValue}"/>字典对象</param>
+        /// <param name="entryNameEncoding">读取和解析zip内的项名时使用的文本编码，null表示默认使用UTF-8编码</param>
+        /// <param name="itemDecompress">zip项数据解压缩器，null表示使用默认实现的解压缩器，默认仅实现deflate和deflate64两种算法</param>
+        /// <param name="needCheckISO_IEC21320_1">在解析项路径时是否需要按 ISO/IEC 21320-1 标准判断通用目位标志的第11位来强制采用UTF-8编码</param>
+        /// <exception cref="ArgumentNullException">流对象是null</exception>
+        /// <exception cref="NotSupportedException">数据不支持读取和查找</exception>
+        /// <exception cref="IOException">数据访问IO错误</exception>
+        /// <exception cref="NotImplementedException">无法解析zip包</exception>
+        public ZipDataCompressionParser(Stream zipStream, bool onDispose, CreateDictionaryByCollection<string, ZipDataInformation> createDictionaryFunc, Encoding entryNameEncoding, IZipItemDecompress itemDecompress, bool needCheckISO_IEC21320_1)
         {
             if (zipStream is null) throw new ArgumentNullException();
             if ((!zipStream.CanRead) || (!zipStream.CanSeek)) throw new NotSupportedException();
@@ -224,8 +296,12 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             {
                 createDictionaryFunc = DeleagateFunctions.CreateDictionaryByCollection;
             }
+            if(itemDecompress is null)
+            {
+                itemDecompress = ZipItemDecompressDefault.CreateDef();
+            }
             // 初始化zip解析器对象
-            f_init(zipStream, onDispose, createDictionaryFunc, entryNameEncoding);
+            f_init(zipStream, onDispose, createDictionaryFunc, entryNameEncoding, itemDecompress, needCheckISO_IEC21320_1);
         }
 
 #if DEBUG
@@ -237,10 +313,12 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// <param name="createDictionaryFunc">用于创建索引字典的委托，此回调让调用者自定义字典对象类型</param>
         /// <param name="entryNameEncoding">读取和解析zip内的结构和项时可能会使用的文本编码</param>
 #endif
-        private void f_init(Stream zipStream, bool onDispose, CreateDictionaryByCollection<string, ZipDataInformation> createDictionaryFunc, Encoding entryNameEncoding)
+        private void f_init(Stream zipStream, bool onDispose, CreateDictionaryByCollection<string, ZipDataInformation> createDictionaryFunc, Encoding entryNameEncoding, IZipItemDecompress itemDec, bool isISO_IEC21320_1)
         {
+
             p_zipStream = zipStream;
             p_onDispose = onDispose;
+            p_isISO_IEC21320_1 = isISO_IEC21320_1;
             // 使用忽略大小写的路径对比器初始化字典
             p_keyEquals = new EqualityStrNotPathSeparator(false, true);
             p_entryNameEncoding = entryNameEncoding;
@@ -249,7 +327,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
 
             p_zipList = new List<ZipDataInformation>();
             p_zipDict = null;
-
+            p_itemDec = itemDec;
             try
             {
                 // 读取zip目录结构
@@ -258,7 +336,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
                 p_zipDict = createDictionaryFunc.Invoke(p_zipList, f_getDictionaryKey, p_keyEquals);
                 if (p_zipDict is null)
                 {
-                    throw new InvalidDataException(cp_exceptionCreateDictionary);
+                    throw new ArgumentException();
                 }
 
                 if (p_zipList.Count < (p_zipList.Capacity - 16))
@@ -280,8 +358,16 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
 
         private bool p_onDispose;
 
+#if DEBUG
+        /// <summary>
+        /// 是否需要判断ISO/IEC 21320-1标准的比特位强制规定
+        /// </summary>
+#endif
+        private bool p_isISO_IEC21320_1;
+
         internal Stream p_zipStream;
         private EqualityStrNotPathSeparator p_keyEquals;
+        private IZipItemDecompress p_itemDec;
 
 #if DEBUG
         /// <summary>
@@ -327,7 +413,6 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
 
         protected override bool Disposeing(bool disposeing)
         {
-            // 释放非托管和内部资源
             if (disposeing)
             {
                 if (p_onDispose && (p_zipStream is object)) p_zipStream.Close();
@@ -492,24 +577,25 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
 
         private static IEnumerable<string> f_enumerateFilePath(List<ZipDataInformation> list)
         {
-            for (int i = 0; i < list.Count; i++)
+            foreach (var item in list)
             {
-                yield return list[i].DataPath;
+                yield return item.DataPath;
             }
         }
 
         private static IEnumerable<string> f_enumerateFileName(List<ZipDataInformation> list)
         {
-            for (int i = 0; i < list.Count; i++)
+            foreach (var item in list)
             {
-                yield return list[i].DataName;
+                yield return item.DataName;
             }
         }
 
+        /// <summary>
+        /// 无实现
+        /// </summary>
         public override void Flush()
         {
-            ThrowObjectDisposeException();
-            p_zipStream.Flush();
         }
 
         #endregion
@@ -579,6 +665,69 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         }
 
         /// <summary>
+        /// 使用索引判断指定项是否支持解压缩
+        /// </summary>
+        /// <param name="index">项数据索引</param>
+        /// <returns>是否支持解压缩</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public bool CanDecompressStream(int index)
+        {
+            ThrowObjectDisposeException();
+            var inf = p_zipList[index];
+            return CanDecompressStreamByInformation(inf);
+        }
+
+        /// <summary>
+        /// 使用路径判断指定项是否支持解压缩
+        /// </summary>
+        /// <param name="path">项数据路径</param>
+        /// <returns>是否支持解压缩</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="KeyNotFoundException">路径不存在</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public bool CanDecompressStream(string path)
+        {
+            ThrowObjectDisposeException();
+            if (path is null) throw new ArgumentNullException();
+            var inf = p_zipDict[path];
+            return CanDecompressStreamByInformation(inf);
+        }
+
+        /// <summary>
+        /// 打开指定索引下项的原始数据
+        /// </summary>
+        /// <param name="index">项数据索引</param>
+        /// <returns>项存档的原始数据流，不再使用时释放</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public Stream OpenRawStream(int index)
+        {
+            ThrowObjectDisposeException();
+            var inf = p_zipList[index];
+            return OpenRawStreamByInformation(inf);
+        }
+
+        /// <summary>
+        /// 打开指定路径下项的原始数据
+        /// </summary>
+        /// <param name="path">项数据路径</param>
+        /// <returns>项存档的原始数据流，不再使用时释放</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="KeyNotFoundException">路径不存在</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public Stream OpenRawStream(string path)
+        {
+            ThrowObjectDisposeException();
+            if (path is null) throw new ArgumentNullException();
+            var inf = p_zipDict[path];
+            return OpenRawStreamByInformation(inf);
+        }
+
+        /// <summary>
         /// 使用项数据信息获取对应数据
         /// </summary>
         /// <param name="zipInformation">项信息</param>
@@ -611,6 +760,39 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             if (((object)zipInformation.p_parser) != this) throw new ArgumentException();
 
             return f_getDataBlock(zipInformation);
+        }
+
+        /// <summary>
+        /// 使用项数据信息获取打开对应原始数据流对象
+        /// </summary>
+        /// <param name="zipInformation"></param>
+        /// <returns>zip项原始数据，不再使用后释放</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数不是当前对象的项</exception>
+        public Stream OpenRawStreamByInformation(ZipDataInformation zipInformation)
+        {
+            ThrowObjectDisposeException();
+            if (zipInformation is null) throw new ArgumentNullException();
+            if (((object)zipInformation.p_parser) != this) throw new ArgumentException();
+
+            return f_openOriEntry(zipInformation);
+        }
+
+        /// <summary>
+        /// 判断指定项的数据是否在该解析器内支持解压缩
+        /// </summary>
+        /// <param name="zipInformation">要判断的项</param>
+        /// <returns></returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">参数不是当前对象的项</exception>
+        public bool CanDecompressStreamByInformation(ZipDataInformation zipInformation)
+        {
+            ThrowObjectDisposeException();
+            if (zipInformation is null) throw new ArgumentNullException();
+            if (((object)zipInformation.p_parser) != this) throw new ArgumentException();
+            return p_itemDec.CanDecompressType(zipInformation.p_compressionMethod);
         }
 
         #endregion
