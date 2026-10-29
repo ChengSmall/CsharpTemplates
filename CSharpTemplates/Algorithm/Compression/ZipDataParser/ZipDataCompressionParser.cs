@@ -946,6 +946,9 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// <summary>
         /// 为crc32校验后续数据
         /// </summary>
+        /// <remarks>
+        /// <para>想要校验数据的CRC32值，先从<see cref="CRC32BeginValue"/>获取初始值，然后对需要校验的数据按顺序调用<see cref="CRC32Update(uint, byte[], int, int)"/>更新，最后用<see cref="CRC32End(uint)"/>结束校验即可获取</para>
+        /// </remarks>
         /// <param name="crc32">当前crc32值</param>
         /// <param name="buffer">读取需要校验的数据</param>
         /// <param name="offset">读取的数据起始偏移</param>
@@ -967,7 +970,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// 为crc32校验后续数据
         /// </summary>
         /// <remarks>
-        /// <para>想要校验数据的CRC32值，先从<see cref="CRC32BeginValue"/>获取初始值，然后对需要校验的数据按顺序调用<see cref="CRC32Update(uint, byte[], int, int)"/>更新，最后用<see cref="CRC32End(uint)"/>结束校验即可获取</para>
+        /// <para>想要校验数据的CRC32值，先从<see cref="CRC32BeginValue"/>获取初始值，然后对需要校验的数据按顺序调用<see cref="CRC32UpdateByAddress(uint, byte*, int)"/>更新，最后用<see cref="CRC32End(uint)"/>结束校验即可获取</para>
         /// </remarks>
         /// <param name="crc32">当前crc32值</param>
         /// <param name="buffer">读取需要校验数据的地址</param>
