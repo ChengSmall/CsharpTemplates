@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -106,7 +107,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// <summary>
         /// 使用zip常用的Deflate压缩算法
         /// </summary>
-        Deflate = 1
+        Deflate = 8
 
     }
 
@@ -124,16 +125,43 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
 
         #region 结构
 
-        private readonly struct ZipPackItem
+        private struct ZipPackItem
         {
-            internal ZipPackItem(IGettingStream getting, ZipItemPackType type)
+            internal ZipPackItem(IGettingStream getting, int type)
             {
                 gettingStream = getting;
                 packType = type;
+                csize = -1;
+                crc = -1;
+                bsize = -1;
             }
 
+            internal ZipPackItem(IGettingStream getting, int type, long csize, long bsize, long crc)
+            {
+                gettingStream = getting;
+                packType = type;
+                this.csize = csize;
+                this.crc = crc;
+                this.bsize = bsize;
+            }
+#if DEBUG
+            /// <summary>
+            /// 预设压缩后大小，没有为-1
+            /// </summary>
+#endif
+            internal long csize;
+            internal long bsize;
+
+#if DEBUG
+            /// <summary>
+            /// 预设32位crc校验码，没有为-1
+            /// </summary>
+#endif
+            internal long crc;
             internal readonly IGettingStream gettingStream;
-            internal readonly ZipItemPackType packType;
+            internal readonly int packType;
+
+            internal ZipItemPackType ItemPackType => (ZipItemPackType)packType;
         }
 
         #endregion
@@ -373,16 +401,48 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// </summary>
         /// <param name="data">要打包的数据获取接口</param>
         /// <param name="path">待打包项的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
-        /// <param name="type">待打包项的压缩类型，默认使用<see cref="ZipItemPackType.Deflate"/></param>
+        /// <param name="type">
+        /// <para>待打包项的压缩类型，默认使用<see cref="ZipItemPackType.Deflate"/></para>
+        /// <para>如果指定<see cref="ZipItemPackType"/>类型之外的值，则一律采用仅存储写入原始数据</para>
+        /// </param>
         /// <exception cref="ArgumentNullException">对象或路径是null</exception>
-        /// <exception cref="ArgumentException">设置的路径拥有不可打印字符或其它路径错误；或者压缩类型不属于已有参数</exception>
+        /// <exception cref="ArgumentException">设置的路径拥有不可打印字符或其它路径错误</exception>
         /// <exception cref="NotImplementedException">打包器正在打包</exception>
         public void SetDataItem(IGettingStream data, string path, ZipItemPackType type)
         {
             if (data is null) throw new ArgumentNullException(nameof(data));
             if (p_running) throw new NotImplementedException();
-            if (type < ZipItemPackType.Stored || type > ZipItemPackType.Deflate) throw new ArgumentException();
-            p_pack[f_addZipPath(path)] = new ZipPackItem(data, type);
+            p_pack[f_addZipPath(path)] = new ZipPackItem(data, (int)type);
+        }
+
+        /// <summary>
+        /// 添加或覆盖一个待打包项，自定义打包项标头
+        /// </summary>
+        /// <param name="data">要打包的数据获取接口</param>
+        /// <param name="path">待打包项的路径；<![CDATA[字符'/'或'\'都表示路径分隔符]]></param>
+        /// <param name="type">
+        /// <para>待打包项的压缩类型，默认使用<see cref="ZipItemPackType.Deflate"/></para>
+        /// <para>如果指定<see cref="ZipItemPackType"/>类型之外的值，则一律采用仅存储写入原始数据；如果值小于0，则在写入类型头时使用绝对值，而数据项写入原始数据</para>
+        /// </param>
+        /// <param name="pcsize">
+        /// <para>强制设置压缩后大小字节头</para>
+        /// <para>参数小于0表示不进行规定</para>
+        /// </param>
+        /// <param name="beforeSize">
+        /// <para>强制设置压缩后大小字节头</para>
+        /// <para>参数小于0表示不进行规定</para>
+        /// </param>
+        /// <param name="crc">
+        /// <para>强制在中央目录设置该项打包后的crc校验值，范围在[0, 4294967295]，-1表示不设置</para>
+        /// </param>
+        /// <exception cref="ArgumentNullException">对象或路径是null</exception>
+        /// <exception cref="ArgumentException">设置的路径拥有不可打印字符或其它路径错误</exception>
+        /// <exception cref="NotImplementedException">打包器正在打包</exception>
+        public void SetDataItemCustom(IGettingStream data, string path, int type, long pcsize, long beforeSize, long crc)
+        {
+            if (data is null) throw new ArgumentNullException(nameof(data));
+            if (p_running) throw new NotImplementedException();
+            p_pack[f_addZipPath(path)] = new ZipPackItem(data, type, pcsize, beforeSize, crc);
         }
 
         /// <summary>
@@ -394,11 +454,11 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         }
 
         /// <summary>
-        /// 开始讲当前待打包队列写入流对象
+        /// 开始将当前待打包队列写入流对象
         /// </summary>
         /// <param name="stream">要将zip数据写入的对象</param>
         /// <returns>
-        /// <para>一个打包枚举器，每次推进都会返回一个打包完成的项结果</para>
+        /// <para>一个打包迭代器，每次推进都会返回一个打包完成的项结果</para>
         /// </returns>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="NotSupportedException">流对象没有写入权限</exception>
@@ -412,6 +472,45 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
             p_running = true;
             return new ZipPackingEnumerator(this, f_packTo(stream));
         }
+
+        /// <summary>
+        /// 获取能够将当前待打包队列写入流对象的枚举器
+        /// </summary>
+        /// <param name="stream">要写入到的流对象</param>
+        /// <returns>获取一个打包枚举器，每次推进都会返回一个打包完成的项结果</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="NotSupportedException">流对象没有写入权限</exception>
+        /// <exception cref="Exception">其它错误</exception>
+        public IEnumerable<ZipPackingItem> PackToEnumerable(Stream stream)
+        {
+            if (stream is null) throw new ArgumentNullException(nameof(stream));
+            if (!stream.CanWrite) throw new NotSupportedException();
+            return new c_packToEnumator(stream, this);
+        }
+
+        private sealed class c_packToEnumator : IEnumerable<ZipPackingItem>
+        {
+            internal c_packToEnumator(Stream stream, ZipPackagingOperation zip)
+            {
+                this.z = zip; this.s = stream;
+            }
+            private ZipPackagingOperation z;
+            private Stream s;
+
+            public IEnumerator<ZipPackingItem> GetEnumerator()
+            {
+                return z.PackToEnumator(s);
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return z.PackToEnumator(s);
+            }
+        }
+
+        #endregion
+
+        #region 封装
 
 #if DEBUG
         /// <summary>
@@ -429,7 +528,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
                 List<ZipCentralRecord> records = p_records;
                 records.Clear();
                 if (records.Capacity < count) records.Capacity = count;
-
+                ZipPackItem zpitem;
                 ushort dosDate;
                 ushort dosTime;
                 DateTime bnowTime = (p_getNowTime is null) ? DateTime.Now : p_getNowTime.Invoke();
@@ -441,21 +540,29 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
                 DateTime? nowdt;
                 foreach (KeyValuePair<string, ZipPackItem> pair in p_pack)
                 {
+                    bool isOriBufWr = false;
+                    zpitem = pair.Value;
+                    var packTypeCode = zpitem.packType;
+                    if(packTypeCode < 0)
+                    {
+                        packTypeCode = -packTypeCode;
+                        isOriBufWr = true;
+                    }
                     byte[] nameBytes = f_getNameBytes(pair.Key);
-                    ushort method = f_getPackMethod(pair.Value.packType);
+                    ushort method = f_getPackMethod(packTypeCode);
                     long localHeaderOffset = position;
 
                     // 数据源声明的长度只用于预先决定本地文件头的格式，未知长度时延迟到数据写完再决定
-                    long streamLength = f_getStreamLength(pair.Value.gettingStream);
+                    long streamLength = f_getStreamLength(zpitem);
                     bool lengthKnown = streamLength >= 0;
-                    bool entryZip64 = lengthKnown && f_isZip64Entry(streamLength, pair.Value.packType);
+                    bool entryZip64 = lengthKnown && f_isZip64Entry(streamLength, packTypeCode);
 
                     uint crc = cp_crc32Begin;
                     long beforeSize = 0;
                     long compressedSize;
                     ZipEntryBufferStream bufferStream = null;
 
-                    Stream source = pair.Value.gettingStream.OpenStream();
+                    Stream source = zpitem.gettingStream.OpenStream();
                     if (source is null) throw new IOException(cp_exceptionOpenStream);
 
                     try
@@ -491,7 +598,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
 
                         Stream dataStream = (bufferStream is null) ? stream : (Stream)bufferStream;
 
-                        if (pair.Value.packType == ZipItemPackType.Stored)
+                        if ((isOriBufWr) || (packTypeCode != (int)ZipItemPackType.Deflate))
                         {
                             // 仅存储，边拷贝边计算校验和
                             int readCount;
@@ -569,6 +676,12 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
                     }
 
                     crc = f_crc32End(crc);
+                    if (zpitem.csize >= 0) compressedSize = zpitem.csize;
+                    if (zpitem.bsize >= 0) beforeSize = zpitem.bsize;
+                    if (zpitem.crc >= 0 && zpitem.crc <= uint.MaxValue)
+                    {
+                        crc = (uint)(zpitem.crc);
+                    }
                     position += f_writeDataDescriptor(stream, crc, compressedSize, beforeSize, entryZip64);
 
                     if (entryZip64) zip64Archive = true;
@@ -705,7 +818,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
                 f_writeU16(p_headerBuffer, 20, 0);
 
                 stream.Write(p_headerBuffer, 0, cp_endOfCentralSize);
-                stream.Flush();
+                //stream.Flush();
             }
             finally
             {
@@ -725,6 +838,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         }
 
         #endregion
+
 
     }
 

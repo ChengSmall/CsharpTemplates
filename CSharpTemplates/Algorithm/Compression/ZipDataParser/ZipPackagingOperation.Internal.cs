@@ -143,20 +143,6 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
 
 #if DEBUG
         /// <summary>
-        /// 仅存储的压缩方法代码
-        /// </summary>
-#endif
-        private const ushort cp_methodStored = 0;
-
-#if DEBUG
-        /// <summary>
-        /// Deflate压缩的压缩方法代码
-        /// </summary>
-#endif
-        private const ushort cp_methodDeflate = 8;
-
-#if DEBUG
-        /// <summary>
         /// 本地文件头签名
         /// </summary>
 #endif
@@ -251,7 +237,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// CRC32校验初值
         /// </summary>
 #endif
-        private const uint cp_crc32Begin = 0xFFFFFFFF;
+        internal const uint cp_crc32Begin = 0xFFFFFFFF;
 
         private const string cp_exceptionPathInvalid = "路径不合规";
 
@@ -791,10 +777,9 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// <param name="type">压缩类型</param>
         /// <returns>zip压缩方法代码</returns>
 #endif
-        private static ushort f_getPackMethod(ZipItemPackType type)
+        private static ushort f_getPackMethod(int type)
         {
-            if (type == ZipItemPackType.Stored) return cp_methodStored;
-            return cp_methodDeflate;
+            return (ushort)type;
         }
 
 #if DEBUG
@@ -804,13 +789,13 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// <param name="getting">数据源对象</param>
         /// <returns>数据源长度，无法确认时返回-1</returns>
 #endif
-        private static long f_getStreamLength(IGettingStream getting)
+        private static long f_getStreamLength(ZipPackItem item)
         {
-            var re = getting.StreamLength;
+            var re = item.gettingStream.StreamLength;
             if (re >= 0) return re;
             try
             {
-                using (var open = getting.OpenStream())
+                using (var open = item.gettingStream.OpenStream())
                 {
                     return open.Length;
                 }
@@ -829,10 +814,10 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// <param name="type">项压缩类型</param>
         /// <returns>true表示需要使用zip64，false表示可以使用经典zip</returns>
 #endif
-        private static bool f_isZip64Entry(long length, ZipItemPackType type)
+        private static bool f_isZip64Entry(long length, int type)
         {
             if (length < 0) return true;
-            if (type == ZipItemPackType.Stored) return length > cp_maxEntrySize;
+            if (type == 0) return length > cp_maxEntrySize;
             // Deflate可能产生少量膨胀，预留余量避免压缩后大小越过经典zip上限
             return length > cp_maxEntrySize - cp_deflateBoundMargin;
         }
@@ -1020,7 +1005,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// CRC32校验表
         /// </summary>
 #endif
-        private static readonly uint[] cp_crc32Table = f_createCrc32Table();
+        internal static readonly uint[] cp_crc32Table = f_createCrc32Table();
 
 #if DEBUG
         /// <summary>
@@ -1031,13 +1016,11 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         private static uint[] f_createCrc32Table()
         {
             uint[] table = new uint[256];
-            uint value;
-            int i, j;
 
-            for (i = 0; i < 256; i++)
+            for (int i = 0; i < 256; i++)
             {
-                value = (uint)i;
-                for (j = 0; j < 8; j++)
+                var value = (uint)i;
+                for (int j = 0; j < 8; j++)
                 {
                     if ((value & 1) != 0) value = 0xEDB88320 ^ (value >> 1);
                     else value >>= 1;
@@ -1058,7 +1041,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// <param name="count">数据的字节数量</param>
         /// <returns>更新后的校验值</returns>
 #endif
-        private static uint f_crc32Update(uint crc, byte[] buffer, int offset, int count)
+        internal static uint f_crc32Update(uint crc, byte[] buffer, int offset, int count)
         {
             uint[] table = cp_crc32Table;
             int end = offset + count;
@@ -1078,7 +1061,7 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// <param name="crc">更新后的校验值</param>
         /// <returns>最终的CRC32校验和</returns>
 #endif
-        private static uint f_crc32End(uint crc)
+        internal static uint f_crc32End(uint crc)
         {
             return crc ^ 0xFFFFFFFF;
         }

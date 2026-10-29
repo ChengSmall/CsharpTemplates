@@ -10,6 +10,7 @@ using Cheng.Algorithm.Trees;
 using Cheng.Algorithm.Collections;
 using Cheng.DataStructure.Streams;
 using Cheng.Streams;
+using Cheng.Algorithm.Compressions.ZipPackagings;
 
 namespace Cheng.Algorithm.Compressions.ZipDataParser
 {
@@ -59,8 +60,9 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             p_localHeaderOffset = localHeaderOffset;
             p_modifiedTime = modifiedTime;
             p_keyComparer = keyComparer;
-            p_dataPosition = -1;
             p_parser = parser;
+            p_dataPosition = -1;
+            p_crc = -1;
         }
 
         #endregion
@@ -94,6 +96,8 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// </summary>
 #endif
         internal long p_localHeaderOffset;
+
+        internal long p_crc;
 
         internal readonly ushort p_compressionMethod;
 
@@ -161,6 +165,17 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         public ZipCompressionMethodType CompressionMethodType
         {
             get => (ZipCompressionMethodType)p_compressionMethod;
+        }
+
+        /// <summary>
+        /// 当前项中央目录的crc32校验值
+        /// </summary>
+        public uint CRCValue
+        {
+            get
+            {
+                return (uint)p_crc;
+            }
         }
 
         #endregion
@@ -279,7 +294,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
         /// <param name="createDictionaryFunc">用于创建索引字典的委托，null表示使用默认的<see cref="Dictionary{TKey, TValue}"/>字典对象</param>
         /// <param name="entryNameEncoding">读取和解析zip内的项名时使用的文本编码，null表示默认使用UTF-8编码</param>
         /// <param name="itemDecompress">zip项数据解压缩器，null表示使用默认实现的解压缩器，默认仅实现deflate和deflate64两种算法</param>
-        /// <param name="needCheckISO_IEC21320_1">在解析项路径时是否需要按 ISO/IEC 21320-1 标准判断通用目位标志的第11位来强制采用UTF-8编码</param>
+        /// <param name="needCheckISO_IEC21320_1">在解析项路径时是否需要按 ISO/IEC 21320-1 标准判断通用目位标志的第11位来强制采用UTF-8编码；默认为false</param>
         /// <exception cref="ArgumentNullException">流对象是null</exception>
         /// <exception cref="NotSupportedException">数据不支持读取和查找</exception>
         /// <exception cref="IOException">数据访问IO错误</exception>
@@ -794,6 +809,211 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             if (((object)zipInformation.p_parser) != this) throw new ArgumentException();
             return p_itemDec.CanDecompressType(zipInformation.p_compressionMethod);
         }
+
+        /// <summary>
+        /// 预热zip包数据内的项
+        /// </summary>
+        /// <param name="zipInformation">该zip内的项</param>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">项不属于当前zip数据内</exception>
+        public void InitZipItem(ZipDataInformation zipInformation)
+        {
+            ThrowObjectDisposeException();
+            if (zipInformation is null) throw new ArgumentNullException();
+            if (((object)zipInformation.p_parser) != this) throw new ArgumentException();
+            f_ensureDataPosition(zipInformation);
+        }
+
+        private uint f_toCRC(Stream ori, Stream wr)
+        {
+            uint crc = ZipPackagingOperation.cp_crc32Begin;
+            while (true)
+            {
+                var rc = ori.Read(p_buffer, 0, p_buffer.Length);
+                if (rc == 0) break;
+                wr?.Write(p_buffer, 0, rc);
+                crc = ZipPackagingOperation.f_crc32Update(crc, p_buffer, 0, rc);
+            }
+            return ZipPackagingOperation.f_crc32End(crc);
+        }
+
+        /// <summary>
+        /// 对指定项校验CRC值
+        /// </summary>
+        /// <remarks>可以与<see cref="ZipDataInformation.CRCValue"/>对比检测数据是否损坏</remarks>
+        /// <param name="zipInformation">该zip内的项</param>
+        /// <returns>该数据实际的CRC32值</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">项不属于当前zip数据内</exception>
+        public uint InformationToCRC32(ZipDataInformation zipInformation)
+        {
+            ThrowObjectDisposeException();
+            if (zipInformation is null) throw new ArgumentNullException();
+            if (((object)zipInformation.p_parser) != this) throw new ArgumentException();
+
+            using (var open = f_openOriEntry(zipInformation))
+            {
+                return f_toCRC(open, null);
+            }
+        }
+
+        /// <summary>
+        /// 将指定项的数据解压缩到指定流并校验crc32验证码
+        /// </summary>
+        /// <param name="zipInformation">该zip内的项</param>
+        /// <param name="stream">要写入的流数据</param>
+        /// <returns>该数据实际的crc32值</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">项不属于当前zip数据内</exception>
+        /// <exception cref="NotSupportedException">流对象没有写入权限</exception>
+        public uint DeCompressionToCRC32ByItem(ZipDataInformation zipInformation, Stream stream)
+        {
+            ThrowObjectDisposeException();
+            if (stream is null) throw new ArgumentNullException();
+            if (((object)zipInformation.p_parser) != this) throw new ArgumentException();
+
+            using (var open = f_openEntry(zipInformation))
+            {
+                return f_toCRC(open, stream);
+            }
+        }
+
+        /// <summary>
+        /// 将指定索引下的数据解压缩到指定流并校验crc32验证码
+        /// </summary>
+        /// <param name="index">索引</param>
+        /// <param name="stream">要写入数据的流</param>
+        /// <returns>此数据的crc32校验码</returns>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ArgumentNullException">对象是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        /// <exception cref="NotSupportedException">流没有写入权限</exception>
+        public uint DeCompressionToCRC32(int index, Stream stream)
+        {
+            ThrowObjectDisposeException();
+            if (stream is null) throw new ArgumentNullException();
+
+            var inf = p_zipList[index];
+            using (var open = f_openEntry(inf))
+            {
+                return f_toCRC(open, stream);
+            }
+        }
+
+        /// <summary>
+        /// 将指定路径下的数据解压缩到指定流并校验crc32验证码
+        /// </summary>
+        /// <param name="dataPath">路径</param>
+        /// <param name="stream">要写入数据的流</param>
+        /// <returns>此数据的crc32校验码</returns>
+        /// <exception cref="ObjectDisposedException">对象已释放</exception>
+        /// <exception cref="ArgumentNullException">对象是null</exception>
+        /// <exception cref="NotSupportedException">流没有写入权限</exception>
+        public uint DeCompressionToCRC32(string dataPath, Stream stream)
+        {
+            ThrowObjectDisposeException();
+            if (dataPath is null || stream is null) throw new ArgumentNullException();
+            if (!stream.CanWrite) throw new NotSupportedException();
+
+            var inf = p_zipDict[dataPath];
+            using (var open = f_openEntry(inf))
+            {
+                return f_toCRC(open, stream);
+            }
+        }
+
+        #region CRC32
+
+        internal static unsafe uint f_crc32Update(uint crc, byte* buffer, int count)
+        {
+            uint[] table = ZipPackagingOperation.cp_crc32Table;
+            int end = count;
+            for (int i = 0; i < count; i++)
+            {
+                crc = table[(crc ^ buffer[i]) & 0xFF] ^ (crc >> 8);
+            }
+            return crc;
+        }
+
+        /// <summary>
+        /// CRC32校验码初始值
+        /// </summary>
+        public static uint CRC32BeginValue => ZipPackagingOperation.cp_crc32Begin;
+
+        /// <summary>
+        /// 为crc32校验后续数据
+        /// </summary>
+        /// <param name="crc32">当前crc32值</param>
+        /// <param name="buffer">读取需要校验的数据</param>
+        /// <param name="offset">读取的数据起始偏移</param>
+        /// <param name="count">要读取的数据字节数量</param>
+        /// <returns>校验之后更新的crc32值</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        ///  <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
+        public static unsafe uint CRC32Update(uint crc32, byte[] buffer, int offset, int count)
+        {
+            if (buffer is null) throw new ArgumentNullException();
+            if (offset < 0 || count < 0 || (offset + count > buffer.Length)) throw new ArgumentOutOfRangeException();
+            fixed (byte* buf = buffer)
+            {
+                return f_crc32Update(crc32, buf + offset, count);
+            }
+        }
+
+        /// <summary>
+        /// 为crc32校验后续数据
+        /// </summary>
+        /// <remarks>
+        /// <para>想要校验数据的CRC32值，先从<see cref="CRC32BeginValue"/>获取初始值，然后对需要校验的数据按顺序调用<see cref="CRC32Update(uint, byte[], int, int)"/>更新，最后用<see cref="CRC32End(uint)"/>结束校验即可获取</para>
+        /// </remarks>
+        /// <param name="crc32">当前crc32值</param>
+        /// <param name="buffer">读取需要校验数据的地址</param>
+        /// <param name="count">要读取的数据字节数量</param>
+        /// <returns>校验之后更新的crc32值</returns>
+        /// <exception cref="ArgumentNullException">地址是null</exception>
+        public static unsafe uint CRC32UpdateByAddress(uint crc32, byte* buffer, int count)
+        {
+            if (buffer == null) throw new ArgumentNullException();
+            return f_crc32Update(crc32, buffer, count);
+        }
+
+        /// <summary>
+        /// CRC32校验码结束符号
+        /// </summary>
+        /// <param name="crc32">校验后的值</param>
+        /// <returns>校验完成的值</returns>
+        public static uint CRC32End(uint crc32)
+        {
+            return ZipPackagingOperation.f_crc32End(crc32);
+        }
+
+        /// <summary>
+        /// 获取指定流对象的CRC32值
+        /// </summary>
+        /// <param name="stream">要读取的流数据</param>
+        /// <param name="buffer">需要用到的缓冲区</param>
+        /// <returns>校验后的CRC32值</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentException">缓冲区长度是0</exception>
+        /// <exception cref="ObjectDisposedException">流对象已释放</exception>
+        /// <exception cref="NotSupportedException">流没有读取权限</exception>
+        /// <exception cref="IOException">IO错误</exception>
+        public static uint GetStreamCRC32(Stream stream, byte[] buffer)
+        {
+            if (stream is null || buffer is null) throw new ArgumentNullException();
+            if (buffer.Length == 0) throw new ArgumentException();
+            uint c = CRC32BeginValue;
+            Begin:
+            var rc = stream.Read(buffer, 0, buffer.Length);
+            if (rc == 0) return ZipPackagingOperation.f_crc32End(c);
+            c = CRC32Update(c, buffer, 0, rc);
+            goto Begin;
+        }
+
+        #endregion
 
         #endregion
 

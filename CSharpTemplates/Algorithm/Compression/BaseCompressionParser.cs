@@ -906,53 +906,6 @@ namespace Cheng.Algorithm.Compressions
             throw new NotSupportedException();
         }
 
-        private sealed class GetterData : IGettingStream
-        {
-            public GetterData(string path, BaseCompressionParser parser)
-            {
-                this.path = path; this.parser = parser;
-            }
-            internal string path;
-            BaseCompressionParser parser;
-
-            public OpenStreamIOSourceType SourceType
-            {
-                get
-                {
-                    if (parser.ContainsData(path)) return OpenStreamIOSourceType.Unknown;
-                    return OpenStreamIOSourceType.Error;
-                }
-            }
-
-            public long StreamLength
-            {
-                get
-                {
-                    try
-                    {
-                        var inf = parser[path];
-                        return inf.BeforeSize;
-                    }
-                    catch (Exception)
-                    {
-                        return -1;
-                    }
-                }
-            }
-
-            public Stream OpenStream()
-            {
-                try
-                {
-                    return parser.OpenCompressedStream(path);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }
-        }
-
         IGettingStream IOpenTargetStream.OpenStreamGetter(string path)
         {
             try
@@ -961,7 +914,7 @@ namespace Cheng.Algorithm.Compressions
                 {
                     if (ContainsData(path))
                     {
-                        return new GetterData(path, this);
+                        return new CompressionParserOpenStreamByPath(this, path);
                     }
                 }
                 return GettingStreamExtend.ErrorGetter;

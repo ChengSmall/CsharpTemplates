@@ -380,7 +380,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
                 {
                     throw new InvalidDataException(cp_exceptionCentralDirectoryCorrupt);
                 }
-
+                uint crc;
                 f_readAt(position, p_headerBuffer, 0, cp_centralHeaderSize);
                 if (f_u32(p_headerBuffer, 0) != cp_sigCentralHeader)
                 {
@@ -391,6 +391,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
                 ushort compressionMethod = f_u16(p_headerBuffer, 10);
                 ushort lastModifyTime = f_u16(p_headerBuffer, 12);
                 ushort lastModifyDate = f_u16(p_headerBuffer, 14);
+                crc =                   f_u32(p_headerBuffer, 16);
                 uint compressedSize32 = f_u32(p_headerBuffer, 20);
                 uint beforeSize32 = f_u32(p_headerBuffer, 24);
                 int nameLength = f_u16(p_headerBuffer, 28);
@@ -459,10 +460,11 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
                 }
 
                 DateTime? modifiedTime = f_dosTimeToDateTime(lastModifyTime, lastModifyDate);
-
-                p_zipList.Add(new ZipDataInformation(dataPath, beforeSize, compressedSize,
+                var zdatainf = new ZipDataInformation(dataPath, beforeSize, compressedSize,
                     compressionMethod, generalPurposeBitFlag, finalLocalHeaderOffset,
-                    modifiedTime, p_keyEquals, this));
+                    modifiedTime, p_keyEquals, this);
+                zdatainf.p_crc = crc;
+                p_zipList.Add(zdatainf);
             }
         }
 
@@ -635,7 +637,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             {
                 throw new InvalidDataException(cp_exceptionLocalHeaderCorrupt);
             }
-
+            if (inf.p_crc < 0) inf.p_crc = f_u16(p_headerBuffer, 14);
             int nameLength = f_u16(p_headerBuffer, 26);
             int extraLength = f_u16(p_headerBuffer, 28);
             long dataPosition = localHeaderOffset + cp_localHeaderSize + nameLength + extraLength;
@@ -647,6 +649,7 @@ namespace Cheng.Algorithm.Compressions.ZipDataParser
             }
 
             inf.p_dataPosition = dataPosition;
+            
         }
 
         private StreamBlock f_getDataBlock(ZipDataInformation inf)

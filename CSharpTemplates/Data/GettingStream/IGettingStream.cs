@@ -1,9 +1,12 @@
-using Cheng.IO;
 using System;
 using System.IO;
 
+using Cheng.IO;
+
 namespace Cheng.DataStructure
 {
+
+    #region 基类
 
     /// <summary>
     /// 数据IO来源类型
@@ -86,6 +89,10 @@ namespace Cheng.DataStructure
 
     }
 
+    #endregion
+
+    #region 扩展
+
     /// <summary>
     /// 数据获取接口扩展
     /// </summary>
@@ -123,6 +130,10 @@ namespace Cheng.DataStructure
         }
 
     }
+
+    #endregion
+
+    #region 实现
 
     /// <summary>
     /// 使用委托函数实现一个<see cref="IGettingStream"/>
@@ -190,6 +201,15 @@ namespace Cheng.DataStructure
         public GettingFileStream(string filePath)
         {
             fileInfo = new FileInfo(Path.GetFullPath(filePath));
+        }
+
+        /// <summary>
+        /// 实例化一个打开指定文件流的文件对象
+        /// </summary>
+        /// <param name="fileInfo"></param>
+        public GettingFileStream(FileInfo fileInfo)
+        {
+            this.fileInfo = fileInfo ?? throw new ArgumentNullException();
         }
 
         #endregion
@@ -264,5 +284,7 @@ namespace Cheng.DataStructure
         public OpenStreamIOSourceType SourceType => OpenStreamIOSourceType.MemoryData;
 
     }
+
+    #endregion
 
 }
