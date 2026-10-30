@@ -13,13 +13,17 @@ namespace Cheng.Timers.Unitys
         }
 
         protected override double NowTime => UnityEngine.Time.realtimeSinceStartup;
-        protected override TimeSpan SingleTimeToTimeSpan(double elapsed)
+
+        protected override bool SingleTimeToTimeSpan(double elapsed, out TimeSpan span)
         {
-            return TimeSpan.FromSeconds(elapsed);
+            span = TimeSpan.FromSeconds(elapsed);
+            return true;
         }
-        protected sealed override double TimeSpanToDouble(TimeSpan span)
+
+        protected override bool TimeSpanToDouble(TimeSpan span, out double tick)
         {
-            return span.TotalSeconds;
+            tick = span.TotalSeconds;
+            return true;
         }
     }
 

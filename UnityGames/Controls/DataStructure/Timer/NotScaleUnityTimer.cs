@@ -13,14 +13,16 @@ namespace Cheng.Timers.Unitys
 
         protected sealed override double NowTime => UnityEngine.Time.unscaledTime;
 
-        protected sealed override double TimeSpanToDouble(TimeSpan span)
+        protected override bool SingleTimeToTimeSpan(double elapsed, out TimeSpan span)
         {
-            return span.TotalSeconds;
+            span = TimeSpan.FromSeconds(elapsed);
+            return true;
         }
 
-        protected sealed override TimeSpan SingleTimeToTimeSpan(double elapsed)
+        protected override bool TimeSpanToDouble(TimeSpan span, out double tick)
         {
-            return TimeSpan.FromSeconds(elapsed);
+            tick = span.TotalSeconds;
+            return true;
         }
 
     }

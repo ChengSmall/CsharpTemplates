@@ -12,7 +12,13 @@ namespace Cheng.Timers
         /// <summary>
         /// 获取当前计时器的运行时间
         /// </summary>
+        /// <exception cref="NotSupportedException">无法获取<see cref="TimeSpan"/>格式的计时器时间</exception>
         TimeSpan Elapsed { get; }
+
+        /// <summary>
+        /// 是否允许获取<see cref="TimeSpan"/>格式的计时器时间
+        /// </summary>
+        bool CanGetTimeSpanElapsed { get; }
 
         /// <summary>
         /// 当前计时器是否正在运行
@@ -114,6 +120,8 @@ namespace Cheng.Timers
         /// </summary>
         /// <returns>在派生类重写此属性，以返回当前时间刻；刻度单位是<see cref="TimeSpan.Ticks"/></returns>
         protected abstract ulong NowTimeTick { get; }
+
+        public bool CanGetTimeSpanElapsed => true;
 
         /// <summary>
         /// 获取当前计时器的运行时间
@@ -335,19 +343,31 @@ namespace Cheng.Timers
             }
         }
 
+        public virtual bool CanGetTimeSpanElapsed => false;
+
         /// <summary>
         /// 在派生类重写，将浮点数时间转化为<see cref="TimeSpan"/>以实现公共接口
         /// </summary>
         /// <param name="elapsed"><see cref="Elapsed"/>属性的浮点刻度值</param>
-        /// <returns>一个与<see cref="Elapsed"/>属性等价的<see cref="TimeSpan"/>实例</returns>
-        protected abstract TimeSpan SingleTimeToTimeSpan(double elapsed);
+        /// <param name="span"></param>
+        /// <returns>是否成功转换</returns>
+        protected virtual bool SingleTimeToTimeSpan(double elapsed, out TimeSpan span)
+        {
+            span = default;
+            return false;
+        }
 
         /// <summary>
         /// 在派生类重写，将<see cref="TimeSpan"/>时间转化为浮点型以实现公共接口
         /// </summary>
         /// <param name="span">时间间隔</param>
-        /// <returns>与<paramref name="span"/>对应的浮点型时间间隔</returns>
-        protected abstract double TimeSpanToDouble(TimeSpan span);
+        /// <param name="tick">与<paramref name="span"/>对应的浮点数时间间隔</param>
+        /// <returns>是否成功转换</returns>
+        protected virtual bool TimeSpanToDouble(TimeSpan span, out double tick)
+        {
+            tick = default;
+            return false;
+        }
 
         /// <summary>
         /// 当前计时器是否正在运行
@@ -356,7 +376,11 @@ namespace Cheng.Timers
 
         TimeSpan ITimer.Elapsed
         {
-            get => SingleTimeToTimeSpan(Elapsed);
+            get
+            {
+                if (SingleTimeToTimeSpan(Elapsed, out var span)) return span;
+                throw new NotSupportedException();
+            }
         }
 
         /// <summary>
@@ -445,7 +469,11 @@ namespace Cheng.Timers
 
         void ITimer.AddElapsed(TimeSpan span)
         {
-            AddElapsed(TimeSpanToDouble(span));
+            if(TimeSpanToDouble(span, out var tick))
+            {
+                AddElapsed(tick); return;
+            }
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -460,8 +488,13 @@ namespace Cheng.Timers
 
         void ITimer.SubElapsed(TimeSpan span)
         {
-            SubElapsed(TimeSpanToDouble(span));
+            if (TimeSpanToDouble(span, out var tick))
+            {
+                SubElapsed(tick); return;
+            }
+            throw new NotSupportedException();
         }
+
         #endregion
 
     }
@@ -477,7 +510,7 @@ namespace Cheng.Timers
         protected UInt64TimeTimer()
         {
             p_running = false;
-            p_elapsed = 0L;
+            p_elapsed = 0;
         }
 
         /// <summary>
@@ -665,6 +698,8 @@ namespace Cheng.Timers
             return false;
         }
 
+        public virtual bool CanGetTimeSpanElapsed => false;
+
         #endregion
 
         #region 封装
@@ -673,11 +708,11 @@ namespace Cheng.Timers
         {
             get
             {
-                if (TickToTimeSpan(NowTimeTick, out var re))
+                if (TickToTimeSpan(ElapsedTick, out var re))
                 {
                     return re;
                 }
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
 
@@ -688,7 +723,7 @@ namespace Cheng.Timers
                 AddElapsed(tick);
                 return;
             }
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         void ITimer.SubElapsed(TimeSpan span)
@@ -697,7 +732,7 @@ namespace Cheng.Timers
             {
                 SubElapsed(tick); return;
             }
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         #endregion

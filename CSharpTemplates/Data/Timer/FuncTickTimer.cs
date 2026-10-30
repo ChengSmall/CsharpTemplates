@@ -24,8 +24,6 @@ namespace Cheng.Timers
 
         protected override ulong NowTimeTick => (ulong)p_getTickFunc.Invoke();
 
-        //protected override DateTime NowTime => new DateTime((long)p_getTickFunc.Invoke());
-
     }
 
 }
