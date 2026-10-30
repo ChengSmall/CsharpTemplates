@@ -466,4 +466,242 @@ namespace Cheng.Timers
 
     }
 
+    /// <summary>
+    /// 一个以64位无符号整数作为时间参数的计时器
+    /// </summary>
+    public abstract class UInt64TimeTimer : ITimer
+    {
+
+        #region 构造
+
+        protected UInt64TimeTimer()
+        {
+            p_running = false;
+            p_elapsed = 0L;
+        }
+
+        /// <summary>
+        /// 初始化计时器并定义计时器的运行时间
+        /// </summary>
+        /// <param name="elapsed">定义计时器的运行时间</param>
+        protected UInt64TimeTimer(ulong elapsed)
+        {
+            p_running = false;
+            p_elapsed = elapsed;
+        }
+
+        #endregion
+
+        #region 参数
+
+        /// <summary>
+        /// 开始运行标志
+        /// </summary>
+        protected bool p_running;
+
+        /// <summary>
+        /// 计时器经过的时间
+        /// </summary>
+        protected ulong p_elapsed;
+
+        /// <summary>
+        /// 计时器开始运行时的时间刻
+        /// </summary>
+        protected ulong p_startTime;
+
+        #endregion
+
+        #region 功能
+
+        /// <summary>
+        /// 获取当前计时器的运行时间
+        /// </summary>
+        public ulong ElapsedTick
+        {
+            get
+            {
+                if (p_running) return (p_elapsed + (NowTimeTick - p_startTime));
+                return p_elapsed;
+            }
+        }
+
+        /// <summary>
+        /// 当前计时器是否正在运行
+        /// </summary>
+        public bool IsRunning => p_running;
+
+        /// <summary>
+        /// 获取当前时间缓冲参数
+        /// </summary>
+        public ulong BufferElapsed
+        {
+            get => p_elapsed;
+        }
+
+        /// <summary>
+        /// 开启计时器计时
+        /// </summary>
+        public void Start()
+        {
+            if (!p_running)
+            {
+                p_startTime = NowTimeTick;
+                p_running = true;
+            }
+        }
+
+        /// <summary>
+        /// 停止计时器计时
+        /// </summary>
+        public void Stop()
+        {
+            if (p_running)
+            {
+                p_running = false;
+                p_elapsed += (ulong)(NowTimeTick - p_startTime);
+            }
+        }
+
+        /// <summary>
+        /// 停止计时器并重置计时器的运行时间
+        /// </summary>
+        public void Reset()
+        {
+            p_elapsed = 0;
+            p_running = false;
+        }
+
+        /// <summary>
+        /// 清空计时器运行时间并重新开始计时
+        /// </summary>
+        public void Restart()
+        {
+            p_elapsed = 0;
+            p_startTime = NowTimeTick;
+            p_running = true;
+        }
+
+        /// <summary>
+        /// 重置计时器的时间记录，且不影响计时器运行
+        /// </summary>
+        public void Clear()
+        {
+            p_elapsed = 0;
+            if (p_running) p_startTime = NowTimeTick;
+        }
+
+        /// <summary>
+        /// 将计时器的时间写入到缓存参数
+        /// </summary>
+        public void Flush()
+        {
+            if (p_running)
+            {
+                var tick = NowTimeTick;
+                p_elapsed += (ulong)(tick - p_startTime);
+                p_startTime = tick;
+            }
+        }
+
+        /// <summary>
+        /// 为计时器添加计时器时间
+        /// </summary>
+        /// <param name="span">添加的时间</param>
+        public void AddElapsed(ulong span)
+        {
+            Flush();
+            p_elapsed += span;
+        }
+
+        /// <summary>
+        /// 为计时器减少时间
+        /// </summary>
+        /// <param name="span">要减少的时间</param>
+        public void SubElapsed(ulong span)
+        {
+            Flush();
+            if (p_elapsed > span)
+            {
+                p_elapsed -= span;
+            }
+            else
+            {
+                p_elapsed = 0;
+            }
+
+        }
+
+        #endregion
+
+        #region 派生
+
+        /// <summary>
+        /// 获取当前的时间刻tick
+        /// </summary>
+        /// <returns>在派生类重写此属性，以返回当前时间刻；刻度单位由派生类决定</returns>
+        protected abstract ulong NowTimeTick { get; }
+
+        /// <summary>
+        /// 将64位整数转换到<see cref="TimeSpan"/>的方法
+        /// </summary>
+        /// <param name="tick">要转换的值</param>
+        /// <param name="span">转换到的span</param>
+        /// <returns>是否能够转换</returns>
+        protected virtual bool TickToTimeSpan(ulong tick, out TimeSpan span)
+        {
+            span = default;
+            return false;
+        }
+
+        /// <summary>
+        /// 将<see cref="TimeSpan"/>转为64位整数
+        /// </summary>
+        /// <param name="span"></param>
+        /// <param name="tick"></param>
+        /// <returns></returns>
+        protected virtual bool TimeSpanToTick(TimeSpan span, out ulong tick)
+        {
+            tick = 0;
+            return false;
+        }
+
+        #endregion
+
+        #region 封装
+
+        TimeSpan ITimer.Elapsed
+        {
+            get
+            {
+                if (TickToTimeSpan(NowTimeTick, out var re))
+                {
+                    return re;
+                }
+                throw new NotImplementedException();
+            }
+        }
+
+        void ITimer.AddElapsed(TimeSpan span)
+        {
+            if (TimeSpanToTick(span, out var tick))
+            {
+                AddElapsed(tick);
+                return;
+            }
+            throw new NotImplementedException();
+        }
+
+        void ITimer.SubElapsed(TimeSpan span)
+        {
+            if (TimeSpanToTick(span, out var tick))
+            {
+                SubElapsed(tick); return;
+            }
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+    }
+
 }
