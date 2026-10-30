@@ -251,13 +251,8 @@ namespace Cheng.Systems
 
         static bool f_assIsMemoryLoad(Assembly assembly)
         {
-            if (assembly == null)
-                throw new ArgumentNullException(nameof(assembly));
-
-            // 动态生成
-            // 必然是纯内存对象，且访问 Location 会抛 NotSupportedException，必须先判断
-            if (assembly.IsDynamic)
-                return true;
+            // 必是纯内存对象
+            if (assembly.IsDynamic) return true;
 
             string location;
             try
@@ -268,7 +263,7 @@ namespace Cheng.Systems
             {
                 return true;
             }
-            // Location 为空 通过 byte[] 加载
+            // Location为空表示byte[]加载
             return string.IsNullOrEmpty(location);
         }
 
