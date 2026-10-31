@@ -425,11 +425,11 @@ namespace Cheng.Algorithm.Compressions.ZipPackagings
         /// <para>如果指定<see cref="ZipItemPackType"/>类型之外的值，则一律采用仅存储写入原始数据；如果值小于0，则在写入类型头时使用绝对值，而数据项写入原始数据</para>
         /// </param>
         /// <param name="pcsize">
-        /// <para>强制设置压缩后大小字节头</para>
+        /// <para>强制在目录头设置压缩后大小字节</para>
         /// <para>参数小于0表示不进行规定</para>
         /// </param>
         /// <param name="beforeSize">
-        /// <para>强制设置压缩后大小字节头</para>
+        /// <para>强制在目录头设置压缩前大小字节</para>
         /// <para>参数小于0表示不进行规定</para>
         /// </param>
         /// <param name="crc">
