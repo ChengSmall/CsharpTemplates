@@ -116,6 +116,7 @@
     <Compile Include="DEBUG\Lists\ListExt.cs" />
     <Compile Include="DEBUG\Pathfindings\TestGridMap.cs" />
     <Compile Include="DEBUG\Pathfindings\TestNodeNetworkMap.cs" />
+    <Compile Include="DEBUG\Random\RandomExtends\DEBUGRandomExtend.cs" />
     <Compile Include="DEBUG\Random\TestRandom.cs" />
     <Compile Include="DEBUG\Stream\DEBUGFile.cs" />
     <Compile Include="DEBUG\Stream\DEBUGStream.cs" />

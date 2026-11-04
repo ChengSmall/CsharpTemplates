@@ -130,7 +130,6 @@
     <Compile Include="CSharpCode\InitArgs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Alg\RsaSSH\" />
     <Folder Include="Compressions\" />
     <Folder Include="Resources\" />
     <Folder Include="structure\MindMap\" />

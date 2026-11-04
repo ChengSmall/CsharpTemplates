@@ -11,6 +11,7 @@ using Cheng.Memorys;
 
 namespace Cheng.DEBUG
 {
+
     /// <summary>
     /// DEBUG扩展方法
     /// </summary>
@@ -81,7 +82,10 @@ namespace Cheng.DEBUG
         /// <value>默认开启</value>
         public static bool EnablePrint
         {
-            get => SafeObj.obj.p_openDebug;
+            get
+            {
+                lock (SafeObj.obj) return SafeObj.obj.p_openDebug;
+            }
             set
             {
                 lock (SafeObj.obj) SafeObj.obj.p_openDebug = value;
@@ -94,7 +98,10 @@ namespace Cheng.DEBUG
         /// <exception cref="ArgumentNullException">设置的对象是null</exception>
         public static TextWriter BasePrintTextWriter
         {
-            get => SafeObj.obj.p_print;
+            get
+            {
+                lock (SafeObj.obj) return SafeObj.obj.p_print;
+            }
             set
             {
                 if (value is null) throw new ArgumentNullException();
