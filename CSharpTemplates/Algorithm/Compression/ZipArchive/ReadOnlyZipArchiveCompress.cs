@@ -123,7 +123,7 @@ namespace Cheng.Algorithm.Compressions.Systems
         {
             if(createFunc is null)
             {
-                createFunc = ListExtend.CreateDictionaryByCollection;
+                createFunc = DeleagateFunctions.CreateDictionaryByCollection;
             }
             var ens = p_zip.Entries;
             int length = ens.Count;

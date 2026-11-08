@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Cheng.Algorithm.Collections
 {
+
     /// <summary>
     /// 集合扩展
     /// </summary>
@@ -1372,7 +1373,7 @@ namespace Cheng.Algorithm.Collections
             }
             else
             {
-                f_qukeAndInsertSort(list, index, index + count - 1, comparer, 64);
+                QukeAndInsertSort(list, comparer, index, count);
             }
 
         }
@@ -1386,7 +1387,8 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentNullException">参数为null</exception>
         public static void Sort<T>(this IList<T> list, IComparer<T> comparer)
         {
-            Sort(list ?? throw new ArgumentNullException(), comparer, 0, list.Count);
+            if (list is null) throw new ArgumentNullException();
+            Sort(list, comparer, 0, list.Count);
         }
 
         /// <summary>
@@ -1397,7 +1399,8 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentNullException">集合为null</exception>
         public static void Sort<T>(this IList<T> list)
         {
-            Sort(list ?? throw new ArgumentNullException(), null, 0, list.Count);
+            if (list is null) throw new ArgumentNullException();
+            Sort(list, null, 0, list.Count);
         }
 
         /// <summary>
@@ -1447,7 +1450,8 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentNullException">参数为null</exception>
         public static void Sort(this IList list, IComparer comparer)
         {
-            Sort(list ?? throw new ArgumentNullException(), comparer, 0, list.Count);
+            if (list is null) throw new ArgumentNullException();
+            Sort(list, comparer, 0, list.Count);
         }
 
         #region 综排
@@ -1501,7 +1505,21 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentException">排序器是null并且没有默认排序实现，或其他参数错误</exception>
         public static void QukeAndInsertSort<T>(this IList<T> list, IComparer<T> comparer, int index, int count)
         {
-            QukeAndInsertSort(list, comparer, index, count, 64);
+            if (list is null) throw new ArgumentNullException();
+            int length = list.Count;
+            if (index < 0 || count < 0 || (index + count > length)) throw new ArgumentOutOfRangeException();
+
+            if (count == 0) return;
+            int st;
+            if (count < 128)
+            {
+                st = 32;
+            }
+            else
+            {
+                st = Math.Min(count / 8, 64);
+            }
+            f_qukeAndInsertSort(list, index, index + count - 1, comparer ?? Comparer<T>.Default, st);
         }
 
         /// <summary>
@@ -1515,7 +1533,7 @@ namespace Cheng.Algorithm.Collections
         /// <param name="comparer">排序方法，null表示使用<typeparamref name="T"/>类型的默认排序方法</param>
         /// <param name="index">排序的起始索引</param>
         /// <param name="count">要排序的元素数量</param>
-        /// <param name="stackDepth">进行快速排序时的递归深度，值越大深度越深，等于或小于0则不使用快速排序，默认值为64</param>
+        /// <param name="stackDepth">进行快速排序时的递归深度，值越大深度越深，等于或小于0则不使用快速排序</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         /// <exception cref="ArgumentException">排序器是null并且没有默认排序实现，或其他参数错误</exception>
@@ -1541,10 +1559,10 @@ namespace Cheng.Algorithm.Collections
                 }
                 else
                 {
-                    //将数组分割为两部分，并返回分割点的索引
+                    // 分割
                     int pivotIndex = QukeSort.partition(list, low, high, comparer);
 
-                    //递归对分割后的两部分进行排序
+                    // 递归排序
                     f_qukeAndInsertSort(list, low, pivotIndex - 1, comparer, count - 1);
                     f_qukeAndInsertSort(list, pivotIndex + 1, high, comparer, count - 1);
                 }
@@ -1562,7 +1580,7 @@ namespace Cheng.Algorithm.Collections
         /// <param name="comparer">排序方法</param>
         /// <param name="index">排序的起始索引</param>
         /// <param name="count">要排序的元素数量</param>
-        /// <param name="stackDepth">进行快速排序时的入栈深度，值越大深度越深，等于或小于0则不使用快速排序，默认值为32</param>
+        /// <param name="stackDepth">进行快速排序时的入栈深度，值越大深度越深，等于或小于0则不使用快速排序</param>
         /// <exception cref="ArgumentNullException">参数是null</exception>
         /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public static void QukeAndInsertSort(this IList list, IComparer comparer, int index, int count, int stackDepth)
@@ -1588,7 +1606,18 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public static void QukeAndInsertSort(this IList list, IComparer comparer, int index, int count)
         {
-            QukeAndInsertSort(list, comparer, index, count, 32);
+            if (list is null || comparer is null) throw new ArgumentNullException();
+            int length = list.Count;
+            if (index < 0 || count < 0 || (index + count > length)) throw new ArgumentOutOfRangeException();
+
+            if (count == 0) return;
+            int st;
+            if (count < 128) st = 32;
+            else
+            {
+                st = Math.Min(count / 4, 64);
+            }
+            ng_QukeAndInsertSort(list, index, index + count - 1, comparer, st);
         }
 
         /// <summary>
@@ -1599,7 +1628,8 @@ namespace Cheng.Algorithm.Collections
         /// <exception cref="ArgumentNullException">参数是null</exception>
         public static void QukeAndInsertSort(this IList list, IComparer comparer)
         {
-            QukeAndInsertSort(list ?? throw new ArgumentNullException(), comparer, 0, list.Count, 32);
+            if (list is null) throw new ArgumentNullException();
+            QukeAndInsertSort(list, comparer, 0, list.Count);
         }
 
         static void ng_QukeAndInsertSort(IList list, int low, int high, IComparer comparer, int count)
