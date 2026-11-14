@@ -251,18 +251,22 @@ namespace Cheng.Algorithm.Randoms
             if (length <= 0) return;
             int len = length / sizeof(uint);
             ulong re;
-            uint* buffer = (uint*)ptr.p_ptr;
+            byte* buffer = (byte*)ptr.p_ptr;
             int i;
             for (i = 0; i < len; i++)
             {
                 re = Generate(ref data);
-                buffer[i] = (uint)((re >> 32) ^ (re & uint.MaxValue));
+                byte* bptr = (byte*)&re;
+                buffer[i * 4] = bptr[0];
+                buffer[(i * 4) + 1] = bptr[1];
+                buffer[(i * 4) + 2] = bptr[2];
+                buffer[(i * 4) + 3] = bptr[3];
             }
 
             var mod = (length % sizeof(uint));
             if (mod != 0)
             {
-                byte* mp = (byte*)(buffer + i);
+                byte* mp = (byte*)(buffer + (i * 4));
                 re = Generate(ref data);
                 len = (int)((re >> 32) ^ (re & uint.MaxValue));
                 byte* reb = (byte*)&len;

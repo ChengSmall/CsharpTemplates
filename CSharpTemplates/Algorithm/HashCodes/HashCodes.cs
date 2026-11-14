@@ -457,15 +457,13 @@ namespace Cheng.Algorithm.HashCodes
         /// <returns>实例的默认64位哈希值</returns>
         public static long GetHashCode64(this decimal value)
         {
-            int* ip = (int*)&value;
-
-            long re;
-
-            re = (((long)ip[1] | ((long)((ulong)ip[2] << 32))) ^ (long)ip[3]);
-
-            re |= ((*(uint*)ip) >> 16);
-
-            return re;
+            byte* p = (byte*)&value;
+            ulong re = 0;
+            for (int i = 0; i < sizeof(decimal); i++)
+            {
+                re |= (((ulong)p[i]) << (i * 8));
+            }
+            return (long)re;
         }
 
         /// <summary>
@@ -475,7 +473,8 @@ namespace Cheng.Algorithm.HashCodes
         /// <returns>实例的64位哈希值</returns>
         public static long GetHashCode64(this DateTime value)
         {
-            return value.Ticks;
+            var ticks = (ulong)value.Ticks;
+            return (long)((((ulong)value.Kind) << 62) | ticks);
         }
 
         /// <summary>
@@ -497,9 +496,10 @@ namespace Cheng.Algorithm.HashCodes
         /// </summary>
         /// <param name="str">要获取的字符串</param>
         /// <returns>字符串的64位哈希值</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
         public static long GetHashCode64(this string str)
         {
-            if (str is null) return 0;
+            if (str is null) throw new ArgumentNullException();
             int length = str.Length;
 
             fixed (char* p = str)
@@ -515,6 +515,8 @@ namespace Cheng.Algorithm.HashCodes
         /// <param name="startIndex">字符串截取的起始索引</param>
         /// <param name="length">字符串截取长度</param>
         /// <returns>截取字符串的64位哈希值</returns>
+        /// <exception cref="ArgumentNullException">参数是null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">索引超出范围</exception>
         public static long GetHashCode64(this string str, int startIndex, int length)
         {
             if (str is null) throw new ArgumentNullException();
@@ -547,6 +549,19 @@ namespace Cheng.Algorithm.HashCodes
                 hash = (hash ^ charPointer[i]) * FNV_PRIME;
             }
             return (long)hash;
+        }
+
+        /// <summary>
+        /// 获取字符串的默认64位哈希值
+        /// </summary>
+        /// <param name="charPointer">指向字符串的起始地址</param>
+        /// <param name="count">字符串的字符数量</param>
+        /// <returns>字符串的64位哈希值</returns>
+        /// <exception cref="ArgumentNullException">是空指针</exception>
+        public static long GetHashCode64ByPtr(CPtr<char> charPointer, int count)
+        {
+            if (charPointer.IsEmpty) throw new ArgumentNullException();
+            return GetHashCode64ByPointer(charPointer, count);
         }
 
         #endregion

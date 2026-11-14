@@ -334,15 +334,17 @@ namespace Cheng.Algorithm.Randoms
         {
             if (length == 0) return;
             int len = length / 2;
-            ushort* buffer = (ushort*)ptr;
+            byte* buffer = ptr;
             int i;
             for (i = 0; i < len; i++)
             {
-                buffer[i] = (ushort)Next(0, ushort.MaxValue + 1);
+                var re = (ushort)Next(0, ushort.MaxValue + 1);
+                buffer[(i * 2)] = (byte)re;
+                buffer[(i * 2) + 1] = (byte)(re >> 8);
             }
             if ((length % 2) != 0)
             {
-                *((byte*)(buffer + i)) = (byte)Next(0, byte.MaxValue + 1);
+                *((byte*)(buffer + (i * 2))) = (byte)Next(0, byte.MaxValue + 1);
             }
         }
 

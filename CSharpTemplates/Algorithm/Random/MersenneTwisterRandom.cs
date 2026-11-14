@@ -93,10 +93,14 @@ namespace Cheng.Algorithm.Randoms
         public MersenneTwisterRandom(byte[] seed)
         {
             if (seed is null) throw new ArgumentNullException();
-
+            mt = new ulong[N];
+            if (seed.Length == 0)
+            {
+                f_twist();
+                return;
+            }
             fixed (byte* buffer = seed)
             {
-                mt = new ulong[N];
                 f_init(buffer, seed.Length);
             }
         }
@@ -116,10 +120,14 @@ namespace Cheng.Algorithm.Randoms
             {
                 throw new ArgumentOutOfRangeException();
             }
-
+            mt = new ulong[N];
+            if (size == 0)
+            {
+                f_twist();
+                return;
+            }
             fixed (byte* buffer = seed)
             {
-                mt = new ulong[N];
                 f_init(buffer + offset, size);
             }
         }
@@ -133,6 +141,7 @@ namespace Cheng.Algorithm.Randoms
         public MersenneTwisterRandom(CPtr<byte> seed, int size)
         {
             if (seed.IsEmpty) throw new ArgumentNullException();
+            if (size < 0) throw new ArgumentException();
             mt = new ulong[N];
             f_init(seed, size);
         }
@@ -146,15 +155,10 @@ namespace Cheng.Algorithm.Randoms
         {
             if(state.matrix is null || state.matrix.Length != N)
             {
-                ThrowByRandomStateInit(); return;
+                throw new ArgumentException();
             }
             this.mt = (ulong[])state.matrix;
             this.mti = Maths.Clamp(state.index, 0, N);
-
-            void ThrowByRandomStateInit()
-            {
-                throw new ArgumentException(Cheng.Properties.Resources.Exception_FuncArgError, "state");
-            }
         }
 
         /// <summary>
@@ -179,29 +183,31 @@ namespace Cheng.Algorithm.Randoms
         {
             var lenb8 = (size / 8);
             var mod8 = size % 8;
-            int overIndex = 1;
-            if (lenb8 == 0 && (mod8 == 0)) goto StartInit;
-
+            int overIndex;
+            if (lenb8 == 0 && (mod8 == 0))
+            {
+                overIndex = N;
+                goto StartInit;
+            }
+            overIndex = 1;
             int i;
             int sc = Math.Min(lenb8, N);
             overIndex = Math.Max(1, sc);
-            //byte* bps = seed;
-            ulong* LP = (ulong*)(seed);
+
             for (i = 0; i < sc; i++)
             {
-                mt[i] = LP[i];
+                mt[i] = Cheng.IO.IOoperations.OrderToUInt64(seed + (i * 8));
             }
             if (lenb8 < N)
             {
-                //var mod8 = (size % 8);
                 if (mod8 != 0)
                 {
                     int mtidex = i;
-                    byte* bmp = (byte*)(LP + i);
+                    byte* bmp = (byte*)(seed + (i * 8));
                     ulong temp = 0;
                     for (i = 0; i < mod8; i++)
                     {
-                        *(((byte*)&temp) + i) = bmp[i];
+                        temp |= (((ulong)bmp[i]) << (i * 8));
                     }
                     mt[mtidex] = temp;
                 }
@@ -331,6 +337,8 @@ namespace Cheng.Algorithm.Randoms
 
         #endregion
 
+        #region 功能
+
         public override SeedType SeedValueType => SeedType.None;
 
         private void f_twist()
@@ -374,6 +382,19 @@ namespace Cheng.Algorithm.Randoms
         }
 
         /// <summary>
+        /// 获取随机器当前状态副本
+        /// </summary>
+        /// <returns>表示随机器当前状态的数据副本</returns>
+        public RandomState GetNowState()
+        {
+            return new RandomState((ulong[])this.mt.Clone(), this.mti);
+        }
+
+        #endregion
+
+        #region 重写
+
+        /// <summary>
         /// 获取一个随机长整型值
         /// </summary>
         /// <returns>一个随机长整型值，范围在[0,9223372036854775807)</returns>
@@ -389,15 +410,6 @@ namespace Cheng.Algorithm.Randoms
         public override int Next()
         {
             return (int)(Generate() % int.MaxValue);
-        }
-
-        /// <summary>
-        /// 获取随机器当前状态副本
-        /// </summary>
-        /// <returns>表示随机器当前状态的数据副本</returns>
-        public RandomState GetNowState()
-        {
-            return new RandomState((ulong[])this.mt.Clone(), this.mti);
         }
 
         public override int Next(int min, int max)
@@ -422,24 +434,27 @@ namespace Cheng.Algorithm.Randoms
             if (length <= 0) return;
             int len = length / sizeof(uint);
             ulong re;
-            uint* buffer = (uint*)ptr.p_ptr;
+            byte* buffer = (byte*)ptr.p_ptr;
             int i;
             for (i = 0; i < len; i++)
             {
                 re = this.Generate();
-                buffer[i] = (uint)((re >> 32) ^ (re & uint.MaxValue));
+                uint ure = (uint)((re >> 32) ^ (re & uint.MaxValue));
+                buffer[(i * 4)] = (byte)((ure) & 0xFF);
+                buffer[(i * 4) + 1] = (byte)((ure >> 8) & 0xFF);
+                buffer[(i * 4) + 2] = (byte)((ure >> (8 * 2)) & 0xFF);
+                buffer[(i * 4) + 3] = (byte)((ure >> (8 * 3)) & 0xFF);
             }
 
             var mod = (length % sizeof(uint));
             if (mod != 0)
             {
-                byte* mp = (byte*)(buffer + i);
+                byte* mp = (buffer + (i * 4));
                 re = Generate();
-                len = (int)((re >> 32) ^ (re & uint.MaxValue));
-                byte* reb = (byte*)&len;
+                var mre = (uint)((re >> 32) ^ (re & uint.MaxValue));
                 for (i = 0; i < mod; i++)
                 {
-                    mp[i] = reb[i];
+                    mp[i] = (byte)((mre >> (8 * i)) & 0xFF);
                 }
             }
         }
@@ -453,6 +468,8 @@ namespace Cheng.Algorithm.Randoms
         {
             return ((Generate() % int.MaxValue)) / 2147483647d;
         }
+
+        #endregion
 
         #endregion
 

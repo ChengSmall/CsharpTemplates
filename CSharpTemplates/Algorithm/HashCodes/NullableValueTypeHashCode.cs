@@ -16,8 +16,9 @@ namespace Cheng.Algorithm.HashCodes
 
         public override long GetHashCode64(TS? value)
         {
-            return value.HasValue ? p_def.GetHashCode64(value.Value) : 0;
+            return value.HasValue ? p_def.GetHashCode64(value.Value) : throw new ArgumentNullException();
         }
+
     }
 
 }

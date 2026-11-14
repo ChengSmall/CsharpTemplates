@@ -214,7 +214,7 @@ namespace Cheng.Algorithm.Randoms
         /// <returns>范围在[0,1)的单精度浮点数</returns>
         public static float NextFloat(ref long seed)
         {
-            return (NextInt(ref seed) / 2147483647f);
+            return (NextInt(ref seed, 0, 8388607) / 8388607f);
         }
 
         /// <summary>
